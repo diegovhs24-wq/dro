@@ -129,7 +129,11 @@ export const partners = [
   "Keukensale"
 ];
 
-export const partnerLogos = [
+export type PartnerLogo =
+  | { name: string; image: string }
+  | { name: string; accent: string };
+
+export const partnerLogos: PartnerLogo[] = [
   { name: "Bouwmaat", image: "/bouwmaat-logo.svg" },
   { name: "Sanisale", image: "/sanisale-logo.svg" },
   { name: "Keukensale", image: "/keukensale-logo.svg" }
