@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 190" role="img" aria-labelledby="title">
+  <title id="title">Bouwmaat logo</title>
+  <rect width="980" height="190" fill="#fff"/>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="900" fill="#071345" letter-spacing="34">
+    <text x="43" y="82">BOUW</text>
+    <text x="535" y="82">MAAT</text>
+  </g>
+  <rect x="487" y="0" width="5" height="92" fill="#1664d9"/>
+  <rect x="0" y="116" width="980" height="74" fill="#155bd8"/>
+  <rect x="486" y="172" width="5" height="18" fill="#fff"/>
+</svg>

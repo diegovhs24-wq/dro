@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 170" role="img" aria-labelledby="title">
+  <title id="title">Keukensale.com logo</title>
+  <rect width="760" height="170" fill="transparent"/>
+  <g transform="translate(22 26)">
+    <ellipse cx="45" cy="28" rx="33" ry="20" fill="#f2f2f2"/>
+    <ellipse cx="28" cy="32" rx="18" ry="14" fill="#dedede"/>
+    <ellipse cx="64" cy="34" rx="18" ry="14" fill="#dedede"/>
+    <path d="M22 66c0-23 46-24 48 0 2 24-10 58-24 58S20 90 22 66z" fill="#d71920"/>
+    <circle cx="46" cy="62" r="21" fill="#ef1c25"/>
+    <circle cx="38" cy="58" r="5" fill="#fff"/>
+    <circle cx="55" cy="58" r="5" fill="#fff"/>
+    <circle cx="39" cy="59" r="2.5" fill="#111"/>
+    <circle cx="54" cy="59" r="2.5" fill="#111"/>
+    <path d="M35 72c8 6 16 6 24 0" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M24 78 2 96" stroke="#d71920" stroke-width="12" stroke-linecap="round"/>
+    <path d="M68 78 95 96" stroke="#d71920" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  <text x="125" y="80" font-family="Arial, Helvetica, sans-serif" font-size="62" font-weight="800" letter-spacing="-3">
+    <tspan fill="#111">keuken</tspan><tspan fill="#e61e2a">sale</tspan><tspan fill="#111">.com</tspan>
+  </text>
+  <text x="129" y="118" fill="#333" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="800" letter-spacing=".8">
+    KEUKEN &amp; APPARATUUROUTLET
+  </text>
+</svg>

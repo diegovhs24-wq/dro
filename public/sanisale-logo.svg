@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 170" role="img" aria-labelledby="title">
+  <title id="title">Sanisale.com logo</title>
+  <rect width="520" height="170" fill="#fff"/>
+  <text x="24" y="86" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="800" letter-spacing="-3">
+    <tspan fill="#151515">sani</tspan><tspan fill="#d71920">sale</tspan><tspan fill="#151515">.com</tspan>
+  </text>
+  <text x="27" y="124" fill="#222" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="1.5">
+    SANITAIR-TEGELOUTLET
+  </text>
+</svg>

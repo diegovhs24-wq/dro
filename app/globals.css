@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #171717;
+}
+
+::selection {
+  background: #ff6a00;
+  color: #ffffff;
+}
+
+.section-shell {
+  @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+}
+
+.eyebrow {
+  @apply text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-md bg-brand-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#e85f00] focus:outline-none focus:ring-4 focus:ring-orange-200;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-md border border-white/60 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-brand-ink focus:outline-none focus:ring-4 focus:ring-white/30;
+}
+
+.card {
+  @apply rounded-lg border border-black/10 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-premium;
+}
+
+.photo-treatment {
+  background-image:
+    linear-gradient(135deg, rgba(23, 23, 23, 0.08), rgba(255, 106, 0, 0.22)),
+    url("https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=80");
+  background-position: center;
+  background-size: cover;
+}
