@@ -16,11 +16,11 @@ export default function UitbouwAanbouwPage() {
       <ServicePage
         eyebrow="Uitbouw / aanbouw"
         title="Uitbouw laten plaatsen Den Haag"
-        intro="Meer ruimte creëren met een uitbouw vereist een goede voorbereiding en uitvoering. DRO Renovaties zorgt voor structuur, technische afstemming en een nette oplevering."
+        intro="Meer ruimte met technische voorbereiding, duidelijke planning en nette afwerking."
         sections={[
           {
             title: "Werkzaamheden",
-            items: ["Fundering", "Constructie", "Kozijnen en puien", "Dak en isolatie", "Afwerking"]
+            items: ["Fundering", "Constructie", "Kozijnen en puien", "Dak, isolatie en afwerking"]
           },
           {
             title: "Waar wij op sturen",
@@ -31,8 +31,49 @@ export default function UitbouwAanbouwPage() {
             items: ["Leefkeukens", "Meer woonruimte", "Woningwaarde verhogen"]
           }
         ]}
-        processTitle="Bouwkundige voorbereiding zonder losse eindjes."
-        processText="We stemmen constructie, partners, materialen en planning vooraf af. Zo blijft de uitvoering gecontroleerd en weet u welke stappen nodig zijn."
+        processTitle="Bouwkundig voorbereid."
+        processText="Constructie, materialen en uitvoering worden vooraf afgestemd."
+        situations={[
+          {
+            title: "Leefkeuken",
+            items: ["Meer licht", "Open verbinding", "Praktische indeling"]
+          },
+          {
+            title: "Extra woonruimte",
+            items: ["Constructie beoordelen", "Isolatie meenemen", "Afwerking aansluiten"]
+          },
+          {
+            title: "Aanbouw op maat",
+            items: ["Bouwkundig plannen", "Kozijnen afstemmen", "Netjes opleveren"]
+          }
+        ]}
+        examples={["Constructie en fundering", "Wind- en waterdicht", "Binnenafwerking"]}
+        faqs={[
+          {
+            question: "Hoe starten jullie een uitbouw?",
+            answer: "We kijken eerst naar constructie, vergunningen, planning en gewenste afwerking."
+          },
+          {
+            question: "Stemmen jullie constructie af?",
+            answer: "Ja. Waar nodig werken we met vaste constructeurs en partners."
+          },
+          {
+            question: "Regelen jullie ook de afwerking binnen?",
+            answer: "Ja. Denk aan stucwerk, elektra, vloeropbouw en schilderwerk."
+          },
+          {
+            question: "Kan de woning bewoond blijven?",
+            answer: "Dat hangt af van de situatie. We bespreken vooraf wat praktisch haalbaar is."
+          },
+          {
+            question: "Hoe blijft de planning beheersbaar?",
+            answer: "Door bouwkundige voorbereiding, materiaalkeuzes en fasering vooraf vast te leggen."
+          },
+          {
+            question: "Is isolatie onderdeel van het werk?",
+            answer: "Ja. Dak, gevel en aansluitingen worden meegenomen in de uitvoering."
+          }
+        ]}
       />
       <Footer />
     </main>

@@ -14,6 +14,9 @@ const config: Config = {
           soft: "#f6f5f2"
         }
       },
+      fontFamily: {
+        hand: ['"Comic Sans MS"', '"Comic Sans"', "cursive"]
+      },
       boxShadow: {
         premium: "0 24px 70px rgba(23, 23, 23, 0.10)"
       },

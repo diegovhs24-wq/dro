@@ -16,7 +16,7 @@ export default function ZonnepanelenPage() {
       <ServicePage
         eyebrow="Zonnepanelen"
         title="Zonnepanelen laten installeren"
-        intro="Met zonnepanelen verlaagt u direct uw energiekosten en maakt u uw woning duurzamer. Wij verzorgen een complete installatie, van plaatsing tot aansluiting."
+        intro="Zonnepanelen veilig geplaatst, aangesloten en gecontroleerd opgeleverd."
         sections={[
           {
             title: "Wat wij doen",
@@ -36,8 +36,49 @@ export default function ZonnepanelenPage() {
             ]
           }
         ]}
-        processTitle="Netjes en veilig geïnstalleerd."
-        processText="Alles wordt netjes en veilig geïnstalleerd, zonder dat u zich ergens zorgen over hoeft te maken."
+        processTitle="Veilig geïnstalleerd."
+        processText="Plaatsing, aansluiting en controle worden helder afgestemd."
+        situations={[
+          {
+            title: "Schuin dak",
+            items: ["Dakvlak beoordelen", "Montageplan maken", "Veilig installeren"]
+          },
+          {
+            title: "Plat dak",
+            items: ["Ballast en ligging", "Windbelasting checken", "Nette kabelroute"]
+          },
+          {
+            title: "Meterkast",
+            items: ["Aansluiting controleren", "Groep voorbereiden", "Veilig opleveren"]
+          }
+        ]}
+        examples={["Dakinspectie", "Panelen plaatsen", "Aansluiten en controleren"]}
+        faqs={[
+          {
+            question: "Bekijken jullie eerst het dak?",
+            answer: "Ja. We kijken naar dakvlak, ligging, bereikbaarheid en veilige montage."
+          },
+          {
+            question: "Wordt de meterkast meegenomen?",
+            answer: "Ja. De aansluiting op de meterkast wordt gecontroleerd en afgestemd."
+          },
+          {
+            question: "Kan dit tijdens een renovatie?",
+            answer: "Ja. Dan plannen we dit logisch mee met andere werkzaamheden."
+          },
+          {
+            question: "Hoe wordt kabelwerk weggewerkt?",
+            answer: "We kiezen vooraf een nette en veilige kabelroute."
+          },
+          {
+            question: "Controleren jullie na installatie?",
+            answer: "Ja. We controleren plaatsing, aansluiting en werking."
+          },
+          {
+            question: "Krijg ik uitleg bij oplevering?",
+            answer: "Ja. We nemen de installatie en aandachtspunten kort met u door."
+          }
+        ]}
       />
       <Footer />
     </main>

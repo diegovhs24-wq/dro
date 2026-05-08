@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="460" viewBox="0 0 680 460" fill="none">
+  <g stroke="#111111" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round" opacity="0.045">
+    <!-- ladder -->
+    <path d="M58 48 22 166M102 55 66 173M43 92l44 8M34 122l44 8M25 151l44 8" />
+
+    <!-- helmet -->
+    <path d="M536 70c5-27 25-42 50-39 28 3 45 24 44 51" />
+    <path d="M523 82h119c5 0 8 4 6 8-2 6-9 9-17 9h-94c-9 0-17-4-20-10-1-4 2-7 6-7Z" />
+    <path d="M577 35v42M604 45v31" />
+
+    <!-- wall blocks -->
+    <path d="M73 320h110M82 287h92M68 354h122" />
+    <path d="M73 320v34M128 320v34M183 320v34M82 287v33M128 287v33M174 287v33" />
+
+    <!-- construction plan -->
+    <path d="M286 72h112v78H286z" />
+    <path d="M301 91h35v24h-35zM354 91h29M354 110h29M301 130h82" />
+    <path d="M393 82l18-16M401 99l18-16" />
+
+    <!-- drill -->
+    <path d="M456 300h62l19 21-15 18h-44l-13-15h-18c-8 0-14-5-14-12s9-12 23-12Z" />
+    <path d="M522 339l12 34h-26l-10-34M537 321h51M588 321l21-8" />
+    <path d="M471 306v16M489 306v16" />
+
+    <!-- paint roller -->
+    <path d="M286 330h82v26h-82zM368 343h31c14 0 22 8 22 21v20" />
+    <path d="M421 384h-28v39h28z" />
+
+    <!-- outlet -->
+    <path d="M584 252h48v56h-48z" />
+    <path d="M598 279h.1M617 279h.1M608 260v34" />
+
+    <!-- door -->
+    <path d="M490 136h61v118h-61z" />
+    <path d="M503 147h36v95h-36zM535 199h.1" />
+
+    <!-- sanitary elements -->
+    <path d="M190 94h52v27a26 26 0 0 1-26 26 26 26 0 0 1-26-26V94Z" />
+    <path d="M184 94h64M198 147l-8 22M234 147l8 22" />
+    <path d="M211 64c0-18 12-28 28-28h8" />
+    <path d="M245 36h22M248 47h18" />
+  </g>
+
+  <g stroke="#ff6a00" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.018">
+    <path d="M444 78c18-14 39-14 57 0" />
+    <path d="M130 218c18 7 38 7 57 0" />
+    <path d="M315 219l24 18 42-46" />
+    <path d="M584 188c10-10 23-10 33 0M594 174l-4-13M614 176l8-12" />
+  </g>
+</svg>

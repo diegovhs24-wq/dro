@@ -34,6 +34,21 @@ const teamMembers = [
       "Met een technische achtergrond als elektricien en doordat ik ben opgegroeid in de bouw — mijn vader zat ook in de elektra — heb ik een scherp oog voor detail en weet ik precies waar het in de praktijk om draait.",
       "Voor mij is het simpel: afspraken nakomen, kwaliteit leveren en zorgen dat alles klopt."
     ]
+  },
+  {
+    name: "Scott",
+    role: "Klantcontact & kantoor",
+    image: "/scott-klantcontact.png",
+    bullets: [
+      "Klantupdates",
+      "Planning opvolgen",
+      "Kantoorcontact",
+      "Oog voor afwerking"
+    ],
+    paragraphs: [
+      "Mijn naam is Scott en ik ben dagelijks op kantoor bij DRO Renovaties. Ik zorg ervoor dat klanten goed op de hoogte blijven van updates, afspraken en vervolgstappen.",
+      "Ik kom uit een echte interieurfamilie. Daardoor kijk ik niet alleen naar wat praktisch moet gebeuren, maar ook naar de details die bepalen of een ruimte echt klopt."
+    ]
   }
 ];
 
@@ -51,7 +66,7 @@ export default function TeamMember() {
             aansturen en opleveren.
           </p>
         </div>
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {teamMembers.map((member) => (
             <article className="card overflow-hidden bg-white" key={member.name}>
             <div

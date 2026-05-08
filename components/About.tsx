@@ -8,7 +8,7 @@ export default function About() {
           <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">
             Tweede generatie, moderne aanpak.
           </h2>
-          <div className="mt-8 space-y-5 text-lg leading-9 text-white/78">
+          <div className="mt-8 space-y-5 text-lg leading-9 text-white/80">
             <p>
               Mijn naam is Therab. Samen met mijn vader vormen wij de tweede generatie
               binnen DRO Bouwgroep.

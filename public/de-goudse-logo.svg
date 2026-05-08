@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 250" role="img" aria-labelledby="title desc">
+  <title id="title">de Goudse verzekeringen logo</title>
+  <desc id="desc">De Goudse verzekeringen logo</desc>
+  <rect width="560" height="250" fill="none"/>
+  <path d="M214 36c-22-5-44 2-64 19-20 17-33 38-40 64 25-22 52-30 81-25-20 36-55 62-105 79 54-6 96-25 126-57 23-25 37-53 42-84-15 1-28 4-40 10Z" fill="#6f2c8f"/>
+  <path d="M230 30c-16 10-28 25-38 44 24-18 48-30 72-35-10-8-21-11-34-9Z" fill="#6f2c8f"/>
+  <text x="40" y="157" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" fill="#0b8ec1">de Goudse</text>
+  <text x="80" y="212" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" letter-spacing="6" fill="#6f2c8f">verzekeringen</text>
+</svg>

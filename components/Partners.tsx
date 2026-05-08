@@ -2,7 +2,7 @@ import { partnerLogos } from "@/components/siteContent";
 
 export default function Partners() {
   return (
-    <section className="bg-white py-16">
+    <section className="bg-white py-12 sm:py-14">
       <div className="section-shell">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
@@ -15,7 +15,7 @@ export default function Partners() {
             Wij werken met herkenbare leveranciers zodat keuzes, levertijden en kwaliteit beter te controleren zijn.
           </p>
         </div>
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {partnerLogos.map((partner) => (
             <div
               className="flex min-h-28 items-center justify-center rounded-lg border border-black/10 bg-brand-soft p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-premium"

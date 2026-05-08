@@ -38,20 +38,20 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
   return (
     <main>
       <Header />
-      <section className="bg-brand-ink py-24 text-white sm:py-28">
+      <section className="bg-brand-ink py-14 text-white sm:py-16">
         <div className="section-shell grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
           <div>
             <p className="eyebrow">{project.location}</p>
-            <h1 className="mt-4 text-4xl font-extrabold leading-tight sm:text-6xl">
+            <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-5xl">
               {project.type} in {project.location}
             </h1>
             <p className="mt-6 text-lg leading-8 text-white/76">{project.description}</p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a className="btn-primary" href="/contact">
-                Bespreek uw project met ons
+                Start intake
               </a>
               <a className="btn-secondary" href="tel:+31600000000">
-                Plan een vrijblijvend gesprek
+                Bespreek uw project met ons
               </a>
             </div>
           </div>
@@ -62,7 +62,7 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
       </section>
 
-      <section className="bg-white py-20">
+      <section className="bg-white py-12 sm:py-14">
         <div className="section-shell grid gap-5 md:grid-cols-4">
           {[
             ["Locatie", project.location],
@@ -80,7 +80,7 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
       </section>
 
-      <section className="bg-brand-soft py-24">
+      <section className="bg-brand-soft py-14 sm:py-16">
         <div className="section-shell grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <p className="eyebrow">Uitgevoerd werk</p>
@@ -110,7 +110,7 @@ export default function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
       </section>
 
-      <section className="bg-white py-24">
+      <section className="bg-white py-14 sm:py-16">
         <div className="section-shell max-w-4xl">
           <p className="eyebrow">Projectverhaal</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">

@@ -2,259 +2,440 @@ import type { Metadata } from "next";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import PageHero from "@/components/PageHero";
-import { processSteps } from "@/components/siteContent";
+import Partners from "@/components/Partners";
+import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 
 export const metadata: Metadata = {
   title: "Onze werkwijze | DRO Renovaties",
   description:
-    "Ontdek hoe DRO Renovaties renovaties structureert met intake, offerte, planning, uitvoering en oplevering."
+    "Zo werkt DRO Renovaties: van eerste idee tot oplevering met één aanspreekpunt, duidelijke planning en vaste teams."
 };
 
-const focusItems = [
-  "Eén vast aanspreekpunt",
-  "Vaste volgorde per fase",
-  "Afstemming met partners",
-  "Controle tot oplevering"
-];
-
-const coordinationNodes = ["Intake", "Planning", "Partners", "Oplevering"];
-
-const partnerGroups = [
+const steps = [
   {
-    title: "Bouwkundig",
-    text: "Technische keuzes vooraf helder.",
-    items: [
-      {
-        icon: "constructie",
-        name: "Constructeurs",
-        text: "Constructieve zekerheid."
-      },
-      {
-        icon: "architect",
-        name: "Architecten",
-        text: "Indeling en ontwerpkeuzes."
-      }
+    title: "Idee",
+    text: "U heeft een idee of wens. Wij denken direct met u mee.",
+    note: "Alles begint met uw idee",
+    icon: "idea"
+  },
+  {
+    title: "Gesprek",
+    text: "We bespreken uw situatie en geven eerlijk advies.",
+    note: "Open en eerlijk advies",
+    icon: "talk"
+  },
+  {
+    title: "Plan",
+    text: "U ontvangt een duidelijk plan en een transparante offerte.",
+    note: "Duidelijk plan, geen verrassingen",
+    icon: "checklist"
+  },
+  {
+    title: "Uitvoering",
+    text: "Ons team voert het werk uit volgens planning en afspraak.",
+    note: "Vaste teams, strakke uitvoering",
+    icon: "tools"
+  },
+  {
+    title: "Oplevering",
+    text: "We leveren netjes op. Alles gecontroleerd en afgerond.",
+    note: "Oplevering met aandacht",
+    icon: "delivery"
+  }
+] satisfies Array<{
+  title: string;
+  text: string;
+  note: string;
+  icon: SketchIconName;
+}>;
+
+const benefits = [
+  { title: "Eén aanspreekpunt", icon: "contact" },
+  { title: "Duidelijke planning", icon: "planning" },
+  { title: "Korte communicatie", icon: "handshake" },
+  { title: "Geen verrassingen", icon: "shield" },
+  { title: "Strak resultaat", icon: "tools" }
+] satisfies Array<{ title: string; icon: SketchIconName }>;
+
+const trustPoints = [
+  {
+    title: "VCA gecertificeerd",
+    text: "Onze monteurs zijn VCA gecertificeerd.",
+    icon: "checklist",
+    logo: "/vca-logo.svg"
+  },
+  {
+    title: "Goed verzekerd",
+    text: "Ons bedrijf beschikt over een CAR- en aansprakelijkheidsverzekering.",
+    icon: "shield",
+    logo: "/de-goudse-logo.svg"
+  },
+  {
+    title: "Verantwoord uitgevoerd",
+    text: "Zo weet u dat wij altijd kwalitatief en verantwoord werk leveren.",
+    icon: "quality"
+  }
+] satisfies Array<{ title: string; text: string; icon: SketchIconName; logo?: string }>;
+
+const faqItems = [
+  {
+    question: "Wat gebeurt er nadat ik mijn aanvraag heb gedaan?",
+    answer: [
+      "We nemen binnen 24 uur contact met u op. Soms dezelfde dag, soms de volgende werkdag.",
+      "We kijken direct of uw project bij ons past. Zo ja, dan plannen we een gesprek in en gaan we inhoudelijk met u mee.",
+      "Past het niet? Dan zeggen we dat ook gewoon eerlijk."
     ]
   },
   {
-    title: "Materialen & keuzes",
-    text: "Materialen en planning afgestemd.",
-    items: [
-      {
-        icon: "badkamer",
-        name: "Badkamerzaken",
-        text: "Sanitair en tegels."
-      },
-      {
-        icon: "keuken",
-        name: "Keukenzaken",
-        text: "Planning en aansluitpunten."
-      },
-      {
-        icon: "bouwmaat",
-        name: "Bouwmaat",
-        text: "Materialen en levering."
-      }
+    question: "Hoe snel weet ik waar ik aan toe ben?",
+    answer: [
+      "Vrij snel. Na het eerste gesprek kunnen we al veel richting geven.",
+      "Daarna ontvangt u een duidelijke offerte waarin staat wat we doen, hoe we het doen en wat het kost.",
+      "Geen vage aannames. Gewoon concreet."
     ]
   },
   {
-    title: "Afwerking & installatie",
-    text: "Strakke details in uitvoering.",
-    items: [
-      {
-        icon: "vloer",
-        name: "Vloerspecialisten",
-        text: "Vloeropbouw en afwerking."
-      },
-      {
-        icon: "sanitair",
-        name: "Sanisale",
-        text: "Badkameronderdelen."
-      },
-      {
-        icon: "apparaten",
-        name: "Keukensale",
-        text: "Onderdelen en apparatuur."
-      }
+    question: "Wat als ik zelf nog geen compleet plan heb?",
+    answer: [
+      "Dat is normaal. De meeste projecten starten met een idee, niet met een uitgewerkt ontwerp.",
+      "Wij helpen u dat idee technisch en praktisch kloppend te maken.",
+      "Van 'ik wil iets' naar 'zo gaan we het doen'."
+    ]
+  },
+  {
+    question: "Doen jullie echt alles zelf of werken jullie met losse partijen?",
+    answer: [
+      "Wij werken met vaste teams en vaste specialisten.",
+      "Denk aan sloopwerk, constructieve aanpassingen, elektra, installaties, wanden, vloeren, tegelwerk, stucwerk, schilderwerk, timmerwerk en afbouw.",
+      "Alles wordt vanuit één centrale aansturing geregeld."
+    ]
+  },
+  {
+    question: "Kunnen jullie ook constructieve dingen oppakken?",
+    answer: [
+      "Ja. Bijvoorbeeld dragende muren aanpassen, staalconstructies plaatsen, indelingen veranderen en volledige renovaties.",
+      "Waar nodig werken we samen met constructeurs en zorgen wij dat de uitvoering klopt.",
+      "U hoeft dat niet zelf te regelen."
+    ]
+  },
+  {
+    question: "Hoe zorgen jullie dat een project niet uitloopt?",
+    answer: [
+      "Door vooraf strak te plannen en tijdens het werk kort te schakelen.",
+      "Duidelijke voorbereiding, vaste teams en directe communicatie zorgen voor overzicht.",
+      "Geen losse schakels, maar één lijn."
+    ]
+  },
+  {
+    question: "Heb ik één aanspreekpunt tijdens het project?",
+    answer: [
+      "Ja. U heeft één vast aanspreekpunt die alles overziet.",
+      "Van planning tot uitvoering.",
+      "Geen gedoe met vijf verschillende nummers."
+    ]
+  },
+  {
+    question: "Wat gebeurt er als er iets verandert tijdens de verbouwing?",
+    answer: [
+      "Dat gebeurt soms en dat is geen probleem.",
+      "We bespreken direct wat er verandert, wat dat betekent en wat het eventueel kost.",
+      "Altijd vooraf duidelijk. Nooit achteraf verrassingen."
+    ]
+  },
+  {
+    question: "Werken jullie met vaste mensen?",
+    answer: [
+      "Ja. Wij werken met vaste vakmensen die gewend zijn om samen te werken.",
+      "Geen wisselende ploegen per week.",
+      "Daardoor blijven kwaliteit en tempo stabiel."
+    ]
+  },
+  {
+    question: "Kan ik zien hoe jullie werken voordat ik beslis?",
+    answer: [
+      "Ja. Tijdens het traject nemen we u indien mogelijk mee naar een lopend project.",
+      "Zo ziet u precies wat u kunt verwachten.",
+      "Dat geeft vaak meteen vertrouwen."
+    ]
+  },
+  {
+    question: "Voor wat voor projecten zijn jullie de juiste partij?",
+    answer: [
+      "Voor mensen die het goed geregeld willen hebben.",
+      "Badkamers, totaalrenovaties, verbouwingen en grotere projecten passen goed bij onze aanpak.",
+      "Zolang kwaliteit en duidelijkheid belangrijk zijn, zitten we goed."
+    ]
+  },
+  {
+    question: "En als mijn project niet bij jullie past?",
+    answer: [
+      "Dan zeggen we dat eerlijk.",
+      "We nemen alleen projecten aan waar we volledig achter staan en capaciteit voor hebben.",
+      "Liever nee zeggen, dan half werk leveren."
+    ]
+  },
+  {
+    question: "Zijn jullie meer een groot bedrijf of een familiebedrijf?",
+    answer: [
+      "Beide.",
+      "We hebben de structuur en capaciteit om projecten strak te draaien, maar werken nog steeds met persoonlijk contact en verantwoordelijkheid.",
+      "U merkt dat verschil direct."
+    ]
+  },
+  {
+    question: "Hoe zit het met kwaliteit en zekerheid?",
+    answer: [
+      "Dat is goed geregeld.",
+      "Onze monteurs zijn VCA gecertificeerd en het bedrijf beschikt over een CAR- en aansprakelijkheidsverzekering.",
+      "We werken veilig, gestructureerd en professioneel."
+    ]
+  },
+  {
+    question: "Waarom kiezen mensen uiteindelijk voor jullie?",
+    answer: [
+      "Omdat het klopt.",
+      "Duidelijke communicatie, strakke uitvoering, geen verrassingen en één aanspreekpunt.",
+      "En misschien nog belangrijker: het voelt betrouwbaar."
     ]
   }
 ];
 
-const partnerIconPaths = {
-  constructie: "M12 3l8 4v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10V7l8-4zM9 12l2 2 4-5",
-  architect: "M4 20h16M6 20V9l6-5 6 5v11M10 20v-6h4v6",
-  badkamer: "M5 11h14v3a5 5 0 0 1-5 5h-4a5 5 0 0 1-5-5v-3zM7 11V7a3 3 0 0 1 3-3h1M7 19l-1 2M17 19l1 2",
-  keuken: "M5 4h14v16H5zM9 4v16M13 8h2M13 12h2",
-  bouwmaat: "M4 8h16M6 8v12h12V8M9 12h6M9 16h6M8 8V5h8v3",
-  vloer: "M4 6h16v12H4zM4 10h16M8 6v12M12 6v12M16 6v12",
-  sanitair: "M7 5h10v14H7zM10 8h4M10 12h4M10 16h4M17 9h2v6h-2",
-  apparaten: "M6 6h12v9H6zM8 19h8M10 15v4M14 15v4M9 9h6M9 12h6"
-} as const;
-
-type PartnerIconName = keyof typeof partnerIconPaths;
-
-function PartnerIcon({ icon }: { icon: PartnerIconName }) {
-
+function HandUnderline({ className = "" }: { className?: string }) {
   return (
-    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-brand-orange/10 text-brand-orange">
-      <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24">
-        <path
-          d={partnerIconPaths[icon]}
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.9"
-        />
-      </svg>
-    </span>
+    <svg
+      aria-hidden="true"
+      className={`absolute -bottom-1 left-0 h-3 w-full text-brand-orange ${className}`}
+      fill="none"
+      preserveAspectRatio="none"
+      viewBox="0 0 160 14"
+    >
+      <path
+        d="M3 9c35-7 83-6 154-4"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="4"
+      />
+    </svg>
+  );
+}
+
+function FlowLine() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute left-3 top-7 hidden h-[72%] w-[72px] text-brand-orange/70 lg:block"
+      fill="none"
+      viewBox="0 0 90 640"
+    >
+      <path
+        d="M57 4C8 59 69 94 26 153C-3 194 68 236 34 290C5 337 67 370 27 429C-6 478 59 518 34 592"
+        stroke="currentColor"
+        strokeDasharray="8 12"
+        strokeLinecap="round"
+        strokeWidth="3"
+      />
+      <path d="M30 151l-12 2 7 10M33 291l-12 4 8 9M31 592l-12 2 7 11" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
+    </svg>
+  );
+}
+
+function SideArrow() {
+  return (
+    <svg aria-hidden="true" className="hidden h-8 w-20 text-brand-ink lg:block" fill="none" viewBox="0 0 110 46">
+      <path d="M5 29c23-13 50-16 86-10" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
+      <path d="M82 9l20 12-22 10" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+function NoteCard() {
+  return (
+    <div className="relative mt-5 max-w-[390px] rotate-[-1deg] border-2 border-brand-ink/70 bg-[#fffaf0] px-6 py-5 shadow-[8px_10px_0_rgba(17,17,17,0.06)]">
+      <div className="absolute -top-4 left-1/2 h-7 w-24 -translate-x-1/2 rotate-[-2deg] border border-black/20 bg-[#f4ead6]" />
+      <div className="grid grid-cols-[48px_1fr] gap-4">
+        <div className="grid h-11 w-11 place-items-center text-brand-ink">
+          <SketchIcon name="quality" className="h-9 w-9" />
+        </div>
+        <p className="m-0 font-hand text-xl leading-snug text-brand-ink">
+          Tijdens het traject nemen wij u indien mogelijk mee naar een lopend project, zodat u precies weet wat u kunt verwachten.
+        </p>
+      </div>
+      <div className="mx-auto mt-3 h-1 w-24 rounded-full bg-brand-orange" />
+    </div>
   );
 }
 
 export default function WerkwijzePage() {
   return (
-    <main>
+    <main className="bg-white">
       <Header />
-      <PageHero
-        eyebrow="Werkwijze"
-        title="Onze werkwijze"
-        text="Een vaste structuur voor intake, planning, uitvoering en oplevering."
-      />
-      <section className="bg-white py-16 sm:py-20">
-        <div className="section-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
-            <p className="eyebrow">Complete coördinatie</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Eén centrale regie over uw verbouwing.
-            </h2>
-            <p className="mt-6 leading-8 text-neutral-600">
-              Wij coördineren planning, partners en uitvoering. U houdt overzicht,
-              zonder losse partijen zelf aan te sturen.
+      <section className="relative overflow-hidden bg-white py-6 lg:py-7">
+        <div className="section-shell relative grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+          <div className="pt-2">
+            <p className="eyebrow">Werkwijze</p>
+            <h1 className="mt-4 max-w-2xl text-5xl font-black leading-[0.98] tracking-[-0.04em] text-brand-ink sm:text-6xl lg:text-[64px]">
+              Zo werkt het als u met ons{" "}
+              <span className="relative inline-block">
+                samenwerkt.
+                <HandUnderline />
+              </span>
+            </h1>
+            <p className="mt-5 max-w-lg text-base font-bold leading-7 text-neutral-600">
+              U hoeft niks uit te zoeken.
+              <br />
+              Wij regelen het van begin tot eind.
             </p>
-            <div className="mt-7 rounded-lg border-l-4 border-brand-orange bg-brand-soft p-6">
-              <p className="text-base font-semibold leading-8 text-brand-ink">
-                Voor ons is coördinatie dagelijks werk. Daardoor blijft uw traject
-                rustig, logisch en controleerbaar.
+
+            <NoteCard />
+
+            <div className="mt-5 flex max-w-xl items-end gap-4">
+              <div className="grid h-20 w-24 shrink-0 place-items-center text-brand-ink">
+                <SketchIcon name="team" className="h-20 w-20" />
+              </div>
+              <SideArrow />
+              <p className="mb-1 max-w-xs font-hand text-xl leading-snug text-brand-ink">
+                U spreekt met de mensen die uw project ook echt uitvoeren.
               </p>
             </div>
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
-              {focusItems.map((item) => (
+          </div>
+
+          <div className="relative">
+            <FlowLine />
+            <div className="grid gap-0">
+              {steps.map((step, index) => (
                 <div
-                  className="rounded-lg border border-black/10 bg-white px-4 py-3 text-sm font-bold text-brand-ink shadow-sm"
-                  key={item}
+                  className="grid items-center gap-3 rounded-none border-b border-black/5 py-1 sm:grid-cols-[100px_1fr] lg:grid-cols-[110px_1.05fr_86px_185px]"
+                  key={step.title}
                 >
-                  <span className="mr-2 text-brand-orange">✔</span>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-lg bg-brand-ink p-6 text-white shadow-premium sm:p-8">
-            <div className="flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
-                  Regiekaart
-                </p>
-                <h3 className="mt-3 text-3xl font-bold tracking-tight">
-                  Uw project, helder aangestuurd.
-                </h3>
-              </div>
-              <span className="rounded-lg border border-white/15 px-4 py-3 text-sm font-bold text-white/80">
-                Van A tot Z
-              </span>
-            </div>
-            <div className="relative mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="absolute left-1/2 top-0 hidden h-full w-px bg-white/10 sm:block" />
-              {coordinationNodes.map((node, index) => (
-                <div
-                  className="relative rounded-lg border border-white/10 bg-white/5 p-5"
-                  key={node}
-                >
-                  <span className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-orange">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <p className="mt-3 text-lg font-bold">{node}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-7 rounded-lg bg-white/10 p-5 text-sm leading-7 text-white/70">
-              Eén volgorde. Eén aanspreekpunt. Eén duidelijke oplevering.
-            </p>
-          </div>
-        </div>
-      </section>
-      <section className="bg-brand-soft py-16 sm:py-20">
-        <div className="section-shell">
-          <div className="max-w-3xl">
-            <p className="eyebrow">Vaste partners</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Vaste partners, centraal aangestuurd.
-            </h2>
-            <p className="mt-5 leading-8 text-neutral-600">
-              Keuzes, leveringen en uitvoering worden vooraf op elkaar afgestemd.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {partnerGroups.map((group) => (
-              <article
-                className="rounded-lg border border-black/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-premium"
-                key={group.title}
-              >
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange">
-                  {group.title}
-                </p>
-                <p className="mt-4 text-sm leading-7 text-neutral-600">
-                  {group.text}
-                </p>
-                <div className="mt-6 grid gap-4">
-                  {group.items.map((partner) => (
-                    <div className="flex gap-4" key={partner.name}>
-                      <PartnerIcon icon={partner.icon as PartnerIconName} />
-                      <div>
-                        <h3 className="text-base font-bold text-brand-ink">
-                          {partner.name}
-                        </h3>
-                        <p className="mt-1 text-sm leading-6 text-neutral-600">
-                          {partner.text}
-                        </p>
-                      </div>
+                  <div className="hidden justify-center text-brand-ink sm:flex">
+                    <div className="grid h-[86px] w-[86px] place-items-center">
+                      <SketchIcon name={step.icon} className="h-20 w-20" />
                     </div>
-                  ))}
+                  </div>
+
+                  <div className="grid grid-cols-[44px_1fr] gap-3">
+                    <span className="grid h-9 w-9 place-items-center rounded-full border-[3px] border-brand-orange font-hand text-2xl leading-none text-brand-orange">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <h2 className="relative inline-block font-hand text-[32px] font-normal leading-none text-brand-ink">
+                        {step.title}
+                        <HandUnderline />
+                      </h2>
+                      <p className="mt-2 max-w-sm font-hand text-lg leading-snug text-brand-ink">
+                        {step.text}
+                      </p>
+                    </div>
+                  </div>
+
+                  <SideArrow />
+
+                  <p className="hidden max-w-[185px] font-hand text-lg leading-snug text-brand-ink lg:block">
+                    {step.note}
+                    <span className="mt-1 block h-1 w-24 rounded-full bg-brand-orange" />
+                  </p>
                 </div>
-              </article>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </section>
-      <section className="bg-white py-16 sm:py-20">
-        <div className="section-shell">
-          <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-            <div>
-              <p className="eyebrow">Stappenplan</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                Van aanvraag naar oplevering.
-              </h2>
-            </div>
-            <p className="max-w-xl text-sm leading-7 text-neutral-600">
-              Duidelijke fases. Duidelijke verantwoordelijkheden.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-3 xl:grid-cols-6">
-            {processSteps.map((step, index) => (
+
+        <div className="section-shell mt-4">
+          <div className="mx-auto grid max-w-6xl gap-0 border-2 border-brand-ink/70 bg-white shadow-[8px_10px_0_rgba(17,17,17,0.05)] sm:grid-cols-2 lg:grid-cols-5">
+            {benefits.map((benefit, index) => (
               <div
-                className="rounded-lg border border-black/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-premium"
-                key={step}
+                className={`flex items-center gap-3 px-4 py-3 ${index > 0 ? "border-t border-brand-ink/20 sm:border-l sm:border-t-0" : ""}`}
+                key={benefit.title}
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-orange text-sm font-extrabold text-white">
-                  {String(index + 1).padStart(2, "0")}
-                </div>
-                <h3 className="mt-5 text-lg font-bold">{step}</h3>
+                <span className="grid h-9 w-9 shrink-0 place-items-center text-brand-ink">
+                  <SketchIcon name={benefit.icon} className="h-8 w-8" />
+                </span>
+                <p className="m-0 font-hand text-lg leading-tight text-brand-ink">{benefit.title}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-      <CTASection />
+      <section className="bg-white py-4">
+        <div className="section-shell">
+          <div className="grid gap-5 rounded-lg bg-brand-soft px-6 py-5 sm:grid-cols-3 lg:px-8">
+            {trustPoints.map((point) => (
+              <div className="flex gap-4" key={point.title}>
+                {point.logo ? (
+                  <span className="mt-1 flex h-10 w-20 shrink-0 items-center">
+                    <img
+                      alt={`${point.title} logo`}
+                      className="max-h-10 w-auto max-w-full object-contain"
+                      src={point.logo}
+                    />
+                  </span>
+                ) : (
+                  <span className="mt-1 grid h-10 w-10 shrink-0 place-items-center text-brand-ink">
+                    <SketchIcon name={point.icon} className="h-8 w-8" />
+                  </span>
+                )}
+                <div>
+                  <h2 className="text-base font-bold text-brand-ink">{point.title}</h2>
+                  <p className="mt-1 text-sm font-medium leading-6 text-neutral-600">
+                    {point.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <Partners />
+      <section className="bg-brand-soft py-10 sm:py-12">
+        <div className="section-shell">
+          <div className="mx-auto max-w-3xl text-center">
+              <p className="eyebrow">FAQ</p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-brand-ink sm:text-4xl">
+                U heeft nog vragen. Dat begrijpen we.
+              </h2>
+              <p className="mt-4 text-base font-semibold leading-7 text-neutral-600">
+                Een verbouwing is geen kleine beslissing. Daarom beantwoorden we hieronder de vragen die wij bijna altijd krijgen, kort en eerlijk.
+              </p>
+          </div>
+
+          <div className="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {faqItems.map((item) => (
+                <details
+                  className="group rounded-lg bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-premium"
+                  key={item.question}
+                >
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-4 text-sm font-bold leading-6 text-brand-ink">
+                    <span>{item.question}</span>
+                    <span className="text-brand-orange transition group-open:rotate-45">+</span>
+                  </summary>
+                  <div className="mt-4 grid gap-3 text-sm font-medium leading-7 text-neutral-600">
+                    {item.answer.map((line) => (
+                      <p className="m-0" key={line}>
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                </details>
+              ))}
+          </div>
+
+          <div className="mt-8 rounded-lg bg-neutral-950 p-6 text-white sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <h2 className="text-2xl font-bold">Twijfelt u nog? Plan gewoon een intake.</h2>
+              <p className="mt-2 text-sm font-medium leading-6 text-white/65">
+                Na één gesprek weet u direct of wij bij u passen.
+              </p>
+            </div>
+            <a className="btn-primary mt-5 sm:mt-0" href="/contact">
+              Start intake
+            </a>
+          </div>
+        </div>
+      </section>
+      <CTASection
+        title="Klaar om uw project goed te starten?"
+        text="Start met een korte intake. Wij beoordelen uw aanvraag persoonlijk."
+      />
       <Footer />
     </main>
   );

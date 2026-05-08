@@ -16,17 +16,15 @@ export default function BadkamerRenovatiePage() {
       <ServicePage
         eyebrow="Badkamer renovatie"
         title="Badkamer renovatie Den Haag | DRO Renovaties"
-        intro="Een badkamer renovatie is meer dan alleen tegels en sanitair. U wilt vooraf duidelijkheid over planning, uitvoering en het eindresultaat. Bij DRO Renovaties zorgen wij voor een complete en professionele aanpak, zonder verrassingen achteraf."
+        intro="Strakke badkamer renovatie met duidelijke planning, vaste coördinatie en nette oplevering."
         sections={[
           {
-            title: "Wat wij volledig verzorgen",
+            title: "Wat wij verzorgen",
             items: [
               "Sloopwerk en afvoer",
-              "Aanpassen van waterleidingen en afvoer",
+              "Leidingwerk",
               "Elektra en verlichting",
-              "Tegelwerk voor vloer en wanden",
-              "Installatie sanitair",
-              "Kit- en afwerking"
+              "Tegelwerk en sanitair"
             ]
           },
           {
@@ -42,8 +40,49 @@ export default function BadkamerRenovatiePage() {
             items: ["Alles onder één dak", "Heldere communicatie", "Ervaren vakmensen"]
           }
         ]}
-        processTitle="Van intake tot oplevering gestructureerd geregeld."
-        processText="We brengen wensen, technische aandachtspunten, materiaalkeuzes en planning vooraf in kaart. Daardoor weet u precies hoe het traject verloopt voordat we starten."
+        processTitle="Van intake tot oplevering geregeld."
+        processText="Wensen, techniek en planning worden vooraf afgestemd."
+        situations={[
+          {
+            title: "Compacte badkamer",
+            items: ["Slimme indeling", "Praktische opbergruimte", "Heldere materiaalkeuzes"]
+          },
+          {
+            title: "Luxe afwerking",
+            items: ["Inbouwkranen", "Nis en verlichting", "Strak tegelwerk"]
+          },
+          {
+            title: "Nieuwe woning",
+            items: ["Vooraf plannen", "Keuzes bundelen", "Snel woonklaar"]
+          }
+        ]}
+        examples={["Techniek voorbereiden", "Tegelwerk en sanitair", "Detailcontrole"]}
+        faqs={[
+          {
+            question: "Hoe begint een badkamerrenovatie?",
+            answer: "We bespreken wensen, bekijken de ruimte en stemmen techniek, indeling en materiaalkeuzes af."
+          },
+          {
+            question: "Regelen jullie sloop en afvoer?",
+            answer: "Ja. De bestaande badkamer wordt netjes verwijderd en afgevoerd."
+          },
+          {
+            question: "Wie coördineert de verschillende vakmensen?",
+            answer: "Wij doen de coördinatie. U heeft één aanspreekpunt."
+          },
+          {
+            question: "Kan ik sanitair zelf kiezen?",
+            answer: "Ja. We denken mee en stemmen keuzes technisch af voordat we starten."
+          },
+          {
+            question: "Wordt alles waterdicht gecontroleerd?",
+            answer: "Ja. Leidingen, kitwerk en natte zones krijgen extra aandacht."
+          },
+          {
+            question: "Wanneer is de badkamer klaar voor gebruik?",
+            answer: "Dat stemmen we vooraf af op basis van scope, materiaalkeuzes en planning."
+          }
+        ]}
       />
       <Footer />
     </main>

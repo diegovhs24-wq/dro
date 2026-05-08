@@ -21,7 +21,7 @@ export default function ProjectenPage() {
         title="Renovatieprojecten met zichtbaar resultaat."
         text="Bekijk hoe structuur, vakmanschap en duidelijke keuzes leiden tot renovaties die rust en kwaliteit uitstralen."
       />
-      <section className="bg-brand-soft py-24">
+      <section className="bg-brand-soft py-14 sm:py-16">
         <div className="section-shell grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
             <ProjectCard key={project.slug} {...project} />

@@ -21,7 +21,7 @@ export default function DienstenPage() {
         title="Complete renovaties met één duidelijk traject."
         text="DRO Renovaties is gespecialiseerd in complete renovaties en begeleidt projecten van eerste idee tot oplevering."
       />
-      <section className="bg-brand-soft py-24">
+      <section className="bg-brand-soft py-14 sm:py-16">
         <div className="section-shell grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => (
             <ServiceCard key={service.slug} {...service} />

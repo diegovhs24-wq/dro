@@ -1,7 +1,7 @@
 const steps = [
   { icon: "01", title: "Aanvraag met foto's", text: "U deelt de situatie, wensen en beelden." },
   { icon: "02", title: "Persoonlijk contact", text: "Een consulent bespreekt wat realistisch is." },
-  { icon: "03", title: "Heldere offerte", text: "Kosten, planning en scope worden concreet." },
+  { icon: "03", title: "Heldere offerte", text: "Planning en scope worden concreet." },
   { icon: "04", title: "Start & oplevering", text: "Onze vakmensen voeren strak en netjes uit." }
 ];
 
@@ -17,8 +17,8 @@ export default function Process() {
             </h2>
           </div>
           <p className="text-lg leading-8 text-neutral-600">
-            Geen losse beloftes, maar een praktisch proces dat snel duidelijk maakt wat kan,
-            wat het kost en wanneer we kunnen starten.
+            Geen losse beloftes, maar een praktisch proces dat snel duidelijk maakt wat kan
+            en wanneer we kunnen starten.
           </p>
         </div>
         <div className="mt-14 grid gap-5 md:grid-cols-4">
