@@ -2,6 +2,7 @@ import CTASection from "@/components/CTASection";
 import GoogleReviews from "@/components/GoogleReviews";
 import PageHero from "@/components/PageHero";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
+import type {FaqItem, ReviewItem} from "@/lib/types";
 
 type ServiceBlock = {
   title: string;
@@ -17,7 +18,8 @@ type ServicePageProps = {
   processText: string;
   situations?: ServiceBlock[];
   examples?: string[];
-  faqs?: Array<{ question: string; answer: string }>;
+  faqs?: FaqItem[];
+  reviews?: ReviewItem[];
 };
 
 const defaultFaqs = [
@@ -59,7 +61,8 @@ export default function ServicePage({
   processText,
   situations,
   examples = ["Voorbereiding", "Uitvoering", "Oplevering"],
-  faqs = defaultFaqs
+  faqs = defaultFaqs,
+  reviews
 }: ServicePageProps) {
   return (
     <>
@@ -178,7 +181,7 @@ export default function ServicePage({
                   {faq.question}
                 </summary>
                 <p className="mt-3 text-sm font-semibold leading-6 text-neutral-600">
-                  {faq.answer}
+                  {Array.isArray(faq.answer) ? faq.answer.join(" ") : faq.answer}
                 </p>
               </details>
             ))}
@@ -186,7 +189,7 @@ export default function ServicePage({
         </div>
       </section>
 
-      <GoogleReviews compact limit={4} />
+      {reviews?.length ? <GoogleReviews compact limit={4} reviews={reviews} /> : null}
       <CTASection />
     </>
   );

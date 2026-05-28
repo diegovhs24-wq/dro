@@ -1,13 +1,22 @@
-import { reviews } from "@/components/siteContent";
 import GoogleRatingBadge from "@/components/GoogleRatingBadge";
 import SketchIcon from "@/components/SketchIcon";
+import type {ReviewItem} from "@/lib/types";
 
 type GoogleReviewsProps = {
+  reviews: ReviewItem[];
   compact?: boolean;
   limit?: number;
+  title?: string;
+  text?: string;
 };
 
-export default function GoogleReviews({ compact = false, limit = 4 }: GoogleReviewsProps) {
+export default function GoogleReviews({
+  reviews,
+  compact = false,
+  limit = 4,
+  title = "273+ recensies",
+  text = "Klanten waarderen vooral onze duidelijke communicatie, nette uitvoering en vaste aanspreekpunt.",
+}: GoogleReviewsProps) {
   const visibleReviews = reviews.slice(0, limit);
 
   return (
@@ -19,13 +28,12 @@ export default function GoogleReviews({ compact = false, limit = 4 }: GoogleRevi
             <div className="mt-3 flex flex-wrap items-center gap-4">
               <GoogleRatingBadge compact />
               <h2 className="text-2xl font-bold tracking-tight text-brand-ink sm:text-3xl">
-                273+ recensies
+                {title}
               </h2>
             </div>
           </div>
           <p className="max-w-md text-sm font-semibold leading-6 text-neutral-600">
-            Klanten waarderen vooral onze duidelijke communicatie, nette uitvoering
-            en vaste aanspreekpunt.
+            {text}
           </p>
         </div>
 

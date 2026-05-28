@@ -4,37 +4,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { services } from "@/components/siteContent";
+import type {ServiceSummary, SiteSettings} from "@/lib/types";
+import {fallbackServices, fallbackSiteSettings} from "@/lib/cms-fallback";
 
-const navItems = [
-  { label: "Over ons", href: "/over-ons" },
-  { label: "Werkwijze", href: "/werkwijze" },
-  { label: "Projecten", href: "/projecten" },
-  { label: "Zakelijk", href: "/zakelijk" }
-];
+type HeaderProps = {
+  services: ServiceSummary[];
+  siteSettings: SiteSettings;
+};
 
-const serviceGroups = [
-  {
-    title: "Renovatie",
-    slugs: ["badkamer-renovatie", "totaalrenovatie", "uitbouw-aanbouw", "afbouw-nieuwbouw"]
-  },
-  {
-    title: "Installaties & Duurzaam",
-    slugs: ["vloerverwarming", "warmtepomp", "zonnepanelen"]
-  },
-  {
-    title: "Afwerking & Onderhoud",
-    slugs: ["stuc-schilderwerk", "onderhoud"]
-  }
-].map((group) => ({
-  ...group,
-  items: services.filter((service) => group.slugs.includes(service.slug))
-}));
-
-export default function Header() {
+export default function Header({services, siteSettings}: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const servicesActive = pathname === "/diensten" || pathname.startsWith("/diensten/");
+  const navItems = siteSettings.headerNavigation.length
+    ? siteSettings.headerNavigation
+    : fallbackSiteSettings.headerNavigation;
+  const resolvedServices = services.length ? services : fallbackServices;
+  const serviceGroups = (siteSettings.serviceMenuGroups.length
+    ? siteSettings.serviceMenuGroups
+    : fallbackSiteSettings.serviceMenuGroups
+  ).map((group) => ({
+    ...group,
+    items: resolvedServices.filter((service) => group.slugs.includes(service.slug)),
+  }));
 
   useEffect(() => {
     const updateHeader = () => setScrolled(window.scrollY > 12);
@@ -81,11 +73,11 @@ export default function Header() {
 
         <nav className="hidden flex-1 items-center justify-center gap-9 md:flex xl:gap-12" aria-label="Hoofdmenu">
           <div className="group">
-            <button
+            <Link
               className={`relative flex h-[68px] items-center text-[13px] font-medium transition hover:text-brand-ink ${
                 servicesActive ? "text-brand-ink" : "text-neutral-600"
               }`}
-              type="button"
+              href="/diensten"
             >
               <span
                 className={`relative after:absolute after:-bottom-3 after:left-0 after:h-0.5 after:bg-brand-orange after:transition-all group-hover:after:w-full ${
@@ -95,7 +87,7 @@ export default function Header() {
                 Diensten
               </span>
               <span className="ml-2 text-brand-orange">+</span>
-            </button>
+            </Link>
 
             <div
               className="pointer-events-none fixed left-1/2 z-50 w-[min(1180px,calc(100vw-40px))] -translate-x-1/2 translate-y-3 rounded-lg border border-black/10 bg-white opacity-0 shadow-[0_30px_90px_rgba(15,15,15,0.16)] transition duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100"
@@ -128,19 +120,19 @@ export default function Header() {
 
                 <div className="relative hidden min-h-[260px] overflow-hidden rounded-lg bg-neutral-950 xl:block">
                   <img
-                    alt="DRO Renovaties team"
+                    alt={siteSettings.menuPromo.eyebrow}
                     className="h-full w-full object-cover"
-                    src="/dro-renovaties-team.jpg"
+                    src={siteSettings.menuPromo.image}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/65">DRO Renovaties</p>
-                    <p className="mt-3 text-2xl font-bold leading-tight">Uw project, volledig geregeld.</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/65">{siteSettings.menuPromo.eyebrow}</p>
+                    <p className="mt-3 text-2xl font-bold leading-tight">{siteSettings.menuPromo.title}</p>
                   </div>
                 </div>
               </div>
               <div className="border-t border-black/10 px-7 py-4 text-sm font-medium text-neutral-500">
-                We begeleiden uw verbouwing van A tot Z.
+                {siteSettings.menuPromo.footerText}
               </div>
             </div>
           </div>
