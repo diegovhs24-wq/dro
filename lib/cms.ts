@@ -51,10 +51,13 @@ const CTA_FIELDS = `
   eyebrow,
   title,
   text,
-  primaryLabel,
-  primaryHref,
-  secondaryLabel,
-  secondaryHref
+  buttons[]{
+    label,
+    link{${SMART_LINK_FIELDS}},
+    variant
+  },
+  ratingScore,
+  ratingLabel
 `;
 
 const PAGE_HERO_FIELDS = `
@@ -275,28 +278,34 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
     variant
   },
   footer{
-    logo{${IMAGE_SOURCE_FIELDS}},
-    logoAlt,
-    brandTitle,
-    description,
-    contactTitle,
-    contactAddress,
-    contactPhone,
-    contactPhoneHref,
-    contactPhoneNote,
-    contactEmail,
-    contactEmailHref,
-    servicesTitle,
-    businessTitle,
-    businessText,
-    businessItems,
-    businessClosing,
-    statement,
-    copyright,
-    legalLinks[]{
+    "logo": brand.logo{${IMAGE_SOURCE_FIELDS}},
+    "logoAlt": brand.logoAlt,
+    "brandTitle": brand.brandTitle,
+    "description": brand.description,
+    "contactTitle": contact.contactTitle,
+    "contactAddress": contact.contactAddress,
+    "contactPhone": contact.contactPhone,
+    "contactPhoneHref": contact.contactPhoneHref,
+    "contactPhoneNote": contact.contactPhoneNote,
+    "contactEmail": contact.contactEmail,
+    "contactEmailHref": contact.contactEmailHref,
+    "servicesTitle": services.servicesTitle,
+    "businessTitle": commercial.businessTitle,
+    "businessText": commercial.businessText,
+    "businessItems": commercial.businessItems,
+    "businessClosing": commercial.businessClosing,
+    "statement": bottom.statement,
+    "copyright": bottom.copyright,
+    "legalLinks": bottom.legalLinks[]{label, href, openInNewTab}
+  },
+  footerCta{${CTA_FIELDS}},
+  notFound{
+    title,
+    text,
+    buttons[]{
       label,
-      href,
-      openInNewTab
+      link{${SMART_LINK_FIELDS}},
+      variant
     }
   },
   floatingActions{
@@ -796,6 +805,12 @@ function mapSiteSettings(raw: unknown): SiteSettings {
       copyright: asString(footer.copyright),
       legalLinks: asArray<SiteSettings["footer"]["legalLinks"][number]>(footer.legalLinks),
     },
+    footerCta: isRecord(normalized.footerCta)
+      ? (normalizeCmsValue(normalized.footerCta) as CtaContent)
+      : undefined,
+    notFound: isRecord(normalized.notFound)
+      ? (normalizeCmsValue(normalized.notFound) as SiteSettings["notFound"])
+      : undefined,
     floatingActions: {
       whatsappLabel: asString(floatingActions.whatsappLabel, EMPTY_SITE_SETTINGS.floatingActions.whatsappLabel),
       whatsappHref: asString(floatingActions.whatsappHref, EMPTY_SITE_SETTINGS.floatingActions.whatsappHref),

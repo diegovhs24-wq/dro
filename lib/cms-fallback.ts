@@ -7,68 +7,25 @@ const HERO_IMAGE =
 export const fallbackSiteSettings: SiteSettings = {
   title: "DRO Renovaties",
   description: "Renovatie- en bouwbedrijf in Den Haag en omgeving.",
-  headerMenu: [
-    {
-      type: "megaMenu",
-      label: "Diensten",
-      columns: [
-        {
-          title: "Woning",
-          links: [
-            {label: "Badkamer renovatie", link: {linkType: "external", externalUrl: "/diensten/badkamer-renovatie"}},
-            {label: "Totaalrenovatie", link: {linkType: "external", externalUrl: "/diensten/totaalrenovatie"}},
-            {label: "Uitbouw / aanbouw", link: {linkType: "external", externalUrl: "/diensten/uitbouw-aanbouw"}},
-            {label: "Afbouw nieuwbouw", link: {linkType: "external", externalUrl: "/diensten/afbouw-nieuwbouw"}},
-          ],
-        },
-        {
-          title: "Installaties",
-          links: [
-            {label: "Vloerverwarming", link: {linkType: "external", externalUrl: "/diensten/vloerverwarming"}},
-            {label: "Warmtepomp", link: {linkType: "external", externalUrl: "/diensten/warmtepomp"}},
-            {label: "Zonnepanelen", link: {linkType: "external", externalUrl: "/diensten/zonnepanelen"}},
-          ],
-        },
-        {
-          title: "Afwerking",
-          links: [
-            {label: "Stuc- en schilderwerk", link: {linkType: "external", externalUrl: "/diensten/stuc-schilderwerk"}},
-            {label: "Onderhoud", link: {linkType: "external", externalUrl: "/diensten/onderhoud"}},
-          ],
-        },
-      ],
-      promo: {
-        image: HERO_IMAGE,
-        eyebrow: "DRO Renovaties",
-        title: "Uw project, volledig verzorgd.",
-        footerText: "Wij begeleiden uw renovatie van A tot Z.",
-      },
-    },
-    {type: "link", label: "Projecten", link: {linkType: "external", externalUrl: "/projecten"}},
-    {type: "link", label: "Over ons", link: {linkType: "external", externalUrl: "/over-ons"}},
-    {type: "link", label: "Werkwijze", link: {linkType: "external", externalUrl: "/werkwijze"}},
-    {type: "link", label: "Zakelijk", link: {linkType: "external", externalUrl: "/zakelijk"}},
-  ],
-  headerButtons: [
-    {label: "Start intake", link: {linkType: "external", externalUrl: "/contact"}, variant: "primary"},
-  ],
+  headerMenu: [],
+  headerButtons: [],
   footer: {
-    brandTitle: "DRO Renovaties",
-    description: "Renovatie, afbouw en installaties met duidelijke planning en één aanspreekpunt.",
-    contactTitle: "Contact",
-    contactAddress: "Den Haag en omgeving",
-    contactPhone: "+31 6 0000 0000",
-    contactPhoneHref: "tel:+31600000000",
-    contactPhoneNote: "Bel ons op werkdagen tussen 08:00 en 18:00.",
-    contactEmail: "info@drorenovaties.nl",
-    contactEmailHref: "mailto:info@drorenovaties.nl",
-    servicesTitle: "Diensten",
-    businessTitle: "Zakelijk",
-    businessText: "Ook voor vastgoed, aannemers en ontwikkelaars.",
-    businessItems: ["Meerdere units", "Vaste planning", "Één aanspreekpunt"],
-    businessClosing: "Bespreek uw project via de intake.",
-    statement: "Renoveren met overzicht.",
-    copyright: "© DRO Renovaties",
+    brandTitle: "",
+    description: "",
+    contactTitle: "",
+    contactAddress: "",
+    contactPhone: "",
+    contactPhoneHref: "",
+    contactPhoneNote: "",
+    contactEmail: "",
+    contactEmailHref: "",
+    servicesTitle: "",
+    businessTitle: "",
+    businessText: "",
+    businessItems: [],
+    businessClosing: "",
+    statement: "",
+    copyright: "",
     legalLinks: [],
   },
   floatingActions: {
@@ -231,10 +188,10 @@ export const fallbackHomePage = {
         eyebrow: "Start vandaag",
         title: "Klaar om uw project goed te starten?",
         text: "Start de intake. Wij nemen binnen 24 uur contact op.",
-        primaryLabel: "Start intake",
-        primaryHref: "/contact",
-        secondaryLabel: "Bel direct",
-        secondaryHref: "tel:+31600000000",
+        buttons: [
+          {label: "Start intake", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "primary" as const},
+          {label: "Bel direct", link: {linkType: "external" as const, externalUrl: "tel:+31600000000"}, variant: "outlined" as const},
+        ],
       },
     },
   ],
@@ -264,61 +221,15 @@ function normalizeLinkItems(items: {label: string; href: string; openInNewTab?: 
 }
 
 export function withSiteSettingsFallback(settings: SiteSettings): SiteSettings {
-  const headerMenu = settings.headerMenu.length
-    ? settings.headerMenu
-    : fallbackSiteSettings.headerMenu;
-
-  const headerButtons = settings.headerButtons.length
-    ? settings.headerButtons
-    : fallbackSiteSettings.headerButtons;
-
   return {
     ...settings,
     title: settings.title || fallbackSiteSettings.title,
     description: settings.description || fallbackSiteSettings.description,
-    headerMenu,
-    headerButtons,
     footer: {
-      ...fallbackSiteSettings.footer,
       ...settings.footer,
-      brandTitle: settings.footer.brandTitle || fallbackSiteSettings.footer.brandTitle,
-      description: settings.footer.description || fallbackSiteSettings.footer.description,
-      contactTitle: settings.footer.contactTitle || fallbackSiteSettings.footer.contactTitle,
-      contactAddress: settings.footer.contactAddress || fallbackSiteSettings.footer.contactAddress,
-      contactPhone: settings.footer.contactPhone || fallbackSiteSettings.footer.contactPhone,
-      contactPhoneHref:
-        settings.footer.contactPhoneHref || fallbackSiteSettings.footer.contactPhoneHref,
-      contactPhoneNote:
-        settings.footer.contactPhoneNote || fallbackSiteSettings.footer.contactPhoneNote,
-      contactEmail: settings.footer.contactEmail || fallbackSiteSettings.footer.contactEmail,
-      contactEmailHref:
-        settings.footer.contactEmailHref || fallbackSiteSettings.footer.contactEmailHref,
-      servicesTitle: settings.footer.servicesTitle || fallbackSiteSettings.footer.servicesTitle,
-      businessTitle: settings.footer.businessTitle || fallbackSiteSettings.footer.businessTitle,
-      businessText: settings.footer.businessText || fallbackSiteSettings.footer.businessText,
-      businessItems: settings.footer.businessItems.length
-        ? settings.footer.businessItems
-        : fallbackSiteSettings.footer.businessItems,
-      businessClosing:
-        settings.footer.businessClosing || fallbackSiteSettings.footer.businessClosing,
-      statement: settings.footer.statement || fallbackSiteSettings.footer.statement,
-      copyright: settings.footer.copyright || fallbackSiteSettings.footer.copyright,
-      legalLinks: settings.footer.legalLinks.length
-        ? normalizeLinkItems(settings.footer.legalLinks)
-        : fallbackSiteSettings.footer.legalLinks,
+      legalLinks: normalizeLinkItems(settings.footer.legalLinks),
     },
-    floatingActions: {
-      ...fallbackSiteSettings.floatingActions,
-      ...settings.floatingActions,
-      whatsappLabel:
-        settings.floatingActions.whatsappLabel || fallbackSiteSettings.floatingActions.whatsappLabel,
-      whatsappHref:
-        settings.floatingActions.whatsappHref || fallbackSiteSettings.floatingActions.whatsappHref,
-      intakeLabel:
-        settings.floatingActions.intakeLabel || fallbackSiteSettings.floatingActions.intakeLabel,
-      intakeHref:
-        settings.floatingActions.intakeHref || fallbackSiteSettings.floatingActions.intakeHref,
-    },
+    floatingActions: settings.floatingActions,
   };
 }
 

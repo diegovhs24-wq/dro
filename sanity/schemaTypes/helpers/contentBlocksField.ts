@@ -10,7 +10,6 @@ const pageBlockTypes = [
   'partnersBlock',
   'projectsListingBlock',
   'googleReviewsBlock',
-  'ctaBannerBlock',
   'contactFormBlock',
   'aboutIntroBlock',
   'aboutTeamBlock',
@@ -67,7 +66,7 @@ export const contentBlocksField = defineField({
         {
           name: 'conversion',
           title: 'CTA & Forms',
-          of: ['ctaBannerBlock', 'contactFormBlock'],
+          of: ['contactFormBlock'],
         },
       ],
       views: [{name: 'list'}],

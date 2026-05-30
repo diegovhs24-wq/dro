@@ -324,10 +324,26 @@ export const ctaContent = defineType({
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'text', title: 'Text', type: 'text', rows: 3}),
-    defineField({name: 'primaryLabel', title: 'Primary Button Label', type: 'string'}),
-    defineField({name: 'primaryHref', title: 'Primary Button URL', type: 'string'}),
-    defineField({name: 'secondaryLabel', title: 'Secondary Button Label', type: 'string'}),
-    defineField({name: 'secondaryHref', title: 'Secondary Button URL', type: 'string'}),
+    defineField({
+      name: 'buttons',
+      title: 'Buttons',
+      type: 'array',
+      of: [defineArrayMember({type: 'headerButton'})],
+      description: 'First button is primary, second is outlined (matches header button style).',
+    }),
+    defineField({
+      name: 'ratingScore',
+      title: 'Rating Score',
+      type: 'number',
+      description: 'Number of stars to display (1–5). E.g. 4.8 shows 5 filled stars.',
+      validation: (Rule) => Rule.min(0).max(5),
+    }),
+    defineField({
+      name: 'ratingLabel',
+      title: 'Rating Label',
+      type: 'string',
+      description: 'Text shown next to the stars. E.g. "4.8 Star Rating".',
+    }),
   ],
 })
 

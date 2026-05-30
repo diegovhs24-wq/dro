@@ -61,8 +61,8 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
       return [
         heading(2, block.cta?.title || "Contact"),
         paragraph(block.cta?.text),
-        block.cta?.primaryHref
-          ? `- ${link(block.cta.primaryLabel || "Neem contact op", block.cta.primaryHref)}\n\n`
+        block.cta?.buttons?.[0]
+          ? `- ${link(block.cta.buttons[0].label || "Neem contact op", block.cta.buttons[0].link.linkType === "external" ? block.cta.buttons[0].link.externalUrl : "#")}\n\n`
           : "",
       ].join("");
     case "contactFormBlock":

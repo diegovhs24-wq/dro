@@ -1,6 +1,5 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
-import CTASection from "@/components/CTASection";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {
   getProjectBySlug,
@@ -146,7 +145,6 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
           </div>
         </section>
 
-        <CTASection title="Wilt u een renovatie met dezelfde duidelijkheid?" />
       </main>
     </>
   );

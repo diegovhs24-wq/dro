@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
-import Link from "next/link";
+import SmartButton from "@/components/SmartButton";
+import {getSiteSettings} from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Pagina niet gevonden | DRO Renovaties",
@@ -11,7 +12,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function NotFound() {
+const FALLBACK = {
+  title: "Pagina niet gevonden",
+  text: "De pagina bestaat niet meer, is verplaatst of het adres klopt niet. Ga terug naar de homepage of start direct een intake.",
+  buttons: [
+    {label: "Naar homepage", link: {linkType: "external" as const, externalUrl: "/"}, variant: "primary" as const},
+    {label: "Start intake", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "outlined" as const},
+  ],
+};
+
+export default async function NotFound() {
+  const siteSettings = await getSiteSettings();
+  const content = siteSettings.notFound;
+
+  const title = content?.title || FALLBACK.title;
+  const text = content?.text || FALLBACK.text;
+  const buttons = content?.buttons?.length ? content.buttons : FALLBACK.buttons;
+
   return (
     <section className="relative flex flex-1 items-center justify-center overflow-hidden bg-white py-16 sm:py-20">
       <div className="section-shell">
@@ -24,25 +41,18 @@ export default function NotFound() {
           </p>
 
           <h1 className="mt-4 text-2xl font-bold tracking-tight text-brand-ink sm:text-3xl">
-            Pagina niet gevonden
+            {title}
           </h1>
 
           <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-7 text-neutral-600">
-            De pagina bestaat niet meer, is verplaatst of het adres klopt niet. Ga terug naar de
-            homepage of start direct een intake.
+            {text}
           </p>
 
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link className="btn-primary min-w-[180px]" href="/">
-              Naar homepage
-            </Link>
-            <Link
-              className="inline-flex min-w-[180px] items-center justify-center rounded-md border border-black/10 bg-white px-6 py-3 text-sm font-semibold text-brand-ink shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-orange/30 hover:bg-brand-soft focus:outline-none focus:ring-4 focus:ring-orange-100"
-              href="/contact"
-            >
-              Start intake
-            </Link>
-          </div>
+          {buttons.length > 0 && (
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <SmartButton buttons={buttons} />
+            </div>
+          )}
         </div>
       </div>
     </section>

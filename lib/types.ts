@@ -50,14 +50,19 @@ export type IconTextItem = {
   logo?: string;
 };
 
+export type NotFoundContent = {
+  title?: string;
+  text?: string;
+  buttons?: HeaderButton[];
+};
+
 export type CtaContent = {
   eyebrow?: string;
   title?: string;
   text?: string;
-  primaryLabel?: string;
-  primaryHref?: string;
-  secondaryLabel?: string;
-  secondaryHref?: string;
+  buttons?: HeaderButton[];
+  ratingScore?: number;
+  ratingLabel?: string;
 };
 
 export type PageHeroContent = {
@@ -161,6 +166,8 @@ export type SiteSettings = {
   headerLogo?: string;
   headerMenu: HeaderMenuItem[];
   headerButtons: HeaderButton[];
+  footerCta?: CtaContent;
+  notFound?: NotFoundContent;
   footer: {
     logo?: string;
     logoAlt?: string;
