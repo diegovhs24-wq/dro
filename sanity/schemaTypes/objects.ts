@@ -1,4 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {blockPreview} from './helpers/blockPreviews'
 import {
   HomeIcon,
   DocumentTextIcon,
@@ -711,6 +712,7 @@ export const homeHeroBlock = defineType({
   name: 'homeHeroBlock',
   title: 'Home Hero Block',
   type: 'object',
+  icon: blockPreview('/block-previews/home-hero.png'),
   fields: [
     defineField({
       name: 'hero',
@@ -774,7 +776,7 @@ export const homeHeroBlock = defineType({
   preview: {
     select: {title: 'hero.headlineTop'},
     prepare({title}) {
-      return {title: title || 'Home Hero Block', media: HomeIcon}
+      return {title: title || 'Home Hero Block', media: blockPreview('/block-previews/home-hero.png')}
     },
   },
 })
@@ -783,11 +785,12 @@ export const pageHeroBlock = defineType({
   name: 'pageHeroBlock',
   title: 'Page Hero Block',
   type: 'object',
+  icon: blockPreview('/block-previews/page-hero.png'),
   fields: [defineField({name: 'hero', title: 'Hero Content', type: 'pageHeroContent'})],
   preview: {
     select: {title: 'hero.title'},
     prepare({title}) {
-      return {title: title || 'Page Hero Block', media: DocumentTextIcon}
+      return {title: title || 'Page Hero Block', media: blockPreview('/block-previews/page-hero.png')}
     },
   },
 })
@@ -796,6 +799,7 @@ export const problemSolutionBlock = defineType({
   name: 'problemSolutionBlock',
   title: 'Problem / Solution Block',
   type: 'object',
+  icon: blockPreview('/block-previews/problem-solution.png'),
   fields: [
     defineField({name: 'problemEyebrow', title: 'Problem Eyebrow', type: 'string'}),
     defineField({name: 'problemTitle', title: 'Problem Title', type: 'string'}),
@@ -811,7 +815,7 @@ export const problemSolutionBlock = defineType({
   preview: {
     select: {title: 'problemTitle'},
     prepare({title}) {
-      return {title: title || 'Problem / Solution Block', media: ComposeIcon}
+      return {title: title || 'Problem / Solution Block', media: blockPreview('/block-previews/problem-solution.png')}
     },
   },
 })
@@ -820,15 +824,42 @@ export const textBlock = defineType({
   name: 'textBlock',
   title: 'Text Block',
   type: 'object',
+  icon: blockPreview('/block-previews/text-block.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required()}),
-    defineField({name: 'text', title: 'Text', type: 'text', rows: 5}),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'H3', value: 'h3'},
+            {title: 'H4', value: 'h4'},
+          ],
+          lists: [
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'},
+          ],
+          marks: {
+            decorators: [
+              {title: 'Bold', value: 'strong'},
+              {title: 'Italic', value: 'em'},
+              {title: 'Underline', value: 'underline'},
+            ],
+            annotations: [],
+          },
+        }),
+      ],
+    }),
   ],
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Text Block', media: BlockquoteIcon}
+      return {title: title || 'Text Block', media: blockPreview('/block-previews/text-block.png')}
     },
   },
 })
@@ -837,6 +868,7 @@ export const servicesListingBlock = defineType({
   name: 'servicesListingBlock',
   title: 'Services Listing Block',
   type: 'object',
+  icon: blockPreview('/block-previews/services-listing.png'),
   fields: [
     defineField({name: 'limit', title: 'Number of Services', type: 'number'}),
     defineField({
@@ -854,7 +886,7 @@ export const servicesListingBlock = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'Services Listing Block', media: TagIcon}
+      return {title: 'Services Listing Block', media: blockPreview('/block-previews/services-listing.png')}
     },
   },
 })
@@ -863,12 +895,13 @@ export const projectsListingBlock = defineType({
   name: 'projectsListingBlock',
   title: 'Projects Listing Block',
   type: 'object',
+  icon: blockPreview('/block-previews/projects-listing.png'),
   fields: [
     defineField({name: 'limit', title: 'Number of Projects', type: 'number'}),
   ],
   preview: {
     prepare() {
-      return {title: 'Projects Listing Block', media: ImageIcon}
+      return {title: 'Projects Listing Block', media: blockPreview('/block-previews/projects-listing.png')}
     },
   },
 })
@@ -877,6 +910,7 @@ export const featuredServicesBlock = defineType({
   name: 'featuredServicesBlock',
   title: 'Featured Services Block',
   type: 'object',
+  icon: blockPreview('/block-previews/featured-services.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string', initialValue: 'Diensten'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
@@ -893,7 +927,7 @@ export const featuredServicesBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Featured Services Block', media: TagIcon}
+      return {title: title || 'Featured Services Block', media: blockPreview('/block-previews/featured-services.png')}
     },
   },
 })
@@ -902,6 +936,7 @@ export const featuredProjectsBlock = defineType({
   name: 'featuredProjectsBlock',
   title: 'Featured Projects Block',
   type: 'object',
+  icon: blockPreview('/block-previews/featured-projects.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string', initialValue: 'Projecten'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
@@ -918,7 +953,7 @@ export const featuredProjectsBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Featured Projects Block', media: ImageIcon}
+      return {title: title || 'Featured Projects Block', media: blockPreview('/block-previews/featured-projects.png')}
     },
   },
 })
@@ -927,6 +962,7 @@ export const iconCardsBlock = defineType({
   name: 'iconCardsBlock',
   title: 'Icon Cards Block',
   type: 'object',
+  icon: blockPreview('/block-previews/icon-cards.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
@@ -937,7 +973,7 @@ export const iconCardsBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Icon Cards Block', media: ThLargeIcon}
+      return {title: title || 'Icon Cards Block', media: blockPreview('/block-previews/icon-cards.png')}
     },
   },
 })
@@ -946,10 +982,11 @@ export const ctaBannerBlock = defineType({
   name: 'ctaBannerBlock',
   title: 'CTA Banner Block',
   type: 'object',
+  icon: blockPreview('/block-previews/cta-banner.png'),
   fields: [defineField({name: 'cta', title: 'CTA Content', type: 'ctaContent'})],
   preview: {
     prepare() {
-      return {title: 'CTA Banner Block', media: RocketIcon}
+      return {title: 'CTA Banner Block', media: blockPreview('/block-previews/cta-banner.png')}
     },
   },
 })
@@ -958,6 +995,7 @@ export const contactFormBlock = defineType({
   name: 'contactFormBlock',
   title: 'Contact Form Block',
   type: 'object',
+  icon: blockPreview('/block-previews/contact-form.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
@@ -968,7 +1006,7 @@ export const contactFormBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Contact Form Block', media: EnvelopeIcon}
+      return {title: title || 'Contact Form Block', media: blockPreview('/block-previews/contact-form.png')}
     },
   },
 })
@@ -977,6 +1015,7 @@ export const partnersBlock = defineType({
   name: 'partnersBlock',
   title: 'Partners Block',
   type: 'object',
+  icon: blockPreview('/block-previews/partners.png'),
   fields: [
     defineField({
       name: 'eyebrow',
@@ -1005,7 +1044,7 @@ export const partnersBlock = defineType({
       return {
         title: title || 'Partners Block',
         subtitle: 'Partner logos from Website Content → Partners',
-        media: UsersIcon,
+        media: blockPreview('/block-previews/partners.png'),
       }
     },
   },
@@ -1015,13 +1054,14 @@ export const googleReviewsBlock = defineType({
   name: 'googleReviewsBlock',
   title: 'Google Reviews Block',
   type: 'object',
+  icon: blockPreview('/block-previews/google-reviews.png'),
   fields: [
     defineField({name: 'limit', title: 'Number of Reviews', type: 'number', initialValue: 4}),
     defineField({name: 'compact', title: 'Compact Layout', type: 'boolean', initialValue: true}),
   ],
   preview: {
     prepare() {
-      return {title: 'Google Reviews Block', media: StarIcon}
+      return {title: 'Google Reviews Block', media: blockPreview('/block-previews/google-reviews.png')}
     },
   },
 })
@@ -1030,6 +1070,7 @@ export const aboutIntroBlock = defineType({
   name: 'aboutIntroBlock',
   title: 'About Intro Block',
   type: 'object',
+  icon: blockPreview('/block-previews/about-intro.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
@@ -1041,7 +1082,7 @@ export const aboutIntroBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'About Intro Block', media: PresentationIcon}
+      return {title: title || 'About Intro Block', media: blockPreview('/block-previews/about-intro.png')}
     },
   },
 })
@@ -1050,6 +1091,7 @@ export const aboutTeamBlock = defineType({
   name: 'aboutTeamBlock',
   title: 'About Team Block',
   type: 'object',
+  icon: blockPreview('/block-previews/about-team.png'),
   fields: [
     defineField({name: 'teamEyebrow', title: 'Team Eyebrow', type: 'string'}),
     defineField({name: 'teamTitle', title: 'Team Title', type: 'string'}),
@@ -1074,7 +1116,7 @@ export const aboutTeamBlock = defineType({
   preview: {
     select: {title: 'teamTitle'},
     prepare({title}) {
-      return {title: title || 'About Team Block', media: UsersIcon}
+      return {title: title || 'About Team Block', media: blockPreview('/block-previews/about-team.png')}
     },
   },
 })
@@ -1083,6 +1125,7 @@ export const aboutTeamImageBlock = defineType({
   name: 'aboutTeamImageBlock',
   title: 'About Team Image Block',
   type: 'object',
+  icon: blockPreview('/block-previews/about-team-image.png'),
   fields: [
     defineField({name: 'teamImageEyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'teamImageTitle', title: 'Title', type: 'string'}),
@@ -1091,15 +1134,16 @@ export const aboutTeamImageBlock = defineType({
   preview: {
     select: {title: 'teamImageTitle'},
     prepare({title}) {
-      return {title: title || 'About Team Image Block', media: ImageIcon}
+      return {title: title || 'About Team Image Block', media: blockPreview('/block-previews/about-team-image.png')}
     },
   },
 })
 
-export const processHeaderBlock = defineType({
-  name: 'processHeaderBlock',
-  title: 'Process Header Block',
+export const processBlock = defineType({
+  name: 'processBlock',
+  title: 'Process Block',
   type: 'object',
+  icon: blockPreview('/block-previews/process-block.png'),
   fields: [
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'titlePrefix', title: 'Title Prefix', type: 'string'}),
@@ -1128,35 +1172,13 @@ export const processHeaderBlock = defineType({
         }),
       ],
     }),
+    defineField({name: 'benefits', title: 'Benefits Bar', type: 'array', of: [defineArrayMember({type: 'iconText'})]}),
+    defineField({name: 'trustPoints', title: 'Trust Points', type: 'array', of: [defineArrayMember({type: 'iconText'})]}),
   ],
   preview: {
     select: {title: 'titlePrefix'},
     prepare({title}) {
-      return {title: title || 'Process Header Block', media: OlistIcon}
-    },
-  },
-})
-
-export const processBenefitsBlock = defineType({
-  name: 'processBenefitsBlock',
-  title: 'Process Benefits Block',
-  type: 'object',
-  fields: [defineField({name: 'benefits', title: 'Benefits', type: 'array', of: [defineArrayMember({type: 'iconText'})]})],
-  preview: {
-    prepare() {
-      return {title: 'Process Benefits Block', media: CheckmarkIcon}
-    },
-  },
-})
-
-export const processTrustBlock = defineType({
-  name: 'processTrustBlock',
-  title: 'Process Trust Block',
-  type: 'object',
-  fields: [defineField({name: 'trustPoints', title: 'Trust Points', type: 'array', of: [defineArrayMember({type: 'iconText'})]})],
-  preview: {
-    prepare() {
-      return {title: 'Process Trust Block', media: LockIcon}
+      return {title: title || 'Process Block', media: blockPreview('/block-previews/process-header.png')}
     },
   },
 })
@@ -1165,6 +1187,7 @@ export const processFaqBlock = defineType({
   name: 'processFaqBlock',
   title: 'Process FAQ Block',
   type: 'object',
+  icon: blockPreview('/block-previews/process-faq.png'),
   fields: [
     defineField({name: 'faqEyebrow', title: 'FAQ Eyebrow', type: 'string'}),
     defineField({name: 'faqTitle', title: 'FAQ Title', type: 'string'}),
@@ -1180,7 +1203,7 @@ export const processFaqBlock = defineType({
   preview: {
     select: {title: 'faqTitle'},
     prepare({title}) {
-      return {title: title || 'Process FAQ Block', media: HelpCircleIcon}
+      return {title: title || 'Process FAQ Block', media: blockPreview('/block-previews/process-faq.png')}
     },
   },
 })
@@ -1189,6 +1212,7 @@ export const processIntakeBannerBlock = defineType({
   name: 'processIntakeBannerBlock',
   title: 'Process Intake Banner Block',
   type: 'object',
+  icon: blockPreview('/block-previews/process-intake-banner.png'),
   fields: [
     defineField({name: 'intakeBannerTitle', title: 'Banner Title', type: 'string'}),
     defineField({name: 'intakeBannerText', title: 'Banner Text', type: 'text', rows: 2}),
@@ -1198,7 +1222,7 @@ export const processIntakeBannerBlock = defineType({
   preview: {
     select: {title: 'intakeBannerTitle'},
     prepare({title}) {
-      return {title: title || 'Process Intake Banner Block', media: InlineIcon}
+      return {title: title || 'Process Intake Banner Block', media: blockPreview('/block-previews/process-intake-banner.png')}
     },
   },
 })
@@ -1207,6 +1231,7 @@ export const businessContentBlock = defineType({
   name: 'businessContentBlock',
   title: 'Business Content Block',
   type: 'object',
+  icon: blockPreview('/block-previews/business-content.png'),
   fields: [
     defineField({name: 'positionEyebrow', title: 'Position Eyebrow', type: 'string'}),
     defineField({name: 'positionTitle', title: 'Position Title', type: 'string'}),
@@ -1232,7 +1257,7 @@ export const businessContentBlock = defineType({
   preview: {
     select: {title: 'positionTitle'},
     prepare({title}) {
-      return {title: title || 'Business Content Block', media: CaseIcon}
+      return {title: title || 'Business Content Block', media: blockPreview('/block-previews/business-content.png')}
     },
   },
 })
@@ -1276,9 +1301,7 @@ export const objectSchemaTypes = [
   aboutIntroBlock,
   aboutTeamBlock,
   aboutTeamImageBlock,
-  processHeaderBlock,
-  processBenefitsBlock,
-  processTrustBlock,
+  processBlock,
   processFaqBlock,
   processIntakeBannerBlock,
   businessContentBlock,

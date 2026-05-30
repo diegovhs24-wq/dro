@@ -181,7 +181,7 @@ export default function ServicePage({
                   {faq.question}
                 </summary>
                 <p className="mt-3 text-sm font-semibold leading-6 text-neutral-600">
-                  {Array.isArray(faq.answer) ? faq.answer.join(" ") : faq.answer}
+                  {faq.answer}
                 </p>
               </details>
             ))}

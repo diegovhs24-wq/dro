@@ -101,7 +101,7 @@ export type PartnerLogoItem = {
 
 export type FaqItem = {
   question: string;
-  answer: string | string[];
+  answer: string;
 };
 
 export type ServiceBlock = {
@@ -225,7 +225,7 @@ export type IntakeFormConfig = {
   successEyebrow: string;
   successTitle: string;
   successText: string;
-  faqItems: Array<{ question: string; answer: string[] }>;
+  faqItems: Array<{ question: string; answer: string }>;
   submitLabel: string;
   nextLabel: string;
   backLabel: string;

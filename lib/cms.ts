@@ -105,7 +105,7 @@ const INTAKE_FORM_FIELDS = `
     successText,
     faqItems[]->{
       question,
-      answer
+      "answer": pt::text(answer)
     },
     submitLabel,
     nextLabel,
@@ -149,7 +149,7 @@ const INDEX_CONTENT_BLOCKS = `
       solutionEyebrow, solutionTitle, solutions, solutionNote,
       bannerTitle, bannerButtonLabel, bannerButtonLink{${SMART_LINK_FIELDS}}
     },
-    _type == "textBlock" => { eyebrow, title, text },
+    _type == "textBlock" => { eyebrow, title, description },
     _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonLink{${SMART_LINK_FIELDS}}, items[]{${ICON_TEXT_FIELDS}} },
     _type == "partnersBlock" => { eyebrow, title, text },
     _type == "googleReviewsBlock" => { limit, compact },
@@ -157,10 +157,8 @@ const INDEX_CONTENT_BLOCKS = `
     _type == "aboutIntroBlock" => { eyebrow, title, intro, sketchLabels, sketchClosing, introItems[]{${ICON_TEXT_FIELDS}} },
     _type == "aboutTeamBlock" => { teamEyebrow, teamTitle, coreTeam[]{ name, role, image{${IMAGE_SOURCE_FIELDS}}, text }, teamBanner },
     _type == "aboutTeamImageBlock" => { teamImageEyebrow, teamImageTitle, teamImage{${IMAGE_SOURCE_FIELDS}} },
-    _type == "processHeaderBlock" => { eyebrow, titlePrefix, titleHighlight, intro, note, sideNote, steps[]{ title, text, note, icon } },
-    _type == "processBenefitsBlock" => { benefits[]{${ICON_TEXT_FIELDS}} },
-    _type == "processTrustBlock" => { trustPoints[]{${ICON_TEXT_FIELDS}} },
-    _type == "processFaqBlock" => { faqEyebrow, faqTitle, faqIntro, faqs[]->{question, answer} },
+    _type == "processBlock" => { eyebrow, titlePrefix, titleHighlight, intro, note, sideNote, steps[]{ title, text, note, icon }, benefits[]{${ICON_TEXT_FIELDS}}, trustPoints[]{${ICON_TEXT_FIELDS}} },
+    _type == "processFaqBlock" => { faqEyebrow, faqTitle, faqIntro, faqs[]->{question, "answer": pt::text(answer)} },
     _type == "processIntakeBannerBlock" => { intakeBannerTitle, intakeBannerText, buttonLabel, buttonLink{${SMART_LINK_FIELDS}} },
     _type == "businessContentBlock" => { positionEyebrow, positionTitle, positionText, positionBanner, capacity, cards[]{ eyebrow, title, items } }
   }
@@ -209,7 +207,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
     _type == "textBlock" => {
       eyebrow,
       title,
-      text
+      description
     },
     _type == "servicesListingBlock" => {
       limit,
@@ -298,31 +296,22 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       teamImageTitle,
       teamImage{${IMAGE_SOURCE_FIELDS}}
     },
-    _type == "processHeaderBlock" => {
+    _type == "processBlock" => {
       eyebrow,
       titlePrefix,
       titleHighlight,
       intro,
       note,
       sideNote,
-      steps[]{
-        title,
-        text,
-        note,
-        icon
-      }
-    },
-    _type == "processBenefitsBlock" => {
-      benefits[]{${ICON_TEXT_FIELDS}}
-    },
-    _type == "processTrustBlock" => {
+      steps[]{ title, text, note, icon },
+      benefits[]{${ICON_TEXT_FIELDS}},
       trustPoints[]{${ICON_TEXT_FIELDS}}
     },
     _type == "processFaqBlock" => {
       faqEyebrow,
       faqTitle,
       faqIntro,
-      faqs[]->{question, answer}
+      faqs[]->{question, "answer": pt::text(answer)}
     },
     _type == "processIntakeBannerBlock" => {
       intakeBannerTitle,
@@ -453,7 +442,7 @@ const SERVICES_QUERY = `*[_type == "service"]|order(sortOrder asc, title asc){
       items
     },
     examples,
-    faqs[]->{question, answer}
+    faqs[]->{question, "answer": pt::text(answer)}
   }
 }`;
 
@@ -480,7 +469,7 @@ const SERVICE_QUERY = `*[_type == "service" && slug.current == $slug][0]{
       items
     },
     examples,
-    faqs[]->{question, answer}
+    faqs[]->{question, "answer": pt::text(answer)}
   }
 }`;
 
@@ -582,11 +571,14 @@ export type ProblemSolutionBlock = CmsBaseBlock & {
   _type: "problemSolutionBlock";
 } & ProblemSolutionContent;
 
+type PtSpan = {_type: 'span'; _key: string; text: string; marks?: string[]};
+export type PtBlock = {_type: 'block'; _key: string; style?: string; children?: PtSpan[]; markDefs?: unknown[]};
+
 export type TextBlock = CmsBaseBlock & {
   _type: "textBlock";
   eyebrow?: string;
   title?: string;
-  text?: string;
+  description?: PtBlock[];
 };
 
 export type ServicesListingBlock = CmsBaseBlock & {
@@ -674,19 +666,11 @@ export type AboutTeamImageBlock = CmsBaseBlock & {
   _type: "aboutTeamImageBlock";
 } & Pick<AboutPageContent, "teamImageEyebrow" | "teamImageTitle" | "teamImage">;
 
-export type ProcessHeaderBlock = CmsBaseBlock & {
-  _type: "processHeaderBlock";
-} & Pick<ProcessPageContent, "eyebrow" | "titlePrefix" | "titleHighlight" | "intro" | "note" | "sideNote" | "steps">;
-
-export type ProcessBenefitsBlock = CmsBaseBlock & {
-  _type: "processBenefitsBlock";
+export type ProcessBlock = CmsBaseBlock & {
+  _type: "processBlock";
   benefits?: IconTextItem[];
-};
-
-export type ProcessTrustBlock = CmsBaseBlock & {
-  _type: "processTrustBlock";
   trustPoints?: IconTextItem[];
-};
+} & Pick<ProcessPageContent, "eyebrow" | "titlePrefix" | "titleHighlight" | "intro" | "note" | "sideNote" | "steps">;
 
 export type ProcessFaqBlock = CmsBaseBlock & {
   _type: "processFaqBlock";
@@ -724,9 +708,7 @@ export type CmsDynamicPageBlock =
   | AboutIntroBlock
   | AboutTeamBlock
   | AboutTeamImageBlock
-  | ProcessHeaderBlock
-  | ProcessBenefitsBlock
-  | ProcessTrustBlock
+  | ProcessBlock
   | ProcessFaqBlock
   | ProcessIntakeBannerBlock
   | BusinessContentBlock;

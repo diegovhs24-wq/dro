@@ -40,7 +40,7 @@ function extractFaqs(page: CmsDynamicPage) {
         "faqs" in block
           ? (block.faqs || []).map((faq) => ({
               question: faq.question,
-              answer: Array.isArray(faq.answer) ? faq.answer.join("\n") : faq.answer,
+              answer: faq.answer,
             }))
           : []
       ) || []

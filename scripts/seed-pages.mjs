@@ -246,8 +246,8 @@ const pages = [
     slug: {_type: 'slug', current: 'werkwijze'},
     contentBlocks: [
       {
-        _key: 'processHeaderBlock-0',
-        _type: 'processHeaderBlock',
+        _key: 'processBlock-0',
+        _type: 'processBlock',
         eyebrow: 'Werkwijze',
         titlePrefix: 'Zo werkt het als u met ons',
         titleHighlight: 'samenwerkt.',
@@ -261,10 +261,6 @@ const pages = [
           {_key: 'step-3', icon: 'tools', title: 'Uitvoering', text: 'Ons team voert het werk uit volgens planning en afspraak.', note: 'Vaste teams, strakke uitvoering'},
           {_key: 'step-4', icon: 'delivery', title: 'Oplevering', text: 'We leveren netjes op. Alles gecontroleerd en afgerond.', note: 'Oplevering met aandacht'},
         ],
-      },
-      {
-        _key: 'processBenefitsBlock-1',
-        _type: 'processBenefitsBlock',
         benefits: [
           {_key: 'iconText-0', _type: 'iconText', icon: 'contact', title: 'Eén aanspreekpunt'},
           {_key: 'iconText-1', _type: 'iconText', icon: 'planning', title: 'Duidelijke planning'},
@@ -272,10 +268,6 @@ const pages = [
           {_key: 'iconText-3', _type: 'iconText', icon: 'shield', title: 'Geen verrassingen'},
           {_key: 'iconText-4', _type: 'iconText', icon: 'tools', title: 'Strak resultaat'},
         ],
-      },
-      {
-        _key: 'processTrustBlock-2',
-        _type: 'processTrustBlock',
         trustPoints: [
           {_key: 'iconText-0', _type: 'iconText', icon: 'checklist', title: 'VCA gecertificeerd', text: 'Onze monteurs zijn VCA gecertificeerd.'},
           {_key: 'iconText-1', _type: 'iconText', icon: 'shield', title: 'Goed verzekerd', text: 'Ons bedrijf beschikt over een CAR- en aansprakelijkheidsverzekering.'},

@@ -276,7 +276,7 @@ export default function IntakeWizard({ compact = false, embedded = false, config
                   {question}
                 </summary>
                 <div className="mt-3 grid gap-2">
-                  {answer.map((paragraph, i) => (
+                  {answer.split('\n\n').filter(Boolean).map((paragraph, i) => (
                     <p className="text-sm font-semibold leading-6 text-neutral-600" key={i}>
                       {paragraph}
                     </p>

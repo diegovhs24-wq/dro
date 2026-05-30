@@ -103,7 +103,7 @@ function MultilineText({ text }: { text: string }) {
   );
 }
 
-type ProcessHeaderContent = Pick<
+type ProcessContent = Pick<
   ProcessPageContent,
   | "eyebrow"
   | "titlePrefix"
@@ -112,153 +112,138 @@ type ProcessHeaderContent = Pick<
   | "note"
   | "sideNote"
   | "steps"
->;
+> & {
+  benefits?: IconTextItem[];
+  trustPoints?: IconTextItem[];
+};
 
-export function ProcessHeaderBlockSection({
-  content,
-}: {
-  content: ProcessHeaderContent;
-}) {
+export function ProcessBlockSection({ content }: { content: ProcessContent }) {
   return (
-    <section className="relative overflow-hidden bg-white py-6 lg:py-7">
-      <div className="section-shell relative grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-        <div className="pt-2">
-          <p className="eyebrow">{content.eyebrow}</p>
-          <h1 className="mt-4 max-w-2xl text-5xl font-black leading-[0.98] tracking-[-0.04em] text-brand-ink sm:text-6xl lg:text-[64px]">
-            {content.titlePrefix}{" "}
-            <span className="relative inline-block">
-              {content.titleHighlight}
-              <HandUnderline />
-            </span>
-          </h1>
-          <p className="mt-5 max-w-lg text-base font-bold leading-7 text-neutral-600">
-            <MultilineText text={content.intro} />
-          </p>
-          <NoteCard note={content.note} />
-          <div className="mt-5 flex max-w-xl items-end gap-4">
-            <div className="grid h-20 w-24 shrink-0 place-items-center text-brand-ink">
-              <SketchIcon name="team" className="h-20 w-20" />
-            </div>
-            <SideArrow />
-            <p className="mb-1 max-w-xs font-hand text-xl leading-snug text-brand-ink">
-              {content.sideNote}
+    <>
+      <section className="relative overflow-hidden bg-white py-6 lg:py-7">
+        <div className="section-shell relative grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
+          <div className="pt-2">
+            <p className="eyebrow">{content.eyebrow}</p>
+            <h1 className="mt-4 max-w-2xl text-5xl font-black leading-[0.98] tracking-[-0.04em] text-brand-ink sm:text-6xl lg:text-[64px]">
+              {content.titlePrefix}{" "}
+              <span className="relative inline-block">
+                {content.titleHighlight}
+                <HandUnderline />
+              </span>
+            </h1>
+            <p className="mt-5 max-w-lg text-base font-bold leading-7 text-neutral-600">
+              <MultilineText text={content.intro} />
             </p>
+            <NoteCard note={content.note} />
+            <div className="mt-5 flex max-w-xl items-end gap-4">
+              <div className="grid h-20 w-24 shrink-0 place-items-center text-brand-ink">
+                <SketchIcon name="team" className="h-20 w-20" />
+              </div>
+              <SideArrow />
+              <p className="mb-1 max-w-xs font-hand text-xl leading-snug text-brand-ink">
+                {content.sideNote}
+              </p>
+            </div>
+          </div>
+
+          <div className="relative">
+            <FlowLine />
+            <div className="grid gap-0">
+              {(content.steps || []).map((step, index) => (
+                <div
+                  className="grid items-center gap-3 rounded-none border-b border-black/5 py-1 sm:grid-cols-[100px_1fr] lg:grid-cols-[110px_1.05fr_86px_185px]"
+                  key={step.title}
+                >
+                  <div className="hidden justify-center text-brand-ink sm:flex">
+                    <div className="grid h-[86px] w-[86px] place-items-center">
+                      <SketchIcon
+                        name={step.icon as SketchIconName}
+                        className="h-20 w-20"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-[44px_1fr] gap-3">
+                    <span className="grid h-9 w-9 place-items-center rounded-full border-[3px] border-brand-orange font-hand text-2xl leading-none text-brand-orange">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <h2 className="relative inline-block font-hand text-[32px] font-normal leading-none text-brand-ink">
+                        {step.title}
+                        <HandUnderline />
+                      </h2>
+                      <p className="mt-2 max-w-sm font-hand text-lg leading-snug text-brand-ink">
+                        {step.text}
+                      </p>
+                    </div>
+                  </div>
+                  <SideArrow />
+                  <p className="hidden max-w-[185px] font-hand text-lg leading-snug text-brand-ink lg:block">
+                    {step.note}
+                    <span className="mt-1 block h-1 w-24 rounded-full bg-brand-orange" />
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      </section>
 
-        <div className="relative">
-          <FlowLine />
-          <div className="grid gap-0">
-            {(content.steps || []).map((step, index) => (
+      {content.benefits && content.benefits.length > 0 && (
+        <div className="section-shell mt-4">
+          <div className="mx-auto grid max-w-6xl gap-0 border-2 border-brand-ink/70 bg-white shadow-[8px_10px_0_rgba(17,17,17,0.05)] sm:grid-cols-2 lg:grid-cols-5">
+            {content.benefits.map((benefit, index) => (
               <div
-                className="grid items-center gap-3 rounded-none border-b border-black/5 py-1 sm:grid-cols-[100px_1fr] lg:grid-cols-[110px_1.05fr_86px_185px]"
-                key={step.title}
+                className={`flex items-center gap-3 px-4 py-3 ${index > 0 ? "border-t border-brand-ink/20 sm:border-l sm:border-t-0" : ""}`}
+                key={benefit.title}
               >
-                <div className="hidden justify-center text-brand-ink sm:flex">
-                  <div className="grid h-[86px] w-[86px] place-items-center">
-                    <SketchIcon
-                      name={step.icon as SketchIconName}
-                      className="h-20 w-20"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-[44px_1fr] gap-3">
-                  <span className="grid h-9 w-9 place-items-center rounded-full border-[3px] border-brand-orange font-hand text-2xl leading-none text-brand-orange">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <h2 className="relative inline-block font-hand text-[32px] font-normal leading-none text-brand-ink">
-                      {step.title}
-                      <HandUnderline />
-                    </h2>
-                    <p className="mt-2 max-w-sm font-hand text-lg leading-snug text-brand-ink">
-                      {step.text}
-                    </p>
-                  </div>
-                </div>
-                <SideArrow />
-                <p className="hidden max-w-[185px] font-hand text-lg leading-snug text-brand-ink lg:block">
-                  {step.note}
-                  <span className="mt-1 block h-1 w-24 rounded-full bg-brand-orange" />
+                <span className="grid h-9 w-9 shrink-0 place-items-center text-brand-ink">
+                  <SketchIcon
+                    name={(benefit.icon || "tools") as SketchIconName}
+                    className="h-8 w-8"
+                  />
+                </span>
+                <p className="m-0 font-hand text-lg leading-tight text-brand-ink">
+                  {benefit.title}
                 </p>
               </div>
             ))}
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
+      )}
 
-export function ProcessBenefitsBlockSection({
-  benefits,
-}: {
-  benefits: IconTextItem[];
-}) {
-  return (
-    <div className="section-shell mt-4">
-      <div className="mx-auto grid max-w-6xl gap-0 border-2 border-brand-ink/70 bg-white shadow-[8px_10px_0_rgba(17,17,17,0.05)] sm:grid-cols-2 lg:grid-cols-5">
-        {benefits.map((benefit, index) => (
-          <div
-            className={`flex items-center gap-3 px-4 py-3 ${index > 0 ? "border-t border-brand-ink/20 sm:border-l sm:border-t-0" : ""}`}
-            key={benefit.title}
-          >
-            <span className="grid h-9 w-9 shrink-0 place-items-center text-brand-ink">
-              <SketchIcon
-                name={(benefit.icon || "tools") as SketchIconName}
-                className="h-8 w-8"
-              />
-            </span>
-            <p className="m-0 font-hand text-lg leading-tight text-brand-ink">
-              {benefit.title}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function ProcessTrustBlockSection({
-  trustPoints,
-}: {
-  trustPoints: IconTextItem[];
-}) {
-  return (
-    <section className="bg-white py-4">
-      <div className="section-shell">
-        <div className="grid gap-5 rounded-lg bg-brand-soft px-6 py-5 sm:grid-cols-3 lg:px-8">
-          {trustPoints.map((point) => (
-            <div className="flex gap-4" key={point.title}>
-              {point.logo ? (
-                <span className="mt-1 flex h-10 w-20 shrink-0 items-center">
-                  <img
-                    alt={`${point.title} logo`}
-                    className="max-h-10 w-auto max-w-full object-contain"
-                    src={point.logo}
-                  />
-                </span>
-              ) : (
-                <span className="mt-1 grid h-10 w-10 shrink-0 place-items-center text-brand-ink">
-                  <SketchIcon
-                    name={(point.icon || "quality") as SketchIconName}
-                    className="h-8 w-8"
-                  />
-                </span>
-              )}
-              <div>
-                <h2 className="text-base font-bold text-brand-ink">
-                  {point.title}
-                </h2>
-                <p className="mt-1 text-sm font-medium leading-6 text-neutral-600">
-                  {point.text}
-                </p>
-              </div>
+      {content.trustPoints && content.trustPoints.length > 0 && (
+        <section className="bg-white py-4">
+          <div className="section-shell">
+            <div className="grid gap-5 rounded-lg bg-brand-soft px-6 py-5 sm:grid-cols-3 lg:px-8">
+              {content.trustPoints.map((point) => (
+                <div className="flex gap-4" key={point.title}>
+                  {point.logo ? (
+                    <span className="mt-1 flex h-10 w-20 shrink-0 items-center">
+                      <img
+                        alt={`${point.title} logo`}
+                        className="max-h-10 w-auto max-w-full object-contain"
+                        src={point.logo}
+                      />
+                    </span>
+                  ) : (
+                    <span className="mt-1 grid h-10 w-10 shrink-0 place-items-center text-brand-ink">
+                      <SketchIcon
+                        name={(point.icon || "quality") as SketchIconName}
+                        className="h-8 w-8"
+                      />
+                    </span>
+                  )}
+                  <div>
+                    <h2 className="text-base font-bold text-brand-ink">{point.title}</h2>
+                    <p className="mt-1 text-sm font-medium leading-6 text-neutral-600">{point.text}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
+          </div>
+        </section>
+      )}
+    </>
   );
 }
 
@@ -297,8 +282,8 @@ export function ProcessFaqBlockSection({
                 </span>
               </summary>
               <div className="mt-4 grid gap-3 text-sm font-medium leading-7 text-neutral-600">
-                {(Array.isArray(item.answer) ? item.answer : [item.answer]).map((line) => (
-                  <p className="m-0" key={line}>
+                {item.answer.split('\n\n').filter(Boolean).map((line, i) => (
+                  <p className="m-0" key={i}>
                     {line}
                   </p>
                 ))}

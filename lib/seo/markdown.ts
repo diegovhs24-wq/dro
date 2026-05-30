@@ -38,8 +38,12 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
         list(block.solutions),
         paragraph(block.solutionNote),
       ].join("");
-    case "textBlock":
-      return [heading(2, block.title || ""), paragraph(block.text)].join("");
+    case "textBlock": {
+      const descText = Array.isArray(block.description)
+        ? block.description.flatMap((b) => (b.children || []).map((s) => s.text)).join(" ")
+        : "";
+      return [heading(2, block.title || ""), paragraph(descText)].join("");
+    }
     case "servicesListingBlock":
       return heading(2, "Diensten");
     case "projectsListingBlock":
@@ -86,7 +90,7 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
         ),
         "\n",
       ].join("");
-    case "processHeaderBlock":
+    case "processBlock":
       return [
         heading(1, `${block.titlePrefix || ""} ${block.titleHighlight || ""}`.trim()),
         paragraph(block.intro),
@@ -94,15 +98,9 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
           (step, index) => `${index + 1}. **${step.title}** — ${step.text || ""}\n`
         ),
         "\n",
-      ].join("");
-    case "processBenefitsBlock":
-      return [
         heading(2, "Voordelen"),
         ...(block.benefits || []).map((item) => `- **${item.title}**: ${item.text || ""}\n`),
         "\n",
-      ].join("");
-    case "processTrustBlock":
-      return [
         heading(2, "Vertrouwen"),
         ...(block.trustPoints || []).map((item) => `- **${item.title}**: ${item.text || ""}\n`),
         "\n",

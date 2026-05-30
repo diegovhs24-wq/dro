@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type {PtBlock} from "@/lib/cms";
 import {resolveSmartLink} from "@/lib/smartLink";
 import CTASection from "@/components/CTASection";
 import Hero from "@/components/Hero";
@@ -15,11 +16,9 @@ import GoogleReviewsBlockSection from "@/components/cms/blocks/GoogleReviewsBloc
 import PartnersBlockSection from "@/components/cms/blocks/PartnersBlockSection";
 import ProblemSolutionBlockSection from "@/components/cms/blocks/ProblemSolutionBlockSection";
 import {
-  ProcessBenefitsBlockSection,
+  ProcessBlockSection,
   ProcessFaqBlockSection,
-  ProcessHeaderBlockSection,
   ProcessIntakeBannerBlockSection,
-  ProcessTrustBlockSection
 } from "@/components/cms/blocks/ProcessBlockSections";
 import FeaturedProjectsBlockSection from "@/components/cms/blocks/FeaturedProjectsBlockSection";
 import FeaturedServicesBlockSection from "@/components/cms/blocks/FeaturedServicesBlockSection";
@@ -32,7 +31,29 @@ import type {
   IconCardsBlock,
 } from "@/lib/cms";
 
+function RichDescription({blocks}: {blocks: PtBlock[]}) {
+  return (
+    <div className="mt-5 max-w-3xl space-y-4 text-base font-semibold leading-7 text-neutral-600">
+      {blocks.map((block, bi) => {
+        const children = (block.children || []).map((span, si) => {
+          const marks = span.marks || [];
+          let node: React.ReactNode = span.text;
+          if (marks.includes('strong')) node = <strong key={si}>{node}</strong>;
+          if (marks.includes('em')) node = <em key={si}>{node}</em>;
+          if (marks.includes('underline')) node = <u key={si}>{node}</u>;
+          return <span key={si}>{node}</span>;
+        });
+        const style = block.style;
+        if (style === 'h3') return <h3 key={bi} className="text-xl font-bold text-brand-ink">{children}</h3>;
+        if (style === 'h4') return <h4 key={bi} className="text-lg font-bold text-brand-ink">{children}</h4>;
+        return <p key={bi}>{children}</p>;
+      })}
+    </div>
+  );
+}
+
 function TextBlockSection({ block }: { block: Extract<CmsDynamicPageBlock, {_type: "textBlock"}> }) {
+  const hasDescription = Array.isArray(block.description) && block.description.length > 0;
   return (
     <section className="bg-white py-14 sm:py-16">
       <div className="section-shell max-w-3xl">
@@ -40,7 +61,7 @@ function TextBlockSection({ block }: { block: Extract<CmsDynamicPageBlock, {_typ
         {block.title ? (
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-brand-ink sm:text-4xl">{block.title}</h2>
         ) : null}
-        {block.text ? <p className="mt-5 text-base font-semibold leading-7 text-neutral-600">{block.text}</p> : null}
+        {hasDescription ? <RichDescription blocks={block.description!} /> : null}
       </div>
     </section>
   );
@@ -145,12 +166,8 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
       return <AboutTeamBlockSection content={block} />;
     case "aboutTeamImageBlock":
       return <AboutTeamImageBlockSection content={block} />;
-    case "processHeaderBlock":
-      return <ProcessHeaderBlockSection content={block} />;
-    case "processBenefitsBlock":
-      return <ProcessBenefitsBlockSection benefits={block.benefits || []} />;
-    case "processTrustBlock":
-      return <ProcessTrustBlockSection trustPoints={block.trustPoints || []} />;
+    case "processBlock":
+      return <ProcessBlockSection content={block} />;
     case "processFaqBlock":
       return <ProcessFaqBlockSection content={block} />;
     case "processIntakeBannerBlock":
