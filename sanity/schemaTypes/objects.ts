@@ -611,7 +611,13 @@ export const processPageContent = defineType({
     defineField({name: 'faqEyebrow', title: 'FAQ Eyebrow', type: 'string'}),
     defineField({name: 'faqTitle', title: 'FAQ Title', type: 'string'}),
     defineField({name: 'faqIntro', title: 'FAQ Intro', type: 'text', rows: 3}),
-    defineField({name: 'faqs', title: 'FAQs', type: 'array', of: [defineArrayMember({type: 'faqRichItem'})]}),
+    defineField({
+      name: 'faqs',
+      title: 'FAQs',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'faq'}]})],
+      description: 'Select FAQs from the FAQ collection.',
+    }),
     defineField({name: 'intakeBannerTitle', title: 'Intake Banner Title', type: 'string'}),
     defineField({name: 'intakeBannerText', title: 'Intake Banner Text', type: 'text', rows: 2}),
     defineField({name: 'cta', title: 'CTA', type: 'ctaContent'}),
@@ -673,7 +679,13 @@ export const servicePageContent = defineType({
     defineField({name: 'processText', title: 'Process Text', type: 'text', rows: 3}),
     defineField({name: 'situations', title: 'Situation Blocks', type: 'array', of: [defineArrayMember({type: 'listBlock'})]}),
     defineField({name: 'examples', title: 'Examples', type: 'array', of: [defineArrayMember({type: 'string'})]}),
-    defineField({name: 'faqs', title: 'FAQs', type: 'array', of: [defineArrayMember({type: 'faqItem'})]}),
+    defineField({
+      name: 'faqs',
+      title: 'FAQs',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'faq'}]})],
+      description: 'Select FAQs from the FAQ collection.',
+    }),
   ],
 })
 
@@ -811,10 +823,6 @@ export const servicesListingBlock = defineType({
   title: 'Services Listing Block',
   type: 'object',
   fields: [
-    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
-    defineField({name: 'title', title: 'Title', type: 'string'}),
-    defineField({name: 'linkLabel', title: 'Link Label', type: 'string'}),
-    defineField({name: 'linkHref', title: 'Link URL', type: 'string'}),
     defineField({name: 'limit', title: 'Number of Services', type: 'number'}),
     defineField({
       name: 'layout',
@@ -830,9 +838,8 @@ export const servicesListingBlock = defineType({
     }),
   ],
   preview: {
-    select: {title: 'title'},
-    prepare({title}) {
-      return {title: title || 'Services Listing Block'}
+    prepare() {
+      return {title: 'Services Listing Block'}
     },
   },
 })
@@ -842,14 +849,11 @@ export const projectsListingBlock = defineType({
   title: 'Projects Listing Block',
   type: 'object',
   fields: [
-    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
-    defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'limit', title: 'Number of Projects', type: 'number'}),
   ],
   preview: {
-    select: {title: 'title'},
-    prepare({title}) {
-      return {title: title || 'Projects Listing Block'}
+    prepare() {
+      return {title: 'Projects Listing Block'}
     },
   },
 })
@@ -1098,7 +1102,13 @@ export const processFaqBlock = defineType({
     defineField({name: 'faqEyebrow', title: 'FAQ Eyebrow', type: 'string'}),
     defineField({name: 'faqTitle', title: 'FAQ Title', type: 'string'}),
     defineField({name: 'faqIntro', title: 'FAQ Intro', type: 'text', rows: 3}),
-    defineField({name: 'faqs', title: 'FAQs', type: 'array', of: [defineArrayMember({type: 'faqRichItem'})]}),
+    defineField({
+      name: 'faqs',
+      title: 'FAQs',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'faq'}]})],
+      description: 'Select FAQs from the FAQ collection.',
+    }),
   ],
   preview: {
     select: {title: 'faqTitle'},

@@ -106,6 +106,48 @@ const HOME_HERO_FIELDS = `
   }
 `;
 
+const INDEX_CONTENT_BLOCKS = `
+  contentBlocks[]{
+    _type,
+    _key,
+    _type == "homeHeroBlock" => { hero{${HOME_HERO_FIELDS}} },
+    _type == "pageHeroBlock" => { hero{${PAGE_HERO_FIELDS}} },
+    _type == "problemSolutionBlock" => {
+      problemEyebrow, problemTitle, problems,
+      solutionEyebrow, solutionTitle, solutions, solutionNote,
+      bannerTitle, bannerButtonLabel, bannerButtonHref
+    },
+    _type == "textBlock" => { eyebrow, title, text },
+    _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonHref, items[]{${ICON_TEXT_FIELDS}} },
+    _type == "partnersBlock" => { eyebrow, title, text },
+    _type == "googleReviewsBlock" => { limit, compact },
+    _type == "contactFormBlock" => { eyebrow, title, text, note },
+    _type == "aboutIntroBlock" => { eyebrow, title, intro, sketchLabels, sketchClosing, introItems[]{${ICON_TEXT_FIELDS}} },
+    _type == "aboutTeamBlock" => { teamEyebrow, teamTitle, coreTeam[]{ name, role, image{${IMAGE_SOURCE_FIELDS}}, text }, teamBanner },
+    _type == "aboutTeamImageBlock" => { teamImageEyebrow, teamImageTitle, teamImage{${IMAGE_SOURCE_FIELDS}} },
+    _type == "processHeaderBlock" => { eyebrow, titlePrefix, titleHighlight, intro, note, sideNote, steps[]{ title, text, note, icon } },
+    _type == "processBenefitsBlock" => { benefits[]{${ICON_TEXT_FIELDS}} },
+    _type == "processTrustBlock" => { trustPoints[]{${ICON_TEXT_FIELDS}} },
+    _type == "processFaqBlock" => { faqEyebrow, faqTitle, faqIntro, faqs[]->{question, answer} },
+    _type == "processIntakeBannerBlock" => { intakeBannerTitle, intakeBannerText, buttonLabel, buttonHref },
+    _type == "businessContentBlock" => { positionEyebrow, positionTitle, positionText, positionBanner, capacity, cards[]{ eyebrow, title, items } }
+  }
+`;
+
+const SERVICES_INDEX_QUERY = `*[_type == "servicesIndex"][0]{
+  title,
+  ${INDEX_CONTENT_BLOCKS},
+  listingSettings{ limit, layout },
+  seo{${SEO_FIELDS}}
+}`;
+
+const PROJECTS_INDEX_QUERY = `*[_type == "projectsIndex"][0]{
+  title,
+  ${INDEX_CONTENT_BLOCKS},
+  listingSettings{ limit, layout },
+  seo{${SEO_FIELDS}}
+}`;
+
 const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
   _id,
   title,
@@ -138,16 +180,10 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       text
     },
     _type == "servicesListingBlock" => {
-      eyebrow,
-      title,
-      linkLabel,
-      linkHref,
       limit,
       layout
     },
     _type == "projectsListingBlock" => {
-      eyebrow,
-      title,
       limit
     },
     _type == "iconCardsBlock" => {
@@ -223,10 +259,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       faqEyebrow,
       faqTitle,
       faqIntro,
-      faqs[]{
-        question,
-        answer
-      }
+      faqs[]->{question, answer}
     },
     _type == "processIntakeBannerBlock" => {
       intakeBannerTitle,
@@ -357,10 +390,7 @@ const SERVICES_QUERY = `*[_type == "service"]|order(sortOrder asc, title asc){
       items
     },
     examples,
-    faqs[]{
-      question,
-      answer
-    }
+    faqs[]->{question, answer}
   }
 }`;
 
@@ -387,10 +417,7 @@ const SERVICE_QUERY = `*[_type == "service" && slug.current == $slug][0]{
       items
     },
     examples,
-    faqs[]{
-      question,
-      answer
-    }
+    faqs[]->{question, answer}
   }
 }`;
 
@@ -501,18 +528,12 @@ export type TextBlock = CmsBaseBlock & {
 
 export type ServicesListingBlock = CmsBaseBlock & {
   _type: "servicesListingBlock";
-  eyebrow?: string;
-  title?: string;
-  linkLabel?: string;
-  linkHref?: string;
   limit?: number;
   layout?: "default" | "fullGrid";
 };
 
 export type ProjectsListingBlock = CmsBaseBlock & {
   _type: "projectsListingBlock";
-  eyebrow?: string;
-  title?: string;
   limit?: number;
 };
 
@@ -955,6 +976,38 @@ export async function getPageBySlug(slug: string) {
   }
 
   return null;
+}
+
+export type IndexPageDoc = {
+  title?: string;
+  seo?: SeoSettings;
+  contentBlocks?: CmsDynamicPageBlock[];
+  listingSettings?: {
+    limit?: number;
+    layout?: string;
+  };
+};
+
+function normalizeIndexPage(raw: RawRecord | null): IndexPageDoc | null {
+  if (!raw) return null;
+  const normalized = normalizeCmsValue(raw) as IndexPageDoc;
+  return {
+    ...normalized,
+    seo: mapSeo(raw.seo),
+    contentBlocks: Array.isArray(normalized.contentBlocks) ? normalized.contentBlocks : [],
+  };
+}
+
+export async function getServicesIndex(): Promise<IndexPageDoc | null> {
+  const {data, failed} = await safeFetch<RawRecord | null>(SERVICES_INDEX_QUERY);
+  if (failed || !data) return null;
+  return normalizeIndexPage(data);
+}
+
+export async function getProjectsIndex(): Promise<IndexPageDoc | null> {
+  const {data, failed} = await safeFetch<RawRecord | null>(PROJECTS_INDEX_QUERY);
+  if (failed || !data) return null;
+  return normalizeIndexPage(data);
 }
 
 export {metadataFromSeo, buildPageMetadata} from "@/lib/seo/metadata";

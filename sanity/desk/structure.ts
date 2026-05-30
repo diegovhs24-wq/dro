@@ -4,6 +4,8 @@ import {
   CogIcon,
   DocumentTextIcon,
   DocumentsIcon,
+  FolderIcon,
+  HelpCircleIcon,
   HomeIcon,
   ImageIcon,
   LinkIcon,
@@ -11,7 +13,7 @@ import {
   TagIcon,
 } from '@sanity/icons'
 
-export const singletonSchemaTypes = ['siteSettings'] as const
+export const singletonSchemaTypes = ['siteSettings', 'servicesIndex', 'projectsIndex'] as const
 const singletonSchemaTypeSet = new Set<string>(singletonSchemaTypes)
 
 export function isSingletonSchemaType(schemaType: string) {
@@ -107,8 +109,31 @@ export const structure: StructureResolver = async (S, context) => {
     .items([
       singletonItem(S, 'siteSettings', 'Site Settings', CogIcon),
       pagesItem(S, counts.allOtherPages),
-      S.documentTypeListItem('service').title(`Services (${counts.services})`).icon(TagIcon),
-      S.documentTypeListItem('project').title(`Projects (${counts.projects})`).icon(ImageIcon),
+      S.listItem()
+        .id('services-section')
+        .title('Services')
+        .icon(TagIcon)
+        .child(
+          S.list()
+            .title('Services')
+            .items([
+              singletonItem(S, 'servicesIndex', 'Index Page (/diensten)', FolderIcon),
+              S.documentTypeListItem('service').title(`Individual Services (${counts.services})`).icon(TagIcon),
+            ]),
+        ),
+      S.listItem()
+        .id('projects-section')
+        .title('Projects')
+        .icon(ImageIcon)
+        .child(
+          S.list()
+            .title('Projects')
+            .items([
+              singletonItem(S, 'projectsIndex', 'Index Page (/projecten)', FolderIcon),
+              S.documentTypeListItem('project').title(`Individual Projects (${counts.projects})`).icon(ImageIcon),
+            ]),
+        ),
+      S.documentTypeListItem('faq').title('FAQs').icon(HelpCircleIcon),
       S.documentTypeListItem('review').title(`Reviews (${counts.reviews})`).icon(StarIcon),
       S.documentTypeListItem('partner').title('Partners').icon(ImageIcon),
       S.documentTypeListItem('redirect').title('URL Redirects').icon(LinkIcon),

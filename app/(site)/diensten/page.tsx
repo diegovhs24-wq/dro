@@ -1,17 +1,18 @@
 import type {Metadata} from "next";
+import {notFound} from "next/navigation";
 
-import DynamicPageShell from "@/components/cms/DynamicPageShell";
-import {cmsPageMetadata, requireCmsPage} from "@/lib/cms-page";
+import ServicesIndexShell from "@/components/cms/ServicesIndexShell";
+import {getServicesIndex, metadataFromSeo} from "@/lib/cms";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return cmsPageMetadata({
-    slug: "diensten",
+  const page = await getServicesIndex();
+  return metadataFromSeo(page?.seo || {}, page?.title || "Renovatiediensten | DRO Renovaties", {
     pathname: "/diensten",
-    fallbackTitle: "Renovatiediensten | DRO Renovaties",
   });
 }
 
 export default async function DienstenPage() {
-  const page = await requireCmsPage("diensten");
-  return <DynamicPageShell page={page} pathname="/diensten" />;
+  const page = await getServicesIndex();
+  if (!page) notFound();
+  return <ServicesIndexShell page={page} />;
 }

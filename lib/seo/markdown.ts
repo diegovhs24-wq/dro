@@ -41,9 +41,9 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
     case "textBlock":
       return [heading(2, block.title || ""), paragraph(block.text)].join("");
     case "servicesListingBlock":
-      return heading(2, block.title || "Diensten");
+      return heading(2, "Diensten");
     case "projectsListingBlock":
-      return heading(2, block.title || "Projecten");
+      return heading(2, "Projecten");
     case "iconCardsBlock":
       return [
         heading(2, block.title || ""),

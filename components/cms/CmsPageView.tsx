@@ -2,8 +2,6 @@ import CTASection from "@/components/CTASection";
 import Hero from "@/components/Hero";
 import LeadForm from "@/components/LeadForm";
 import PageHero from "@/components/PageHero";
-import ProjectCard from "@/components/ProjectCard";
-import ServiceCard from "@/components/ServiceCard";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 import {
   AboutIntroBlockSection,
@@ -26,10 +24,7 @@ import type {
   CmsDynamicPageBlock,
   ContactFormBlock,
   IconCardsBlock,
-  ProjectsListingBlock,
-  ServicesListingBlock
 } from "@/lib/cms";
-import { getProjects, getServices } from "@/lib/cms";
 
 function TextBlockSection({ block }: { block: Extract<CmsDynamicPageBlock, {_type: "textBlock"}> }) {
   return (
@@ -45,61 +40,6 @@ function TextBlockSection({ block }: { block: Extract<CmsDynamicPageBlock, {_typ
   );
 }
 
-async function ServicesListingSection({ block }: { block: ServicesListingBlock }) {
-  const services = await getServices();
-  const limit = typeof block.limit === "number" ? block.limit : services.length;
-  const visibleServices = services.slice(0, Math.max(limit, 0));
-  const isFullGrid = block.layout === "fullGrid";
-
-  return (
-    <section className={isFullGrid ? "bg-brand-soft py-14 sm:py-16" : "bg-white py-14 sm:py-16"} id={isFullGrid ? undefined : "diensten"}>
-      <div className="section-shell">
-        {!isFullGrid ? (
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <div>
-              {block.eyebrow ? <p className="eyebrow">{block.eyebrow}</p> : null}
-              {block.title ? (
-                <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{block.title}</h2>
-              ) : null}
-            </div>
-            {block.linkHref && block.linkLabel ? (
-              <a className="text-sm font-bold text-brand-orange hover:text-brand-ink" href={block.linkHref}>
-                {block.linkLabel}
-              </a>
-            ) : null}
-          </div>
-        ) : null}
-        <div className={`grid gap-5 md:grid-cols-2 lg:grid-cols-3 ${!isFullGrid ? "mt-9" : ""}`}>
-          {visibleServices.map((service) => (
-            <ServiceCard key={service.slug} {...service} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-async function ProjectsListingSection({ block }: { block: ProjectsListingBlock }) {
-  const projects = await getProjects();
-  const limit = typeof block.limit === "number" ? block.limit : projects.length;
-  const visibleProjects = projects.slice(0, Math.max(limit, 0));
-
-  return (
-    <section className="bg-white py-14 sm:py-16">
-      <div className="section-shell">
-        {block.eyebrow ? <p className="eyebrow">{block.eyebrow}</p> : null}
-        {block.title ? (
-          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{block.title}</h2>
-        ) : null}
-        <div className="mt-9 grid gap-6 lg:grid-cols-3">
-          {visibleProjects.map((project) => (
-            <ProjectCard key={project.slug} {...project} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function IconCardsSection({ block }: { block: IconCardsBlock }) {
   const items = Array.isArray(block.items) ? block.items : [];
@@ -170,10 +110,6 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
       return <ProblemSolutionBlockSection content={block} />;
     case "textBlock":
       return <TextBlockSection block={block} />;
-    case "servicesListingBlock":
-      return <ServicesListingSection block={block} />;
-    case "projectsListingBlock":
-      return <ProjectsListingSection block={block} />;
     case "iconCardsBlock":
       return <IconCardsSection block={block} />;
     case "partnersBlock":

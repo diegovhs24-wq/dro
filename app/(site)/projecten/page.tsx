@@ -1,17 +1,18 @@
 import type {Metadata} from "next";
+import {notFound} from "next/navigation";
 
-import DynamicPageShell from "@/components/cms/DynamicPageShell";
-import {cmsPageMetadata, requireCmsPage} from "@/lib/cms-page";
+import ProjectsIndexShell from "@/components/cms/ProjectsIndexShell";
+import {getProjectsIndex, metadataFromSeo} from "@/lib/cms";
 
 export async function generateMetadata(): Promise<Metadata> {
-  return cmsPageMetadata({
-    slug: "projecten",
+  const page = await getProjectsIndex();
+  return metadataFromSeo(page?.seo || {}, page?.title || "Renovatie projecten | DRO Renovaties", {
     pathname: "/projecten",
-    fallbackTitle: "Renovatie projecten | DRO Renovaties",
   });
 }
 
 export default async function ProjectenPage() {
-  const page = await requireCmsPage("projecten");
-  return <DynamicPageShell page={page} pathname="/projecten" />;
+  const page = await getProjectsIndex();
+  if (!page) notFound();
+  return <ProjectsIndexShell page={page} />;
 }

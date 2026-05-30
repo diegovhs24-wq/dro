@@ -373,4 +373,119 @@ export const redirect = defineType({
   },
 })
 
-export const documentSchemaTypes = [siteSettings, page, service, project, review, partner, redirect]
+export const faq = defineType({
+  name: 'faq',
+  title: 'FAQ',
+  type: 'document',
+  fields: [
+    defineField({name: 'question', title: 'Question', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({
+      name: 'answer',
+      title: 'Answer',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      description: 'Each item is a separate paragraph.',
+      validation: (Rule) => Rule.required().min(1),
+    }),
+    defineField({name: 'category', title: 'Category', type: 'string', description: 'Optional — used for grouping (e.g. "General", "Process", "Pricing").'}),
+    defineField({name: 'sortOrder', title: 'Sort Order', type: 'number'}),
+  ],
+  preview: {
+    select: {title: 'question', subtitle: 'category'},
+    prepare({title, subtitle}) {
+      return {title: title || 'FAQ', subtitle: subtitle || ''}
+    },
+  },
+  orderings: [
+    {title: 'Sort Order', name: 'sortOrderAsc', by: [{field: 'sortOrder', direction: 'asc'}]},
+    {title: 'Question A–Z', name: 'questionAsc', by: [{field: 'question', direction: 'asc'}]},
+  ],
+})
+
+export const servicesIndex = defineType({
+  name: 'servicesIndex',
+  title: 'Services Index',
+  type: 'document',
+  groups: [
+    {name: 'content', title: 'Content', default: true},
+    {name: 'listing', title: 'Listing'},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fields: [
+    defineField({name: 'title', title: 'Page Title', type: 'string', validation: (Rule) => Rule.required(), group: 'content'}),
+    {...contentBlocksField, group: 'content'},
+    defineField({
+      name: 'listingSettings',
+      title: 'Listing Settings',
+      type: 'object',
+      group: 'listing',
+      fields: [
+        defineField({name: 'limit', title: 'Number of Services to Show', type: 'number', description: 'Leave empty to show all services.'}),
+        defineField({
+          name: 'layout',
+          title: 'Display Layout',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Grid — 3 columns', value: 'grid'},
+              {title: 'Full grid — soft background', value: 'fullGrid'},
+            ],
+          },
+          initialValue: 'grid',
+        }),
+      ],
+    }),
+    defineField({name: 'seo', title: 'SEO Settings', type: 'seoSettings', options: {collapsible: true, collapsed: true}, group: 'seo'}),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}) {
+      return {title: title || 'Services Index', subtitle: '/diensten'}
+    },
+  },
+})
+
+export const projectsIndex = defineType({
+  name: 'projectsIndex',
+  title: 'Projects Index',
+  type: 'document',
+  groups: [
+    {name: 'content', title: 'Content', default: true},
+    {name: 'listing', title: 'Listing'},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fields: [
+    defineField({name: 'title', title: 'Page Title', type: 'string', validation: (Rule) => Rule.required(), group: 'content'}),
+    {...contentBlocksField, group: 'content'},
+    defineField({
+      name: 'listingSettings',
+      title: 'Listing Settings',
+      type: 'object',
+      group: 'listing',
+      fields: [
+        defineField({name: 'limit', title: 'Number of Projects to Show', type: 'number', description: 'Leave empty to show all projects.'}),
+        defineField({
+          name: 'layout',
+          title: 'Display Layout',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Grid — 3 columns', value: 'grid'},
+              {title: 'List — 1 column', value: 'list'},
+            ],
+          },
+          initialValue: 'grid',
+        }),
+      ],
+    }),
+    defineField({name: 'seo', title: 'SEO Settings', type: 'seoSettings', options: {collapsible: true, collapsed: true}, group: 'seo'}),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}) {
+      return {title: title || 'Projects Index', subtitle: '/projecten'}
+    },
+  },
+})
+
+export const documentSchemaTypes = [siteSettings, page, servicesIndex, projectsIndex, faq, service, project, review, partner, redirect]

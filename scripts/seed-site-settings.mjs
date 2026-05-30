@@ -151,3 +151,4 @@ main().catch((err) => {
   console.error('❌ Failed:', err.message)
   process.exit(1)
 })
+// This file is append-safe — the main() above already handles siteSettings.
