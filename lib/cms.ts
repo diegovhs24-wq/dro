@@ -79,6 +79,40 @@ const ICON_TEXT_FIELDS = `
   logo{${IMAGE_SOURCE_FIELDS}}
 `;
 
+const INTAKE_FORM_FIELDS = `
+  intakeForm->{
+    formTitle,
+    timeLabel,
+    description,
+    privacyText,
+    steps[]{
+      title,
+      subtitle,
+      stepType,
+      stepKey,
+      options,
+      fields[]{
+        fieldKey,
+        label,
+        inputType,
+        required,
+        halfWidth
+      }
+    },
+    successEyebrow,
+    successTitle,
+    successText,
+    faqItems[]->{
+      question,
+      answer
+    },
+    submitLabel,
+    nextLabel,
+    backLabel,
+    errorMessage
+  }
+`;
+
 const HOME_HERO_FIELDS = `
   coverageText,
   backgroundImage{${IMAGE_SOURCE_FIELDS}},
@@ -88,10 +122,7 @@ const HOME_HERO_FIELDS = `
   description,
   trustItems[]{${ICON_TEXT_FIELDS}},
   note,
-  formTitle,
-  formTimeLabel,
-  formText,
-  formPrivacyText,
+  ${INTAKE_FORM_FIELDS},
   stats[]{
     value,
     label,
@@ -121,7 +152,7 @@ const INDEX_CONTENT_BLOCKS = `
     _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonHref, items[]{${ICON_TEXT_FIELDS}} },
     _type == "partnersBlock" => { eyebrow, title, text },
     _type == "googleReviewsBlock" => { limit, compact },
-    _type == "contactFormBlock" => { eyebrow, title, text, note },
+    _type == "contactFormBlock" => { eyebrow, title, text, note, ${INTAKE_FORM_FIELDS} },
     _type == "aboutIntroBlock" => { eyebrow, title, intro, sketchLabels, sketchClosing, introItems[]{${ICON_TEXT_FIELDS}} },
     _type == "aboutTeamBlock" => { teamEyebrow, teamTitle, coreTeam[]{ name, role, image{${IMAGE_SOURCE_FIELDS}}, text }, teamBanner },
     _type == "aboutTeamImageBlock" => { teamImageEyebrow, teamImageTitle, teamImage{${IMAGE_SOURCE_FIELDS}} },
@@ -209,7 +240,8 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       eyebrow,
       title,
       text,
-      note
+      note,
+      ${INTAKE_FORM_FIELDS}
     },
     _type == "aboutIntroBlock" => {
       eyebrow,
@@ -570,6 +602,7 @@ export type ContactFormBlock = CmsBaseBlock & {
   title?: string;
   text?: string;
   note?: string;
+  intakeForm?: import("@/lib/types").IntakeFormConfig;
 };
 
 export type AboutIntroBlock = CmsBaseBlock & {

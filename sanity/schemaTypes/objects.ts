@@ -425,10 +425,7 @@ export const homePageContent = defineType({
         defineField({name: 'description', title: 'Description', type: 'text', rows: 3}),
         defineField({name: 'trustItems', title: 'Trust Items', type: 'array', of: [defineArrayMember({type: 'iconText'})]}),
         defineField({name: 'note', title: 'Handwritten Note', type: 'text', rows: 2}),
-        defineField({name: 'formTitle', title: 'Form Title', type: 'string'}),
-        defineField({name: 'formTimeLabel', title: 'Form Time Label', type: 'string'}),
-        defineField({name: 'formText', title: 'Form Text', type: 'text', rows: 2}),
-        defineField({name: 'formPrivacyText', title: 'Form Privacy Text', type: 'text', rows: 2}),
+        defineField({name: 'intakeForm', title: 'Intake Form', type: 'reference', to: [{type: 'intakeForm'}]}),
         defineField({
           name: 'stats',
           title: 'Stats',
@@ -663,6 +660,7 @@ export const contactPageContent = defineType({
     defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'text', title: 'Text', type: 'text', rows: 2}),
     defineField({name: 'note', title: 'Note', type: 'text', rows: 2}),
+    defineField({name: 'intakeForm', title: 'Intake Form', type: 'reference', to: [{type: 'intakeForm'}]}),
   ],
 })
 
@@ -707,10 +705,7 @@ export const homeHeroBlock = defineType({
         defineField({name: 'description', title: 'Description', type: 'text', rows: 3}),
         defineField({name: 'trustItems', title: 'Trust Items', type: 'array', of: [defineArrayMember({type: 'iconText'})]}),
         defineField({name: 'note', title: 'Handwritten Note', type: 'text', rows: 2}),
-        defineField({name: 'formTitle', title: 'Form Title', type: 'string'}),
-        defineField({name: 'formTimeLabel', title: 'Form Time Label', type: 'string'}),
-        defineField({name: 'formText', title: 'Form Text', type: 'text', rows: 2}),
-        defineField({name: 'formPrivacyText', title: 'Form Privacy Text', type: 'text', rows: 2}),
+        defineField({name: 'intakeForm', title: 'Intake Form', type: 'reference', to: [{type: 'intakeForm'}]}),
         defineField({
           name: 'stats',
           title: 'Stats',
@@ -898,6 +893,7 @@ export const contactFormBlock = defineType({
     defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'text', title: 'Text', type: 'text', rows: 3}),
     defineField({name: 'note', title: 'Note', type: 'text', rows: 3}),
+    defineField({name: 'intakeForm', title: 'Intake Form', type: 'reference', to: [{type: 'intakeForm'}]}),
   ],
   preview: {
     select: {title: 'title'},

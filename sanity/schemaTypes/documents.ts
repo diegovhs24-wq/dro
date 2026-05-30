@@ -488,4 +488,159 @@ export const projectsIndex = defineType({
   },
 })
 
-export const documentSchemaTypes = [siteSettings, page, servicesIndex, projectsIndex, faq, service, project, review, partner, redirect]
+export const intakeForm = defineType({
+  name: 'intakeForm',
+  title: 'Intake Form',
+  type: 'document',
+  fields: [
+    defineField({name: 'title', title: 'Internal Name', type: 'string', description: 'Used to identify this form in the CMS (e.g. "Default Intake Form")'}),
+    defineField({name: 'formTitle', title: 'Form Title', type: 'string'}),
+    defineField({name: 'timeLabel', title: 'Time Label', type: 'string'}),
+    defineField({name: 'description', title: 'Description', type: 'text', rows: 2}),
+    defineField({name: 'privacyText', title: 'Privacy Text', type: 'text', rows: 2}),
+    defineField({
+      name: 'steps',
+      title: 'Form Steps',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({name: 'title', title: 'Step Title', type: 'string'}),
+            defineField({name: 'subtitle', title: 'Step Subtitle', type: 'string'}),
+            defineField({
+              name: 'stepType',
+              title: 'Step Type',
+              type: 'string',
+              options: {
+                list: [
+                  {title: 'Client Type (button grid)', value: 'clientType'},
+                  {title: 'Fields (custom text / email / phone inputs)', value: 'fields'},
+                  {title: 'Choice (button grid with custom options)', value: 'choice'},
+                  {title: 'Date Picker', value: 'date'},
+                  {title: 'Text Area', value: 'textarea'},
+                ],
+              },
+            }),
+            defineField({
+              name: 'stepKey',
+              title: 'Step Key',
+              type: 'string',
+              description: 'Unique key used to store this step\'s value (e.g. "clientType", "projectType", "budget", "startDate", "description"). Required for all step types except Fields.',
+            }),
+            defineField({
+              name: 'options',
+              title: 'Options (for Client Type and Choice steps)',
+              type: 'array',
+              of: [defineArrayMember({type: 'string'})],
+            }),
+            defineField({
+              name: 'fields',
+              title: 'Fields (for Fields step type)',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  fields: [
+                    defineField({name: 'fieldKey', title: 'Field Key', type: 'string', description: 'Unique key for this input (e.g. "naam", "email", "telefoon", "straatnaam")'}),
+                    defineField({name: 'label', title: 'Placeholder Label', type: 'string'}),
+                    defineField({
+                      name: 'inputType',
+                      title: 'Input Type',
+                      type: 'string',
+                      options: {
+                        list: [
+                          {title: 'Text', value: 'text'},
+                          {title: 'Email', value: 'email'},
+                          {title: 'Phone (tel)', value: 'tel'},
+                          {title: 'Number', value: 'number'},
+                        ],
+                      },
+                    }),
+                    defineField({name: 'required', title: 'Required', type: 'boolean', initialValue: true}),
+                    defineField({name: 'halfWidth', title: 'Half Width (2-column grid)', type: 'boolean', initialValue: false}),
+                  ],
+                  preview: {
+                    select: {title: 'label', subtitle: 'fieldKey'},
+                    prepare({title, subtitle}) {
+                      return {title: title || 'Field', subtitle: subtitle || ''}
+                    },
+                  },
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {title: 'title', subtitle: 'stepType'},
+            prepare({title, subtitle}) {
+              return {title: title || 'Step', subtitle: subtitle || ''}
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({name: 'successEyebrow', title: 'Success Eyebrow', type: 'string', description: 'Small label shown above the success title (e.g. "Aanvraag ontvangen")'}),
+    defineField({name: 'successTitle', title: 'Success Title', type: 'string'}),
+    defineField({name: 'successText', title: 'Success Text', type: 'text', rows: 2}),
+    defineField({
+      name: 'faqItems',
+      title: 'FAQ Items (shown after submission)',
+      description: 'Select from the FAQ collection.',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'faq'}]})],
+    }),
+    defineField({name: 'submitLabel', title: 'Submit Button Label', type: 'string'}),
+    defineField({name: 'nextLabel', title: 'Next Button Label', type: 'string'}),
+    defineField({name: 'backLabel', title: 'Back Button Label', type: 'string'}),
+    defineField({name: 'errorMessage', title: 'Validation Error Message', type: 'string'}),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}) {
+      return {title: title || 'Intake Form', media: DocumentIcon}
+    },
+  },
+})
+
+export const formSubmission = defineType({
+  name: 'formSubmission',
+  title: 'Form Submission',
+  type: 'document',
+  fields: [
+    defineField({name: 'submittedAt', title: 'Submitted At', type: 'datetime', readOnly: true}),
+    defineField({name: 'intakeFormRef', title: 'Intake Form', type: 'reference', to: [{type: 'intakeForm'}], readOnly: true}),
+    defineField({
+      name: 'entries',
+      title: 'Form Data',
+      type: 'array',
+      readOnly: true,
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({name: 'fieldKey', title: 'Field Key', type: 'string'}),
+            defineField({name: 'label', title: 'Label', type: 'string'}),
+            defineField({name: 'value', title: 'Value', type: 'string'}),
+          ],
+          preview: {
+            select: {title: 'label', subtitle: 'value'},
+            prepare({title, subtitle}) {
+              return {title: title || 'Entry', subtitle: subtitle || ''}
+            },
+          },
+        }),
+      ],
+    }),
+  ],
+  preview: {
+    select: {title: 'submittedAt'},
+    prepare({title}) {
+      return {title: title ? new Date(title).toLocaleString('nl-NL') : 'Submission', media: DocumentIcon}
+    },
+  },
+  orderings: [
+    {title: 'Newest First', name: 'submittedAtDesc', by: [{field: 'submittedAt', direction: 'desc'}]},
+  ],
+})
+
+export const documentSchemaTypes = [siteSettings, page, servicesIndex, projectsIndex, faq, service, project, review, partner, redirect, intakeForm, formSubmission]

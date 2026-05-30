@@ -83,7 +83,8 @@ function ContactFormSection({ block }: { block: ContactFormBlock }) {
         eyebrow: block.eyebrow || "",
         title: block.title || "",
         text: block.text || "",
-        note: block.note || ""
+        note: block.note || "",
+        intakeForm: block.intakeForm!
       }}
     />
   );

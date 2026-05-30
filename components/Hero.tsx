@@ -77,31 +77,11 @@ export default function Hero({content}: HeroProps) {
             </p>
           </div>
 
-          <div className="rounded-2xl bg-[#fbf8f2] p-5 text-brand-ink shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-6 lg:max-w-[500px] lg:justify-self-end">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <h2 className="text-2xl font-extrabold tracking-[-0.03em]">
-                {content.formTitle}
-              </h2>
-              <span className="font-hand text-lg text-brand-orange">
-                {content.formTimeLabel}
-              </span>
+          {content.intakeForm ? (
+            <div className="rounded-2xl bg-[#fbf8f2] p-5 text-brand-ink shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-6 lg:max-w-[500px] lg:justify-self-end">
+              <IntakeWizard compact embedded config={content.intakeForm} />
             </div>
-            <p className="mt-3 text-sm font-semibold leading-6 text-neutral-500">
-              {content.formText}
-            </p>
-
-            <div className="mt-5">
-              <IntakeWizard compact embedded />
-            </div>
-
-            <p className="mt-5 flex gap-3 text-sm font-semibold leading-6 text-neutral-500">
-              <SketchIcon
-                name="shield"
-                className="mt-0.5 h-6 w-6 shrink-0 text-neutral-500"
-              />
-              {content.formPrivacyText}
-            </p>
-          </div>
+          ) : null}
         </div>
 
         <div className="border-t border-white/10 bg-black/35 backdrop-blur-md">

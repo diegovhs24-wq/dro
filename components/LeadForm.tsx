@@ -22,7 +22,7 @@ export default function LeadForm({content}: LeadFormProps) {
           </div>
         </div>
 
-        <IntakeWizard />
+        {content.intakeForm ? <IntakeWizard config={content.intakeForm} /> : null}
       </div>
     </section>
   );

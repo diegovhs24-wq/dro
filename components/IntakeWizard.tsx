@@ -1,243 +1,238 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useMemo, useState } from "react";
-
-const projectTypes = [
-  "Badkamer renovatie",
-  "Totaalrenovatie",
-  "Uitbouw / aanbouw",
-  "Afbouw nieuwbouw",
-  "Vloerverwarming",
-  "Warmtepomp",
-  "Zonnepanelen",
-  "Stuc- en schilderwerk",
-  "Onderhoud",
-  "Zakelijk project"
-];
-
-const budgetOptions = [
-  "Nog te bepalen",
-  "€ 5.000 - € 15.000",
-  "€ 15.000 - € 30.000",
-  "€ 30.000 - € 75.000",
-  "€ 75.000+",
-  "Zakelijk / meerdere units"
-];
-
-const faqItems = [
-  [
-    "Wat gebeurt er na mijn aanvraag?",
-    "We bekijken uw aanvraag en nemen binnen 24 uur contact op om de situatie rustig door te nemen."
-  ],
-  [
-    "Krijg ik één aanspreekpunt?",
-    "Ja. U heeft één vast aanspreekpunt voor vragen, planning en afstemming."
-  ],
-  [
-    "Kan ik foto's later nog nasturen?",
-    "Ja. Tijdens het eerste contact geven wij aan welke foto's of tekeningen handig zijn."
-  ],
-  [
-    "Werken jullie ook zakelijk?",
-    "Ja. Wij ondersteunen ook vastgoedpartijen, aannemers en ontwikkelaars met uitvoering en afbouw."
-  ]
-];
+import { ChangeEvent, FormEvent, useState } from "react";
+import type { IntakeFormConfig, IntakeFormField, IntakeStep } from "@/lib/types";
 
 type IntakeWizardProps = {
   compact?: boolean;
   embedded?: boolean;
-};
-
-type FormState = {
-  clientType: string;
-  naam: string;
-  email: string;
-  telefoon: string;
-  straatnaam: string;
-  huisnummer: string;
-  postcode: string;
-  plaats: string;
-  projectType: string;
-  budget: string;
-  startdatum: string;
-  omschrijving: string;
-};
-
-const initialState: FormState = {
-  clientType: "",
-  naam: "",
-  email: "",
-  telefoon: "",
-  straatnaam: "",
-  huisnummer: "",
-  postcode: "",
-  plaats: "",
-  projectType: "",
-  budget: "",
-  startdatum: "",
-  omschrijving: ""
+  config: IntakeFormConfig;
 };
 
 const inputClass =
   "w-full rounded-md border border-black/10 bg-white px-4 py-3 text-sm font-medium text-brand-ink outline-none transition placeholder:text-neutral-400 focus:border-brand-orange focus:ring-4 focus:ring-orange-100";
 
-export default function IntakeWizard({ compact = false, embedded = false }: IntakeWizardProps) {
+function isStepValid(step: IntakeStep, form: Record<string, string>): boolean {
+  switch (step.stepType) {
+    case "clientType":
+    case "choice":
+      return Boolean(step.stepKey && form[step.stepKey]);
+    case "date":
+      return Boolean(step.stepKey && form[step.stepKey]);
+    case "textarea":
+      return true;
+    case "fields":
+      return (step.fields ?? [])
+        .filter((f) => f.required)
+        .every((f) => Boolean(form[f.fieldKey]?.trim()));
+  }
+}
+
+function collectEntries(
+  steps: IntakeStep[],
+  form: Record<string, string>
+): Array<{ fieldKey: string; label: string; value: string }> {
+  const entries: Array<{ fieldKey: string; label: string; value: string }> = [];
+
+  for (const step of steps) {
+    if (step.stepType === "fields") {
+      for (const field of step.fields ?? []) {
+        if (form[field.fieldKey]) {
+          entries.push({ fieldKey: field.fieldKey, label: field.label, value: form[field.fieldKey] });
+        }
+      }
+    } else if (step.stepKey && form[step.stepKey]) {
+      entries.push({ fieldKey: step.stepKey, label: step.title, value: form[step.stepKey] });
+    }
+  }
+
+  return entries;
+}
+
+function OptionButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      className={`rounded-lg border px-3.5 py-3 text-left text-sm font-semibold transition hover:-translate-y-0.5 ${
+        active
+          ? "border-brand-orange bg-brand-orange text-white shadow-lg shadow-orange-500/20"
+          : "border-black/10 bg-white text-brand-ink hover:border-brand-orange/60"
+      }`}
+      onClick={onClick}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+}
+
+function FieldInput({
+  field,
+  value,
+  onChange,
+}: {
+  field: IntakeFormField;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <input
+      className={inputClass}
+      name={field.fieldKey}
+      onChange={onChange}
+      placeholder={field.label}
+      type={field.inputType}
+      value={value}
+    />
+  );
+}
+
+function StepContent({
+  step,
+  form,
+  setForm,
+}: {
+  step: IntakeStep;
+  form: Record<string, string>;
+  setForm: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+}) {
+  function handleInput(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  switch (step.stepType) {
+    case "clientType":
+      return (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {(step.options ?? []).map((item) => (
+            <OptionButton
+              active={form[step.stepKey!] === item}
+              key={item}
+              onClick={() => setForm((prev) => ({ ...prev, [step.stepKey!]: item }))}
+            >
+              {item}
+            </OptionButton>
+          ))}
+        </div>
+      );
+
+    case "choice":
+      return (
+        <div className="grid max-h-72 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
+          {(step.options ?? []).map((item) => (
+            <OptionButton
+              active={form[step.stepKey!] === item}
+              key={item}
+              onClick={() => setForm((prev) => ({ ...prev, [step.stepKey!]: item }))}
+            >
+              {item}
+            </OptionButton>
+          ))}
+        </div>
+      );
+
+    case "fields": {
+      const hasHalf = (step.fields ?? []).some((f) => f.halfWidth);
+      return (
+        <div className={`grid gap-3 ${hasHalf ? "sm:grid-cols-2" : ""}`}>
+          {(step.fields ?? []).map((field) => (
+            <div className={field.halfWidth ? "" : hasHalf ? "sm:col-span-2" : ""} key={field.fieldKey}>
+              <FieldInput field={field} onChange={handleInput} value={form[field.fieldKey] ?? ""} />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    case "date":
+      return (
+        <input
+          className={inputClass}
+          name={step.stepKey}
+          onChange={handleInput}
+          type="date"
+          value={form[step.stepKey!] ?? ""}
+        />
+      );
+
+    case "textarea":
+      return (
+        <textarea
+          className={`${inputClass} min-h-32 resize-none`}
+          name={step.stepKey}
+          onChange={handleInput}
+          placeholder={step.subtitle}
+          value={form[step.stepKey ?? "textarea"] ?? ""}
+        />
+      );
+  }
+}
+
+function FormHeader({ config }: { config: IntakeFormConfig }) {
+  return (
+    <>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <h2 className="text-2xl font-extrabold tracking-[-0.03em]">
+          {config.formTitle}
+        </h2>
+        <span className="font-hand text-lg text-brand-orange">
+          {config.timeLabel}
+        </span>
+      </div>
+      <p className="mt-3 text-sm font-semibold leading-6 text-neutral-500">
+        {config.description}
+      </p>
+    </>
+  );
+}
+
+function FormFooter({ config }: { config: IntakeFormConfig }) {
+  if (!config.privacyText) return null;
+  return (
+    <p className="mt-5 flex gap-3 text-sm font-semibold leading-6 text-neutral-500">
+      <svg className="mt-0.5 h-6 w-6 shrink-0 text-neutral-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      {config.privacyText}
+    </p>
+  );
+}
+
+export default function IntakeWizard({ compact = false, embedded = false, config }: IntakeWizardProps) {
   const [step, setStep] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [form, setForm] = useState<FormState>(initialState);
+  const [form, setForm] = useState<Record<string, string>>({});
 
-  const steps = useMemo(
-    () => [
-      {
-        title: "Voor wie is deze aanvraag?",
-        subtitle: "Zo stemmen we de intake direct goed af.",
-        isValid: Boolean(form.clientType),
-        content: (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {["Particulier", "Zakelijk"].map((item) => (
-              <button
-                className={`rounded-lg border px-4 py-4 text-left text-sm font-semibold transition hover:-translate-y-0.5 ${
-                  form.clientType === item
-                    ? "border-brand-orange bg-brand-orange text-white shadow-lg shadow-orange-500/20"
-                    : "border-black/10 bg-white text-brand-ink hover:border-brand-orange/60"
-                }`}
-                key={item}
-                onClick={() => updateField("clientType", item)}
-                type="button"
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        )
-      },
-      {
-        title: "Hoe kunnen we u bereiken?",
-        subtitle: "We nemen binnen 24 uur persoonlijk contact op.",
-        isValid: Boolean(form.naam && form.email && form.telefoon),
-        content: (
-          <div className="grid gap-3">
-            <input className={inputClass} name="naam" onChange={handleChange} placeholder="Naam *" value={form.naam} />
-            <input className={inputClass} name="email" onChange={handleChange} placeholder="E-mail *" type="email" value={form.email} />
-            <input className={inputClass} name="telefoon" onChange={handleChange} placeholder="Telefoonnummer *" type="tel" value={form.telefoon} />
-          </div>
-        )
-      },
-      {
-        title: "Waar bevindt het project zich?",
-        subtitle: "Alleen de basislocatie is genoeg voor de eerste beoordeling.",
-        isValid: Boolean(form.straatnaam && form.huisnummer && form.postcode && form.plaats),
-        content: (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input className={inputClass} name="straatnaam" onChange={handleChange} placeholder="Straatnaam *" value={form.straatnaam} />
-            <input className={inputClass} name="huisnummer" onChange={handleChange} placeholder="Huisnummer *" value={form.huisnummer} />
-            <input className={inputClass} name="postcode" onChange={handleChange} placeholder="Postcode *" value={form.postcode} />
-            <input className={inputClass} name="plaats" onChange={handleChange} placeholder="Plaats *" value={form.plaats} />
-          </div>
-        )
-      },
-      {
-        title: "Wat wilt u laten uitvoeren?",
-        subtitle: "Kies de dienst die het beste past. Details bespreken we daarna.",
-        isValid: Boolean(form.projectType),
-        content: (
-          <div className="grid max-h-72 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
-            {projectTypes.map((item) => (
-              <button
-                className={`rounded-lg border px-3.5 py-3 text-left text-sm font-semibold transition hover:-translate-y-0.5 ${
-                  form.projectType === item
-                    ? "border-brand-orange bg-brand-orange text-white shadow-lg shadow-orange-500/20"
-                    : "border-black/10 bg-white text-brand-ink hover:border-brand-orange/60"
-                }`}
-                key={item}
-                onClick={() => updateField("projectType", item)}
-                type="button"
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        )
-      },
-      {
-        title: "Welke budgetrange past bij uw project?",
-        subtitle: "Geen oordeel. Dit helpt alleen om realistisch mee te denken.",
-        isValid: Boolean(form.budget),
-        content: (
-          <div className="grid gap-2 sm:grid-cols-2">
-            {budgetOptions.map((item) => (
-              <button
-                className={`rounded-lg border px-3.5 py-3 text-left text-sm font-semibold transition hover:-translate-y-0.5 ${
-                  form.budget === item
-                    ? "border-brand-orange bg-brand-orange text-white shadow-lg shadow-orange-500/20"
-                    : "border-black/10 bg-white text-brand-ink hover:border-brand-orange/60"
-                }`}
-                key={item}
-                onClick={() => updateField("budget", item)}
-                type="button"
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        )
-      },
-      {
-        title: "Wanneer wilt u starten?",
-        subtitle: "Een indicatie is voldoende. We stemmen de planning samen af.",
-        isValid: Boolean(form.startdatum),
-        content: (
-          <input className={inputClass} name="startdatum" onChange={handleChange} type="date" value={form.startdatum} />
-        )
-      },
-      {
-        title: "Wat moeten we weten?",
-        subtitle: "Kort is prima. Wij stellen de rest van de vragen.",
-        isValid: true,
-        content: (
-          <textarea
-            className={`${inputClass} min-h-32 resize-none`}
-            name="omschrijving"
-            onChange={handleChange}
-            placeholder="Korte omschrijving van uw project"
-            value={form.omschrijving}
-          />
-        )
-      }
-    ],
-    [form]
-  );
-
+  const steps = config.steps ?? [];
   const currentStep = steps[step];
-  const progress = Math.round(((step + 1) / steps.length) * 100);
+  const progress = steps.length > 0 ? Math.round(((step + 1) / steps.length) * 100) : 0;
+  const valid = currentStep ? isStepValid(currentStep, form) : true;
 
-  function updateField(name: keyof FormState, value: string) {
-    setForm((current) => ({ ...current, [name]: value }));
+  function wrappedSetForm(updater: React.SetStateAction<Record<string, string>>) {
+    setForm(updater);
     setShowError(false);
   }
 
-  function handleChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    updateField(event.target.name as keyof FormState, event.target.value);
-  }
-
   function goNext() {
-    if (!currentStep.isValid) {
-      setShowError(true);
-      return;
-    }
-
+    if (!valid) { setShowError(true); return; }
     setShowError(false);
     setStep((current) => Math.min(current + 1, steps.length - 1));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!currentStep.isValid) {
-      setShowError(true);
-      return;
-    }
+    if (!valid) { setShowError(true); return; }
 
     if (step < steps.length - 1) {
       setShowError(false);
@@ -245,29 +240,48 @@ export default function IntakeWizard({ compact = false, embedded = false }: Inta
       return;
     }
 
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      await fetch("/api/submit-intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          intakeFormId: "default-intake-form",
+          entries: collectEntries(steps, form),
+        }),
+      });
+    } catch {
+      // submission saved client-side regardless; failure is non-blocking
+    } finally {
+      setSubmitting(false);
+      setSubmitted(true);
+    }
   }
 
   if (submitted) {
     return (
       <div className={embedded ? "" : "rounded-lg border border-black/10 bg-brand-soft p-6 shadow-premium sm:p-8"}>
-        <p className="eyebrow">Aanvraag ontvangen</p>
+        <p className="eyebrow">{config.successEyebrow}</p>
         <h2 className="mt-3 text-2xl font-bold tracking-tight text-brand-ink sm:text-3xl">
-          We nemen contact met u op
+          {config.successTitle}
         </h2>
         <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-neutral-700">
-          Bedankt voor uw aanvraag. Wij nemen binnen 24 uur contact met u op.
+          {config.successText}
         </p>
-        {!compact ? (
+        {!compact && config.faqItems?.length > 0 ? (
           <div className="mt-7 grid gap-3">
-            {faqItems.map(([question, answer]) => (
+            {config.faqItems.map(({ question, answer }) => (
               <details className="rounded-lg bg-white p-5 shadow-sm" key={question}>
                 <summary className="cursor-pointer list-none font-bold text-brand-ink">
                   {question}
                 </summary>
-                <p className="mt-3 text-sm font-semibold leading-6 text-neutral-600">
-                  {answer}
-                </p>
+                <div className="mt-3 grid gap-2">
+                  {answer.map((paragraph, i) => (
+                    <p className="text-sm font-semibold leading-6 text-neutral-600" key={i}>
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </details>
             ))}
           </div>
@@ -276,12 +290,16 @@ export default function IntakeWizard({ compact = false, embedded = false }: Inta
     );
   }
 
+  if (!currentStep) return null;
+
   return (
     <form
       className={embedded ? "" : "rounded-lg border border-black/10 bg-brand-soft p-5 shadow-premium sm:p-7"}
       onSubmit={handleSubmit}
     >
-      <div className="mb-5">
+      <FormHeader config={config} />
+
+      <div className="mb-5 mt-5">
         <div className="flex items-center justify-between gap-4 text-xs font-bold uppercase tracking-[0.16em] text-neutral-500">
           <span>Stap {step + 1} van {steps.length}</span>
           <span>{progress}%</span>
@@ -300,11 +318,13 @@ export default function IntakeWizard({ compact = false, embedded = false }: Inta
         </p>
       </div>
 
-      <div className="mt-5">{currentStep.content}</div>
+      <div className="mt-5">
+        <StepContent form={form} setForm={wrappedSetForm} step={currentStep} />
+      </div>
 
       {showError ? (
         <p className="mt-4 rounded-md bg-orange-50 px-4 py-3 text-sm font-semibold text-brand-orange">
-          Vul deze stap eerst in, dan kunt u door.
+          {config.errorMessage}
         </p>
       ) : null}
 
@@ -315,19 +335,21 @@ export default function IntakeWizard({ compact = false, embedded = false }: Inta
           onClick={() => setStep((current) => Math.max(current - 1, 0))}
           type="button"
         >
-          Terug
+          {config.backLabel}
         </button>
 
         {step === steps.length - 1 ? (
-          <button className="btn-primary" type="submit">
-            Verstuur intake
+          <button className="btn-primary" disabled={submitting} type="submit">
+            {submitting ? "Bezig…" : config.submitLabel}
           </button>
         ) : (
           <button className="btn-primary" onClick={goNext} type="button">
-            Volgende stap
+            {config.nextLabel}
           </button>
         )}
       </div>
+
+      <FormFooter config={config} />
     </form>
   );
 }

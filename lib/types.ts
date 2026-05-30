@@ -199,6 +199,39 @@ export type SiteSettings = {
   organizationSeo?: OrganizationSeo;
 };
 
+export type IntakeFormField = {
+  fieldKey: string;
+  label: string;
+  inputType: 'text' | 'email' | 'tel' | 'number';
+  required: boolean;
+  halfWidth: boolean;
+};
+
+export type IntakeStep = {
+  title: string;
+  subtitle: string;
+  stepType: 'clientType' | 'fields' | 'choice' | 'date' | 'textarea';
+  stepKey?: string;
+  options?: string[];
+  fields?: IntakeFormField[];
+};
+
+export type IntakeFormConfig = {
+  formTitle: string;
+  timeLabel: string;
+  description: string;
+  privacyText: string;
+  steps: IntakeStep[];
+  successEyebrow: string;
+  successTitle: string;
+  successText: string;
+  faqItems: Array<{ question: string; answer: string[] }>;
+  submitLabel: string;
+  nextLabel: string;
+  backLabel: string;
+  errorMessage: string;
+};
+
 export type HomeHeroContent = {
   coverageText: string;
   backgroundImage: string;
@@ -208,10 +241,7 @@ export type HomeHeroContent = {
   description: string;
   trustItems: IconTextItem[];
   note: string;
-  formTitle: string;
-  formTimeLabel: string;
-  formText: string;
-  formPrivacyText: string;
+  intakeForm: IntakeFormConfig | null;
   stats: Array<{
     value: string;
     label: string;
@@ -318,4 +348,5 @@ export type ContactPageContent = {
   title: string;
   text: string;
   note: string;
+  intakeForm: IntakeFormConfig | null;
 };
