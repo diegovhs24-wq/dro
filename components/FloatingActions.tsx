@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const SUPPRESS_PATHS = new Set(["/contact", "/over-ons", "/werkwijze", "/zakelijk"]);
@@ -25,12 +26,12 @@ export default function FloatingActions({whatsappLabel, whatsappHref, intakeLabe
       >
         WA
       </a>
-      <a
+      <Link
         className="fixed bottom-5 left-5 z-50 hidden rounded-md bg-brand-orange px-4 py-2.5 text-xs font-semibold text-white shadow-2xl transition hover:-translate-y-1 sm:inline-flex"
         href={intakeHref}
       >
         {intakeLabel}
-      </a>
+      </Link>
     </>
   );
 }

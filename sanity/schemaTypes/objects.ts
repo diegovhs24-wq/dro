@@ -377,9 +377,9 @@ export const pageHeroContent = defineType({
     defineField({name: 'text', title: 'Text', type: 'text', rows: 3}),
     defineField({name: 'backgroundImage', title: 'Background Image', type: 'cmsImage'}),
     defineField({name: 'primaryLabel', title: 'Primary Button Label', type: 'string'}),
-    defineField({name: 'primaryHref', title: 'Primary Button URL', type: 'string'}),
+    defineField({name: 'primaryLink', title: 'Primary Button Link', type: 'smartLink'}),
     defineField({name: 'secondaryLabel', title: 'Secondary Button Label', type: 'string'}),
-    defineField({name: 'secondaryHref', title: 'Secondary Button URL', type: 'string'}),
+    defineField({name: 'secondaryLink', title: 'Secondary Button Link', type: 'smartLink'}),
   ],
 })
 
@@ -806,7 +806,7 @@ export const problemSolutionBlock = defineType({
     defineField({name: 'solutionNote', title: 'Solution Note', type: 'text', rows: 2}),
     defineField({name: 'bannerTitle', title: 'Banner Title', type: 'string'}),
     defineField({name: 'bannerButtonLabel', title: 'Banner Button Label', type: 'string'}),
-    defineField({name: 'bannerButtonHref', title: 'Banner Button URL', type: 'string'}),
+    defineField({name: 'bannerButtonLink', title: 'Banner Button Link', type: 'smartLink'}),
   ],
   preview: {
     select: {title: 'problemTitle'},
@@ -881,7 +881,7 @@ export const featuredServicesBlock = defineType({
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string', initialValue: 'Diensten'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'viewAllLabel', title: 'View All Button Label', type: 'string', initialValue: 'Alle diensten'}),
-    defineField({name: 'viewAllHref', title: 'View All Button URL', type: 'string', initialValue: '/diensten'}),
+    defineField({name: 'viewAllLink', title: 'View All Button Link', type: 'smartLink'}),
     defineField({
       name: 'services',
       title: 'Services',
@@ -906,7 +906,7 @@ export const featuredProjectsBlock = defineType({
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string', initialValue: 'Projecten'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'viewAllLabel', title: 'View All Button Label', type: 'string', initialValue: 'Alle projecten'}),
-    defineField({name: 'viewAllHref', title: 'View All Button URL', type: 'string', initialValue: '/projecten'}),
+    defineField({name: 'viewAllLink', title: 'View All Button Link', type: 'smartLink'}),
     defineField({
       name: 'projects',
       title: 'Projects',
@@ -931,7 +931,7 @@ export const iconCardsBlock = defineType({
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'buttonLabel', title: 'Button Label', type: 'string'}),
-    defineField({name: 'buttonHref', title: 'Button URL', type: 'string'}),
+    defineField({name: 'buttonLink', title: 'Button Link', type: 'smartLink'}),
     defineField({name: 'items', title: 'Items', type: 'array', of: [defineArrayMember({type: 'iconText'})]}),
   ],
   preview: {
@@ -1193,7 +1193,7 @@ export const processIntakeBannerBlock = defineType({
     defineField({name: 'intakeBannerTitle', title: 'Banner Title', type: 'string'}),
     defineField({name: 'intakeBannerText', title: 'Banner Text', type: 'text', rows: 2}),
     defineField({name: 'buttonLabel', title: 'Button Label', type: 'string', initialValue: 'Start intake'}),
-    defineField({name: 'buttonHref', title: 'Button URL', type: 'string', initialValue: '/contact'}),
+    defineField({name: 'buttonLink', title: 'Button Link', type: 'smartLink'}),
   ],
   preview: {
     select: {title: 'intakeBannerTitle'},

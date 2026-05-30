@@ -23,6 +23,14 @@ function ref(id) {
   return {_type: 'reference', _ref: id}
 }
 
+function external(url) {
+  return {_type: 'smartLink', linkType: 'external', externalUrl: url}
+}
+
+function btn(key, label, link, variant = 'primary') {
+  return {_type: 'headerButton', _key: key, label, link, variant}
+}
+
 async function upsertById(doc) {
   const id = doc._id
   const existing = await client.fetch(`*[_id == $id][0]{ _id }`, {id})
@@ -114,7 +122,7 @@ const pages = [
         solutionNote: 'Bij DRO Renovaties weet u vooraf waar u aan toe bent.',
         bannerTitle: 'Rustig starten met een duidelijke intake.',
         bannerButtonLabel: 'Start intake',
-        bannerButtonHref: '/contact',
+        bannerButtonLink: internal('page-contact'),
       },
       {
         _key: 'iconCardsBlock-3',
@@ -122,7 +130,7 @@ const pages = [
         eyebrow: 'Afbouw',
         title: 'Complete afbouw onder één verantwoordelijkheid.',
         buttonLabel: 'Bekijk zakelijk',
-        buttonHref: '/zakelijk',
+        buttonLink: internal('page-zakelijk'),
         items: [
           {_key: 'iconText-0', _type: 'iconText', icon: 'materials', title: 'Metselwerk'},
           {_key: 'iconText-1', _type: 'iconText', icon: 'bathroom', title: 'Tegelwerk'},
@@ -295,7 +303,7 @@ const pages = [
         intakeBannerTitle: 'Twijfelt u nog? Plan gewoon een intake.',
         intakeBannerText: 'Na één gesprek weet u direct of wij bij u passen.',
         buttonLabel: 'Start intake',
-        buttonHref: '/contact',
+        buttonLink: internal('page-contact'),
       },
     ],
   },
@@ -319,9 +327,9 @@ const pages = [
           title: 'Een uitvoeringspartner voor projecten en volume.',
           text: 'Voor opdrachtgevers die capaciteit, structuur en betrouwbare uitvoering zoeken.',
           primaryLabel: 'Start intake',
-          primaryHref: '/contact',
+          primaryLink: internal('page-contact'),
           secondaryLabel: 'Bespreek uw project met ons',
-          secondaryHref: 'tel:+31600000000',
+          secondaryLink: external('tel:+31850871814'),
         },
       },
       {
@@ -354,10 +362,10 @@ const pages = [
           eyebrow: 'Start vandaag',
           title: 'Plan een kennismaking',
           text: 'Bespreek uw project, volume en gewenste uitvoering met ons.',
-          primaryLabel: 'Start intake',
-          primaryHref: '/contact',
-          secondaryLabel: 'Bel direct',
-          secondaryHref: 'tel:+31600000000',
+          buttons: [
+            btn('btn-intake', 'Start intake', external('/contact'),          'primary'),
+            btn('btn-call',   'Bel direct',   external('tel:+31850871814'), 'outlined'),
+          ],
         },
       },
     ],

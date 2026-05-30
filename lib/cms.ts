@@ -21,6 +21,7 @@ import type {
   ServiceDetailContent,
   ServiceSummary,
   SiteSettings,
+  SmartLink,
   AboutPageContent,
   BusinessPageContent,
   ContactPageContent,
@@ -66,9 +67,9 @@ const PAGE_HERO_FIELDS = `
   text,
   backgroundImage{${IMAGE_SOURCE_FIELDS}},
   primaryLabel,
-  primaryHref,
+  primaryLink{${SMART_LINK_FIELDS}},
   secondaryLabel,
-  secondaryHref
+  secondaryLink{${SMART_LINK_FIELDS}}
 `;
 
 const ICON_TEXT_FIELDS = `
@@ -146,10 +147,10 @@ const INDEX_CONTENT_BLOCKS = `
     _type == "problemSolutionBlock" => {
       problemEyebrow, problemTitle, problems,
       solutionEyebrow, solutionTitle, solutions, solutionNote,
-      bannerTitle, bannerButtonLabel, bannerButtonHref
+      bannerTitle, bannerButtonLabel, bannerButtonLink{${SMART_LINK_FIELDS}}
     },
     _type == "textBlock" => { eyebrow, title, text },
-    _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonHref, items[]{${ICON_TEXT_FIELDS}} },
+    _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonLink{${SMART_LINK_FIELDS}}, items[]{${ICON_TEXT_FIELDS}} },
     _type == "partnersBlock" => { eyebrow, title, text },
     _type == "googleReviewsBlock" => { limit, compact },
     _type == "contactFormBlock" => { eyebrow, title, text, note, ${INTAKE_FORM_FIELDS} },
@@ -160,7 +161,7 @@ const INDEX_CONTENT_BLOCKS = `
     _type == "processBenefitsBlock" => { benefits[]{${ICON_TEXT_FIELDS}} },
     _type == "processTrustBlock" => { trustPoints[]{${ICON_TEXT_FIELDS}} },
     _type == "processFaqBlock" => { faqEyebrow, faqTitle, faqIntro, faqs[]->{question, answer} },
-    _type == "processIntakeBannerBlock" => { intakeBannerTitle, intakeBannerText, buttonLabel, buttonHref },
+    _type == "processIntakeBannerBlock" => { intakeBannerTitle, intakeBannerText, buttonLabel, buttonLink{${SMART_LINK_FIELDS}} },
     _type == "businessContentBlock" => { positionEyebrow, positionTitle, positionText, positionBanner, capacity, cards[]{ eyebrow, title, items } }
   }
 `;
@@ -203,7 +204,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       solutionNote,
       bannerTitle,
       bannerButtonLabel,
-      bannerButtonHref
+      bannerButtonLink{${SMART_LINK_FIELDS}}
     },
     _type == "textBlock" => {
       eyebrow,
@@ -221,7 +222,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       eyebrow,
       title,
       viewAllLabel,
-      viewAllHref,
+      viewAllLink{${SMART_LINK_FIELDS}},
       services[]->{
         title,
         "slug": slug.current,
@@ -236,7 +237,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       eyebrow,
       title,
       viewAllLabel,
-      viewAllHref,
+      viewAllLink{${SMART_LINK_FIELDS}},
       projects[]->{
         title,
         "slug": slug.current,
@@ -251,7 +252,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       eyebrow,
       title,
       buttonLabel,
-      buttonHref,
+      buttonLink{${SMART_LINK_FIELDS}},
       items[]{${ICON_TEXT_FIELDS}}
     },
     _type == "partnersBlock" => {
@@ -327,7 +328,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       intakeBannerTitle,
       intakeBannerText,
       buttonLabel,
-      buttonHref
+      buttonLink{${SMART_LINK_FIELDS}}
     },
     _type == "businessContentBlock" => {
       positionEyebrow,
@@ -604,7 +605,7 @@ export type FeaturedServicesBlock = CmsBaseBlock & {
   eyebrow?: string;
   title?: string;
   viewAllLabel?: string;
-  viewAllHref?: string;
+  viewAllLink?: SmartLink;
   services?: import("@/lib/types").ServiceSummary[];
 };
 
@@ -613,7 +614,7 @@ export type FeaturedProjectsBlock = CmsBaseBlock & {
   eyebrow?: string;
   title?: string;
   viewAllLabel?: string;
-  viewAllHref?: string;
+  viewAllLink?: SmartLink;
   projects?: Array<{
     title: string;
     slug: string;
@@ -630,7 +631,7 @@ export type IconCardsBlock = CmsBaseBlock & {
   eyebrow?: string;
   title?: string;
   buttonLabel?: string;
-  buttonHref?: string;
+  buttonLink?: SmartLink;
   items?: IconTextItem[];
 };
 
@@ -696,7 +697,7 @@ export type ProcessIntakeBannerBlock = CmsBaseBlock & {
   intakeBannerTitle?: string;
   intakeBannerText?: string;
   buttonLabel?: string;
-  buttonHref?: string;
+  buttonLink?: SmartLink;
 };
 
 export type BusinessContentBlock = CmsBaseBlock & {

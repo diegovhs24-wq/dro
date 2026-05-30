@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function CTA() {
   return (
     <section className="border-b border-white/10 bg-neutral-950 py-8 text-white sm:py-10">
@@ -11,12 +13,12 @@ export default function CTA() {
           </h2>
         </div>
         <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
-          <a className="btn-primary" href="#aanvraag">
+          <Link className="btn-primary" href="#aanvraag">
             Start aanvraag
-          </a>
-          <a className="btn-secondary" href="tel:+31600000000">
+          </Link>
+          <Link className="btn-secondary" href="tel:+31600000000">
             Bespreek uw project met ons
-          </a>
+          </Link>
         </div>
       </div>
     </section>

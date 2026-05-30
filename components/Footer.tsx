@@ -86,9 +86,9 @@ export default function Footer({services, siteSettings}: FooterProps) {
               )}
               <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-white/65">
                 {services.map((service) => (
-                  <a className="transition hover:text-brand-orange" href={service.href} key={service.href}>
+                  <Link className="transition hover:text-brand-orange" href={service.href} key={service.href}>
                     {service.title}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -137,9 +137,9 @@ export default function Footer({services, siteSettings}: FooterProps) {
             {footer.legalLinks.length > 0 && (
               <div className="flex flex-wrap gap-5">
                 {footer.legalLinks.map((link) => (
-                  <a className="transition hover:text-brand-orange" href={link.href} key={link.href}>
+                  <Link className="transition hover:text-brand-orange" href={link.href} key={link.href}>
                     {link.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
             )}

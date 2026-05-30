@@ -1,8 +1,11 @@
+import Link from "next/link";
+import {resolveSmartLink} from "@/lib/smartLink";
 import type {ProblemSolutionContent} from "@/lib/types";
 
 type ProblemSolutionBlock = ProblemSolutionContent;
 
 export default function ProblemSolutionBlockSection({ content }: { content: ProblemSolutionBlock }) {
+  const bannerLink = resolveSmartLink(content.bannerButtonLink);
   return (
     <section className="bg-white py-14 sm:py-16">
       <div className="section-shell">
@@ -43,9 +46,14 @@ export default function ProblemSolutionBlockSection({ content }: { content: Prob
         </div>
         <div className="mt-8 flex flex-col items-start justify-between gap-5 rounded-lg bg-neutral-950 p-6 text-white sm:flex-row sm:items-center">
           <h3 className="text-xl font-bold sm:text-2xl">{content.bannerTitle}</h3>
-          <a className="btn-primary shrink-0" href={content.bannerButtonHref}>
+          <Link
+            className="btn-primary shrink-0"
+            href={bannerLink.href}
+            target={bannerLink.openInNewTab ? "_blank" : undefined}
+            rel={bannerLink.openInNewTab ? "noopener noreferrer" : undefined}
+          >
             {content.bannerButtonLabel}
-          </a>
+          </Link>
         </div>
       </div>
     </section>

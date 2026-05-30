@@ -1,9 +1,12 @@
+import Link from "next/link";
+import {resolveSmartLink} from "@/lib/smartLink";
 import ServiceCard from "@/components/ServiceCard";
 import type { FeaturedServicesBlock } from "@/lib/cms";
 import { cmsImageUrl } from "@/lib/sanity";
 
 export default function FeaturedServicesBlockSection({ block }: { block: FeaturedServicesBlock }) {
   const services = block.services ?? [];
+  const viewAllLink = resolveSmartLink(block.viewAllLink);
 
   return (
     <section className="bg-white py-14 sm:py-16">
@@ -17,13 +20,15 @@ export default function FeaturedServicesBlockSection({ block }: { block: Feature
               </h2>
             ) : null}
           </div>
-          {block.viewAllHref && block.viewAllLabel ? (
-            <a
+          {block.viewAllLink && block.viewAllLabel ? (
+            <Link
               className="text-sm font-bold text-brand-orange transition hover:text-brand-ink"
-              href={block.viewAllHref}
+              href={viewAllLink.href}
+              target={viewAllLink.openInNewTab ? "_blank" : undefined}
+              rel={viewAllLink.openInNewTab ? "noopener noreferrer" : undefined}
             >
               {block.viewAllLabel}
-            </a>
+            </Link>
           ) : null}
         </div>
 

@@ -71,9 +71,9 @@ export type PageHeroContent = {
   text?: string;
   backgroundImage?: string;
   primaryLabel?: string;
-  primaryHref?: string;
+  primaryLink?: SmartLink;
   secondaryLabel?: string;
-  secondaryHref?: string;
+  secondaryLink?: SmartLink;
 };
 
 export type ServiceSummary = {
@@ -262,7 +262,7 @@ export type ProblemSolutionContent = {
   solutionNote: string;
   bannerTitle: string;
   bannerButtonLabel: string;
-  bannerButtonHref: string;
+  bannerButtonLink: SmartLink;
 };
 
 export type HomePageContent = {

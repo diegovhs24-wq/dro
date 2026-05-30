@@ -1,3 +1,5 @@
+import Link from "next/link";
+import {resolveSmartLink} from "@/lib/smartLink";
 import CTASection from "@/components/CTASection";
 import Hero from "@/components/Hero";
 import LeadForm from "@/components/LeadForm";
@@ -47,6 +49,7 @@ function TextBlockSection({ block }: { block: Extract<CmsDynamicPageBlock, {_typ
 
 function IconCardsSection({ block }: { block: IconCardsBlock }) {
   const items = Array.isArray(block.items) ? block.items : [];
+  const btnLink = resolveSmartLink(block.buttonLink);
 
   return (
     <section className="bg-brand-soft py-14 sm:py-16">
@@ -56,10 +59,15 @@ function IconCardsSection({ block }: { block: IconCardsBlock }) {
           {block.title ? (
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{block.title}</h2>
           ) : null}
-          {block.buttonHref && block.buttonLabel ? (
-            <a className="btn-primary mt-7" href={block.buttonHref}>
+          {block.buttonLink && block.buttonLabel ? (
+            <Link
+              className="btn-primary mt-7"
+              href={btnLink.href}
+              target={btnLink.openInNewTab ? "_blank" : undefined}
+              rel={btnLink.openInNewTab ? "noopener noreferrer" : undefined}
+            >
               {block.buttonLabel}
-            </a>
+            </Link>
           ) : null}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -106,9 +114,9 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
           text={block.hero.text || ""}
           backgroundImage={block.hero.backgroundImage}
           primaryLabel={block.hero.primaryLabel}
-          primaryHref={block.hero.primaryHref}
+          primaryLink={block.hero.primaryLink}
           secondaryLabel={block.hero.secondaryLabel}
-          secondaryHref={block.hero.secondaryHref}
+          secondaryLink={block.hero.secondaryLink}
         />
       ) : null;
     case "problemSolutionBlock":

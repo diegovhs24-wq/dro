@@ -1,5 +1,7 @@
+import Link from "next/link";
+import {resolveSmartLink} from "@/lib/smartLink";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
-import type {IconTextItem, ProcessPageContent} from "@/lib/types";
+import type {IconTextItem, ProcessPageContent, SmartLink} from "@/lib/types";
 
 function HandUnderline({ className = "" }: { className?: string }) {
   return (
@@ -313,7 +315,7 @@ type ProcessIntakeBannerContent = {
   intakeBannerTitle?: string;
   intakeBannerText?: string;
   buttonLabel?: string;
-  buttonHref?: string;
+  buttonLink?: SmartLink;
 };
 
 export function ProcessIntakeBannerBlockSection({
@@ -321,6 +323,7 @@ export function ProcessIntakeBannerBlockSection({
 }: {
   content: ProcessIntakeBannerContent;
 }) {
+  const btnLink = resolveSmartLink(content.buttonLink);
   return (
     <div className="bg-brand-soft w-full">
       <div className="section-shell py-8 ">
@@ -331,12 +334,14 @@ export function ProcessIntakeBannerBlockSection({
               {content.intakeBannerText}
             </p>
           </div>
-          <a
+          <Link
             className="btn-primary mt-5 sm:mt-0"
-            href={content.buttonHref || "/contact"}
+            href={btnLink.href || "/contact"}
+            target={btnLink.openInNewTab ? "_blank" : undefined}
+            rel={btnLink.openInNewTab ? "noopener noreferrer" : undefined}
           >
             {content.buttonLabel || "Start intake"}
-          </a>
+          </Link>
         </div>
       </div>
     </div>
