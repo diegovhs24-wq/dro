@@ -19,10 +19,14 @@ import {
   ProcessIntakeBannerBlockSection,
   ProcessTrustBlockSection
 } from "@/components/cms/blocks/ProcessBlockSections";
+import FeaturedProjectsBlockSection from "@/components/cms/blocks/FeaturedProjectsBlockSection";
+import FeaturedServicesBlockSection from "@/components/cms/blocks/FeaturedServicesBlockSection";
 import type {
   CmsDynamicPage,
   CmsDynamicPageBlock,
   ContactFormBlock,
+  FeaturedProjectsBlock,
+  FeaturedServicesBlock,
   IconCardsBlock,
 } from "@/lib/cms";
 
@@ -145,6 +149,10 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
       return <ProcessIntakeBannerBlockSection content={block} />;
     case "businessContentBlock":
       return <BusinessContentBlockSection content={block} />;
+    case "featuredServicesBlock":
+      return <FeaturedServicesBlockSection block={block as FeaturedServicesBlock} />;
+    case "featuredProjectsBlock":
+      return <FeaturedProjectsBlockSection block={block as FeaturedProjectsBlock} />;
     default:
       return null;
   }

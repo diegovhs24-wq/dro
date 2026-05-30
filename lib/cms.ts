@@ -217,6 +217,36 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
     _type == "projectsListingBlock" => {
       limit
     },
+    _type == "featuredServicesBlock" => {
+      eyebrow,
+      title,
+      viewAllLabel,
+      viewAllHref,
+      services[]->{
+        title,
+        "slug": slug.current,
+        "href": "/diensten/" + slug.current,
+        summary,
+        "image": cardImage{${IMAGE_SOURCE_FIELDS}},
+        icon,
+        label
+      }
+    },
+    _type == "featuredProjectsBlock" => {
+      eyebrow,
+      title,
+      viewAllLabel,
+      viewAllHref,
+      projects[]->{
+        title,
+        "slug": slug.current,
+        description,
+        before,
+        after,
+        "beforeImage": beforeImage{${IMAGE_SOURCE_FIELDS}},
+        "afterImage": afterImage{${IMAGE_SOURCE_FIELDS}}
+      }
+    },
     _type == "iconCardsBlock" => {
       eyebrow,
       title,
@@ -569,6 +599,32 @@ export type ProjectsListingBlock = CmsBaseBlock & {
   limit?: number;
 };
 
+export type FeaturedServicesBlock = CmsBaseBlock & {
+  _type: "featuredServicesBlock";
+  eyebrow?: string;
+  title?: string;
+  viewAllLabel?: string;
+  viewAllHref?: string;
+  services?: import("@/lib/types").ServiceSummary[];
+};
+
+export type FeaturedProjectsBlock = CmsBaseBlock & {
+  _type: "featuredProjectsBlock";
+  eyebrow?: string;
+  title?: string;
+  viewAllLabel?: string;
+  viewAllHref?: string;
+  projects?: Array<{
+    title: string;
+    slug: string;
+    description: string;
+    before: string;
+    after: string;
+    beforeImage?: string;
+    afterImage?: string;
+  }>;
+};
+
 export type IconCardsBlock = CmsBaseBlock & {
   _type: "iconCardsBlock";
   eyebrow?: string;
@@ -657,6 +713,8 @@ export type CmsDynamicPageBlock =
   | TextBlock
   | ServicesListingBlock
   | ProjectsListingBlock
+  | FeaturedServicesBlock
+  | FeaturedProjectsBlock
   | IconCardsBlock
   | PartnersBlock
   | GoogleReviewsBlock

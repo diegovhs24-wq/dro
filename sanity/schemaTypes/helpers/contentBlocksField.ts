@@ -5,6 +5,8 @@ const pageBlockTypes = [
   'pageHeroBlock',
   'problemSolutionBlock',
   'textBlock',
+  'featuredServicesBlock',
+  'featuredProjectsBlock',
   'iconCardsBlock',
   'partnersBlock',
   'googleReviewsBlock',
@@ -54,7 +56,7 @@ export const contentBlocksField = defineField({
         {
           name: 'listings',
           title: 'Listings & Cards',
-          of: ['iconCardsBlock'],
+          of: ['featuredServicesBlock', 'featuredProjectsBlock', 'iconCardsBlock'],
         },
         {
           name: 'social',
@@ -67,7 +69,7 @@ export const contentBlocksField = defineField({
           of: ['contactFormBlock'],
         },
       ],
-      views: [{name: 'list'}],
+      views: [{name: 'grid'}, {name: 'list'}],
     },
   },
 })

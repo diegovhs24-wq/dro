@@ -1,4 +1,24 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {
+  HomeIcon,
+  DocumentTextIcon,
+  ComposeIcon,
+  BlockquoteIcon,
+  ThLargeIcon,
+  TagIcon,
+  ImageIcon,
+  RocketIcon,
+  EnvelopeIcon,
+  UsersIcon,
+  PresentationIcon,
+  OlistIcon,
+  CheckmarkIcon,
+  LockIcon,
+  HelpCircleIcon,
+  InlineIcon,
+  CaseIcon,
+  StarIcon,
+} from '@sanity/icons'
 
 const iconOptions = [
   'bathroom',
@@ -754,7 +774,7 @@ export const homeHeroBlock = defineType({
   preview: {
     select: {title: 'hero.headlineTop'},
     prepare({title}) {
-      return {title: title || 'Home Hero Block'}
+      return {title: title || 'Home Hero Block', media: HomeIcon}
     },
   },
 })
@@ -767,7 +787,7 @@ export const pageHeroBlock = defineType({
   preview: {
     select: {title: 'hero.title'},
     prepare({title}) {
-      return {title: title || 'Page Hero Block'}
+      return {title: title || 'Page Hero Block', media: DocumentTextIcon}
     },
   },
 })
@@ -791,7 +811,7 @@ export const problemSolutionBlock = defineType({
   preview: {
     select: {title: 'problemTitle'},
     prepare({title}) {
-      return {title: title || 'Problem / Solution Block'}
+      return {title: title || 'Problem / Solution Block', media: ComposeIcon}
     },
   },
 })
@@ -808,7 +828,7 @@ export const textBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Text Block'}
+      return {title: title || 'Text Block', media: BlockquoteIcon}
     },
   },
 })
@@ -834,7 +854,7 @@ export const servicesListingBlock = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'Services Listing Block'}
+      return {title: 'Services Listing Block', media: TagIcon}
     },
   },
 })
@@ -848,7 +868,57 @@ export const projectsListingBlock = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'Projects Listing Block'}
+      return {title: 'Projects Listing Block', media: ImageIcon}
+    },
+  },
+})
+
+export const featuredServicesBlock = defineType({
+  name: 'featuredServicesBlock',
+  title: 'Featured Services Block',
+  type: 'object',
+  fields: [
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string', initialValue: 'Diensten'}),
+    defineField({name: 'title', title: 'Title', type: 'string'}),
+    defineField({name: 'viewAllLabel', title: 'View All Button Label', type: 'string', initialValue: 'Alle diensten'}),
+    defineField({name: 'viewAllHref', title: 'View All Button URL', type: 'string', initialValue: '/diensten'}),
+    defineField({
+      name: 'services',
+      title: 'Services',
+      type: 'array',
+      description: 'Pick the services to display in this block.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'service'}]})],
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}) {
+      return {title: title || 'Featured Services Block', media: TagIcon}
+    },
+  },
+})
+
+export const featuredProjectsBlock = defineType({
+  name: 'featuredProjectsBlock',
+  title: 'Featured Projects Block',
+  type: 'object',
+  fields: [
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string', initialValue: 'Projecten'}),
+    defineField({name: 'title', title: 'Title', type: 'string'}),
+    defineField({name: 'viewAllLabel', title: 'View All Button Label', type: 'string', initialValue: 'Alle projecten'}),
+    defineField({name: 'viewAllHref', title: 'View All Button URL', type: 'string', initialValue: '/projecten'}),
+    defineField({
+      name: 'projects',
+      title: 'Projects',
+      type: 'array',
+      description: 'Pick the projects to display in this block.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'project'}]})],
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}) {
+      return {title: title || 'Featured Projects Block', media: ImageIcon}
     },
   },
 })
@@ -867,7 +937,7 @@ export const iconCardsBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Icon Cards Block'}
+      return {title: title || 'Icon Cards Block', media: ThLargeIcon}
     },
   },
 })
@@ -879,7 +949,7 @@ export const ctaBannerBlock = defineType({
   fields: [defineField({name: 'cta', title: 'CTA Content', type: 'ctaContent'})],
   preview: {
     prepare() {
-      return {title: 'CTA Banner Block'}
+      return {title: 'CTA Banner Block', media: RocketIcon}
     },
   },
 })
@@ -898,7 +968,7 @@ export const contactFormBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'Contact Form Block'}
+      return {title: title || 'Contact Form Block', media: EnvelopeIcon}
     },
   },
 })
@@ -935,6 +1005,7 @@ export const partnersBlock = defineType({
       return {
         title: title || 'Partners Block',
         subtitle: 'Partner logos from Website Content → Partners',
+        media: UsersIcon,
       }
     },
   },
@@ -950,7 +1021,7 @@ export const googleReviewsBlock = defineType({
   ],
   preview: {
     prepare() {
-      return {title: 'Google Reviews Block'}
+      return {title: 'Google Reviews Block', media: StarIcon}
     },
   },
 })
@@ -970,7 +1041,7 @@ export const aboutIntroBlock = defineType({
   preview: {
     select: {title: 'title'},
     prepare({title}) {
-      return {title: title || 'About Intro Block'}
+      return {title: title || 'About Intro Block', media: PresentationIcon}
     },
   },
 })
@@ -1003,7 +1074,7 @@ export const aboutTeamBlock = defineType({
   preview: {
     select: {title: 'teamTitle'},
     prepare({title}) {
-      return {title: title || 'About Team Block'}
+      return {title: title || 'About Team Block', media: UsersIcon}
     },
   },
 })
@@ -1020,7 +1091,7 @@ export const aboutTeamImageBlock = defineType({
   preview: {
     select: {title: 'teamImageTitle'},
     prepare({title}) {
-      return {title: title || 'About Team Image Block'}
+      return {title: title || 'About Team Image Block', media: ImageIcon}
     },
   },
 })
@@ -1061,7 +1132,7 @@ export const processHeaderBlock = defineType({
   preview: {
     select: {title: 'titlePrefix'},
     prepare({title}) {
-      return {title: title || 'Process Header Block'}
+      return {title: title || 'Process Header Block', media: OlistIcon}
     },
   },
 })
@@ -1073,7 +1144,7 @@ export const processBenefitsBlock = defineType({
   fields: [defineField({name: 'benefits', title: 'Benefits', type: 'array', of: [defineArrayMember({type: 'iconText'})]})],
   preview: {
     prepare() {
-      return {title: 'Process Benefits Block'}
+      return {title: 'Process Benefits Block', media: CheckmarkIcon}
     },
   },
 })
@@ -1085,7 +1156,7 @@ export const processTrustBlock = defineType({
   fields: [defineField({name: 'trustPoints', title: 'Trust Points', type: 'array', of: [defineArrayMember({type: 'iconText'})]})],
   preview: {
     prepare() {
-      return {title: 'Process Trust Block'}
+      return {title: 'Process Trust Block', media: LockIcon}
     },
   },
 })
@@ -1109,7 +1180,7 @@ export const processFaqBlock = defineType({
   preview: {
     select: {title: 'faqTitle'},
     prepare({title}) {
-      return {title: title || 'Process FAQ Block'}
+      return {title: title || 'Process FAQ Block', media: HelpCircleIcon}
     },
   },
 })
@@ -1127,7 +1198,7 @@ export const processIntakeBannerBlock = defineType({
   preview: {
     select: {title: 'intakeBannerTitle'},
     prepare({title}) {
-      return {title: title || 'Process Intake Banner Block'}
+      return {title: title || 'Process Intake Banner Block', media: InlineIcon}
     },
   },
 })
@@ -1161,7 +1232,7 @@ export const businessContentBlock = defineType({
   preview: {
     select: {title: 'positionTitle'},
     prepare({title}) {
-      return {title: title || 'Business Content Block'}
+      return {title: title || 'Business Content Block', media: CaseIcon}
     },
   },
 })
@@ -1195,6 +1266,8 @@ export const objectSchemaTypes = [
   textBlock,
   servicesListingBlock,
   projectsListingBlock,
+  featuredServicesBlock,
+  featuredProjectsBlock,
   iconCardsBlock,
   ctaBannerBlock,
   contactFormBlock,
