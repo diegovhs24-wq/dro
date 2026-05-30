@@ -37,6 +37,11 @@ async function main() {
   const existing = await client.fetch(`*[_type == "siteSettings"][0]{ _id }`)
   const docId = existing?._id?.replace(/^drafts\./, '') || 'siteSettings'
 
+  if (!existing?._id) {
+    await client.create({_id: docId, _type: 'siteSettings'})
+    console.log(`✅ Created siteSettings: ${docId}`)
+  }
+
   const patch = client.patch(docId).setIfMissing({
     _type: 'siteSettings',
     title: 'DRO Renovaties',

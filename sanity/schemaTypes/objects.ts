@@ -321,7 +321,7 @@ export const iconText = defineType({
   title: 'Icon Text',
   type: 'object',
   fields: [
-    defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({name: 'title', title: 'Title', type: 'string'}),
     defineField({name: 'text', title: 'Text', type: 'text', rows: 3}),
     defineField({
       name: 'icon',

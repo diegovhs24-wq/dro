@@ -810,9 +810,10 @@ function toServiceSummary(raw: RawRecord): ServiceSummary | null {
 }
 
 function mapServiceDetail(raw: RawRecord): ServiceDetailContent | null {
-  const summary = toServiceSummary(raw);
+  const slug = typeof raw.slug === "string" ? raw.slug : "";
+  const title = typeof raw.title === "string" ? raw.title : "";
 
-  if (!summary) {
+  if (!slug || !title) {
     return null;
   }
 
@@ -820,9 +821,9 @@ function mapServiceDetail(raw: RawRecord): ServiceDetailContent | null {
   const content = isRecord(pageContent) ? pageContent : {};
 
   return {
-    slug: summary.slug,
+    slug,
     eyebrow: asString(content.eyebrow),
-    title: asString(content.title) || summary.title,
+    title: asString(content.title) || title,
     intro: asString(content.intro),
     sections: asArray<ServiceBlock>(content.sections),
     processTitle: asString(content.processTitle),

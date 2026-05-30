@@ -23,6 +23,10 @@ function ref(id) {
   return {_type: 'reference', _ref: id}
 }
 
+function internal(id) {
+  return {_type: 'smartLink', linkType: 'internal', internalRef: {_type: 'reference', _ref: id}}
+}
+
 function external(url) {
   return {_type: 'smartLink', linkType: 'external', externalUrl: url}
 }
@@ -31,17 +35,16 @@ function btn(key, label, link, variant = 'primary') {
   return {_type: 'headerButton', _key: key, label, link, variant}
 }
 
-async function upsertById(doc) {
-  const id = doc._id
-  const existing = await client.fetch(`*[_id == $id][0]{ _id }`, {id})
-  if (existing?._id) {
-    const {_id, _type, ...rest} = doc
-    const result = await client.patch(id).set(rest).commit({returnDocuments: true})
-    console.log(`✅ Updated ${doc._type}: ${result._id}`)
-  } else {
-    const result = await client.create(doc)
-    console.log(`✅ Created ${doc._type}: ${result._id}`)
+async function upsertAllInTransaction(docs) {
+  const tx = client.transaction()
+  for (const doc of docs) {
+    tx.createOrReplace(doc)
   }
+  const result = await tx.commit()
+  for (const doc of docs) {
+    console.log(`✅ Upserted ${doc._type}: ${doc._id}`)
+  }
+  return result
 }
 
 // FAQ document references (seeded via seed-faqs.mjs)
@@ -365,9 +368,7 @@ const pages = [
 ]
 
 async function main() {
-  for (const page of pages) {
-    await upsertById(page)
-  }
+  await upsertAllInTransaction(pages)
   console.log(`\n✅ Done — ${pages.length} pages seeded.`)
 }
 

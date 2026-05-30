@@ -7,8 +7,8 @@
  *   3. seed-services      — service documents with page content (no page deps)
  *   4. seed-projects      — project documents (no deps)
  *   5. seed-index-pages   — servicesIndex + projectsIndex singletons (no deps)
- *   6. seed-site-settings — global nav/footer (refs services + pages)
- *   7. seed-pages         — all page documents (refs FAQs, intake form, services)
+ *   6. seed-pages         — all page documents (refs FAQs, intake form, services)
+ *   7. seed-site-settings — global nav/footer (refs services + pages)
  */
 
 import {execFileSync} from 'child_process'
@@ -23,8 +23,8 @@ const steps = [
   {name: 'Services',      file: 'seed-services.mjs'},
   {name: 'Projects',      file: 'seed-projects.mjs'},
   {name: 'Index pages',   file: 'seed-index-pages.mjs'},
-  {name: 'Site settings', file: 'seed-site-settings.mjs'},
   {name: 'Pages',         file: 'seed-pages.mjs'},
+  {name: 'Site settings', file: 'seed-site-settings.mjs'},
 ]
 
 const total = steps.length
