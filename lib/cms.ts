@@ -33,6 +33,13 @@ const IMAGE_SOURCE_FIELDS = `
   externalImageUrl
 `;
 
+const SMART_LINK_FIELDS = `
+  linkType,
+  internalRef->{_type, "slug": slug.current},
+  externalUrl,
+  openInNewTab
+`;
+
 const SEO_FIELDS = `
   metaTitle,
   metaDescription,
@@ -242,20 +249,30 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
 const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   title,
   description,
-  headerNavigation[]{
+  favicon{${IMAGE_SOURCE_FIELDS}},
+  headerLogo{${IMAGE_SOURCE_FIELDS}},
+  headerMenu[]{
     label,
-    href,
-    openInNewTab
+    type,
+    link{${SMART_LINK_FIELDS}},
+    columns[]{
+      title,
+      links[]{
+        label,
+        link{${SMART_LINK_FIELDS}}
+      }
+    },
+    promo{
+      image{${IMAGE_SOURCE_FIELDS}},
+      eyebrow,
+      title,
+      footerText
+    }
   },
-  serviceMenuGroups[]{
-    title,
-    slugs
-  },
-  menuPromo{
-    image{${IMAGE_SOURCE_FIELDS}},
-    eyebrow,
-    title,
-    footerText
+  headerButtons[]{
+    label,
+    link{${SMART_LINK_FIELDS}},
+    variant
   },
   footer{
     logo{${IMAGE_SOURCE_FIELDS}},
@@ -417,14 +434,8 @@ const PARTNERS_QUERY = `*[_type == "partner"]|order(sortOrder asc, name asc){
 
 const EMPTY_SITE_SETTINGS: SiteSettings = {
   title: "DRO Renovaties",
-  headerNavigation: [],
-  serviceMenuGroups: [],
-  menuPromo: {
-    image: "",
-    eyebrow: "",
-    title: "",
-    footerText: "",
-  },
+  headerMenu: [],
+  headerButtons: [],
   footer: {
     brandTitle: "DRO Renovaties",
     description: "",
@@ -755,20 +766,15 @@ function mapSiteSettings(raw: unknown): SiteSettings {
   }
 
   const footer = isRecord(normalized.footer) ? normalized.footer : {};
-  const menuPromo = isRecord(normalized.menuPromo) ? normalized.menuPromo : {};
   const floatingActions = isRecord(normalized.floatingActions) ? normalized.floatingActions : {};
 
   return {
     title: asString(normalized.title, EMPTY_SITE_SETTINGS.title),
     description: asString(normalized.description) || undefined,
-    headerNavigation: asArray<SiteSettings["headerNavigation"][number]>(normalized.headerNavigation),
-    serviceMenuGroups: asArray<SiteSettings["serviceMenuGroups"][number]>(normalized.serviceMenuGroups),
-    menuPromo: {
-      image: asString(menuPromo.image),
-      eyebrow: asString(menuPromo.eyebrow),
-      title: asString(menuPromo.title),
-      footerText: asString(menuPromo.footerText),
-    },
+    favicon: asString(normalized.favicon) || undefined,
+    headerLogo: asString(normalized.headerLogo) || undefined,
+    headerMenu: asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu),
+    headerButtons: asArray<SiteSettings["headerButtons"][number]>(normalized.headerButtons),
     footer: {
       logo: asString(footer.logo) || undefined,
       logoAlt: asString(footer.logoAlt) || undefined,

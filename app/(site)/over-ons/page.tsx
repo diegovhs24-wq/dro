@@ -13,5 +13,5 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function OverOnsPage() {
   const page = await requireCmsPage("over-ons");
-  return <DynamicPageShell page={page} pathname="/over-ons" showFloatingActions={false} />;
+  return <DynamicPageShell page={page} pathname="/over-ons" />;
 }

@@ -118,22 +118,180 @@ export const linkItem = defineType({
   },
 })
 
-export const serviceMenuGroup = defineType({
-  name: 'serviceMenuGroup',
-  title: 'Service Menu Group',
+export const smartLink = defineType({
+  name: 'smartLink',
+  title: 'Link',
   type: 'object',
   fields: [
-    defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required()}),
     defineField({
-      name: 'slugs',
-      title: 'Service Slugs',
+      name: 'linkType',
+      title: 'Link Type',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Internal — select a page, service or project', value: 'internal'},
+          {title: 'External — enter a URL', value: 'external'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'internal',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'internalRef',
+      title: 'Page / Service / Project',
+      type: 'reference',
+      to: [{type: 'page'}, {type: 'service'}, {type: 'project'}],
+      hidden: ({parent}) => parent?.linkType !== 'internal',
+    }),
+    defineField({
+      name: 'externalUrl',
+      title: 'URL',
+      type: 'string',
+      description: 'Full URL (https://example.com) or a site path (/contact)',
+      hidden: ({parent}) => parent?.linkType !== 'external',
+    }),
+    defineField({
+      name: 'openInNewTab',
+      title: 'Open in New Tab',
+      type: 'boolean',
+      initialValue: false,
+      hidden: ({parent}) => parent?.linkType !== 'external',
+    }),
+  ],
+  preview: {
+    select: {linkType: 'linkType', externalUrl: 'externalUrl'},
+    prepare({linkType, externalUrl}: {linkType?: string; externalUrl?: string}) {
+      return {
+        title: linkType === 'internal' ? 'Internal link' : (externalUrl || 'No URL set'),
+        subtitle: linkType === 'internal' ? 'Internal' : 'External',
+      }
+    },
+  },
+})
+
+export const megaMenuLink = defineType({
+  name: 'megaMenuLink',
+  title: 'Mega Menu Link',
+  type: 'object',
+  fields: [
+    defineField({name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({name: 'link', title: 'Link', type: 'smartLink'}),
+  ],
+  preview: {
+    select: {title: 'label'},
+  },
+})
+
+export const megaMenuColumn = defineType({
+  name: 'megaMenuColumn',
+  title: 'Menu Column',
+  type: 'object',
+  fields: [
+    defineField({name: 'title', title: 'Column Title', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({
+      name: 'links',
+      title: 'Links',
       type: 'array',
-      of: [defineArrayMember({type: 'string'})],
-      description: 'Use service slugs to control which services appear in this group.',
+      of: [defineArrayMember({type: 'megaMenuLink'})],
     }),
   ],
   preview: {
     select: {title: 'title'},
+  },
+})
+
+export const headerMenuItem = defineType({
+  name: 'headerMenuItem',
+  title: 'Menu Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'label',
+      title: 'Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'type',
+      title: 'Type',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Link', value: 'link'},
+          {title: 'Mega Menu', value: 'megaMenu'},
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'link',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'link',
+      title: 'Link',
+      type: 'smartLink',
+      hidden: ({parent}) => parent?.type !== 'link',
+    }),
+    defineField({
+      name: 'columns',
+      title: 'Menu Columns',
+      type: 'array',
+      of: [defineArrayMember({type: 'megaMenuColumn'})],
+      hidden: ({parent}) => parent?.type !== 'megaMenu',
+    }),
+    defineField({
+      name: 'promo',
+      title: 'Promo Card',
+      type: 'object',
+      hidden: ({parent}) => parent?.type !== 'megaMenu',
+      fields: [
+        defineField({name: 'image', title: 'Image', type: 'cmsImage'}),
+        defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+        defineField({name: 'title', title: 'Title', type: 'string'}),
+        defineField({name: 'footerText', title: 'Footer Text', type: 'string'}),
+      ],
+    }),
+  ],
+  preview: {
+    select: {title: 'label', subtitle: 'type'},
+    prepare({title, subtitle}: {title?: string; subtitle?: string}) {
+      return {
+        title: title || 'Menu Item',
+        subtitle: subtitle === 'megaMenu' ? 'Mega Menu' : 'Link',
+      }
+    },
+  },
+})
+
+export const headerButton = defineType({
+  name: 'headerButton',
+  title: 'Header Button',
+  type: 'object',
+  fields: [
+    defineField({name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({name: 'link', title: 'Link', type: 'smartLink'}),
+    defineField({
+      name: 'variant',
+      title: 'Variant',
+      type: 'string',
+      options: {
+        list: [
+          {title: 'Primary — orange filled (default)', value: 'primary'},
+          {title: 'Outlined — white with border', value: 'outlined'},
+        ],
+      },
+      initialValue: 'primary',
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'label', subtitle: 'variant'},
+    prepare({title, subtitle}: {title?: string; subtitle?: string}) {
+      return {
+        title: title || 'Button',
+        subtitle: subtitle === 'outlined' ? 'Outlined' : 'Primary',
+      }
+    },
   },
 })
 
@@ -991,7 +1149,11 @@ export const objectSchemaTypes = [
   seoSettings,
   organizationSeo,
   linkItem,
-  serviceMenuGroup,
+  smartLink,
+  megaMenuLink,
+  megaMenuColumn,
+  headerMenuItem,
+  headerButton,
   iconText,
   ctaContent,
   pageHeroContent,

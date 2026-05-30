@@ -1,13 +1,10 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import CTASection from "@/components/CTASection";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {
   getProjectBySlug,
   getProjects,
-  getServices,
   getSiteSettings,
   metadataFromSeo,
 } from "@/lib/cms";
@@ -45,9 +42,8 @@ export async function generateMetadata({params}: ProjectPageProps): Promise<Meta
 }
 
 export default async function ProjectDetailPage({params}: ProjectPageProps) {
-  const [siteSettings, services, project] = await Promise.all([
+  const [siteSettings, project] = await Promise.all([
     getSiteSettings(),
-    getServices(),
     getProjectBySlug(params.slug),
   ]);
 
@@ -68,7 +64,6 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
         title={title}
       />
       <main>
-        <Header services={services} siteSettings={siteSettings} />
         <section className="bg-brand-ink py-14 text-white sm:py-16">
           <div className="section-shell grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div>
@@ -152,7 +147,6 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
         </section>
 
         <CTASection title="Wilt u een renovatie met dezelfde duidelijkheid?" />
-        <Footer services={services} siteSettings={siteSettings} />
       </main>
     </>
   );

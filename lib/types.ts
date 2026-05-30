@@ -11,6 +11,37 @@ export type LinkItem = {
   openInNewTab?: boolean;
 };
 
+export type SmartLink =
+  | {linkType: 'internal'; internalRef?: {_type: string; slug: string}}
+  | {linkType: 'external'; externalUrl: string; openInNewTab?: boolean};
+
+export type HeaderMenuLink = {
+  label: string;
+  link: SmartLink;
+};
+
+export type HeaderMegaMenuColumn = {
+  title: string;
+  links: HeaderMenuLink[];
+};
+
+export type HeaderMegaMenuPromo = {
+  image: string;
+  eyebrow: string;
+  title: string;
+  footerText: string;
+};
+
+export type HeaderMenuItem =
+  | {type: 'link'; label: string; link: SmartLink}
+  | {type: 'megaMenu'; label: string; columns: HeaderMegaMenuColumn[]; promo: HeaderMegaMenuPromo};
+
+export type HeaderButton = {
+  label: string;
+  link: SmartLink;
+  variant: 'primary' | 'outlined';
+};
+
 export type IconTextItem = {
   title?: string;
   text?: string;
@@ -126,14 +157,10 @@ export type OrganizationSeo = {
 export type SiteSettings = {
   title: string;
   description?: string;
-  headerNavigation: LinkItem[];
-  serviceMenuGroups: Array<{title: string; slugs: string[]}>;
-  menuPromo: {
-    image: string;
-    eyebrow: string;
-    title: string;
-    footerText: string;
-  };
+  favicon?: string;
+  headerLogo?: string;
+  headerMenu: HeaderMenuItem[];
+  headerButtons: HeaderButton[];
   footer: {
     logo?: string;
     logoAlt?: string;

@@ -13,5 +13,5 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ContactPage() {
   const page = await requireCmsPage("contact");
-  return <DynamicPageShell page={page} pathname="/contact" showFloatingActions={false} />;
+  return <DynamicPageShell page={page} pathname="/contact" />;
 }

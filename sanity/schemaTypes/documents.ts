@@ -32,19 +32,21 @@ export const siteSettings = defineType({
   fields: [
     defineField({name: 'title', title: 'Site Title', type: 'string', validation: (Rule) => Rule.required(), group: 'general'}),
     defineField({name: 'description', title: 'Site Description', type: 'text', rows: 3, group: 'general'}),
-    defineField({name: 'headerNavigation', title: 'Header Navigation', type: 'array', of: [defineArrayMember({type: 'linkItem'})], group: 'header'}),
-    defineField({name: 'serviceMenuGroups', title: 'Service Menu Groups', type: 'array', of: [defineArrayMember({type: 'serviceMenuGroup'})], group: 'header'}),
+    defineField({name: 'favicon', title: 'Favicon', type: 'cmsImage', group: 'general', description: 'Recommended: 32×32 or 64×64 PNG/SVG'}),
+    defineField({name: 'headerLogo', title: 'Logo', type: 'cmsImage', group: 'header'}),
     defineField({
-      name: 'menuPromo',
-      title: 'Mega Menu Promo',
-      type: 'object',
+      name: 'headerMenu',
+      title: 'Navigation Menu',
+      type: 'array',
+      of: [defineArrayMember({type: 'headerMenuItem'})],
       group: 'header',
-      fields: [
-        defineField({name: 'image', title: 'Image', type: 'cmsImage'}),
-        defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
-        defineField({name: 'title', title: 'Title', type: 'string'}),
-        defineField({name: 'footerText', title: 'Footer Text', type: 'string'}),
-      ],
+    }),
+    defineField({
+      name: 'headerButtons',
+      title: 'CTA Buttons',
+      type: 'array',
+      of: [defineArrayMember({type: 'headerButton'})],
+      group: 'header',
     }),
     defineField({
       name: 'footer',

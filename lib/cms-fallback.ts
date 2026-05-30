@@ -7,32 +7,51 @@ const HERO_IMAGE =
 export const fallbackSiteSettings: SiteSettings = {
   title: "DRO Renovaties",
   description: "Renovatie- en bouwbedrijf in Den Haag en omgeving.",
-  headerNavigation: [
-    {label: "Projecten", href: "/projecten"},
-    {label: "Over ons", href: "/over-ons"},
-    {label: "Werkwijze", href: "/werkwijze"},
-    {label: "Zakelijk", href: "/zakelijk"},
+  headerMenu: [
+    {
+      type: "megaMenu",
+      label: "Diensten",
+      columns: [
+        {
+          title: "Woning",
+          links: [
+            {label: "Badkamer renovatie", link: {linkType: "external", externalUrl: "/diensten/badkamer-renovatie"}},
+            {label: "Totaalrenovatie", link: {linkType: "external", externalUrl: "/diensten/totaalrenovatie"}},
+            {label: "Uitbouw / aanbouw", link: {linkType: "external", externalUrl: "/diensten/uitbouw-aanbouw"}},
+            {label: "Afbouw nieuwbouw", link: {linkType: "external", externalUrl: "/diensten/afbouw-nieuwbouw"}},
+          ],
+        },
+        {
+          title: "Installaties",
+          links: [
+            {label: "Vloerverwarming", link: {linkType: "external", externalUrl: "/diensten/vloerverwarming"}},
+            {label: "Warmtepomp", link: {linkType: "external", externalUrl: "/diensten/warmtepomp"}},
+            {label: "Zonnepanelen", link: {linkType: "external", externalUrl: "/diensten/zonnepanelen"}},
+          ],
+        },
+        {
+          title: "Afwerking",
+          links: [
+            {label: "Stuc- en schilderwerk", link: {linkType: "external", externalUrl: "/diensten/stuc-schilderwerk"}},
+            {label: "Onderhoud", link: {linkType: "external", externalUrl: "/diensten/onderhoud"}},
+          ],
+        },
+      ],
+      promo: {
+        image: HERO_IMAGE,
+        eyebrow: "DRO Renovaties",
+        title: "Uw project, volledig verzorgd.",
+        footerText: "Wij begeleiden uw renovatie van A tot Z.",
+      },
+    },
+    {type: "link", label: "Projecten", link: {linkType: "external", externalUrl: "/projecten"}},
+    {type: "link", label: "Over ons", link: {linkType: "external", externalUrl: "/over-ons"}},
+    {type: "link", label: "Werkwijze", link: {linkType: "external", externalUrl: "/werkwijze"}},
+    {type: "link", label: "Zakelijk", link: {linkType: "external", externalUrl: "/zakelijk"}},
   ],
-  serviceMenuGroups: [
-    {
-      title: "Woning",
-      slugs: ["badkamer-renovatie", "totaalrenovatie", "uitbouw-aanbouw", "afbouw-nieuwbouw"],
-    },
-    {
-      title: "Installaties",
-      slugs: ["vloerverwarming", "warmtepomp", "zonnepanelen"],
-    },
-    {
-      title: "Afwerking",
-      slugs: ["stuc-schilderwerk", "onderhoud"],
-    },
+  headerButtons: [
+    {label: "Start intake", link: {linkType: "external", externalUrl: "/contact"}, variant: "primary"},
   ],
-  menuPromo: {
-    image: HERO_IMAGE,
-    eyebrow: "Start vandaag",
-    title: "Plan uw renovatie met één vast aanspreekpunt.",
-    footerText: "Intake duurt ongeveer 2 minuten.",
-  },
   footer: {
     brandTitle: "DRO Renovaties",
     description: "Renovatie, afbouw en installaties met duidelijke planning en één aanspreekpunt.",
@@ -237,7 +256,7 @@ function normalizeHref(href: string) {
   return href.startsWith("/") ? href : `/${href}`;
 }
 
-function normalizeLinkItems(items: SiteSettings["headerNavigation"]) {
+function normalizeLinkItems(items: {label: string; href: string; openInNewTab?: boolean}[]) {
   return items.map((item) => ({
     ...item,
     href: normalizeHref(item.href),
@@ -245,26 +264,20 @@ function normalizeLinkItems(items: SiteSettings["headerNavigation"]) {
 }
 
 export function withSiteSettingsFallback(settings: SiteSettings): SiteSettings {
-  const headerNavigation = settings.headerNavigation.length
-    ? normalizeLinkItems(settings.headerNavigation)
-    : fallbackSiteSettings.headerNavigation;
+  const headerMenu = settings.headerMenu.length
+    ? settings.headerMenu
+    : fallbackSiteSettings.headerMenu;
 
-  const serviceMenuGroups = settings.serviceMenuGroups.length
-    ? settings.serviceMenuGroups
-    : fallbackSiteSettings.serviceMenuGroups;
-
-  const menuPromo =
-    settings.menuPromo.image || settings.menuPromo.title
-      ? settings.menuPromo
-      : fallbackSiteSettings.menuPromo;
+  const headerButtons = settings.headerButtons.length
+    ? settings.headerButtons
+    : fallbackSiteSettings.headerButtons;
 
   return {
     ...settings,
     title: settings.title || fallbackSiteSettings.title,
     description: settings.description || fallbackSiteSettings.description,
-    headerNavigation,
-    serviceMenuGroups,
-    menuPromo,
+    headerMenu,
+    headerButtons,
     footer: {
       ...fallbackSiteSettings.footer,
       ...settings.footer,

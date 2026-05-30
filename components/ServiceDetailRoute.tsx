@@ -1,10 +1,8 @@
 import {notFound} from "next/navigation";
 
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import ServicePage from "@/components/ServicePage";
-import {getReviews, getServiceBySlug, getServices, getSiteSettings} from "@/lib/cms";
+import {getReviews, getServiceBySlug, getSiteSettings} from "@/lib/cms";
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
 
 type ServiceDetailRouteProps = {
@@ -12,9 +10,8 @@ type ServiceDetailRouteProps = {
 };
 
 export default async function ServiceDetailRoute({slug}: ServiceDetailRouteProps) {
-  const [siteSettings, services, reviews, service] = await Promise.all([
+  const [siteSettings, reviews, service] = await Promise.all([
     getSiteSettings(),
-    getServices(),
     getReviews(),
     getServiceBySlug(slug),
   ]);
@@ -43,9 +40,7 @@ export default async function ServiceDetailRoute({slug}: ServiceDetailRouteProps
         title={service.title}
       />
       <main>
-        <Header services={services} siteSettings={siteSettings} />
         <ServicePage {...service} reviews={reviews} />
-        <Footer services={services} siteSettings={siteSettings} />
       </main>
     </>
   );

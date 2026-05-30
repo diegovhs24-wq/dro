@@ -152,8 +152,10 @@ export async function buildMarkdownForPath(pathname: string) {
     const page = await getPageBySlug("home");
     page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
     lines.push(`## Navigatie\n\n`);
-    siteSettings.headerNavigation.forEach((item) => {
-      lines.push(`- ${link(item.label, item.href)}`);
+    siteSettings.headerMenu.forEach((item) => {
+      if (item.type === "link" && item.link?.linkType === "external" && item.link.externalUrl) {
+        lines.push(`- ${link(item.label, item.link.externalUrl)}`);
+      }
     });
     lines.push("\n");
     return lines.join("\n");

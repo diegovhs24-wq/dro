@@ -4,37 +4,41 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import type {ServiceSummary, SiteSettings} from "@/lib/types";
-import {fallbackServices, fallbackSiteSettings} from "@/lib/cms-fallback";
+import type { HeaderMenuItem, SmartLink, SiteSettings } from "@/lib/types";
+import SmartButton from "@/components/SmartButton";
 
 type HeaderProps = {
-  services: ServiceSummary[];
   siteSettings: SiteSettings;
 };
 
-export default function Header({services, siteSettings}: HeaderProps) {
+function resolveSmartLink(link: SmartLink | undefined): {href: string; openInNewTab: boolean} {
+  if (!link) return {href: "#", openInNewTab: false};
+
+  if (link.linkType === "internal") {
+    const ref = link.internalRef;
+    if (!ref?.slug) return {href: "#", openInNewTab: false};
+    let href = "/";
+    if (ref._type === "page") href = ref.slug === "home" ? "/" : `/${ref.slug}`;
+    else if (ref._type === "service") href = `/diensten/${ref.slug}`;
+    else if (ref._type === "project") href = `/projecten/${ref.slug}`;
+    return {href, openInNewTab: false};
+  }
+
+  return {
+    href: link.externalUrl || "#",
+    openInNewTab: link.openInNewTab ?? false,
+  };
+}
+
+export default function Header({siteSettings}: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const servicesActive = pathname === "/diensten" || pathname.startsWith("/diensten/");
-  const navItems = siteSettings.headerNavigation.length
-    ? siteSettings.headerNavigation
-    : fallbackSiteSettings.headerNavigation;
-  const resolvedServices = services.length ? services : fallbackServices;
-  const serviceGroups = (siteSettings.serviceMenuGroups.length
-    ? siteSettings.serviceMenuGroups
-    : fallbackSiteSettings.serviceMenuGroups
-  ).map((group) => ({
-    ...group,
-    items: resolvedServices.filter((service) => group.slugs.includes(service.slug)),
-  }));
 
   useEffect(() => {
-    const updateHeader = () => setScrolled(window.scrollY > 12);
-
-    updateHeader();
-    window.addEventListener("scroll", updateHeader, { passive: true });
-
-    return () => window.removeEventListener("scroll", updateHeader);
+    const update = () => setScrolled(window.scrollY > 12);
+    update();
+    window.addEventListener("scroll", update, {passive: true});
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
   return (
@@ -45,118 +49,169 @@ export default function Header({services, siteSettings}: HeaderProps) {
           : "border-black/5 shadow-[0_4px_16px_rgba(15,15,15,0.03)]"
       }`}
     >
-      <div
-        className="section-shell flex h-[68px] items-center justify-between gap-8 transition-all duration-300"
-      >
-        <Link className="flex w-[170px] shrink-0 items-center" href="/" aria-label="DRO Renovaties home">
-          <span className="flex items-end gap-1.5 leading-none text-brand-ink">
-            <svg className="h-10 w-12 shrink-0 text-brand-orange" fill="none" viewBox="0 0 64 46" aria-hidden="true">
-              <path
-                d="M7 28 32 7l25 21M14 28v13h36V28"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="4"
-              />
-              <path d="M20 41h38" stroke="currentColor" strokeLinecap="round" strokeWidth="4" />
-            </svg>
-            <span className="pb-0.5">
-              <span className="block text-[25px] font-black tracking-[-0.07em]">
-                <span className="text-brand-orange">DRO</span>BOUW
-              </span>
-              <span className="block pl-0.5 text-[7px] font-black uppercase tracking-[0.22em] text-neutral-700">
-                Bouw & Renovatie
-              </span>
-            </span>
-          </span>
-        </Link>
+      <div className="section-shell flex h-[68px] items-center justify-between gap-8 transition-all duration-300">
+        <Logo logo={siteSettings.headerLogo} />
 
         <nav className="hidden flex-1 items-center justify-center gap-9 md:flex xl:gap-12" aria-label="Hoofdmenu">
-          <div className="group">
-            <Link
-              className={`relative flex h-[68px] items-center text-[13px] font-medium transition hover:text-brand-ink ${
-                servicesActive ? "text-brand-ink" : "text-neutral-600"
-              }`}
-              href="/diensten"
-            >
-              <span
-                className={`relative after:absolute after:-bottom-3 after:left-0 after:h-0.5 after:bg-brand-orange after:transition-all group-hover:after:w-full ${
-                  servicesActive ? "after:w-full" : "after:w-0"
-                }`}
-              >
-                Diensten
-              </span>
-              <span className="ml-2 text-brand-orange">+</span>
-            </Link>
-
-            <div
-              className="pointer-events-none fixed left-1/2 z-50 w-[min(1180px,calc(100vw-40px))] -translate-x-1/2 translate-y-3 rounded-lg border border-black/10 bg-white opacity-0 shadow-[0_30px_90px_rgba(15,15,15,0.16)] transition duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100"
-              style={{ top: 68 }}
-            >
-              <div className="grid grid-cols-3 gap-7 p-7 xl:grid-cols-[1fr_1fr_1fr_320px]">
-                {serviceGroups.map((group) => (
-                  <div key={group.title}>
-                    <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-neutral-400">
-                      {group.title}
-                    </p>
-                    <div className="grid gap-1">
-                      {group.items.map((service) => (
-                        <Link
-                          className="group/link flex items-center justify-between rounded-md px-3 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-100 hover:text-brand-orange"
-                          href={service.href}
-                          key={service.href}
-                        >
-                          <span className="relative after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-brand-orange after:transition-all group-hover/link:after:w-full">
-                            {service.title}
-                          </span>
-                          <span className="text-xs opacity-0 transition group-hover/link:translate-x-1 group-hover/link:opacity-100">
-                            -&gt;
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-
-                <div className="relative hidden min-h-[260px] overflow-hidden rounded-lg bg-neutral-950 xl:block">
-                  <img
-                    alt={siteSettings.menuPromo.eyebrow}
-                    className="h-full w-full object-cover"
-                    src={siteSettings.menuPromo.image}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/65">{siteSettings.menuPromo.eyebrow}</p>
-                    <p className="mt-3 text-2xl font-bold leading-tight">{siteSettings.menuPromo.title}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="border-t border-black/10 px-7 py-4 text-sm font-medium text-neutral-500">
-                {siteSettings.menuPromo.footerText}
-              </div>
-            </div>
-          </div>
-
-          {navItems.map((item) => (
-            <Link
-              className={`relative text-[13px] font-medium transition after:absolute after:-bottom-3 after:left-0 after:h-0.5 after:bg-brand-orange after:transition-all hover:text-brand-ink hover:after:w-full ${
-                pathname === item.href ? "text-brand-ink after:w-full" : "text-neutral-600 after:w-0"
-              }`}
-              href={item.href}
-              key={item.href}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {siteSettings.headerMenu.map((item) =>
+            item.type === "megaMenu" ? (
+              <MegaMenuItem key={item.label} item={item} pathname={pathname} />
+            ) : (
+              <LinkMenuItem key={item.label} item={item} pathname={pathname} />
+            )
+          )}
         </nav>
 
-        <Link
-          className="hidden min-h-10 items-center rounded-lg bg-brand-orange px-5 text-sm font-bold text-white shadow-[0_14px_30px_rgba(255,106,0,0.20)] transition hover:-translate-y-0.5 hover:bg-brand-orange/90 sm:inline-flex"
-          href="/contact"
-        >
-          Start intake
-        </Link>
+        <div className="hidden items-center gap-3 sm:flex">
+          <SmartButton buttons={siteSettings.headerButtons} />
+        </div>
       </div>
     </header>
+  );
+}
+
+function Logo({logo}: {logo?: string}) {
+  return (
+    <Link className="flex w-[170px] shrink-0 items-center" href="/" aria-label="DRO Renovaties home">
+      {logo ? (
+        <img src={logo} alt="DRO Renovaties" className="h-10 w-auto object-contain" />
+      ) : (
+        <span className="flex items-end gap-1.5 leading-none text-brand-ink">
+          <svg className="h-10 w-12 shrink-0 text-brand-orange" fill="none" viewBox="0 0 64 46" aria-hidden="true">
+            <path
+              d="M7 28 32 7l25 21M14 28v13h36V28"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="4"
+            />
+            <path d="M20 41h38" stroke="currentColor" strokeLinecap="round" strokeWidth="4" />
+          </svg>
+          <span className="pb-0.5">
+            <span className="block text-[25px] font-black tracking-[-0.07em]">
+              <span className="text-brand-orange">DRO</span>BOUW
+            </span>
+            <span className="block pl-0.5 text-[7px] font-black uppercase tracking-[0.22em] text-neutral-700">
+              Bouw & Renovatie
+            </span>
+          </span>
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function LinkMenuItem({item, pathname}: {item: Extract<HeaderMenuItem, {type: "link"}>; pathname: string}) {
+  const {href, openInNewTab} = resolveSmartLink(item.link);
+  const isActive = pathname === href;
+  return (
+    <Link
+      href={href}
+      target={openInNewTab ? "_blank" : undefined}
+      rel={openInNewTab ? "noopener noreferrer" : undefined}
+      className={`relative text-[13px] font-medium transition after:absolute after:-bottom-3 after:left-0 after:h-0.5 after:bg-brand-orange after:transition-all hover:text-brand-ink hover:after:w-full ${
+        isActive ? "text-brand-ink after:w-full" : "text-neutral-600 after:w-0"
+      }`}
+    >
+      {item.label}
+    </Link>
+  );
+}
+
+function MegaMenuItem({item, pathname}: {item: Extract<HeaderMenuItem, {type: "megaMenu"}>; pathname: string}) {
+  const isActive = item.columns.some((col) =>
+    col.links.some(({link}) => {
+      const {href} = resolveSmartLink(link);
+      return pathname === href || pathname.startsWith(href + "/");
+    })
+  );
+
+  return (
+    <div className="group">
+      <button
+        type="button"
+        className={`relative flex h-[68px] items-center gap-2 text-[13px] font-medium transition hover:text-brand-ink ${
+          isActive ? "text-brand-ink" : "text-neutral-600"
+        }`}
+      >
+        <span
+          className={`relative after:absolute after:-bottom-3 after:left-0 after:h-0.5 after:bg-brand-orange after:transition-all group-hover:after:w-full ${
+            isActive ? "after:w-full" : "after:w-0"
+          }`}
+        >
+          {item.label}
+        </span>
+        <span className="text-brand-orange">+</span>
+      </button>
+
+      <div
+        className="pointer-events-none fixed left-1/2 z-50 w-[min(1180px,calc(100vw-40px))] -translate-x-1/2 translate-y-3 rounded-lg border border-black/10 bg-white opacity-0 shadow-[0_30px_90px_rgba(15,15,15,0.16)] transition duration-200 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100"
+        style={{top: 68}}
+      >
+        <div
+          className={`grid gap-7 p-7 ${
+            item.promo?.image
+              ? "grid-cols-3 xl:grid-cols-[1fr_1fr_1fr_320px]"
+              : "grid-cols-3"
+          }`}
+        >
+          {item.columns.map((col) => (
+            <div key={col.title}>
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-neutral-400">
+                {col.title}
+              </p>
+              <div className="grid gap-1">
+                {col.links.map(({label, link}) => {
+                  const {href, openInNewTab} = resolveSmartLink(link);
+                  return (
+                    <Link
+                      key={`${label}-${href}`}
+                      href={href}
+                      target={openInNewTab ? "_blank" : undefined}
+                      rel={openInNewTab ? "noopener noreferrer" : undefined}
+                      className="group/link flex items-center justify-between rounded-md px-3 py-3 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-100 hover:text-brand-orange"
+                    >
+                      <span className="relative after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-brand-orange after:transition-all group-hover/link:after:w-full">
+                        {label}
+                      </span>
+                      <span className="text-xs opacity-0 transition group-hover/link:translate-x-1 group-hover/link:opacity-100">
+                        -&gt;
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+          {item.promo?.image && (
+            <div className="relative hidden min-h-[260px] overflow-hidden rounded-lg bg-neutral-950 xl:block">
+              <img
+                alt={item.promo.eyebrow || item.label}
+                className="h-full w-full object-cover"
+                src={item.promo.image}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                {item.promo.eyebrow && (
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/65">
+                    {item.promo.eyebrow}
+                  </p>
+                )}
+                {item.promo.title && (
+                  <p className="mt-3 text-2xl font-bold leading-tight">{item.promo.title}</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {item.promo?.footerText && (
+          <div className="border-t border-black/10 px-7 py-4 text-sm font-medium text-neutral-500">
+            {item.promo.footerText}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
