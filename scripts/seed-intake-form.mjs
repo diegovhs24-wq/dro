@@ -19,40 +19,46 @@ const client = createClient({
   useCdn: false,
 })
 
-// --- FAQ documents (referenced by the intake form) --------------------------
+// --- Helper ----------------------------------------------------------------
+
+function pt(text) {
+  return [
+    {
+      _type: 'block',
+      _key: Math.random().toString(36).slice(2, 9),
+      style: 'normal',
+      markDefs: [],
+      children: [{_type: 'span', _key: Math.random().toString(36).slice(2, 9), text, marks: []}],
+    },
+  ]
+}
+
+// --- FAQ documents (shown after intake form submission) --------------------
 
 const faqDocs = [
   {
     _id: 'intake-faq-1',
     _type: 'faq',
     question: 'Wat gebeurt er na mijn aanvraag?',
-    answer: ['We bekijken uw aanvraag en nemen binnen 24 uur contact op om de situatie rustig door te nemen.'],
-    category: 'Intake',
-    sortOrder: 1,
+    answer: pt('We bekijken uw aanvraag en nemen binnen 24 uur contact op om de situatie rustig door te nemen.'),
   },
   {
     _id: 'intake-faq-2',
     _type: 'faq',
     question: 'Krijg ik één aanspreekpunt?',
-    answer: ['Ja. U heeft één vast aanspreekpunt voor vragen, planning en afstemming.'],
-    category: 'Intake',
-    sortOrder: 2,
+    answer: pt('Ja. U heeft één vast aanspreekpunt voor vragen, planning en afstemming.'),
   },
   {
     _id: 'intake-faq-3',
     _type: 'faq',
     question: "Kan ik foto's later nog nasturen?",
-    answer: ["Ja. Tijdens het eerste contact geven wij aan welke foto's of tekeningen handig zijn."],
-    category: 'Intake',
-    sortOrder: 3,
+    answer: pt("Ja. Tijdens het eerste contact geven wij aan welke foto's of tekeningen handig zijn."),
   },
   {
     _id: 'intake-faq-4',
     _type: 'faq',
     question: 'Werken jullie ook zakelijk?',
-    answer: ['Ja. Wij ondersteunen ook vastgoedpartijen, aannemers en ontwikkelaars met uitvoering en afbouw.'],
-    category: 'Intake',
-    sortOrder: 4,
+    answer: pt('Ja. Wij ondersteunen ook vastgoedpartijen, aannemers en ontwikkelaars met uitvoering en afbouw.'),
   },
 ]
 

@@ -402,7 +402,7 @@ export const faqItem = defineType({
   type: 'object',
   fields: [
     defineField({name: 'question', title: 'Question', type: 'string', validation: (Rule) => Rule.required()}),
-    defineField({name: 'answer', title: 'Answer', type: 'text', rows: 3}),
+    defineField({name: 'answer', title: 'Answer', type: 'array', of: [defineArrayMember({type: 'block'})]}),
   ],
   preview: {
     select: {title: 'question'},
@@ -417,9 +417,9 @@ export const faqRichItem = defineType({
     defineField({name: 'question', title: 'Question', type: 'string', validation: (Rule) => Rule.required()}),
     defineField({
       name: 'answer',
-      title: 'Answer Paragraphs',
+      title: 'Answer',
       type: 'array',
-      of: [defineArrayMember({type: 'string'})],
+      of: [defineArrayMember({type: 'block'})],
     }),
   ],
   preview: {

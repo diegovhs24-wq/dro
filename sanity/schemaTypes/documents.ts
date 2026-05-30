@@ -383,21 +383,17 @@ export const faq = defineType({
       name: 'answer',
       title: 'Answer',
       type: 'array',
-      of: [defineArrayMember({type: 'string'})],
-      description: 'Each item is a separate paragraph.',
+      of: [defineArrayMember({type: 'block'})],
       validation: (Rule) => Rule.required().min(1),
     }),
-    defineField({name: 'category', title: 'Category', type: 'string', description: 'Optional — used for grouping (e.g. "General", "Process", "Pricing").'}),
-    defineField({name: 'sortOrder', title: 'Sort Order', type: 'number'}),
   ],
   preview: {
-    select: {title: 'question', subtitle: 'category'},
-    prepare({title, subtitle}) {
-      return {title: title || 'FAQ', subtitle: subtitle || ''}
+    select: {title: 'question'},
+    prepare({title}) {
+      return {title: title || 'FAQ'}
     },
   },
   orderings: [
-    {title: 'Sort Order', name: 'sortOrderAsc', by: [{field: 'sortOrder', direction: 'asc'}]},
     {title: 'Question A–Z', name: 'questionAsc', by: [{field: 'question', direction: 'asc'}]},
   ],
 })

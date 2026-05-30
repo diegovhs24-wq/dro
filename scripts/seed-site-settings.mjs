@@ -19,6 +19,20 @@ const client = createClient({
   useCdn: false,
 })
 
+// Internal link — resolves via the document's own slug at runtime
+function internal(id) {
+  return {_type: 'smartLink', linkType: 'internal', internalRef: {_type: 'reference', _ref: id}}
+}
+
+// External link — used for tel:, mailto:, and pages without a document (e.g. /diensten, /projecten)
+function external(url) {
+  return {_type: 'smartLink', linkType: 'external', externalUrl: url}
+}
+
+function btn(key, label, link, variant = 'primary') {
+  return {_type: 'headerButton', _key: key, label, link, variant}
+}
+
 async function main() {
   const existing = await client.fetch(`*[_type == "siteSettings"][0]{ _id }`)
   const docId = existing?._id?.replace(/^drafts\./, '') || 'siteSettings'
@@ -32,49 +46,54 @@ async function main() {
     title: 'DRO Renovaties',
     headerMenu: [
       {
-        _type: 'headerMenuItem', _key: 'menu-services',
-        label: 'Services',
+        _type: 'headerMenuItem',
+        _key: 'menu-services',
+        label: 'Diensten',
         type: 'megaMenu',
         columns: [
           {
-            _type: 'megaMenuColumn', _key: 'col-residential',
-            title: 'Residential',
+            _type: 'megaMenuColumn',
+            _key: 'col-wonen',
+            title: 'Wonen',
             links: [
-              {_type: 'megaMenuLink', _key: 'lnk-bathroom', label: 'Bathroom renovation', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/badkamer-renovatie'}},
-              {_type: 'megaMenuLink', _key: 'lnk-total', label: 'Total renovation', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/totaalrenovatie'}},
-              {_type: 'megaMenuLink', _key: 'lnk-extension', label: 'Extension / addition', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/uitbouw-aanbouw'}},
-              {_type: 'megaMenuLink', _key: 'lnk-newbuild', label: 'Finishing new build', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/afbouw-nieuwbouw'}},
+              {_type: 'megaMenuLink', _key: 'lnk-badkamer',   label: 'Badkamer renovatie', link: internal('service-badkamer-renovatie')},
+              {_type: 'megaMenuLink', _key: 'lnk-totaal',     label: 'Totaalrenovatie',    link: internal('service-totaalrenovatie')},
+              {_type: 'megaMenuLink', _key: 'lnk-uitbouw',    label: 'Uitbouw / aanbouw',  link: internal('service-uitbouw-aanbouw')},
+              {_type: 'megaMenuLink', _key: 'lnk-afbouw',     label: 'Afbouw nieuwbouw',   link: internal('service-afbouw-nieuwbouw')},
             ],
           },
           {
-            _type: 'megaMenuColumn', _key: 'col-installations',
-            title: 'Installations',
+            _type: 'megaMenuColumn',
+            _key: 'col-installaties',
+            title: 'Installaties',
             links: [
-              {_type: 'megaMenuLink', _key: 'lnk-floor', label: 'Underfloor heating', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/vloerverwarming'}},
-              {_type: 'megaMenuLink', _key: 'lnk-heatpump', label: 'Heat pump', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/warmtepomp'}},
-              {_type: 'megaMenuLink', _key: 'lnk-solar', label: 'Solar panels', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/zonnepanelen'}},
+              {_type: 'megaMenuLink', _key: 'lnk-vloer',      label: 'Vloerverwarming', link: internal('service-vloerverwarming')},
+              {_type: 'megaMenuLink', _key: 'lnk-warmtepomp', label: 'Warmtepomp',      link: internal('service-warmtepomp')},
+              {_type: 'megaMenuLink', _key: 'lnk-solar',      label: 'Zonnepanelen',    link: internal('service-zonnepanelen')},
             ],
           },
           {
-            _type: 'megaMenuColumn', _key: 'col-finishing',
-            title: 'Finishing',
+            _type: 'megaMenuColumn',
+            _key: 'col-afwerking',
+            title: 'Afwerking',
             links: [
-              {_type: 'megaMenuLink', _key: 'lnk-plaster', label: 'Plastering and painting', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/stuc-schilderwerk'}},
-              {_type: 'megaMenuLink', _key: 'lnk-maintenance', label: 'Maintenance', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/diensten/onderhoud'}},
+              {_type: 'megaMenuLink', _key: 'lnk-stuc',       label: 'Stuc- en schilderwerk', link: internal('service-stuc-schilderwerk')},
+              {_type: 'megaMenuLink', _key: 'lnk-onderhoud',  label: 'Onderhoud',             link: internal('service-onderhoud')},
             ],
           },
         ],
         promo: {},
       },
-      {_type: 'headerMenuItem', _key: 'menu-projects', label: 'Projects', type: 'link', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/projecten'}},
-      {_type: 'headerMenuItem', _key: 'menu-about', label: 'About us', type: 'link', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/over-ons'}},
-      {_type: 'headerMenuItem', _key: 'menu-process', label: 'Process', type: 'link', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/werkwijze'}},
-      {_type: 'headerMenuItem', _key: 'menu-business', label: 'Commercial', type: 'link', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/zakelijk'}},
-      {_type: 'headerMenuItem', _key: 'menu-contact', label: 'Contact', type: 'link', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/contact'}},
+      // /projecten and /diensten are index pages (servicesIndex / projectsIndex) — not referenceable via smartLink, kept external
+      {_type: 'headerMenuItem', _key: 'menu-projecten', label: 'Projecten', type: 'link', link: external('/projecten')},
+      {_type: 'headerMenuItem', _key: 'menu-over-ons',  label: 'Over ons',  type: 'link', link: internal('page-over-ons')},
+      {_type: 'headerMenuItem', _key: 'menu-werkwijze', label: 'Werkwijze', type: 'link', link: internal('page-werkwijze')},
+      {_type: 'headerMenuItem', _key: 'menu-zakelijk',  label: 'Zakelijk',  type: 'link', link: internal('page-zakelijk')},
+      {_type: 'headerMenuItem', _key: 'menu-contact',   label: 'Contact',   type: 'link', link: internal('page-contact')},
     ],
     headerButtons: [
-      {_type: 'headerButton', _key: 'hbtn-intake', label: 'Start intake', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/contact'}, variant: 'primary'},
-      {_type: 'headerButton', _key: 'hbtn-call', label: 'Call immediately', link: {_type: 'smartLink', linkType: 'external', externalUrl: 'tel:+31850871814'}, variant: 'outlined'},
+      btn('hbtn-intake', 'Start intake',  internal('page-contact'),           'primary'),
+      btn('hbtn-call',   'Bel direct',    external('tel:+31850871814'),        'outlined'),
     ],
     floatingActions: {
       whatsappLabel: 'WhatsApp',
@@ -84,62 +103,59 @@ async function main() {
     },
     footer: {
       brand: {
-        brandTitle: 'DRO Renovations',
-        description:
-          'Your partner for complete renovation and finishing projects. We combine craftsmanship with structure for private and commercial clients.',
+        brandTitle: 'DRO Renovaties',
+        description: 'Uw partner voor complete renovatie- en afbouwprojecten. Wij combineren vakmanschap met structuur voor particuliere en zakelijke opdrachtgevers.',
       },
       contact: {
         contactTitle: 'Contact',
-        contactAddress: 'The Hague and surroundings · Randstad',
+        contactAddress: 'Den Haag en omgeving · Randstad',
         contactPhone: '+31 85 087 1814',
         contactPhoneHref: 'tel:+31850871814',
-        contactPhoneNote: '(also via WhatsApp)',
+        contactPhoneNote: '(ook via WhatsApp)',
         contactEmail: 'info@drobouwgroep.nl',
         contactEmailHref: 'mailto:info@drobouwgroep.nl',
       },
       services: {
-        servicesTitle: 'Services',
+        servicesTitle: 'Diensten',
       },
       commercial: {
-        businessTitle: 'Commercial',
-        businessText:
-          'For real estate parties, developers, and contractors, we provide:',
+        businessTitle: 'Zakelijk',
+        businessText: 'Voor vastgoedpartijen, ontwikkelaars en aannemers leveren wij:',
         businessItems: [
-          'Project-based renovations',
-          'Serial finishing',
-          'Renovation homes',
-          'Execution to scale',
+          'Projectmatige renovaties',
+          'Seriematige afbouw',
+          'Mutatiewoningen',
+          'Uitvoering op schaal',
         ],
-        businessClosing:
-          'Implementation partner with capacity and continuity.\n\nOne party. Full execution. Full control.',
+        businessClosing: 'Uitvoeringspartner met capaciteit en continuïteit.\n\nEén partij. Volledige uitvoering. Volledige controle.',
       },
       bottom: {
-        statement: 'DRO Construction and Contracting Company',
-        copyright: '© DRO Renovations',
+        statement: 'DRO Bouw- en Aannemingsbedrijf',
+        copyright: '© DRO Renovaties',
         legalLinks: [
-          {_type: 'linkItem', _key: 'privacy', label: 'Privacy Statement', href: '/privacy'},
-          {_type: 'linkItem', _key: 'terms', label: 'General Terms and Conditions', href: '/algemene-voorwaarden'},
+          {_type: 'linkItem', _key: 'privacy', label: 'Privacyverklaring',    href: '/privacy'},
+          {_type: 'linkItem', _key: 'terms',   label: 'Algemene voorwaarden', href: '/algemene-voorwaarden'},
         ],
       },
     },
     notFound: {
-      title: 'Page not found',
-      text: 'The page no longer exists, has been moved or the address is incorrect. Go back to the homepage or start an intake directly.',
+      title: 'Pagina niet gevonden',
+      text: 'De pagina bestaat niet meer, is verplaatst of het adres klopt niet. Ga terug naar de homepage of start direct een intake.',
       buttons: [
-        {_type: 'headerButton', _key: 'btn-home', label: 'Go to homepage', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/'}, variant: 'primary'},
-        {_type: 'headerButton', _key: 'btn-intake', label: 'Start intake', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/contact'}, variant: 'outlined'},
+        btn('btn-home',   'Ga naar homepage', internal('home'),         'primary'),
+        btn('btn-intake', 'Start intake',     internal('page-contact'), 'outlined'),
       ],
     },
     footerCta: {
-      eyebrow: 'Start today',
-      title: 'Would you like a renovation with the same clarity?',
-      text: 'Start the intake. We will contact you within 24 hours.',
+      eyebrow: 'Start vandaag',
+      title: 'Wilt u een renovatie met dezelfde duidelijkheid?',
+      text: 'Start de intake. Wij nemen binnen 24 uur contact op.',
       buttons: [
-        {_type: 'headerButton', _key: 'btn-intake', label: 'Start intake', link: {_type: 'smartLink', linkType: 'external', externalUrl: '/contact'}, variant: 'primary'},
-        {_type: 'headerButton', _key: 'btn-call', label: 'Call immediately', link: {_type: 'smartLink', linkType: 'external', externalUrl: 'tel:+31850871814'}, variant: 'outlined'},
+        btn('btn-intake', 'Start intake', internal('page-contact'),    'primary'),
+        btn('btn-call',   'Bel direct',   external('tel:+31850871814'), 'outlined'),
       ],
       ratingScore: 4.8,
-      ratingLabel: '4.8 Star Rating',
+      ratingLabel: '4.8 Sterrenbeoordeling',
     },
   })
 
@@ -151,4 +167,3 @@ main().catch((err) => {
   console.error('❌ Failed:', err.message)
   process.exit(1)
 })
-// This file is append-safe — the main() above already handles siteSettings.
