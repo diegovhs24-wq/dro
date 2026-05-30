@@ -15,7 +15,7 @@ const config: Config = {
         }
       },
       fontFamily: {
-        hand: ['"Comic Sans MS"', '"Comic Sans"', "cursive"]
+        hand: ['var(--font-hand)', 'cursive']
       },
       boxShadow: {
         premium: "0 24px 70px rgba(23, 23, 23, 0.10)"

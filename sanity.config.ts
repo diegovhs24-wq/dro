@@ -9,6 +9,7 @@ import {
   structure,
 } from '@/sanity/desk/structure'
 import {schemaTypes} from '@/sanity/schemaTypes'
+import {dashboardPlugin} from '@/sanity/plugins/dashboard'
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'lxi5ttc2'
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
@@ -31,6 +32,7 @@ export default defineConfig({
   dataset,
   basePath: '/studio',
   plugins: [
+    dashboardPlugin(),
     structureTool({structure}),
     presentationTool({
       previewUrl: {
