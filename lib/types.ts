@@ -114,6 +114,11 @@ export type ServiceDetailContent = {
   eyebrow: string;
   title: string;
   intro: string;
+  backgroundImage?: string;
+  primaryLabel?: string;
+  primaryLink?: SmartLink;
+  secondaryLabel?: string;
+  secondaryLink?: SmartLink;
   sections: ServiceBlock[];
   processTitle: string;
   processText: string;

@@ -2,7 +2,7 @@ import CTASection from "@/components/CTASection";
 import GoogleReviews from "@/components/GoogleReviews";
 import PageHero from "@/components/PageHero";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
-import type {FaqItem, ReviewItem} from "@/lib/types";
+import type {FaqItem, ReviewItem, SmartLink} from "@/lib/types";
 
 type ServiceBlock = {
   title: string;
@@ -13,6 +13,11 @@ type ServicePageProps = {
   eyebrow: string;
   title: string;
   intro: string;
+  backgroundImage?: string;
+  primaryLabel?: string;
+  primaryLink?: SmartLink;
+  secondaryLabel?: string;
+  secondaryLink?: SmartLink;
   sections: ServiceBlock[];
   processTitle: string;
   processText: string;
@@ -56,6 +61,11 @@ export default function ServicePage({
   eyebrow,
   title,
   intro,
+  backgroundImage,
+  primaryLabel,
+  primaryLink,
+  secondaryLabel,
+  secondaryLink,
   sections,
   processTitle,
   processText,
@@ -66,7 +76,16 @@ export default function ServicePage({
 }: ServicePageProps) {
   return (
     <>
-      <PageHero eyebrow={eyebrow} title={title} text={intro} />
+      <PageHero
+        eyebrow={eyebrow}
+        title={title}
+        text={intro}
+        backgroundImage={backgroundImage}
+        primaryLabel={primaryLabel}
+        primaryLink={primaryLink}
+        secondaryLabel={secondaryLabel}
+        secondaryLink={secondaryLink}
+      />
 
       <section className="bg-white py-14 sm:py-16">
         <div className="section-shell grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">

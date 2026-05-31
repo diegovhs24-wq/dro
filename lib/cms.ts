@@ -461,6 +461,11 @@ const SERVICES_QUERY = `*[_type == "service"]|order(sortOrder asc, title asc){
     eyebrow,
     title,
     intro,
+    backgroundImage{${IMAGE_SOURCE_FIELDS}},
+    primaryLabel,
+    primaryLink{${SMART_LINK_FIELDS}},
+    secondaryLabel,
+    secondaryLink{${SMART_LINK_FIELDS}},
     sections[]{
       title,
       items
@@ -488,6 +493,11 @@ const SERVICE_QUERY = `*[_type == "service" && slug.current == $slug][0]{
     eyebrow,
     title,
     intro,
+    backgroundImage{${IMAGE_SOURCE_FIELDS}},
+    primaryLabel,
+    primaryLink{${SMART_LINK_FIELDS}},
+    secondaryLabel,
+    secondaryLink{${SMART_LINK_FIELDS}},
     sections[]{
       title,
       items
@@ -855,6 +865,11 @@ function mapServiceDetail(raw: RawRecord): ServiceDetailContent | null {
     eyebrow: asString(content.eyebrow),
     title: asString(content.title) || title,
     intro: asString(content.intro),
+    backgroundImage: typeof content.backgroundImage === "string" ? content.backgroundImage : undefined,
+    primaryLabel: typeof content.primaryLabel === "string" ? content.primaryLabel : undefined,
+    primaryLink: isRecord(content.primaryLink) ? content.primaryLink as SmartLink : undefined,
+    secondaryLabel: typeof content.secondaryLabel === "string" ? content.secondaryLabel : undefined,
+    secondaryLink: isRecord(content.secondaryLink) ? content.secondaryLink as SmartLink : undefined,
     sections: asArray<ServiceBlock>(content.sections),
     processTitle: asString(content.processTitle),
     processText: asString(content.processText),

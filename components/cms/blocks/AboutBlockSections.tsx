@@ -104,7 +104,7 @@ export function AboutIntroBlockSection({ content }: { content: AboutIntroContent
 
           <div className="mt-7 grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
             <div>
-              <p className="relative mx-auto w-max font-[cursive] text-2xl text-brand-ink">
+              <p className="relative mx-auto w-max font-hand text-2xl text-brand-ink">
                 {sketchLabels[0]}
                 <OrangeUnderline />
               </p>
@@ -114,7 +114,7 @@ export function AboutIntroBlockSection({ content }: { content: AboutIntroContent
               <FlowArrow />
             </div>
             <div>
-              <p className="relative mx-auto w-max font-[cursive] text-2xl text-brand-ink">
+              <p className="relative mx-auto w-max font-hand text-2xl text-brand-ink">
                 {sketchLabels[1]}
                 <OrangeUnderline />
               </p>
@@ -124,7 +124,7 @@ export function AboutIntroBlockSection({ content }: { content: AboutIntroContent
               <FlowArrow />
             </div>
             <div>
-              <p className="relative mx-auto w-max font-[cursive] text-2xl text-brand-ink">
+              <p className="relative mx-auto w-max font-hand text-2xl text-brand-ink">
                 {sketchLabels[2]}
                 <OrangeUnderline />
               </p>
@@ -132,7 +132,7 @@ export function AboutIntroBlockSection({ content }: { content: AboutIntroContent
             </div>
           </div>
 
-          <p className="mx-auto mt-2 max-w-2xl text-center font-[cursive] text-xl leading-tight text-brand-ink sm:text-2xl">
+          <p className="mx-auto mt-2 max-w-2xl text-center font-hand text-xl leading-tight text-brand-ink sm:text-2xl">
             <ClosingText text={content.sketchClosing} />
           </p>
         </div>
