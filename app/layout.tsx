@@ -1,27 +1,16 @@
-import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
-import "./globals.css";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap"
-});
+import type {Metadata} from 'next'
 
 export const metadata: Metadata = {
-  title: "Renovatiebedrijf | DRO Renovaties",
-  description:
-    "DRO Renovaties helpt huiseigenaren met duidelijke afspraken, strakke planning en professionele uitvoering van renovaties."
-};
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+}
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({children}: Readonly<{children: React.ReactNode}>) {
   return (
     <html lang="nl">
-      <body className={poppins.className}>{children}</body>
+      <head>
+        <link href="https://cdn.sanity.io" rel="preconnect" />
+      </head>
+      <body>{children}</body>
     </html>
-  );
+  )
 }

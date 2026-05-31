@@ -1,6 +1,8 @@
 type GoogleRatingBadgeProps = {
   compact?: boolean;
   variant?: "light" | "dark";
+  ratingScore?: number;
+  ratingLabel?: string;
 };
 
 const googleLetters = [
@@ -14,16 +16,20 @@ const googleLetters = [
 
 export default function GoogleRatingBadge({
   compact = false,
-  variant = "light"
+  variant = "light",
+  ratingScore = 4.8,
+  ratingLabel = "4.8 Star Rating",
 }: GoogleRatingBadgeProps) {
   const muted = variant === "dark" ? "text-white/70" : "text-neutral-500";
+  const filledStars = Math.min(5, Math.max(0, Math.round(ratingScore)));
+  const stars = "★".repeat(filledStars) + "☆".repeat(5 - filledStars);
 
   return (
     <div
       className={`inline-flex items-center gap-4 rounded-lg ${
         compact ? "px-0 py-0" : "bg-white/95 px-4 py-3 shadow-sm"
       }`}
-      aria-label="Google 4.8 Star Rating"
+      aria-label={`Google ${ratingLabel}`}
     >
       <div>
         <div
@@ -43,10 +49,10 @@ export default function GoogleRatingBadge({
             className={`leading-none text-[#fbbc05] ${compact ? "text-base" : "text-2xl"}`}
             aria-hidden="true"
           >
-            ★★★★★
+            {stars}
           </span>
           <span className={`font-bold ${compact ? "text-sm" : "text-lg"} ${muted}`}>
-            4.8 Star Rating
+            {ratingLabel}
           </span>
         </div>
       </div>

@@ -15,6 +15,9 @@ body {
   margin: 0;
   background: #ffffff;
   color: #171717;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {

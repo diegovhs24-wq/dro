@@ -1,57 +1,39 @@
 import GoogleRatingBadge from "@/components/GoogleRatingBadge";
 import IntakeWizard from "@/components/IntakeWizard";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
+import type {HomeHeroContent} from "@/lib/types";
 
-const coverageText =
-  "Dekking in Zuid-Holland, Noord-Holland, Utrecht en een deel van Zeeland dankzij meerdere opstartlocaties";
+type HeroProps = {
+  content: HomeHeroContent;
+};
 
-const trustItems: Array<{ title: string; icon: SketchIconName }> = [
-  { title: "Eén aanspreekpunt", icon: "contact" },
-  { title: "Strakke planning", icon: "planning" },
-  { title: "Geen verrassingen", icon: "shield" }
-];
-
-const processSteps: Array<{
-  title: string;
+function MultilineText({
+  text,
+  breakClassName = ""
+}: {
   text: string;
-  icon: SketchIconName;
-}> = [
-  {
-    title: "1. Idee",
-    text: "U heeft een idee of wens. Wij denken direct met u mee.",
-    icon: "idea"
-  },
-  {
-    title: "2. Gesprek",
-    text: "We bespreken uw situatie en geven eerlijk advies.",
-    icon: "talk"
-  },
-  {
-    title: "3. Plan",
-    text: "U ontvangt een helder plan en een transparante offerte.",
-    icon: "checklist"
-  },
-  {
-    title: "4. Uitvoering",
-    text: "Ons team voert het werk uit volgens planning en afspraak.",
-    icon: "tools"
-  },
-  {
-    title: "5. Oplevering",
-    text: "We leveren netjes op. Alles gecontroleerd en afgerond.",
-    icon: "delivery"
-  }
-];
+  breakClassName?: string;
+}) {
+  return (
+    <>
+      {text.split("\n").map((line, index) => (
+        <span key={`${line}-${index}`}>
+          {index > 0 ? <br className={breakClassName} /> : null}
+          {line}
+        </span>
+      ))}
+    </>
+  );
+}
 
-export default function Hero() {
+export default function Hero({content}: HeroProps) {
   return (
     <>
       <section className="relative isolate overflow-hidden bg-neutral-950 text-white">
         <div
           className="absolute inset-0 -z-20 bg-cover bg-center opacity-70"
           style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=85')"
+            backgroundImage: `url('${content.backgroundImage}')`
           }}
         />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_70%_38%,rgba(255,255,255,0.10),transparent_24%),linear-gradient(90deg,rgba(0,0,0,0.92),rgba(0,0,0,0.72)_46%,rgba(0,0,0,0.55))]" />
@@ -59,29 +41,28 @@ export default function Hero() {
         <div className="section-shell grid min-h-[680px] gap-10 py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
           <div className="animate-float-in">
             <p className="font-hand max-w-2xl text-base leading-7 text-brand-orange sm:text-lg">
-              {coverageText}
+              {content.coverageText}
             </p>
             <div className="mt-2 h-1 w-56 rounded-full bg-brand-orange" />
 
             <h1 className="mt-7 max-w-4xl text-[2.75rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-[3.55rem] lg:text-[4.45rem]">
-              Wij regelen uw
-              <span className="block text-brand-orange">verbouwing.</span>
+              {content.headlineTop}
+              <span className="block text-brand-orange">{content.headlineHighlight}</span>
               <span className="relative inline-block">
-                Van A tot Z.
+                {content.headlineBottom}
                 <span className="absolute -bottom-2 left-[52%] h-1.5 w-28 -translate-x-1/2 rotate-[-3deg] rounded-full bg-white" />
               </span>
             </h1>
 
             <p className="mt-6 max-w-2xl text-base font-medium leading-8 text-white/80 sm:text-[17px]">
-              Eén aanspreekpunt. Strakke planning. Vaste teams.
-              <br className="hidden sm:block" /> Geen verrassingen achteraf.
+              <MultilineText text={content.description} breakClassName="hidden sm:block" />
             </p>
 
             <div className="mt-7 grid max-w-2xl gap-5 sm:grid-cols-3">
-              {trustItems.map((item) => (
+              {content.trustItems.map((item) => (
                 <div className="flex items-center gap-3" key={item.title}>
                   <SketchIcon
-                    name={item.icon}
+                    name={item.icon as SketchIconName}
                     className="h-8 w-8 shrink-0 text-brand-orange"
                   />
                   <span className="text-sm font-medium leading-5 text-white/80">
@@ -92,69 +73,38 @@ export default function Hero() {
             </div>
 
             <p className="font-hand mt-7 max-w-2xl text-[17px] leading-8 text-white/80">
-              Past uw project bij ons? Dan gaan we all-in.
-              <br /> Past het niet? Dan zeggen we dat eerlijk.
+              <MultilineText text={content.note} />
             </p>
           </div>
 
-          <div className="rounded-2xl bg-[#fbf8f2] p-5 text-brand-ink shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-6 lg:max-w-[500px] lg:justify-self-end">
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <h2 className="text-2xl font-extrabold tracking-[-0.03em]">
-                Start uw project
-              </h2>
-              <span className="font-hand text-lg text-brand-orange">
-                (1 minuut)
-              </span>
+          {content.intakeForm ? (
+            <div className="rounded-2xl bg-[#fbf8f2] p-5 text-brand-ink shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-6 lg:max-w-[500px] lg:justify-self-end">
+              <IntakeWizard compact embedded config={content.intakeForm} />
             </div>
-            <p className="mt-3 text-sm font-semibold leading-6 text-neutral-500">
-              Beantwoord stap voor stap en ontvang binnen 24 uur duidelijkheid.
-            </p>
-
-            <div className="mt-5">
-              <IntakeWizard compact embedded />
-            </div>
-
-            <p className="mt-5 flex gap-3 text-sm font-semibold leading-6 text-neutral-500">
-              <SketchIcon
-                name="shield"
-                className="mt-0.5 h-6 w-6 shrink-0 text-neutral-500"
-              />
-              Wij nemen altijd contact op. Ook als uw project niet bij ons past.
-            </p>
-          </div>
+          ) : null}
         </div>
 
         <div className="border-t border-white/10 bg-black/35 backdrop-blur-md">
           <div className="section-shell grid gap-5 py-5 text-sm sm:grid-cols-3">
-            <div className="flex items-center gap-4">
-              <GoogleRatingBadge compact variant="dark" />
-              <div>
-                <p className="font-black text-white">
-                  273+ reviews
-                </p>
-                <p className="text-white/60">Klanten beoordelen ons met 4.8/5</p>
+            {content.stats.map((stat, index) => (
+              <div
+                className={`flex items-center gap-4 border-white/10 ${index > 0 ? "sm:border-l sm:pl-9" : ""}`}
+                key={`${stat.value}-${stat.label}`}
+              >
+                {stat.rating ? (
+                  <GoogleRatingBadge compact variant="dark" />
+                ) : (
+                  <SketchIcon
+                    name={(stat.icon || "team") as SketchIconName}
+                    className="h-10 w-10 shrink-0 text-brand-orange"
+                  />
+                )}
+                <div>
+                  <p className="font-black text-white">{stat.value}</p>
+                  <p className="text-white/60">{stat.label}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4 border-white/10 sm:border-l sm:pl-9">
-              <SketchIcon
-                name="team"
-                className="h-10 w-10 shrink-0 text-brand-orange"
-              />
-              <div>
-                <p className="font-black text-white">100+</p>
-                <p className="text-white/60">Projecten succesvol opgeleverd</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 border-white/10 sm:border-l sm:pl-9">
-              <SketchIcon
-                name="planning"
-                className="h-10 w-10 shrink-0 text-brand-orange"
-              />
-              <div>
-                <p className="font-black text-white">Binnen 24 uur</p>
-                <p className="text-white/60">Duidelijkheid over uw project</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -163,13 +113,11 @@ export default function Hero() {
         <div className="section-shell grid gap-5 lg:grid-cols-[1.1fr_repeat(5,1fr)] lg:items-center">
           <div>
             <p className="font-hand text-xl leading-7 text-brand-ink">
-              Duidelijk. Gestructureerd.
-              <br />
-              Zo werken wij.
+              <MultilineText text={content.processIntro} />
             </p>
             <div className="mt-2 h-1 w-44 rounded-full bg-brand-orange" />
           </div>
-          {processSteps.map((step, index) => (
+          {content.processSteps.map((step, index) => (
             <div className="relative" key={step.title}>
               {index > 0 ? (
                 <span className="font-hand absolute -left-6 top-8 hidden text-3xl text-brand-orange lg:block">
@@ -177,7 +125,7 @@ export default function Hero() {
                 </span>
               ) : null}
               <SketchIcon
-                name={step.icon}
+                name={step.icon as SketchIconName}
                 className="h-12 w-12 text-brand-ink"
               />
               <h3 className="font-hand mt-2 text-lg font-normal text-brand-ink">
