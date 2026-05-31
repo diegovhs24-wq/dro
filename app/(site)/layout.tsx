@@ -1,5 +1,5 @@
 import type {Metadata, Viewport} from 'next'
-import {Caveat, Poppins} from 'next/font/google'
+import {Patrick_Hand, Poppins} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {VisualEditing} from 'next-sanity'
 import Footer from '@/components/Footer'
@@ -17,9 +17,9 @@ const poppins = Poppins({
   display: 'swap',
 })
 
-const caveat = Caveat({
+const patrickHand = Patrick_Hand({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: '400',
   display: 'swap',
   variable: '--font-hand',
 })
@@ -55,7 +55,7 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
   const {isEnabled: isDraftMode} = draftMode()
 
   return (
-    <div className={`${poppins.className} ${caveat.variable}`}>
+    <div className={`${poppins.className} ${patrickHand.variable}`}>
       <JsonLd data={buildJsonLdGraph(organizationGraph)} />
       <Header siteSettings={siteSettings} />
       {children}

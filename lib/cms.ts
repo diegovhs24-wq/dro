@@ -150,9 +150,36 @@ const INDEX_CONTENT_BLOCKS = `
       bannerTitle, bannerButtonLabel, bannerButtonLink{${SMART_LINK_FIELDS}}
     },
     _type == "textBlock" => { eyebrow, title, description },
+    _type == "servicesListingBlock" => { limit, layout },
+    _type == "projectsListingBlock" => { limit },
+    _type == "featuredServicesBlock" => {
+      eyebrow, title, viewAllLabel, viewAllLink{${SMART_LINK_FIELDS}},
+      services[]->{
+        title,
+        "slug": slug.current,
+        "href": "/diensten/" + slug.current,
+        summary,
+        "image": cardImage{${IMAGE_SOURCE_FIELDS}},
+        icon,
+        label
+      }
+    },
+    _type == "featuredProjectsBlock" => {
+      eyebrow, title, viewAllLabel, viewAllLink{${SMART_LINK_FIELDS}},
+      projects[]->{
+        title,
+        "slug": slug.current,
+        description,
+        before,
+        after,
+        "beforeImage": beforeImage{${IMAGE_SOURCE_FIELDS}},
+        "afterImage": afterImage{${IMAGE_SOURCE_FIELDS}}
+      }
+    },
     _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonLink{${SMART_LINK_FIELDS}}, items[]{${ICON_TEXT_FIELDS}} },
     _type == "partnersBlock" => { eyebrow, title, text },
     _type == "googleReviewsBlock" => { limit, compact },
+    _type == "ctaBannerBlock" => { cta{${CTA_FIELDS}} },
     _type == "contactFormBlock" => { eyebrow, title, text, note, ${INTAKE_FORM_FIELDS} },
     _type == "aboutIntroBlock" => { eyebrow, title, intro, sketchLabels, sketchClosing, introItems[]{${ICON_TEXT_FIELDS}} },
     _type == "aboutTeamBlock" => { teamEyebrow, teamTitle, coreTeam[]{ name, role, image{${IMAGE_SOURCE_FIELDS}}, text }, teamBanner },
@@ -164,19 +191,22 @@ const INDEX_CONTENT_BLOCKS = `
   }
 `;
 
-const SERVICES_INDEX_QUERY = `*[_type == "servicesIndex"][0]{
+const INDEX_PAGE_FIELDS = `
   title,
   ${INDEX_CONTENT_BLOCKS},
   listingSettings{ limit, layout },
   seo{${SEO_FIELDS}}
-}`;
+`;
 
-const PROJECTS_INDEX_QUERY = `*[_type == "projectsIndex"][0]{
-  title,
-  ${INDEX_CONTENT_BLOCKS},
-  listingSettings{ limit, layout },
-  seo{${SEO_FIELDS}}
-}`;
+const SERVICES_INDEX_QUERY = `coalesce(
+  *[_id == "servicesIndex"][0]{${INDEX_PAGE_FIELDS}},
+  *[_type == "servicesIndex"][0]{${INDEX_PAGE_FIELDS}}
+)`;
+
+const PROJECTS_INDEX_QUERY = `coalesce(
+  *[_id == "projectsIndex"][0]{${INDEX_PAGE_FIELDS}},
+  *[_type == "projectsIndex"][0]{${INDEX_PAGE_FIELDS}}
+)`;
 
 const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
   _id,

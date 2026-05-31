@@ -33,7 +33,7 @@ const client = createClient({
   projectId: getProjectId(),
   dataset: getDataset(),
   apiVersion,
-  useCdn: true,
+  useCdn: process.env.NODE_ENV === 'production',
   perspective: 'published',
 })
 
@@ -72,7 +72,7 @@ export async function fetchSanity<T>(
   }
 
   return client.fetch<T>(query, params, {
-    next: {revalidate: options.revalidate ?? 60},
+    next: {revalidate: process.env.NODE_ENV === 'production' ? (options.revalidate ?? 60) : 0},
   })
 }
 

@@ -162,7 +162,7 @@ export const smartLink = defineType({
       name: 'internalRef',
       title: 'Page / Service / Project',
       type: 'reference',
-      to: [{type: 'page'}, {type: 'service'}, {type: 'project'}],
+      to: [{type: 'page'}, {type: 'servicesIndex'}, {type: 'projectsIndex'}, {type: 'service'}, {type: 'project'}],
       hidden: ({parent}) => parent?.linkType !== 'internal',
     }),
     defineField({

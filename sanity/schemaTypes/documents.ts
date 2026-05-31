@@ -350,8 +350,6 @@ export const partner = defineType({
   fields: [
     defineField({name: 'name', title: 'Name', type: 'string', validation: (Rule) => Rule.required()}),
     defineField({name: 'image', title: 'Logo', type: 'cmsImage'}),
-    defineField({name: 'accent', title: 'Fallback Accent Classes', type: 'string'}),
-    defineField({name: 'sortOrder', title: 'Sort Order', type: 'number'}),
   ],
   preview: {
     select: {title: 'name', media: 'image.image'},
