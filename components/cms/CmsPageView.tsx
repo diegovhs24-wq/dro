@@ -31,23 +31,83 @@ import type {
   IconCardsBlock,
 } from "@/lib/cms";
 
+function renderSpan(span: NonNullable<PtBlock['children']>[number], markDefs: NonNullable<PtBlock['markDefs']>, si: number): React.ReactNode {
+  const marks = span.marks || [];
+  let node: React.ReactNode = span.text;
+
+  // Apply decorators (innermost first so nesting is correct)
+  if (marks.includes('underline')) node = <u>{node}</u>;
+  if (marks.includes('em')) node = <em>{node}</em>;
+  if (marks.includes('strong')) node = <strong>{node}</strong>;
+
+  // Apply annotation marks (links etc.)
+  for (const markKey of marks) {
+    const def = markDefs.find((d) => d._key === markKey);
+    if (def?._type === 'link' && def.href) {
+      const isExternal = def.href.startsWith('http');
+      node = (
+        <a
+          href={def.href}
+          target={isExternal ? '_blank' : undefined}
+          rel={isExternal ? 'noopener noreferrer' : undefined}
+          className="font-semibold text-brand-orange underline underline-offset-2 hover:text-brand-ink"
+        >
+          {node}
+        </a>
+      );
+    }
+  }
+
+  return <span key={si}>{node}</span>;
+}
+
 function RichDescription({blocks}: {blocks: PtBlock[]}) {
+  const nodes: React.ReactNode[] = [];
+  let i = 0;
+
+  while (i < blocks.length) {
+    const block = blocks[i];
+    const markDefs = block.markDefs ?? [];
+
+    // Collect consecutive list items of the same type
+    if (block.listItem === 'bullet' || block.listItem === 'number') {
+      const listType = block.listItem;
+      const listItems: React.ReactNode[] = [];
+
+      while (i < blocks.length && blocks[i].listItem === listType) {
+        const b = blocks[i];
+        const children = (b.children || []).map((span, si) => renderSpan(span, b.markDefs ?? [], si));
+        listItems.push(<li key={b._key}>{children}</li>);
+        i++;
+      }
+
+      const Tag = listType === 'number' ? 'ol' : 'ul';
+      const listClass =
+        listType === 'number'
+          ? 'list-decimal pl-5 space-y-1'
+          : 'list-disc pl-5 space-y-1';
+      nodes.push(<Tag key={`list-${i}`} className={listClass}>{listItems}</Tag>);
+      continue;
+    }
+
+    // Regular block
+    const children = (block.children || []).map((span, si) => renderSpan(span, markDefs, si));
+    const style = block.style;
+
+    if (style === 'h3') {
+      nodes.push(<h3 key={block._key} className="text-xl font-bold text-brand-ink">{children}</h3>);
+    } else if (style === 'h4') {
+      nodes.push(<h4 key={block._key} className="text-lg font-bold text-brand-ink">{children}</h4>);
+    } else {
+      nodes.push(<p key={block._key}>{children}</p>);
+    }
+
+    i++;
+  }
+
   return (
     <div className="mt-5 max-w-3xl space-y-4 text-base font-semibold leading-7 text-neutral-600">
-      {blocks.map((block, bi) => {
-        const children = (block.children || []).map((span, si) => {
-          const marks = span.marks || [];
-          let node: React.ReactNode = span.text;
-          if (marks.includes('strong')) node = <strong key={si}>{node}</strong>;
-          if (marks.includes('em')) node = <em key={si}>{node}</em>;
-          if (marks.includes('underline')) node = <u key={si}>{node}</u>;
-          return <span key={si}>{node}</span>;
-        });
-        const style = block.style;
-        if (style === 'h3') return <h3 key={bi} className="text-xl font-bold text-brand-ink">{children}</h3>;
-        if (style === 'h4') return <h4 key={bi} className="text-lg font-bold text-brand-ink">{children}</h4>;
-        return <p key={bi}>{children}</p>;
-      })}
+      {nodes}
     </div>
   );
 }

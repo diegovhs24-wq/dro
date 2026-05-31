@@ -187,7 +187,7 @@ function FormHeader({ config }: { config: IntakeFormConfig }) {
           {config.timeLabel}
         </span>
       </div>
-      <p className="mt-3 text-sm font-semibold leading-6 text-neutral-500">
+      <p className="mt-3 text-sm font-semibold leading-6 text-brand-ink">
         {config.description}
       </p>
     </>
@@ -197,8 +197,8 @@ function FormHeader({ config }: { config: IntakeFormConfig }) {
 function FormFooter({ config }: { config: IntakeFormConfig }) {
   if (!config.privacyText) return null;
   return (
-    <p className="mt-5 flex gap-3 text-sm font-semibold leading-6 text-neutral-500">
-      <svg className="mt-0.5 h-6 w-6 shrink-0 text-neutral-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+    <p className="mt-5 flex gap-3 text-sm font-semibold leading-6 text-brand-ink">
+      <svg className="mt-0.5 h-6 w-6 shrink-0 text-brand-ink" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
         <path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
       {config.privacyText}
@@ -300,7 +300,7 @@ export default function IntakeWizard({ compact = false, embedded = false, config
       <FormHeader config={config} />
 
       <div className="mb-5 mt-5">
-        <div className="flex items-center justify-between gap-4 text-xs font-bold uppercase tracking-[0.16em] text-neutral-500">
+        <div className="flex items-center justify-between gap-4 text-xs font-bold uppercase tracking-[0.16em] text-brand-ink">
           <span>Stap {step + 1} van {steps.length}</span>
           <span>{progress}%</span>
         </div>
@@ -313,7 +313,7 @@ export default function IntakeWizard({ compact = false, embedded = false, config
         <h3 className={`${compact ? "text-xl" : "text-2xl"} font-bold tracking-tight text-brand-ink`}>
           {currentStep.title}
         </h3>
-        <p className="mt-2 text-sm font-semibold leading-6 text-neutral-600">
+        <p className="mt-2 text-sm font-semibold leading-6 text-brand-ink">
           {currentStep.subtitle}
         </p>
       </div>
@@ -330,7 +330,7 @@ export default function IntakeWizard({ compact = false, embedded = false, config
 
       <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
-          className="rounded-md px-4 py-3 text-sm font-bold text-neutral-500 transition hover:bg-black/5 disabled:pointer-events-none disabled:opacity-30"
+          className="rounded-md px-4 py-3 text-sm font-bold text-brand-ink transition hover:bg-black/5 disabled:pointer-events-none disabled:opacity-30"
           disabled={step === 0}
           onClick={() => setStep((current) => Math.max(current - 1, 0))}
           type="button"

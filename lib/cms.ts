@@ -612,7 +612,8 @@ export type ProblemSolutionBlock = CmsBaseBlock & {
 } & ProblemSolutionContent;
 
 type PtSpan = {_type: 'span'; _key: string; text: string; marks?: string[]};
-export type PtBlock = {_type: 'block'; _key: string; style?: string; children?: PtSpan[]; markDefs?: unknown[]};
+type PtMarkDef = {_key: string; _type: string; href?: string};
+export type PtBlock = {_type: 'block'; _key: string; style?: string; listItem?: 'bullet' | 'number'; level?: number; children?: PtSpan[]; markDefs?: PtMarkDef[]};
 
 export type TextBlock = CmsBaseBlock & {
   _type: "textBlock";
