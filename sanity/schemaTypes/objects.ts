@@ -19,6 +19,7 @@ import {
   InlineIcon,
   CaseIcon,
   StarIcon,
+  PlayIcon,
 } from '@sanity/icons'
 
 const iconOptions = [
@@ -1267,6 +1268,53 @@ export const businessContentBlock = defineType({
   },
 })
 
+export const videoChecklistBlock = defineType({
+  name: 'videoChecklistBlock',
+  title: 'Video Checklist Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/video-checklist.jpeg'),
+  fields: [
+    defineField({
+      name: 'lists',
+      title: 'Checklists',
+      type: 'array',
+      validation: (Rule) => Rule.max(2),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({
+              name: 'icon',
+              title: 'Icon',
+              type: 'string',
+              options: {list: iconOptions.map((value) => ({title: value, value}))},
+            }),
+            defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required()}),
+            defineField({name: 'items', title: 'Items', type: 'array', of: [defineArrayMember({type: 'string'})]}),
+          ],
+          preview: {
+            select: {title: 'title', subtitle: 'icon'},
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'videoUrl',
+      title: 'YouTube Video URL',
+      type: 'url',
+      description: 'Paste the full YouTube link, e.g. https://www.youtube.com/watch?v=...',
+      validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
+    }),
+    defineField({name: 'videoCaption', title: 'Video Caption', type: 'string'}),
+  ],
+  preview: {
+    select: {title: 'videoCaption'},
+    prepare({title}) {
+      return {title: title || 'Video Checklist Block', media: PlayIcon}
+    },
+  },
+})
+
 export const objectSchemaTypes = [
   cmsImage,
   seoSettings,
@@ -1310,4 +1358,5 @@ export const objectSchemaTypes = [
   processFaqBlock,
   processIntakeBannerBlock,
   businessContentBlock,
+  videoChecklistBlock,
 ]

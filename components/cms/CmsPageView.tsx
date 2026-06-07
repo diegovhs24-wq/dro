@@ -12,6 +12,7 @@ import {
   AboutTeamImageBlockSection
 } from "@/components/cms/blocks/AboutBlockSections";
 import BusinessContentBlockSection from "@/components/cms/blocks/BusinessContentBlockSection";
+import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
 import GoogleReviewsBlockSection from "@/components/cms/blocks/GoogleReviewsBlockSection";
 import PartnersBlockSection from "@/components/cms/blocks/PartnersBlockSection";
 import ProblemSolutionBlockSection from "@/components/cms/blocks/ProblemSolutionBlockSection";
@@ -234,6 +235,8 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
       return <ProcessIntakeBannerBlockSection content={block} />;
     case "businessContentBlock":
       return <BusinessContentBlockSection content={block} />;
+    case "videoChecklistBlock":
+      return <VideoChecklistBlockSection content={block} />;
     case "featuredServicesBlock":
       return <FeaturedServicesBlockSection block={block as FeaturedServicesBlock} />;
     case "featuredProjectsBlock":

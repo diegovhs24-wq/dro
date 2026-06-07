@@ -18,6 +18,7 @@ const pageBlockTypes = [
   'processFaqBlock',
   'processIntakeBannerBlock',
   'businessContentBlock',
+  'videoChecklistBlock',
 ] as const
 
 export const contentBlocksField = defineField({
@@ -47,6 +48,7 @@ export const contentBlocksField = defineField({
             'processFaqBlock',
             'processIntakeBannerBlock',
             'businessContentBlock',
+            'videoChecklistBlock',
           ],
         },
         {

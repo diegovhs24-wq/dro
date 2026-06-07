@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import PageStructuredData from "@/components/seo/PageStructuredData";
+import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
 import {
   getProjectBySlug,
   getProjects,
@@ -144,6 +145,10 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
             <p className="mt-7 text-lg leading-9 text-neutral-700">{project.story}</p>
           </div>
         </section>
+
+        {project.videoChecklist?.[0] && (
+          <VideoChecklistBlockSection content={project.videoChecklist[0]} />
+        )}
 
       </main>
     </>

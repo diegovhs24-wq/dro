@@ -128,6 +128,16 @@ export type ServiceDetailContent = {
   seo?: SeoSettings;
 };
 
+export type VideoChecklistItem = {
+  lists?: Array<{
+    icon?: string;
+    title?: string;
+    items?: string[];
+  }>;
+  videoUrl?: string;
+  videoCaption?: string;
+};
+
 export type ProjectItem = {
   title: string;
   slug: string;
@@ -142,6 +152,7 @@ export type ProjectItem = {
   after: string;
   beforeImage?: string;
   afterImage?: string;
+  videoChecklist?: VideoChecklistItem[];
   href?: string;
   seo?: SeoSettings;
 };

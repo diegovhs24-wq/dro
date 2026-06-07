@@ -27,6 +27,7 @@ import type {
   ContactPageContent,
   ListingPageContent,
   ProcessPageContent,
+  VideoChecklistItem,
 } from "@/lib/types";
 
 const IMAGE_SOURCE_FIELDS = `
@@ -187,7 +188,8 @@ const INDEX_CONTENT_BLOCKS = `
     _type == "processBlock" => { eyebrow, titlePrefix, titleHighlight, intro, note, sideNote, steps[]{ title, text, note, icon }, benefits[]{${ICON_TEXT_FIELDS}}, trustPoints[]{${ICON_TEXT_FIELDS}} },
     _type == "processFaqBlock" => { faqEyebrow, faqTitle, faqIntro, faqs[]->{question, "answer": pt::text(answer)} },
     _type == "processIntakeBannerBlock" => { intakeBannerTitle, intakeBannerText, buttonLabel, buttonLink{${SMART_LINK_FIELDS}} },
-    _type == "businessContentBlock" => { positionEyebrow, positionTitle, positionText, positionBanner, capacity, cards[]{ eyebrow, title, items } }
+    _type == "businessContentBlock" => { positionEyebrow, positionTitle, positionText, positionBanner, capacity, cards[]{ eyebrow, title, items } },
+    _type == "videoChecklistBlock" => { lists[]{ icon, title, items }, videoUrl, videoCaption }
   }
 `;
 
@@ -360,6 +362,15 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
         title,
         items
       }
+    },
+    _type == "videoChecklistBlock" => {
+      lists[]{
+        icon,
+        title,
+        items
+      },
+      videoUrl,
+      videoCaption
     }
   }
 }`;
@@ -544,6 +555,11 @@ const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
   after,
   beforeImage{${IMAGE_SOURCE_FIELDS}},
   afterImage{${IMAGE_SOURCE_FIELDS}},
+  videoChecklist[]{
+    lists[]{ icon, title, items },
+    videoUrl,
+    videoCaption
+  },
   seo{${SEO_FIELDS}}
 }`;
 
@@ -732,6 +748,10 @@ export type BusinessContentBlock = CmsBaseBlock & {
   "positionEyebrow" | "positionTitle" | "positionText" | "positionBanner" | "capacity" | "cards"
 >;
 
+export type VideoChecklistBlock = CmsBaseBlock & {
+  _type: "videoChecklistBlock";
+} & VideoChecklistItem;
+
 export type CmsDynamicPageBlock =
   | HomeHeroBlock
   | PageHeroBlock
@@ -752,7 +772,8 @@ export type CmsDynamicPageBlock =
   | ProcessBlock
   | ProcessFaqBlock
   | ProcessIntakeBannerBlock
-  | BusinessContentBlock;
+  | BusinessContentBlock
+  | VideoChecklistBlock;
 
 export type CmsDynamicPage = {
   _id?: string;
@@ -905,6 +926,7 @@ function toProject(raw: RawRecord): ProjectItem | null {
     after: normalized.after || "",
     beforeImage: normalized.beforeImage,
     afterImage: normalized.afterImage,
+    videoChecklist: Array.isArray(normalized.videoChecklist) ? normalized.videoChecklist as VideoChecklistItem[] : [],
     seo: mapSeo(raw.seo),
   };
 }

@@ -320,6 +320,15 @@ export const project = defineType({
     defineField({name: 'story', title: 'Project Story', type: 'text', rows: 5, group: 'detail'}),
     defineField({name: 'images', title: 'Detail Images', type: 'array', of: [defineArrayMember({type: 'cmsImage'})], group: 'detail'}),
     defineField({name: 'work_items', title: 'Work Items', type: 'array', of: [defineArrayMember({type: 'string'})], group: 'detail'}),
+    defineField({
+      name: 'videoChecklist',
+      title: 'Video Checklist Section',
+      type: 'array',
+      description: 'Optional — add a checklist + video section to this project. Leave empty to hide it on the page.',
+      of: [defineArrayMember({type: 'videoChecklistBlock'})],
+      validation: (Rule) => Rule.max(1),
+      group: 'detail',
+    }),
     defineField({name: 'seo', title: 'SEO', type: 'seoSettings', group: 'seo'}),
   ],
   preview: {
