@@ -1310,7 +1310,7 @@ export const videoChecklistBlock = defineType({
   preview: {
     select: {title: 'videoCaption'},
     prepare({title}) {
-      return {title: title || 'Video Checklist Block', media: PlayIcon}
+      return {title: title || 'Video Checklist Block', media: blockPreview('/block-previews/video-checklist.jpeg')}
     },
   },
 })

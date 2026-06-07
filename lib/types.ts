@@ -89,7 +89,7 @@ export type ServiceSummary = {
 export type ReviewItem = {
   name: string;
   location: string;
-  image: string;
+  image?: string;
   quote: string;
 };
 

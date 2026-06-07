@@ -1,6 +1,14 @@
 import GoogleRatingBadge from "@/components/GoogleRatingBadge";
-import SketchIcon from "@/components/SketchIcon";
 import type {ReviewItem} from "@/lib/types";
+
+function getInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
 
 type GoogleReviewsProps = {
   reviews: ReviewItem[];
@@ -44,11 +52,20 @@ export default function GoogleReviews({
               key={`${review.name}-${review.location}`}
             >
               <div className="flex items-center gap-3">
-                <img
-                  alt={`${review.name} Google review`}
-                  className="h-11 w-11 rounded-full object-cover"
-                  src={review.image}
-                />
+                {review.image ? (
+                  <img
+                    alt={`${review.name} Google review`}
+                    className="h-11 w-11 rounded-full object-cover"
+                    src={review.image}
+                  />
+                ) : (
+                  <div
+                    aria-hidden="true"
+                    className="grid h-11 w-11 place-items-center rounded-full bg-brand-orange text-sm font-bold text-white"
+                  >
+                    {getInitials(review.name)}
+                  </div>
+                )}
                 <figcaption>
                   <p className="font-bold text-brand-ink">{review.name}</p>
                   <p className="text-xs font-semibold text-neutral-500">
@@ -58,7 +75,9 @@ export default function GoogleReviews({
               </div>
               <div className="mt-4 flex gap-1 text-brand-orange" aria-label="5 sterren">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <SketchIcon key={index} name="quality" className="h-4 w-4" />
+                  <span aria-hidden="true" className="text-base leading-none" key={index}>
+                    ★
+                  </span>
                 ))}
               </div>
               <blockquote className="mt-3 text-sm font-semibold leading-6 text-neutral-700">
