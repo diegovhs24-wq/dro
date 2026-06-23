@@ -168,7 +168,7 @@ export const smartLink = defineType({
       type: 'string',
       options: {
         list: [
-          {title: 'Internal — select a page, service or project', value: 'internal'},
+          {title: 'Internal — select a page, service, project or blog post', value: 'internal'},
           {title: 'External — enter a URL', value: 'external'},
         ],
         layout: 'radio',
@@ -180,7 +180,16 @@ export const smartLink = defineType({
       name: 'internalRef',
       title: 'Page / Service / Project',
       type: 'reference',
-      to: [{type: 'page'}, {type: 'servicesIndex'}, {type: 'projectsIndex'}, {type: 'service'}, {type: 'project'}],
+      to: [
+        {type: 'page'},
+        {type: 'servicesIndex'},
+        {type: 'projectsIndex'},
+        {type: 'blogsIndex'},
+        {type: 'service'},
+        {type: 'project'},
+        {type: 'blogPost'},
+        {type: 'blogCategory'},
+      ],
       hidden: ({parent}) => parent?.linkType !== 'internal',
     }),
     defineField({

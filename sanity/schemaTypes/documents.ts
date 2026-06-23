@@ -317,6 +317,10 @@ export const project = defineType({
     defineField({name: 'after', title: 'After Label', type: 'string', group: 'summary'}),
     defineField({name: 'beforeImage', title: 'Card Before Image', type: 'cmsImage', group: 'summary'}),
     defineField({name: 'afterImage', title: 'Card After Image', type: 'cmsImage', group: 'summary'}),
+    defineField({name: 'primaryLabel', title: 'Primary Button Label', type: 'string', group: 'detail'}),
+    defineField({name: 'primaryLink', title: 'Primary Button Link', type: 'smartLink', group: 'detail'}),
+    defineField({name: 'secondaryLabel', title: 'Secondary Button Label', type: 'string', group: 'detail'}),
+    defineField({name: 'secondaryLink', title: 'Secondary Button Link', type: 'smartLink', group: 'detail'}),
     defineField({name: 'story', title: 'Project Story', type: 'text', rows: 5, group: 'detail'}),
     defineField({name: 'images', title: 'Detail Images', type: 'array', of: [defineArrayMember({type: 'cmsImage'})], group: 'detail'}),
     defineField({name: 'work_items', title: 'Work Items', type: 'array', of: [defineArrayMember({type: 'string'})], group: 'detail'}),
@@ -334,6 +338,145 @@ export const project = defineType({
   preview: {
     select: {title: 'title', subtitle: 'location', media: 'images.0.image'},
   },
+})
+
+export const blogAuthor = defineType({
+  name: 'blogAuthor',
+  title: 'Blog Author',
+  type: 'document',
+  fields: [
+    defineField({name: 'name', title: 'Name', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({name: 'slug', title: 'Slug', type: 'slug', options: {source: 'name', maxLength: 96}, validation: (Rule) => Rule.required()}),
+    defineField({name: 'role', title: 'Role / Title', type: 'string'}),
+    defineField({name: 'image', title: 'Image', type: 'cmsImage'}),
+    defineField({name: 'bio', title: 'Short Bio', type: 'text', rows: 3}),
+  ],
+  preview: {
+    select: {title: 'name', subtitle: 'role', media: 'image.image'},
+  },
+})
+
+export const blogCategory = defineType({
+  name: 'blogCategory',
+  title: 'Blog Category',
+  type: 'document',
+  groups: [
+    {name: 'content', title: 'Content', default: true},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fields: [
+    defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required(), group: 'content'}),
+    defineField({name: 'slug', title: 'Slug', type: 'slug', options: {source: 'title', maxLength: 96}, validation: (Rule) => Rule.required(), group: 'content'}),
+    defineField({name: 'description', title: 'Description', type: 'text', rows: 3, group: 'content'}),
+    defineField({name: 'seo', title: 'SEO', type: 'seoSettings', options: {collapsible: true, collapsed: true}, group: 'seo'}),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'description'},
+  },
+})
+
+export const blogPost = defineType({
+  name: 'blogPost',
+  title: 'Blog Post',
+  type: 'document',
+  groups: [
+    {name: 'summary', title: 'Summary', default: true},
+    {name: 'content', title: 'Content'},
+    {name: 'relations', title: 'Relations'},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fields: [
+    defineField({name: 'title', title: 'Title', type: 'string', validation: (Rule) => Rule.required(), group: 'summary'}),
+    defineField({name: 'slug', title: 'Slug', type: 'slug', options: {source: 'title', maxLength: 96}, validation: (Rule) => Rule.required(), group: 'summary'}),
+    defineField({name: 'excerpt', title: 'Excerpt', type: 'text', rows: 3, validation: (Rule) => Rule.required().max(220), group: 'summary'}),
+    defineField({name: 'featuredImage', title: 'Featured Image', type: 'cmsImage', group: 'summary'}),
+    defineField({name: 'publishedAt', title: 'Published At', type: 'datetime', validation: (Rule) => Rule.required(), group: 'summary'}),
+    defineField({name: 'updatedAt', title: 'Updated At', type: 'datetime', group: 'summary'}),
+    defineField({name: 'featured', title: 'Featured', type: 'boolean', initialValue: false, group: 'summary'}),
+    defineField({name: 'sortOrder', title: 'Sort Order', type: 'number', group: 'summary'}),
+    defineField({
+      name: 'author',
+      title: 'Author',
+      type: 'reference',
+      to: [{type: 'blogAuthor'}],
+      validation: (Rule) => Rule.required(),
+      group: 'relations',
+    }),
+    defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'blogCategory'}]})],
+      group: 'relations',
+    }),
+    defineField({
+      name: 'relatedServices',
+      title: 'Related Services',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'service'}]})],
+      group: 'relations',
+    }),
+    defineField({
+      name: 'relatedProjects',
+      title: 'Related Projects',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'project'}]})],
+      group: 'relations',
+    }),
+    defineField({
+      name: 'body',
+      title: 'Article Body',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'Heading 2', value: 'h2'},
+            {title: 'Heading 3', value: 'h3'},
+            {title: 'Heading 4', value: 'h4'},
+            {title: 'Quote', value: 'blockquote'},
+          ],
+          lists: [
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'},
+          ],
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+              {title: 'Underline', value: 'underline'},
+            ],
+            annotations: [
+              {
+                name: 'link',
+                title: 'Link',
+                type: 'object',
+                fields: [
+                  defineField({
+                    name: 'href',
+                    title: 'URL',
+                    type: 'url',
+                    validation: (Rule) => Rule.uri({scheme: ['http', 'https', 'mailto', 'tel']}),
+                  }),
+                ],
+              },
+            ],
+          },
+        }),
+        defineArrayMember({type: 'cmsImage'}),
+      ],
+      validation: (Rule) => Rule.required().min(1),
+      group: 'content',
+    }),
+    defineField({name: 'seo', title: 'SEO', type: 'seoSettings', options: {collapsible: true, collapsed: true}, group: 'seo'}),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'publishedAt', media: 'featuredImage.image'},
+  },
+  orderings: [
+    {title: 'Newest first', name: 'publishedAtDesc', by: [{field: 'publishedAt', direction: 'desc'}]},
+  ],
 })
 
 export const review = defineType({
@@ -493,6 +636,49 @@ export const projectsIndex = defineType({
   },
 })
 
+export const blogsIndex = defineType({
+  name: 'blogsIndex',
+  title: 'Blogs Index',
+  type: 'document',
+  groups: [
+    {name: 'content', title: 'Content', default: true},
+    {name: 'listing', title: 'Listing'},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fields: [
+    defineField({name: 'title', title: 'Page Title', type: 'string', validation: (Rule) => Rule.required(), group: 'content'}),
+    {...contentBlocksField, group: 'content'},
+    defineField({
+      name: 'listingSettings',
+      title: 'Listing Settings',
+      type: 'object',
+      group: 'listing',
+      fields: [
+        defineField({name: 'limit', title: 'Number of Posts to Show', type: 'number', description: 'Leave empty to show all posts.'}),
+        defineField({
+          name: 'layout',
+          title: 'Display Layout',
+          type: 'string',
+          options: {
+            list: [
+              {title: 'Grid — 3 columns', value: 'grid'},
+              {title: 'List — 1 column', value: 'list'},
+            ],
+          },
+          initialValue: 'grid',
+        }),
+      ],
+    }),
+    defineField({name: 'seo', title: 'SEO Settings', type: 'seoSettings', options: {collapsible: true, collapsed: true}, group: 'seo'}),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}) {
+      return {title: title || 'Blogs Index', subtitle: '/kennisbank'}
+    },
+  },
+})
+
 export const intakeForm = defineType({
   name: 'intakeForm',
   title: 'Intake Form',
@@ -648,4 +834,21 @@ export const formSubmission = defineType({
   ],
 })
 
-export const documentSchemaTypes = [siteSettings, page, servicesIndex, projectsIndex, faq, service, project, review, partner, redirect, intakeForm, formSubmission]
+export const documentSchemaTypes = [
+  siteSettings,
+  page,
+  servicesIndex,
+  projectsIndex,
+  blogsIndex,
+  faq,
+  service,
+  project,
+  blogPost,
+  blogAuthor,
+  blogCategory,
+  review,
+  partner,
+  redirect,
+  intakeForm,
+  formSubmission,
+]

@@ -1,6 +1,12 @@
 import JsonLd from "@/components/seo/JsonLd";
-import type {BreadcrumbItem, FaqStructuredItem, ServiceStructuredDataInput} from "@/lib/seo/structured-data";
+import type {
+  ArticleStructuredDataInput,
+  BreadcrumbItem,
+  FaqStructuredItem,
+  ServiceStructuredDataInput,
+} from "@/lib/seo/structured-data";
 import {
+  buildArticleSchema,
   buildBreadcrumbList,
   buildFaqPageSchema,
   buildJsonLdGraph,
@@ -19,6 +25,7 @@ type PageStructuredDataProps = {
   description?: string;
   breadcrumbs?: BreadcrumbItem[];
   service?: ServiceStructuredDataInput;
+  article?: ArticleStructuredDataInput;
   faqs?: FaqStructuredItem[];
   includeOrganization?: boolean;
 };
@@ -31,6 +38,7 @@ export default function PageStructuredData({
   description,
   breadcrumbs = [],
   service,
+  article,
   faqs = [],
   includeOrganization = false,
 }: PageStructuredDataProps) {
@@ -39,6 +47,7 @@ export default function PageStructuredData({
     buildWebPageSchema({title, description, pathname}),
     breadcrumbs.length ? buildBreadcrumbList(breadcrumbs) : null,
     service ? buildServiceSchema(service, siteSettings, organizationSeo) : null,
+    article ? buildArticleSchema(article, siteSettings, organizationSeo) : null,
     buildFaqPageSchema(faqs),
   ];
 

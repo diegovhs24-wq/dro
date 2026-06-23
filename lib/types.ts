@@ -12,7 +12,7 @@ export type LinkItem = {
 };
 
 export type SmartLink =
-  | {linkType: 'internal'; internalRef?: {_type: string; slug: string}}
+  | {linkType: 'internal'; internalRef?: {_type: string; slug?: string}}
   | {linkType: 'external'; externalUrl: string; openInNewTab?: boolean};
 
 export type PtSpan = {
@@ -373,9 +373,50 @@ export type ProjectItem = {
   after: string;
   beforeImage?: string;
   afterImage?: string;
+  primaryLabel?: string;
+  primaryLink?: SmartLink;
+  secondaryLabel?: string;
+  secondaryLink?: SmartLink;
   videoChecklist?: VideoChecklistItem[];
   href?: string;
   seo?: SeoSettings;
+};
+
+export type RichTextContent = Array<PtBlock | string>;
+
+export type BlogAuthor = {
+  name: string;
+  slug?: string;
+  role?: string;
+  image?: string;
+  bio?: string;
+};
+
+export type BlogCategory = {
+  title: string;
+  slug: string;
+  description?: string;
+  seo?: SeoSettings;
+};
+
+export type BlogPostSummary = {
+  title: string;
+  slug: string;
+  href: string;
+  excerpt: string;
+  featuredImage?: string;
+  publishedAt?: string;
+  updatedAt?: string;
+  author?: BlogAuthor;
+  categories?: BlogCategory[];
+  readingTime?: string;
+  seo?: SeoSettings;
+};
+
+export type BlogPostDetail = BlogPostSummary & {
+  body: RichTextContent;
+  relatedServices?: ServiceSummary[];
+  relatedProjects?: ProjectItem[];
 };
 
 export type OrganizationSeo = {

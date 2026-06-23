@@ -19,6 +19,16 @@ export type ServiceStructuredDataInput = {
   url?: string;
 };
 
+export type ArticleStructuredDataInput = {
+  title: string;
+  description?: string;
+  pathname: string;
+  image?: string;
+  publishedAt?: string;
+  updatedAt?: string;
+  authorName?: string;
+};
+
 type JsonLd = Record<string, unknown>;
 
 function organizationId(siteUrl: string) {
@@ -154,6 +164,39 @@ export function buildServiceSchema(
     },
     areaServed: org.areaServed,
     serviceType: service.name,
+  };
+}
+
+export function buildArticleSchema(
+  article: ArticleStructuredDataInput,
+  siteSettings: SiteSettings,
+  organizationSeo?: OrganizationSeo | null
+) {
+  const org = resolveOrganizationSeo(siteSettings, organizationSeo);
+
+  return {
+    "@type": "BlogPosting",
+    headline: article.title,
+    description: article.description,
+    url: absoluteUrl(article.pathname),
+    inLanguage: "nl-NL",
+    ...(article.image ? {image: [absoluteUrl(article.image)]} : {}),
+    ...(article.publishedAt ? {datePublished: article.publishedAt} : {}),
+    ...(article.updatedAt ? {dateModified: article.updatedAt} : {}),
+    author: {
+      "@type": "Person",
+      name: article.authorName || org.legalName,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": organizationId(org.siteUrl),
+      name: org.legalName,
+      ...(org.logo ? {logo: absoluteUrl(org.logo)} : {}),
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": absoluteUrl(article.pathname),
+    },
   };
 }
 
