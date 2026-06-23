@@ -358,10 +358,12 @@ export const partner = defineType({
   type: 'document',
   fields: [
     defineField({name: 'name', title: 'Name', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({name: 'category', title: 'Category / Subtitle', type: 'string'}),
     defineField({name: 'image', title: 'Logo', type: 'cmsImage'}),
+    defineField({name: 'sortOrder', title: 'Sort Order', type: 'number'}),
   ],
   preview: {
-    select: {title: 'name', media: 'image.image'},
+    select: {title: 'name', subtitle: 'category', media: 'image.image'},
   },
 })
 

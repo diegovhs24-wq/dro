@@ -9,10 +9,13 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          orange: "#ff6a00",
+          orange: "rgb(224,97,26)",
           ink: "#171717",
           soft: "#f6f5f2"
-        }
+        },
+        "deep-slate": "var(--color-deep-slate)",
+        "muted-slate": "var(--color-muted-slate)",
+        "rich-ink": "var(--color-rich-ink)",
       },
       fontFamily: {
         hand: ['"Comic Sans MS"', '"Comic Sans"', 'var(--font-hand)', 'cursive']
