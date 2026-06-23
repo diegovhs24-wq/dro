@@ -1,10 +1,13 @@
 import Link from "next/link";
-import type {PtBlock} from "@/lib/cms";
+import type {PtBlock} from "@/lib/types";
 import {resolveSmartLink} from "@/lib/smartLink";
 import CTASection from "@/components/CTASection";
 import Hero from "@/components/Hero";
 import LeadForm from "@/components/LeadForm";
 import PageHero from "@/components/PageHero";
+import MetricsBandBlockSection from "@/components/cms/blocks/MetricsBandBlockSection";
+import EditorialPrinciplesBlockSection from "@/components/cms/blocks/EditorialPrinciplesBlockSection";
+import SplitIntroBlockSection from "@/components/cms/blocks/SplitIntroBlockSection";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 import {
   AboutIntroBlockSection,
@@ -14,7 +17,18 @@ import {
 import BusinessContentBlockSection from "@/components/cms/blocks/BusinessContentBlockSection";
 import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
 import GoogleReviewsBlockSection from "@/components/cms/blocks/GoogleReviewsBlockSection";
+import ReviewShowcaseBlockSection from "@/components/cms/blocks/ReviewShowcaseBlockSection";
+import TeamProfilesShowcaseBlockSection from "@/components/cms/blocks/TeamProfilesShowcaseBlockSection";
+import VisitInvitationBlockSection from "@/components/cms/blocks/VisitInvitationBlockSection";
+import SplitTimelineBlockSection from "@/components/cms/blocks/SplitTimelineBlockSection";
+import FaqAnswersGridBlockSection from "@/components/cms/blocks/FaqAnswersGridBlockSection";
+import ProjectsShowcaseGridBlockSection from "@/components/cms/blocks/ProjectsShowcaseGridBlockSection";
+import StackedStepsListBlockSection from "@/components/cms/blocks/StackedStepsListBlockSection";
+import SplitFeatureListBlockSection from "@/components/cms/blocks/SplitFeatureListBlockSection";
+import DarkAssuranceGridBlockSection from "@/components/cms/blocks/DarkAssuranceGridBlockSection";
+import CenteredActionBannerBlockSection from "@/components/cms/blocks/CenteredActionBannerBlockSection";
 import PartnersBlockSection from "@/components/cms/blocks/PartnersBlockSection";
+import LogoCardGridBlockSectionView from "@/components/cms/blocks/LogoCardGridBlockSectionView";
 import ProblemSolutionBlockSection from "@/components/cms/blocks/ProblemSolutionBlockSection";
 import {
   ProcessBlockSection,
@@ -201,6 +215,12 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
           secondaryLink={block.hero.secondaryLink}
         />
       ) : null;
+    case "splitIntroBlock":
+      return <SplitIntroBlockSection content={block} />;
+    case "editorialPrinciplesBlock":
+      return <EditorialPrinciplesBlockSection content={block} />;
+    case "metricsBandBlock":
+      return <MetricsBandBlockSection content={block} />;
     case "problemSolutionBlock":
       return <ProblemSolutionBlockSection content={block} />;
     case "textBlock":
@@ -215,8 +235,12 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
           text={block.text}
         />
       );
+    case "logoCardGridBlock":
+      return <LogoCardGridBlockSectionView block={block} />;
     case "googleReviewsBlock":
       return <GoogleReviewsBlockSection limit={block.limit} compact={block.compact} />;
+    case "reviewShowcaseBlock":
+      return <ReviewShowcaseBlockSection block={block} />;
     case "ctaBannerBlock":
       return block.cta ? <CTASection {...block.cta} /> : null;
     case "contactFormBlock":
@@ -227,6 +251,24 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
       return <AboutTeamBlockSection content={block} />;
     case "aboutTeamImageBlock":
       return <AboutTeamImageBlockSection content={block} />;
+    case "teamProfilesShowcaseBlock":
+      return <TeamProfilesShowcaseBlockSection block={block} />;
+    case "visitInvitationBlock":
+      return <VisitInvitationBlockSection block={block} />;
+    case "splitTimelineBlock":
+      return <SplitTimelineBlockSection block={block} />;
+    case "faqAnswersGridBlock":
+      return <FaqAnswersGridBlockSection block={block} />;
+    case "projectsShowcaseGridBlock":
+      return <ProjectsShowcaseGridBlockSection block={block} />;
+    case "stackedStepsListBlock":
+      return <StackedStepsListBlockSection block={block} />;
+    case "splitFeatureListBlock":
+      return <SplitFeatureListBlockSection block={block} />;
+    case "darkAssuranceGridBlock":
+      return <DarkAssuranceGridBlockSection block={block} />;
+    case "centeredActionBannerBlock":
+      return <CenteredActionBannerBlockSection block={block} />;
     case "processBlock":
       return <ProcessBlockSection content={block} />;
     case "processFaqBlock":

@@ -15,6 +15,29 @@ export type SmartLink =
   | {linkType: 'internal'; internalRef?: {_type: string; slug: string}}
   | {linkType: 'external'; externalUrl: string; openInNewTab?: boolean};
 
+export type PtSpan = {
+  _type: 'span';
+  _key: string;
+  text: string;
+  marks?: string[];
+};
+
+export type PtMarkDef = {
+  _key: string;
+  _type: string;
+  href?: string;
+};
+
+export type PtBlock = {
+  _type: 'block';
+  _key: string;
+  style?: string;
+  listItem?: 'bullet' | 'number';
+  level?: number;
+  children?: PtSpan[];
+  markDefs?: PtMarkDef[];
+};
+
 export type HeaderMenuLink = {
   label: string;
   link: SmartLink;
@@ -76,6 +99,50 @@ export type PageHeroContent = {
   secondaryLink?: SmartLink;
 };
 
+export type SplitMetricItem = {
+  value?: string;
+  suffix?: string;
+  label?: string;
+};
+
+export type SplitIntroContent = {
+  eyebrow?: string;
+  titlePrefix?: string;
+  titleHighlight?: string;
+  titleSuffix?: string;
+  description?: string;
+  primaryButtonLabel?: string;
+  primaryButtonLink?: SmartLink;
+  secondaryNotePrefix?: string;
+  secondaryNoteLinkLabel?: string;
+  secondaryNoteLink?: SmartLink;
+  secondaryNoteSuffix?: string;
+  image?: string;
+  imageCaption?: string;
+  referenceScreenshot?: string;
+};
+
+export type MetricsBandContent = {
+  eyebrow?: string;
+  stats?: SplitMetricItem[];
+  referenceScreenshot?: string;
+};
+
+export type EditorialPillarItem = {
+  title?: string;
+  text?: string;
+};
+
+export type EditorialPrinciplesContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  sideIntro?: string;
+  content?: PtBlock[];
+  pillars?: EditorialPillarItem[];
+  referenceScreenshot?: string;
+};
+
 export type ServiceSummary = {
   slug: string;
   href: string;
@@ -93,15 +160,169 @@ export type ReviewItem = {
   quote: string;
 };
 
+export type ReviewShowcaseContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  ratingValue?: number;
+  reviewsSummary?: string;
+  ctaLabel?: string;
+  ctaLink?: SmartLink;
+  selectedReviews?: ReviewItem[];
+};
+
+export type TeamProfileItem = {
+  image?: string;
+  photoCredit?: string;
+  name?: string;
+  role?: string;
+  whatIDo?: string;
+  why?: string;
+};
+
+export type TeamProfilesShowcaseContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  profiles?: TeamProfileItem[];
+  teamImage?: string;
+  teamImageCredit?: string;
+  closingText?: string;
+};
+
+export type VisitInvitationContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  primaryButtonLabel?: string;
+  primaryButtonLink?: SmartLink;
+  secondaryNote?: string;
+  image?: string;
+  imageCaption?: string;
+};
+
+export type TimelineMilestoneItem = {
+  eyebrow?: string;
+  title?: string;
+  text?: string;
+};
+
+export type AssurancePointItem = {
+  title?: string;
+  text?: string;
+};
+
+export type SplitTimelineContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  highlightLabel?: string;
+  milestones?: TimelineMilestoneItem[];
+  assurancePoints?: AssurancePointItem[];
+};
+
+export type StackedStepCallout = {
+  title?: string;
+  text?: string;
+};
+
+export type StackedStepsStepItem = {
+  _type: "stackedStepsStepItem";
+  icon?: string;
+  stepLabel?: string;
+  title?: string;
+  description?: string;
+  callout?: StackedStepCallout;
+};
+
+export type StackedStepsMediaItem = {
+  _type: "stackedStepsMediaItem";
+  image?: string;
+  caption?: string;
+};
+
+export type StackedStepsListContent = {
+  items?: Array<StackedStepsStepItem | StackedStepsMediaItem>;
+  referenceScreenshot?: string;
+};
+
+export type FeatureHighlightItem = {
+  icon?: string;
+  title?: string;
+  text?: string;
+};
+
+export type SplitFeatureListContent = {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  imageCaption?: string;
+  features?: FeatureHighlightItem[];
+};
+
 export type PartnerLogoItem = {
   name: string;
-  image: string;
+  image?: string;
+  category?: string;
   accent?: string;
+};
+
+export type LogoCardGridContent = {
+  eyebrow?: string;
+  title?: string;
+  text?: string;
+  partners?: PartnerLogoItem[];
 };
 
 export type FaqItem = {
   question: string;
   answer: string;
+};
+
+export type FaqAnswersGridContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  faqs?: FaqItem[];
+};
+
+export type ShowcaseProjectCard = {
+  slug: string;
+  title: string;
+  beforeImage?: string;
+  afterImage?: string;
+  location?: string;
+  type?: string;
+  duration?: string;
+  before?: string;
+  after?: string;
+};
+
+export type ProjectsShowcaseGridContent = {
+  sectionNumber?: string;
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  projects?: ShowcaseProjectCard[];
+};
+
+export type CenteredActionBannerContent = {
+  title?: string;
+  primaryButtonLabel?: string;
+  primaryButtonLink?: SmartLink;
+  secondaryButtonLabel?: string;
+  secondaryButtonLink?: SmartLink;
+};
+
+export type DarkAssuranceGridContent = {
+  eyebrow?: string;
+  title?: string;
+  items?: AssurancePointItem[];
 };
 
 export type ServiceBlock = {

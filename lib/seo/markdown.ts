@@ -59,8 +59,26 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
         heading(2, block.title || "Partners"),
         paragraph(block.text),
       ].join("");
+    case "logoCardGridBlock":
+      return [
+        heading(2, block.title || "Partners"),
+        paragraph(block.text),
+        ...(block.partners || []).map(
+          (partner) => `- **${partner.name}**${partner.category ? ` - ${partner.category}` : ""}\n`
+        ),
+        "\n",
+      ].join("");
     case "googleReviewsBlock":
       return heading(2, "Google reviews");
+    case "reviewShowcaseBlock":
+      return [
+        heading(2, block.title || "Reviews"),
+        paragraph(block.reviewsSummary),
+        ...(block.selectedReviews || []).map(
+          (review) => `- **${review.name}**${review.location ? ` (${review.location})` : ""}: ${review.quote}\n`
+        ),
+        "\n",
+      ].join("");
     case "ctaBannerBlock":
       return [
         heading(2, block.cta?.title || "Contact"),
@@ -88,6 +106,73 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
         ...(block.coreTeam || []).map(
           (member) => `- **${member.name}** (${member.role}): ${member.text || ""}\n`
         ),
+        "\n",
+      ].join("");
+    case "teamProfilesShowcaseBlock":
+      return [
+        heading(2, block.title || "Team"),
+        paragraph(block.intro),
+        ...(block.profiles || []).map(
+          (profile) =>
+            `- **${profile.name || ""}**${profile.role ? ` (${profile.role})` : ""}: ${profile.whatIDo || ""} ${profile.why || ""}\n`
+        ),
+        paragraph(block.closingText),
+        "\n",
+      ].join("");
+    case "visitInvitationBlock":
+      return [
+        heading(2, block.title || "Bezoek"),
+        paragraph(block.description),
+        block.primaryButtonLabel
+          ? `- ${block.primaryButtonLabel}${block.secondaryNote ? `: ${block.secondaryNote}` : ""}\n\n`
+          : "",
+      ].join("");
+    case "splitTimelineBlock":
+      return [
+        heading(2, block.title || "Tijdlijn"),
+        paragraph(block.description),
+        block.highlightLabel ? `- ${block.highlightLabel}\n\n` : "",
+        ...(block.milestones || []).map(
+          (milestone) =>
+            `- **${milestone.eyebrow || ""}**${milestone.title ? `: ${milestone.title}` : ""}${milestone.text ? ` - ${milestone.text}` : ""}\n`
+        ),
+        "\n",
+        ...(block.assurancePoints || []).map(
+          (item) => `- **${item.title || ""}**${item.text ? `: ${item.text}` : ""}\n`
+        ),
+        "\n",
+      ].join("");
+    case "faqAnswersGridBlock":
+      return [
+        heading(2, block.title || "Vragen en antwoorden"),
+        paragraph(block.intro),
+        ...(block.faqs || []).map(
+          (faq, index) => `### ${(index + 1).toString().padStart(2, "0")} ${faq.question}\n\n${faq.answer}\n\n`
+        ),
+      ].join("");
+    case "projectsShowcaseGridBlock":
+      return [
+        heading(2, block.title || "Projecten"),
+        paragraph(block.intro),
+        ...(block.projects || []).map(
+          (project) =>
+            `- **${project.title || ""}**${project.duration ? ` (${project.duration})` : ""}${project.type ? ` - ${project.type}` : ""}${project.location ? ` - ${project.location}` : ""}\n`
+        ),
+        "\n",
+      ].join("");
+    case "darkAssuranceGridBlock":
+      return [
+        heading(2, block.title || "Zekerheden"),
+        ...(block.items || []).map(
+          (item) => `- **${item.title || ""}**${item.text ? `: ${item.text}` : ""}\n`
+        ),
+        "\n",
+      ].join("");
+    case "centeredActionBannerBlock":
+      return [
+        heading(2, block.title || "Contact"),
+        block.primaryButtonLabel ? `- ${block.primaryButtonLabel}\n` : "",
+        block.secondaryButtonLabel ? `- ${block.secondaryButtonLabel}\n` : "",
         "\n",
       ].join("");
     case "processBlock":

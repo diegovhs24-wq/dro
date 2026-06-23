@@ -7,7 +7,6 @@ import {
   BlockquoteIcon,
   ThLargeIcon,
   TagIcon,
-  ImageIcon,
   RocketIcon,
   EnvelopeIcon,
   UsersIcon,
@@ -27,12 +26,30 @@ const iconOptions = [
   'renovation',
   'extension',
   'newbuild',
+  'kitchen',
+  'tiles',
   'floorHeating',
   'heatPump',
   'solar',
+  'electric',
   'paint',
   'maintenance',
   'planning',
+  'document',
+  'budget',
+  'payment',
+  'warranty',
+  'ruler',
+  'calendar',
+  'clock',
+  'phone',
+  'mail',
+  'truck',
+  'box',
+  'key',
+  'safety',
+  'support',
+  'spark',
   'checklist',
   'team',
   'quality',
@@ -801,6 +818,404 @@ export const pageHeroBlock = defineType({
   },
 })
 
+export const splitMetricItem = defineType({
+  name: 'splitMetricItem',
+  title: 'Metric Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'value',
+      title: 'Value',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'suffix', title: 'Suffix', type: 'string'}),
+    defineField({
+      name: 'label',
+      title: 'Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {value: 'value', suffix: 'suffix', label: 'label'},
+    prepare({value, suffix, label}: {value?: string; suffix?: string; label?: string}) {
+      return {
+        title: [value, suffix].filter(Boolean).join(' ') || 'Metric Item',
+        subtitle: label || '',
+      }
+    },
+  },
+})
+
+export const editorialPillarItem = defineType({
+  name: 'editorialPillarItem',
+  title: 'Editorial Pillar Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'text',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'text'},
+  },
+})
+
+export const teamProfileItem = defineType({
+  name: 'teamProfileItem',
+  title: 'Team Profile Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'cmsImage',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'photoCredit', title: 'Photo Credit', type: 'string'}),
+    defineField({
+      name: 'name',
+      title: 'Name',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'role',
+      title: 'Role',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'whatIDo',
+      title: 'What I Do',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'why',
+      title: 'Why',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'name', subtitle: 'role', media: 'image.image'},
+  },
+})
+
+export const timelineMilestoneItem = defineType({
+  name: 'timelineMilestoneItem',
+  title: 'Timeline Milestone Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'text',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'eyebrow'},
+  },
+})
+
+export const assurancePointItem = defineType({
+  name: 'assurancePointItem',
+  title: 'Assurance Point Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'text',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'text'},
+  },
+})
+
+export const stackedStepsStepItem = defineType({
+  name: 'stackedStepsStepItem',
+  title: 'Stacked Steps Step Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {list: iconOptions.map((value) => ({title: value, value}))},
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'stepLabel',
+      title: 'Step Label',
+      type: 'string',
+      description: 'Example: "STEP 01".',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'callout',
+      title: 'Optional Callout Card',
+      type: 'object',
+      fields: [
+        defineField({name: 'title', title: 'Callout Title', type: 'string'}),
+        defineField({name: 'text', title: 'Callout Text', type: 'text', rows: 4}),
+      ],
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'stepLabel'},
+  },
+})
+
+export const stackedStepsMediaItem = defineType({
+  name: 'stackedStepsMediaItem',
+  title: 'Stacked Steps Media Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'cmsImage',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'caption', title: 'Caption', type: 'string'}),
+  ],
+  preview: {
+    select: {title: 'caption', media: 'image.image'},
+    prepare({title, media}: {title?: string; media?: any}) {
+      return {
+        title: title || 'Media Row',
+        subtitle: 'Full-width image',
+        media,
+      }
+    },
+  },
+})
+
+export const featureHighlightItem = defineType({
+  name: 'featureHighlightItem',
+  title: 'Feature Highlight Item',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'icon',
+      title: 'Icon',
+      type: 'string',
+      options: {list: iconOptions.map((value) => ({title: value, value}))},
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'text',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'icon'},
+  },
+})
+
+export const splitIntroBlock = defineType({
+  name: 'splitIntroBlock',
+  title: 'Split Intro Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/split-intro-block.png'),
+  fields: [
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'titlePrefix',
+      title: 'Title Prefix',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'titleHighlight', title: 'Title Highlight', type: 'string'}),
+    defineField({name: 'titleSuffix', title: 'Title Suffix', type: 'string'}),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'primaryButtonLabel', title: 'Primary Button Label', type: 'string'}),
+    defineField({name: 'primaryButtonLink', title: 'Primary Button Link', type: 'smartLink'}),
+    defineField({name: 'secondaryNotePrefix', title: 'Secondary Note Prefix', type: 'string'}),
+    defineField({name: 'secondaryNoteLinkLabel', title: 'Secondary Note Link Label', type: 'string'}),
+    defineField({name: 'secondaryNoteLink', title: 'Secondary Note Link', type: 'smartLink'}),
+    defineField({name: 'secondaryNoteSuffix', title: 'Secondary Note Suffix', type: 'string'}),
+    defineField({
+      name: 'image',
+      title: 'Main Image',
+      type: 'cmsImage',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'imageCaption', title: 'Image Caption', type: 'string'}),
+    
+  ],
+  preview: {
+    select: {title: 'titlePrefix'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Split Intro Block',
+        media: blockPreview('/block-previews/split-intro-block.png'),
+      }
+    },
+  },
+})
+
+export const editorialPrinciplesBlock = defineType({
+  name: 'editorialPrinciplesBlock',
+  title: 'Editorial Principles Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/editorial-pillar-item.png'),
+  fields: [
+    defineField({name: 'sectionNumber', title: 'Section Number', type: 'string'}),
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'sideIntro',
+      title: 'Side Intro',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'content',
+      title: 'Content',
+      type: 'array',
+      validation: (Rule) => Rule.required().min(1),
+      of: [
+        defineArrayMember({
+          type: 'block',
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'Lead', value: 'lead'},
+          ],
+          lists: [
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'},
+          ],
+          marks: {
+            decorators: [
+              {title: 'Bold', value: 'strong'},
+              {title: 'Italic', value: 'em'},
+              {title: 'Underline', value: 'underline'},
+            ],
+            annotations: [],
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'pillars',
+      title: 'Pillars',
+      type: 'array',
+      of: [defineArrayMember({type: 'editorialPillarItem'})],
+      validation: (Rule) => Rule.required().min(3).max(3),
+    }),
+    
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Editorial Principles Block',
+        media: blockPreview('/block-previews/editorial-pillar-item.png'),
+      }
+    },
+  },
+})
+
+export const metricsBandBlock = defineType({
+  name: 'metricsBandBlock',
+  title: 'Metrics Band Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/metrics-band-block.png'),
+  fields: [
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'stats',
+      title: 'Stats',
+      type: 'array',
+      validation: (Rule) => Rule.required().min(1).max(4),
+      of: [defineArrayMember({type: 'splitMetricItem'})],
+    }),
+    
+  ],
+  preview: {
+    select: {title: 'eyebrow'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Metrics Band Block',
+        media: blockPreview('/block-previews/metrics-band-block.png'),
+      }
+    },
+  },
+})
+
 export const problemSolutionBlock = defineType({
   name: 'problemSolutionBlock',
   title: 'Problem / Solution Block',
@@ -988,11 +1403,11 @@ export const ctaBannerBlock = defineType({
   name: 'ctaBannerBlock',
   title: 'CTA Banner Block',
   type: 'object',
-  icon: blockPreview('/block-previews/cta-banner.png'),
+  icon: blockPreview('/block-previews/cta-banner-block.png'),
   fields: [defineField({name: 'cta', title: 'CTA Content', type: 'ctaContent'})],
   preview: {
     prepare() {
-      return {title: 'CTA Banner Block', media: blockPreview('/block-previews/cta-banner.png')}
+      return {title: 'CTA Banner Block', media: blockPreview('/block-previews/cta-banner-block.png')}
     },
   },
 })
@@ -1056,6 +1471,54 @@ export const partnersBlock = defineType({
   },
 })
 
+export const logoCardGridBlock = defineType({
+  name: 'logoCardGridBlock',
+  title: 'Logo Card Grid Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/logo-card-grid-block.png'),
+  fields: [
+    defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      initialValue: 'Partners',
+    }),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'text',
+      title: 'Text',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'partners',
+      title: 'Partner Cards',
+      type: 'array',
+      description:
+        'Select the partner entries to show in this grid, in display order. Add up to 6 for a 3-by-2 layout.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'partner'}]})],
+      validation: (Rule) => Rule.required().min(1).max(6),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', partners: 'partners'},
+    prepare({title, partners}: {title?: string; partners?: Array<unknown>}) {
+      const count = Array.isArray(partners) ? partners.length : 0
+      return {
+        title: title || 'Logo Card Grid Block',
+        subtitle: count ? `${count} partner card${count === 1 ? '' : 's'}` : 'No partner cards yet',
+        media: blockPreview('/block-previews/logo-card-grid-block.png'),
+      }
+    },
+  },
+})
+
 export const googleReviewsBlock = defineType({
   name: 'googleReviewsBlock',
   title: 'Google Reviews Block',
@@ -1068,6 +1531,57 @@ export const googleReviewsBlock = defineType({
   preview: {
     prepare() {
       return {title: 'Google Reviews Block', media: blockPreview('/block-previews/google-reviews.png')}
+    },
+  },
+})
+
+export const reviewShowcaseBlock = defineType({
+  name: 'reviewShowcaseBlock',
+  title: 'Review Showcase Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/review-showcase-content.png'),
+  fields: [
+    defineField({name: 'sectionNumber', title: 'Section Number', type: 'string'}),
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'ratingValue',
+      title: 'Rating Value',
+      type: 'number',
+      initialValue: 4.8,
+      validation: (Rule) => Rule.required().min(0).max(5),
+    }),
+    defineField({
+      name: 'reviewsSummary',
+      title: 'Reviews Summary',
+      type: 'string',
+      initialValue: 'average from 273 reviews',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'ctaLabel', title: 'CTA Label', type: 'string'}),
+    defineField({name: 'ctaLink', title: 'CTA Link', type: 'smartLink'}),
+    defineField({
+      name: 'selectedReviews',
+      title: 'Selected Reviews',
+      type: 'array',
+      description: 'Choose the reviews to display in this layout.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'review'}]})],
+      validation: (Rule) => Rule.required().min(1).max(3),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', subtitle: 'reviewsSummary'},
+    prepare({title, subtitle}: {title?: string; subtitle?: string}) {
+      return {
+        title: title || 'Review Showcase Block',
+        subtitle,
+        media: blockPreview('/block-previews/review-showcase-content.png'),
+      }
     },
   },
 })
@@ -1141,6 +1655,413 @@ export const aboutTeamImageBlock = defineType({
     select: {title: 'teamImageTitle'},
     prepare({title}) {
       return {title: title || 'About Team Image Block', media: blockPreview('/block-previews/about-team-image.png')}
+    },
+  },
+})
+
+export const teamProfilesShowcaseBlock = defineType({
+  name: 'teamProfilesShowcaseBlock',
+  title: 'Team Profiles Showcase Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/team-profiles-showcase-block.png'),
+  fields: [
+    defineField({name: 'sectionNumber', title: 'Section Number', type: 'string'}),
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'intro',
+      title: 'Intro',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'profiles',
+      title: 'Profiles',
+      type: 'array',
+      of: [defineArrayMember({type: 'teamProfileItem'})],
+      validation: (Rule) => Rule.required().min(1).max(3),
+    }),
+    defineField({
+      name: 'teamImage',
+      title: 'Team Image',
+      type: 'cmsImage',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'teamImageCredit', title: 'Team Image Credit', type: 'string'}),
+    defineField({
+      name: 'closingText',
+      title: 'Closing Text',
+      type: 'text',
+      rows: 3,
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Team Profiles Showcase Block',
+        media: blockPreview('/block-previews/team-profiles-showcase-block.png'),
+      }
+    },
+  },
+})
+
+export const visitInvitationBlock = defineType({
+  name: 'visitInvitationBlock',
+  title: 'Visit Invitation Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/visit-invitation-block.png'),
+  fields: [
+    defineField({name: 'sectionNumber', title: 'Section Number', type: 'string'}),
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'primaryButtonLabel', title: 'Primary Button Label', type: 'string'}),
+    defineField({name: 'primaryButtonLink', title: 'Primary Button Link', type: 'smartLink'}),
+    defineField({
+      name: 'secondaryNote',
+      title: 'Secondary Note',
+      type: 'string',
+      description: 'Inline note shown next to the primary button.',
+    }),
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'cmsImage',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'imageCaption', title: 'Image Caption', type: 'string'}),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Visit Invitation Block',
+        media: blockPreview('/block-previews/visit-invitation-block.png'),
+      }
+    },
+  },
+})
+
+export const splitTimelineBlock = defineType({
+  name: 'splitTimelineBlock',
+  title: 'Split Timeline Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/split-timeline-block.png'),
+  fields: [
+    defineField({name: 'sectionNumber', title: 'Section Number', type: 'string'}),
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'highlightLabel',
+      title: 'Highlight Label',
+      type: 'string',
+      description: 'Short rounded label shown beneath the intro copy.',
+    }),
+    defineField({
+      name: 'milestones',
+      title: 'Timeline Milestones',
+      type: 'array',
+      of: [defineArrayMember({type: 'timelineMilestoneItem'})],
+      validation: (Rule) => Rule.required().min(1).max(6),
+    }),
+    defineField({
+      name: 'assurancePoints',
+      title: 'Assurance Points',
+      type: 'array',
+      of: [defineArrayMember({type: 'assurancePointItem'})],
+      validation: (Rule) => Rule.required().min(1).max(6),
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Split Timeline Block',
+        media: blockPreview('/block-previews/split-timeline-block.png'),
+      }
+    },
+  },
+})
+
+export const faqAnswersGridBlock = defineType({
+  name: 'faqAnswersGridBlock',
+  title: 'FAQ Answers Grid Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/faq-answers-grid-block.png'),
+  fields: [
+    defineField({name: 'sectionNumber', title: 'Section Number', type: 'string'}),
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'intro',
+      title: 'Intro',
+      type: 'text',
+      rows: 3,
+    }),
+    defineField({
+      name: 'faqs',
+      title: 'FAQ Items',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'faq'}]})],
+      description: 'Select FAQ entries from the FAQ collection in the order they should appear.',
+      validation: (Rule) => Rule.required().min(1).max(8),
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'FAQ Answers Grid Block',
+        media: blockPreview('/block-previews/faq-answers-grid-block.png'),
+      }
+    },
+  },
+})
+
+export const projectsShowcaseGridBlock = defineType({
+  name: 'projectsShowcaseGridBlock',
+  title: 'Projects Showcase Grid Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/featured-projects-block.png'),
+  fields: [
+    defineField({
+      name: 'sectionNumber',
+      title: 'Section Number',
+      type: 'string',
+      description: 'Example: "07".',
+    }),
+    defineField({
+      name: 'eyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      description: 'Example: "Recent Work".',
+    }),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      description: 'Large left-column headline.',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'intro',
+      title: 'Intro',
+      type: 'text',
+      rows: 3,
+      description: 'Short right-column supporting copy.',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'projects',
+      title: 'Projects',
+      type: 'array',
+      description: 'Curated project cards shown in the large 3-column showcase grid.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'project'}]})],
+      validation: (Rule) => Rule.required().min(1).max(6),
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Projects Showcase Grid Block',
+        media: blockPreview('/block-previews/featured-projects-block.png'),
+      }
+    },
+  },
+})
+
+export const stackedStepsListBlock = defineType({
+  name: 'stackedStepsListBlock',
+  title: 'Stacked Steps List Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/stacked-steps-list-block.png'),
+  fields: [
+    defineField({
+      name: 'items',
+      title: 'Items',
+      type: 'array',
+      of: [
+        defineArrayMember({type: 'stackedStepsStepItem'}),
+        defineArrayMember({type: 'stackedStepsMediaItem'}),
+      ],
+      validation: (Rule) => Rule.required().min(1).max(12),
+    }),
+    
+  ],
+  preview: {
+    select: {title: 'items.0.title', items: 'items'},
+    prepare({title, items}: {title?: string; items?: Array<unknown>}) {
+      const count = Array.isArray(items) ? items.length : 0
+      return {
+        title: title || 'Stacked Steps List Block',
+        subtitle: count ? `${count} item${count === 1 ? '' : 's'}` : 'No items yet',
+        media: blockPreview('/block-previews/stacked-steps-list-block.png'),
+      }
+    },
+  },
+})
+
+export const splitFeatureListBlock = defineType({
+  name: 'splitFeatureListBlock',
+  title: 'Split Feature List Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/split-feature-list-block.png'),
+  fields: [
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Description',
+      type: 'text',
+      rows: 4,
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'image',
+      title: 'Image',
+      type: 'cmsImage',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'imageCaption', title: 'Image Caption', type: 'string'}),
+    defineField({
+      name: 'features',
+      title: 'Features',
+      type: 'array',
+      of: [defineArrayMember({type: 'featureHighlightItem'})],
+      validation: (Rule) => Rule.required().min(1).max(6),
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Split Feature List Block',
+        media: blockPreview('/block-previews/split-feature-list-block.png'),
+      }
+    },
+  },
+})
+
+export const darkAssuranceGridBlock = defineType({
+  name: 'darkAssuranceGridBlock',
+  title: 'Dark Assurance Grid Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/dark-assurance-grid-block.png'),
+  fields: [
+    defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'items',
+      title: 'Assurance Items',
+      type: 'array',
+      of: [defineArrayMember({type: 'assurancePointItem'})],
+      validation: (Rule) => Rule.required().min(1).max(6),
+    }),
+  ],
+  preview: {
+    select: {title: 'title', items: 'items'},
+    prepare({title, items}: {title?: string; items?: Array<unknown>}) {
+      const count = Array.isArray(items) ? items.length : 0
+      return {
+        title: title || 'Dark Assurance Grid Block',
+        subtitle: count ? `${count} item${count === 1 ? '' : 's'}` : 'No items yet',
+        media: blockPreview('/block-previews/dark-assurance-grid-block.png'),
+      }
+    },
+  },
+})
+
+export const centeredActionBannerBlock = defineType({
+  name: 'centeredActionBannerBlock',
+  title: 'Centered Action Banner Block',
+  type: 'object',
+  icon: blockPreview('/block-previews/cta-banner-block.png'),
+  fields: [
+    defineField({
+      name: 'title',
+      title: 'Title',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'primaryButtonLabel',
+      title: 'Primary Button Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'primaryButtonLink',
+      title: 'Primary Button Link',
+      type: 'smartLink',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'secondaryButtonLabel',
+      title: 'Secondary Button Label',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'secondaryButtonLink',
+      title: 'Secondary Button Link',
+      type: 'smartLink',
+      validation: (Rule) => Rule.required(),
+    }),
+  ],
+  preview: {
+    select: {title: 'title'},
+    prepare({title}: {title?: string}) {
+      return {
+        title: title || 'Centered Action Banner Block',
+        media: blockPreview('/block-previews/cta-banner-block.png'),
+      }
     },
   },
 })
@@ -1331,6 +2252,14 @@ export const objectSchemaTypes = [
   listBlock,
   faqItem,
   faqRichItem,
+  splitMetricItem,
+  editorialPillarItem,
+  teamProfileItem,
+  timelineMilestoneItem,
+  assurancePointItem,
+  stackedStepsStepItem,
+  stackedStepsMediaItem,
+  featureHighlightItem,
   homePageContent,
   listingPageContent,
   aboutPageContent,
@@ -1340,6 +2269,9 @@ export const objectSchemaTypes = [
   servicePageContent,
   homeHeroBlock,
   pageHeroBlock,
+  splitIntroBlock,
+  editorialPrinciplesBlock,
+  metricsBandBlock,
   problemSolutionBlock,
   textBlock,
   servicesListingBlock,
@@ -1350,10 +2282,21 @@ export const objectSchemaTypes = [
   ctaBannerBlock,
   contactFormBlock,
   partnersBlock,
+  logoCardGridBlock,
   googleReviewsBlock,
+  reviewShowcaseBlock,
   aboutIntroBlock,
   aboutTeamBlock,
   aboutTeamImageBlock,
+  teamProfilesShowcaseBlock,
+  visitInvitationBlock,
+  splitTimelineBlock,
+  faqAnswersGridBlock,
+  projectsShowcaseGridBlock,
+  stackedStepsListBlock,
+  splitFeatureListBlock,
+  darkAssuranceGridBlock,
+  centeredActionBannerBlock,
   processBlock,
   processFaqBlock,
   processIntakeBannerBlock,

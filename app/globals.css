@@ -5,6 +5,9 @@
 :root {
   color-scheme: light;
   scroll-behavior: smooth;
+  --color-muted-slate: rgb(122, 124, 131);
+  --color-deep-slate: rgb(67, 69, 76);
+  --color-rich-ink: rgb(22, 23, 27);
 }
 
 * {
@@ -36,13 +39,16 @@ details summary::-webkit-details-marker {
 .eyebrow {
   @apply text-sm font-semibold uppercase tracking-[0.18em] text-brand-orange;
 }
+.eyebrow-slate {
+  @apply text-[13px] font-bold uppercase tracking-[0.18em] text-muted-slate;
+}
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-md bg-brand-orange px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#e85f00] focus:outline-none focus:ring-4 focus:ring-orange-200;
+  @apply inline-flex items-center justify-center rounded-md bg-brand-orange px-6 py-3 text-sm lg:text-base font-medium text-white shadow-lg shadow-orange-500/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#e85f00] focus:outline-none focus:ring-4 focus:ring-orange-200;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-md border border-white/60 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-brand-ink focus:outline-none focus:ring-4 focus:ring-white/30;
+  @apply inline-flex items-center justify-center rounded-md border border-white/60 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-brand-ink focus:outline-none focus:ring-4 focus:ring-white/30;
 }
 
 .card {

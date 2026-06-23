@@ -8,11 +8,13 @@ import {
 } from "@/lib/cms-fallback";
 import type {
   CtaContent,
+  DarkAssuranceGridContent,
   FaqItem,
   HomeHeroContent,
   HomePageContent,
   IconTextItem,
   PartnerLogoItem,
+  PtBlock,
   ProblemSolutionContent,
   ProjectItem,
   ReviewItem,
@@ -25,8 +27,21 @@ import type {
   AboutPageContent,
   BusinessPageContent,
   ContactPageContent,
+  EditorialPrinciplesContent,
+  CenteredActionBannerContent,
+  FaqAnswersGridContent,
   ListingPageContent,
+  LogoCardGridContent,
+  MetricsBandContent,
+  ProjectsShowcaseGridContent,
   ProcessPageContent,
+  ReviewShowcaseContent,
+  SplitIntroContent,
+  SplitFeatureListContent,
+  StackedStepsListContent,
+  SplitTimelineContent,
+  TeamProfilesShowcaseContent,
+  VisitInvitationContent,
   VideoChecklistItem,
 } from "@/lib/types";
 
@@ -71,6 +86,201 @@ const PAGE_HERO_FIELDS = `
   primaryLink{${SMART_LINK_FIELDS}},
   secondaryLabel,
   secondaryLink{${SMART_LINK_FIELDS}}
+`;
+
+const SPLIT_INTRO_FIELDS = `
+  eyebrow,
+  titlePrefix,
+  titleHighlight,
+  titleSuffix,
+  description,
+  primaryButtonLabel,
+  primaryButtonLink{${SMART_LINK_FIELDS}},
+  secondaryNotePrefix,
+  secondaryNoteLinkLabel,
+  secondaryNoteLink{${SMART_LINK_FIELDS}},
+  secondaryNoteSuffix,
+  image{${IMAGE_SOURCE_FIELDS}},
+  imageCaption,
+  referenceScreenshot{${IMAGE_SOURCE_FIELDS}}
+`;
+
+const METRICS_BAND_FIELDS = `
+  eyebrow,
+  stats[]{
+    value,
+    suffix,
+    label
+  },
+  referenceScreenshot{${IMAGE_SOURCE_FIELDS}}
+`;
+
+const EDITORIAL_PRINCIPLES_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  sideIntro,
+  content,
+  pillars[]{
+    title,
+    text
+  },
+  referenceScreenshot{${IMAGE_SOURCE_FIELDS}}
+`;
+
+const REVIEW_SHOWCASE_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  ratingValue,
+  reviewsSummary,
+  ctaLabel,
+  ctaLink{${SMART_LINK_FIELDS}},
+  selectedReviews[]->{
+    name,
+    location,
+    image{${IMAGE_SOURCE_FIELDS}},
+    quote
+  }
+`;
+
+const LOGO_CARD_GRID_FIELDS = `
+  eyebrow,
+  title,
+  text,
+  partners[]->{
+    name,
+    category,
+    image{${IMAGE_SOURCE_FIELDS}},
+    accent
+  }
+`;
+
+const TEAM_PROFILES_SHOWCASE_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  intro,
+  profiles[]{
+    image{${IMAGE_SOURCE_FIELDS}},
+    photoCredit,
+    name,
+    role,
+    whatIDo,
+    why
+  },
+  teamImage{${IMAGE_SOURCE_FIELDS}},
+  teamImageCredit,
+  closingText
+`;
+
+const VISIT_INVITATION_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  description,
+  primaryButtonLabel,
+  primaryButtonLink{${SMART_LINK_FIELDS}},
+  secondaryNote,
+  image{${IMAGE_SOURCE_FIELDS}},
+  imageCaption
+`;
+
+const SPLIT_TIMELINE_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  description,
+  highlightLabel,
+  milestones[]{
+    eyebrow,
+    title,
+    text
+  },
+  assurancePoints[]{
+    title,
+    text
+  }
+`;
+
+const FAQ_ANSWERS_GRID_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  intro,
+  faqs[]->{
+    question,
+    "answer": pt::text(answer)
+  }
+`;
+
+const PROJECTS_SHOWCASE_GRID_FIELDS = `
+  sectionNumber,
+  eyebrow,
+  title,
+  intro,
+  projects[]->{
+    "slug": slug.current,
+    title,
+    location,
+    type,
+    duration,
+    before,
+    after,
+    "beforeImage": beforeImage{${IMAGE_SOURCE_FIELDS}},
+    "afterImage": afterImage{${IMAGE_SOURCE_FIELDS}}
+  }
+`;
+
+const STACKED_STEPS_LIST_FIELDS = `
+  items[]{
+    _type,
+    _type == "stackedStepsStepItem" => {
+      icon,
+      stepLabel,
+      title,
+      description,
+      callout{
+        title,
+        text
+      }
+    },
+    _type == "stackedStepsMediaItem" => {
+      image{${IMAGE_SOURCE_FIELDS}},
+      caption
+    }
+  },
+  referenceScreenshot{${IMAGE_SOURCE_FIELDS}}
+`;
+
+const SPLIT_FEATURE_LIST_FIELDS = `
+  eyebrow,
+  title,
+  description,
+  image{${IMAGE_SOURCE_FIELDS}},
+  imageCaption,
+  features[]{
+    icon,
+    title,
+    text
+  }
+`;
+
+const DARK_ASSURANCE_GRID_FIELDS = `
+  eyebrow,
+  title,
+  items[]{
+    title,
+    text
+  }
+`;
+
+const CENTERED_ACTION_BANNER_FIELDS = `
+  title,
+  primaryButtonLabel,
+  primaryButtonLink{${SMART_LINK_FIELDS}},
+  secondaryButtonLabel,
+  secondaryButtonLink{${SMART_LINK_FIELDS}}
 `;
 
 const ICON_TEXT_FIELDS = `
@@ -145,6 +355,9 @@ const INDEX_CONTENT_BLOCKS = `
     _key,
     _type == "homeHeroBlock" => { hero{${HOME_HERO_FIELDS}} },
     _type == "pageHeroBlock" => { hero{${PAGE_HERO_FIELDS}} },
+    _type == "splitIntroBlock" => { ${SPLIT_INTRO_FIELDS} },
+    _type == "editorialPrinciplesBlock" => { ${EDITORIAL_PRINCIPLES_FIELDS} },
+    _type == "metricsBandBlock" => { ${METRICS_BAND_FIELDS} },
     _type == "problemSolutionBlock" => {
       problemEyebrow, problemTitle, problems,
       solutionEyebrow, solutionTitle, solutions, solutionNote,
@@ -179,12 +392,23 @@ const INDEX_CONTENT_BLOCKS = `
     },
     _type == "iconCardsBlock" => { eyebrow, title, buttonLabel, buttonLink{${SMART_LINK_FIELDS}}, items[]{${ICON_TEXT_FIELDS}} },
     _type == "partnersBlock" => { eyebrow, title, text },
+    _type == "logoCardGridBlock" => { ${LOGO_CARD_GRID_FIELDS} },
     _type == "googleReviewsBlock" => { limit, compact },
+    _type == "reviewShowcaseBlock" => { ${REVIEW_SHOWCASE_FIELDS} },
     _type == "ctaBannerBlock" => { cta{${CTA_FIELDS}} },
     _type == "contactFormBlock" => { eyebrow, title, text, note, ${INTAKE_FORM_FIELDS} },
     _type == "aboutIntroBlock" => { eyebrow, title, intro, sketchLabels, sketchClosing, introItems[]{${ICON_TEXT_FIELDS}} },
     _type == "aboutTeamBlock" => { teamEyebrow, teamTitle, coreTeam[]{ name, role, image{${IMAGE_SOURCE_FIELDS}}, text }, teamBanner },
     _type == "aboutTeamImageBlock" => { teamImageEyebrow, teamImageTitle, teamImage{${IMAGE_SOURCE_FIELDS}} },
+    _type == "teamProfilesShowcaseBlock" => { ${TEAM_PROFILES_SHOWCASE_FIELDS} },
+    _type == "visitInvitationBlock" => { ${VISIT_INVITATION_FIELDS} },
+    _type == "splitTimelineBlock" => { ${SPLIT_TIMELINE_FIELDS} },
+    _type == "faqAnswersGridBlock" => { ${FAQ_ANSWERS_GRID_FIELDS} },
+    _type == "projectsShowcaseGridBlock" => { ${PROJECTS_SHOWCASE_GRID_FIELDS} },
+    _type == "stackedStepsListBlock" => { ${STACKED_STEPS_LIST_FIELDS} },
+    _type == "splitFeatureListBlock" => { ${SPLIT_FEATURE_LIST_FIELDS} },
+    _type == "darkAssuranceGridBlock" => { ${DARK_ASSURANCE_GRID_FIELDS} },
+    _type == "centeredActionBannerBlock" => { ${CENTERED_ACTION_BANNER_FIELDS} },
     _type == "processBlock" => { eyebrow, titlePrefix, titleHighlight, intro, note, sideNote, steps[]{ title, text, note, icon }, benefits[]{${ICON_TEXT_FIELDS}}, trustPoints[]{${ICON_TEXT_FIELDS}} },
     _type == "processFaqBlock" => { faqEyebrow, faqTitle, faqIntro, faqs[]->{question, "answer": pt::text(answer)} },
     _type == "processIntakeBannerBlock" => { intakeBannerTitle, intakeBannerText, buttonLabel, buttonLink{${SMART_LINK_FIELDS}} },
@@ -223,6 +447,15 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
     },
     _type == "pageHeroBlock" => {
       hero{${PAGE_HERO_FIELDS}}
+    },
+    _type == "splitIntroBlock" => {
+      ${SPLIT_INTRO_FIELDS}
+    },
+    _type == "editorialPrinciplesBlock" => {
+      ${EDITORIAL_PRINCIPLES_FIELDS}
+    },
+    _type == "metricsBandBlock" => {
+      ${METRICS_BAND_FIELDS}
     },
     _type == "problemSolutionBlock" => {
       problemEyebrow,
@@ -290,9 +523,15 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       title,
       text
     },
+    _type == "logoCardGridBlock" => {
+      ${LOGO_CARD_GRID_FIELDS}
+    },
     _type == "googleReviewsBlock" => {
       limit,
       compact
+    },
+    _type == "reviewShowcaseBlock" => {
+      ${REVIEW_SHOWCASE_FIELDS}
     },
     _type == "ctaBannerBlock" => {
       cta{${CTA_FIELDS}}
@@ -327,6 +566,33 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       teamImageEyebrow,
       teamImageTitle,
       teamImage{${IMAGE_SOURCE_FIELDS}}
+    },
+    _type == "teamProfilesShowcaseBlock" => {
+      ${TEAM_PROFILES_SHOWCASE_FIELDS}
+    },
+    _type == "visitInvitationBlock" => {
+      ${VISIT_INVITATION_FIELDS}
+    },
+    _type == "splitTimelineBlock" => {
+      ${SPLIT_TIMELINE_FIELDS}
+    },
+    _type == "faqAnswersGridBlock" => {
+      ${FAQ_ANSWERS_GRID_FIELDS}
+    },
+    _type == "projectsShowcaseGridBlock" => {
+      ${PROJECTS_SHOWCASE_GRID_FIELDS}
+    },
+    _type == "stackedStepsListBlock" => {
+      ${STACKED_STEPS_LIST_FIELDS}
+    },
+    _type == "splitFeatureListBlock" => {
+      ${SPLIT_FEATURE_LIST_FIELDS}
+    },
+    _type == "darkAssuranceGridBlock" => {
+      ${DARK_ASSURANCE_GRID_FIELDS}
+    },
+    _type == "centeredActionBannerBlock" => {
+      ${CENTERED_ACTION_BANNER_FIELDS}
     },
     _type == "processBlock" => {
       eyebrow,
@@ -572,6 +838,7 @@ const REVIEWS_QUERY = `*[_type == "review"]|order(sortOrder asc, name asc){
 
 const PARTNERS_QUERY = `*[_type == "partner"]|order(sortOrder asc, name asc){
   name,
+  category,
   image{${IMAGE_SOURCE_FIELDS}},
   accent
 }`;
@@ -623,13 +890,21 @@ export type PageHeroBlock = CmsBaseBlock & {
   hero?: ListingPageContent["hero"];
 };
 
+export type SplitIntroBlock = CmsBaseBlock & {
+  _type: "splitIntroBlock";
+} & SplitIntroContent;
+
+export type EditorialPrinciplesBlock = CmsBaseBlock & {
+  _type: "editorialPrinciplesBlock";
+} & EditorialPrinciplesContent;
+
+export type MetricsBandBlock = CmsBaseBlock & {
+  _type: "metricsBandBlock";
+} & MetricsBandContent;
+
 export type ProblemSolutionBlock = CmsBaseBlock & {
   _type: "problemSolutionBlock";
 } & ProblemSolutionContent;
-
-type PtSpan = {_type: 'span'; _key: string; text: string; marks?: string[]};
-type PtMarkDef = {_key: string; _type: string; href?: string};
-export type PtBlock = {_type: 'block'; _key: string; style?: string; listItem?: 'bullet' | 'number'; level?: number; children?: PtSpan[]; markDefs?: PtMarkDef[]};
 
 export type TextBlock = CmsBaseBlock & {
   _type: "textBlock";
@@ -691,11 +966,19 @@ export type PartnersBlock = CmsBaseBlock & {
   text?: string;
 };
 
+export type LogoCardGridBlock = CmsBaseBlock & {
+  _type: "logoCardGridBlock";
+} & LogoCardGridContent;
+
 export type GoogleReviewsBlock = CmsBaseBlock & {
   _type: "googleReviewsBlock";
   limit?: number;
   compact?: boolean;
 };
+
+export type ReviewShowcaseBlock = CmsBaseBlock & {
+  _type: "reviewShowcaseBlock";
+} & ReviewShowcaseContent;
 
 export type CtaBannerBlock = CmsBaseBlock & {
   _type: "ctaBannerBlock";
@@ -722,6 +1005,42 @@ export type AboutTeamBlock = CmsBaseBlock & {
 export type AboutTeamImageBlock = CmsBaseBlock & {
   _type: "aboutTeamImageBlock";
 } & Pick<AboutPageContent, "teamImageEyebrow" | "teamImageTitle" | "teamImage">;
+
+export type TeamProfilesShowcaseBlock = CmsBaseBlock & {
+  _type: "teamProfilesShowcaseBlock";
+} & TeamProfilesShowcaseContent;
+
+export type VisitInvitationBlock = CmsBaseBlock & {
+  _type: "visitInvitationBlock";
+} & VisitInvitationContent;
+
+export type SplitTimelineBlock = CmsBaseBlock & {
+  _type: "splitTimelineBlock";
+} & SplitTimelineContent;
+
+export type FaqAnswersGridBlock = CmsBaseBlock & {
+  _type: "faqAnswersGridBlock";
+} & FaqAnswersGridContent;
+
+export type ProjectsShowcaseGridBlock = CmsBaseBlock & {
+  _type: "projectsShowcaseGridBlock";
+} & ProjectsShowcaseGridContent;
+
+export type StackedStepsListBlock = CmsBaseBlock & {
+  _type: "stackedStepsListBlock";
+} & StackedStepsListContent;
+
+export type SplitFeatureListBlock = CmsBaseBlock & {
+  _type: "splitFeatureListBlock";
+} & SplitFeatureListContent;
+
+export type DarkAssuranceGridBlock = CmsBaseBlock & {
+  _type: "darkAssuranceGridBlock";
+} & DarkAssuranceGridContent;
+
+export type CenteredActionBannerBlock = CmsBaseBlock & {
+  _type: "centeredActionBannerBlock";
+} & CenteredActionBannerContent;
 
 export type ProcessBlock = CmsBaseBlock & {
   _type: "processBlock";
@@ -755,6 +1074,9 @@ export type VideoChecklistBlock = CmsBaseBlock & {
 export type CmsDynamicPageBlock =
   | HomeHeroBlock
   | PageHeroBlock
+  | SplitIntroBlock
+  | EditorialPrinciplesBlock
+  | MetricsBandBlock
   | ProblemSolutionBlock
   | TextBlock
   | ServicesListingBlock
@@ -763,12 +1085,23 @@ export type CmsDynamicPageBlock =
   | FeaturedProjectsBlock
   | IconCardsBlock
   | PartnersBlock
+  | LogoCardGridBlock
   | GoogleReviewsBlock
+  | ReviewShowcaseBlock
   | CtaBannerBlock
   | ContactFormBlock
   | AboutIntroBlock
   | AboutTeamBlock
   | AboutTeamImageBlock
+  | TeamProfilesShowcaseBlock
+  | VisitInvitationBlock
+  | SplitTimelineBlock
+  | FaqAnswersGridBlock
+  | ProjectsShowcaseGridBlock
+  | StackedStepsListBlock
+  | SplitFeatureListBlock
+  | DarkAssuranceGridBlock
+  | CenteredActionBannerBlock
   | ProcessBlock
   | ProcessFaqBlock
   | ProcessIntakeBannerBlock

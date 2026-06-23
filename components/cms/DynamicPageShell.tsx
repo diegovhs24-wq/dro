@@ -35,7 +35,7 @@ export default async function DynamicPageShell({
 function extractFaqs(page: CmsDynamicPage) {
   return (
     page.contentBlocks
-      ?.filter((block) => block._type === "processFaqBlock")
+      ?.filter((block) => block._type === "processFaqBlock" || block._type === "faqAnswersGridBlock")
       .flatMap((block) =>
         "faqs" in block
           ? (block.faqs || []).map((faq) => ({
