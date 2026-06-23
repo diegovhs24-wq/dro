@@ -7,6 +7,10 @@ import {
   withSiteSettingsFallback,
 } from "@/lib/cms-fallback";
 import type {
+  BlogAuthor,
+  BlogCategory,
+  BlogPostDetail,
+  BlogPostSummary,
   CtaContent,
   DarkAssuranceGridContent,
   FaqItem,
@@ -17,6 +21,7 @@ import type {
   PtBlock,
   ProblemSolutionContent,
   ProjectItem,
+  RichTextContent,
   ReviewItem,
   SeoSettings,
   ServiceBlock,
@@ -434,6 +439,11 @@ const PROJECTS_INDEX_QUERY = `coalesce(
   *[_type == "projectsIndex"][0]{${INDEX_PAGE_FIELDS}}
 )`;
 
+const BLOGS_INDEX_QUERY = `coalesce(
+  *[_id == "blogsIndex"][0]{${INDEX_PAGE_FIELDS}},
+  *[_type == "blogsIndex"][0]{${INDEX_PAGE_FIELDS}}
+)`;
+
 const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
   _id,
   title,
@@ -804,6 +814,10 @@ const PROJECTS_QUERY = `*[_type == "project"]|order(sortOrder asc, title asc){
   after,
   beforeImage{${IMAGE_SOURCE_FIELDS}},
   afterImage{${IMAGE_SOURCE_FIELDS}},
+  primaryLabel,
+  primaryLink{${SMART_LINK_FIELDS}},
+  secondaryLabel,
+  secondaryLink{${SMART_LINK_FIELDS}},
   seo{${SEO_FIELDS}}
 }`;
 
@@ -821,12 +835,80 @@ const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
   after,
   beforeImage{${IMAGE_SOURCE_FIELDS}},
   afterImage{${IMAGE_SOURCE_FIELDS}},
+  primaryLabel,
+  primaryLink{${SMART_LINK_FIELDS}},
+  secondaryLabel,
+  secondaryLink{${SMART_LINK_FIELDS}},
   videoChecklist[]{
     lists[]{ icon, title, items },
     videoUrl,
     videoCaption
   },
   seo{${SEO_FIELDS}}
+}`;
+
+const BLOG_AUTHOR_FIELDS = `
+  name,
+  "slug": slug.current,
+  role,
+  image{${IMAGE_SOURCE_FIELDS}},
+  bio
+`;
+
+const BLOG_CATEGORY_FIELDS = `
+  title,
+  "slug": slug.current,
+  description,
+  seo{${SEO_FIELDS}}
+`;
+
+const BLOG_POST_SUMMARY_FIELDS = `
+  title,
+  "slug": slug.current,
+  excerpt,
+  featuredImage{${IMAGE_SOURCE_FIELDS}},
+  publishedAt,
+  updatedAt,
+  author->{${BLOG_AUTHOR_FIELDS}},
+  categories[]->{${BLOG_CATEGORY_FIELDS}},
+  "bodyText": pt::text(body),
+  seo{${SEO_FIELDS}}
+`;
+
+const BLOG_POSTS_QUERY = `*[_type == "blogPost" && defined(slug.current)]|order(coalesce(sortOrder, 9999) asc, publishedAt desc){
+  ${BLOG_POST_SUMMARY_FIELDS}
+}`;
+
+const BLOG_POST_QUERY = `*[_type == "blogPost" && slug.current == $slug][0]{
+  ${BLOG_POST_SUMMARY_FIELDS},
+  body[]{
+    ...,
+    _type == "cmsImage" => {${IMAGE_SOURCE_FIELDS}}
+  },
+  relatedServices[]->{
+    title,
+    "slug": slug.current,
+    icon,
+    label,
+    cardImage{${IMAGE_SOURCE_FIELDS}},
+    summary
+  },
+  relatedProjects[]->{
+    title,
+    "slug": slug.current,
+    description,
+    story,
+    images[]{${IMAGE_SOURCE_FIELDS}},
+    location,
+    type,
+    duration,
+    work_items,
+    before,
+    after,
+    beforeImage{${IMAGE_SOURCE_FIELDS}},
+    afterImage{${IMAGE_SOURCE_FIELDS}},
+    seo{${SEO_FIELDS}}
+  }
 }`;
 
 const REVIEWS_QUERY = `*[_type == "review"]|order(sortOrder asc, name asc){
@@ -1259,8 +1341,97 @@ function toProject(raw: RawRecord): ProjectItem | null {
     after: normalized.after || "",
     beforeImage: normalized.beforeImage,
     afterImage: normalized.afterImage,
+    primaryLabel: normalized.primaryLabel,
+    primaryLink: normalized.primaryLink,
+    secondaryLabel: normalized.secondaryLabel,
+    secondaryLink: normalized.secondaryLink,
     videoChecklist: Array.isArray(normalized.videoChecklist) ? normalized.videoChecklist as VideoChecklistItem[] : [],
     seo: mapSeo(raw.seo),
+  };
+}
+
+function readingTimeFromText(text: unknown): string | undefined {
+  if (typeof text !== "string" || !text.trim()) {
+    return undefined;
+  }
+
+  const words = text.trim().split(/\s+/).length;
+  const minutes = Math.max(1, Math.ceil(words / 220));
+  return `${minutes} min leestijd`;
+}
+
+function toBlogAuthor(raw: unknown): BlogAuthor | undefined {
+  const normalized = normalizeCmsValue(raw);
+  if (!isRecord(normalized) || typeof normalized.name !== "string") {
+    return undefined;
+  }
+
+  return {
+    name: normalized.name,
+    slug: asString(normalized.slug) || undefined,
+    role: asString(normalized.role) || undefined,
+    image: asString(normalized.image) || undefined,
+    bio: asString(normalized.bio) || undefined,
+  };
+}
+
+function toBlogCategory(raw: unknown): BlogCategory | null {
+  const normalized = normalizeCmsValue(raw);
+  if (!isRecord(normalized) || typeof normalized.title !== "string" || typeof normalized.slug !== "string") {
+    return null;
+  }
+
+  return {
+    title: normalized.title,
+    slug: normalized.slug,
+    description: asString(normalized.description) || undefined,
+    seo: mapSeo(normalized.seo),
+  };
+}
+
+function toBlogPostSummary(raw: RawRecord): BlogPostSummary | null {
+  const slug = typeof raw.slug === "string" ? raw.slug : "";
+  const title = typeof raw.title === "string" ? raw.title : "";
+  const normalized = normalizeCmsValue(raw) as RawRecord;
+
+  if (!slug || !title) {
+    return null;
+  }
+
+  return {
+    title,
+    slug,
+    href: `/kennisbank/${slug}`,
+    excerpt: asString(normalized.excerpt),
+    featuredImage: asString(normalized.featuredImage) || undefined,
+    publishedAt: asString(normalized.publishedAt) || undefined,
+    updatedAt: asString(normalized.updatedAt) || undefined,
+    author: toBlogAuthor(normalized.author),
+    categories: asArray<unknown>(normalized.categories)
+      .map(toBlogCategory)
+      .filter(Boolean) as BlogCategory[],
+    readingTime: readingTimeFromText(normalized.bodyText),
+    seo: mapSeo(raw.seo),
+  };
+}
+
+function toBlogPostDetail(raw: RawRecord): BlogPostDetail | null {
+  const summary = toBlogPostSummary(raw);
+  if (!summary) {
+    return null;
+  }
+
+  const normalized = normalizeCmsValue(raw) as RawRecord;
+
+  return {
+    ...summary,
+    body: asArray<RichTextContent[number]>(normalized.body),
+    relatedServices: asArray<RawRecord>(raw.relatedServices)
+      .map(toServiceSummary)
+      .filter(Boolean) as ServiceSummary[],
+    relatedProjects: asArray<RawRecord>(raw.relatedProjects)
+      .map(toProject)
+      .filter(Boolean) as ProjectItem[],
   };
 }
 
@@ -1382,6 +1553,31 @@ export async function getProjectBySlug(slug: string) {
   return data ? toProject(data) : null;
 }
 
+export async function getBlogPosts() {
+  const {data, failed} = await safeFetch<RawRecord[] | null>(BLOG_POSTS_QUERY);
+
+  if (failed || !data) {
+    return [];
+  }
+
+  return (data.map(toBlogPostSummary).filter(Boolean) as BlogPostSummary[]) || [];
+}
+
+export async function getBlogPostBySlug(slug: string) {
+  const {data, failed} = await safeFetch<RawRecord | null>(BLOG_POST_QUERY, {slug});
+
+  if (failed) {
+    return null;
+  }
+
+  return data ? toBlogPostDetail(data) : null;
+}
+
+export async function getBlogPostSlugs() {
+  const posts = await getBlogPosts();
+  return posts.map((post) => post.slug);
+}
+
 export async function getReviews() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(REVIEWS_QUERY);
 
@@ -1482,6 +1678,12 @@ export async function getServicesIndex(): Promise<IndexPageDoc | null> {
 
 export async function getProjectsIndex(): Promise<IndexPageDoc | null> {
   const {data, failed} = await safeFetch<RawRecord | null>(PROJECTS_INDEX_QUERY);
+  if (failed || !data) return null;
+  return normalizeIndexPage(data);
+}
+
+export async function getBlogsIndex(): Promise<IndexPageDoc | null> {
+  const {data, failed} = await safeFetch<RawRecord | null>(BLOGS_INDEX_QUERY);
   if (failed || !data) return null;
   return normalizeIndexPage(data);
 }

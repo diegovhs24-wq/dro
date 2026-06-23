@@ -16,11 +16,17 @@ function resolveSmartLink(link: SmartLink | undefined): {href: string; openInNew
 
   if (link.linkType === "internal") {
     const ref = link.internalRef;
-    if (!ref?.slug) return {href: "#", openInNewTab: false};
+    if (!ref) return {href: "#", openInNewTab: false};
+    if (ref._type === "servicesIndex") return {href: "/diensten", openInNewTab: false};
+    if (ref._type === "projectsIndex") return {href: "/projecten", openInNewTab: false};
+    if (ref._type === "blogsIndex") return {href: "/kennisbank", openInNewTab: false};
+    if (!ref.slug) return {href: "#", openInNewTab: false};
     let href = "/";
     if (ref._type === "page") href = ref.slug === "home" ? "/" : `/${ref.slug}`;
     else if (ref._type === "service") href = `/diensten/${ref.slug}`;
     else if (ref._type === "project") href = `/projecten/${ref.slug}`;
+    else if (ref._type === "blogPost") href = `/kennisbank/${ref.slug}`;
+    else if (ref._type === "blogCategory") href = `/kennisbank?categorie=${ref.slug}`;
     return {href, openInNewTab: false};
   }
 

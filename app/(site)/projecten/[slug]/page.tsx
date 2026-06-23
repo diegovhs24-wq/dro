@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import Link from "next/link";
 import {notFound} from "next/navigation";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
@@ -9,6 +10,7 @@ import {
   metadataFromSeo,
 } from "@/lib/cms";
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
+import {resolveSmartLink} from "@/lib/smartLink";
 
 type ProjectPageProps = {
   params: {
@@ -52,6 +54,12 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
   const pathname = `/projecten/${params.slug}`;
   const breadcrumbs = breadcrumbsForPath(pathname, project.title);
   const title = `${project.type} in ${project.location}`;
+  const primary = resolveSmartLink(
+    project.primaryLink ?? {linkType: "internal", internalRef: {_type: "page", slug: "contact"}}
+  );
+  const secondary = resolveSmartLink(
+    project.secondaryLink ?? {linkType: "external", externalUrl: "tel:+31600000000"}
+  );
 
   return (
     <>
@@ -73,12 +81,22 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
               </h1>
               <p className="mt-6 text-lg leading-8 text-white/76">{project.description}</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a className="btn-primary" href="/contact">
-                  Start intake
-                </a>
-                <a className="btn-secondary" href="tel:+31600000000">
-                  Bespreek uw project met ons
-                </a>
+                <Link
+                  className="btn-primary"
+                  href={primary.href}
+                  target={primary.openInNewTab ? "_blank" : undefined}
+                  rel={primary.openInNewTab ? "noopener noreferrer" : undefined}
+                >
+                  {project.primaryLabel || "Start intake"}
+                </Link>
+                <Link
+                  className="btn-secondary"
+                  href={secondary.href}
+                  target={secondary.openInNewTab ? "_blank" : undefined}
+                  rel={secondary.openInNewTab ? "noopener noreferrer" : undefined}
+                >
+                  {project.secondaryLabel || "Bespreek uw project met ons"}
+                </Link>
               </div>
             </div>
             <div

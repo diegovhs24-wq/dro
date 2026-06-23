@@ -21,7 +21,7 @@ import {
 // Singletons
 // ---------------------------------------------------------------------------
 
-export const singletonSchemaTypes = ['siteSettings', 'servicesIndex', 'projectsIndex'] as const
+export const singletonSchemaTypes = ['siteSettings', 'servicesIndex', 'projectsIndex', 'blogsIndex'] as const
 const singletonSchemaTypeSet = new Set<string>(singletonSchemaTypes)
 
 export function isSingletonSchemaType(schemaType: string) {
@@ -60,6 +60,9 @@ async function getStructureCounts(context: StructureResolverContext) {
       partnerIds: string[]
       intakeFormIds: string[]
       submissionIds: string[]
+      blogPostIds: string[]
+      blogAuthorIds: string[]
+      blogCategoryIds: string[]
     }>(
       `{
         "otherPageIds":    *[_type == "page" && !(_id in [$homeId, $homeDraftId])]._id,
@@ -69,7 +72,10 @@ async function getStructureCounts(context: StructureResolverContext) {
         "faqIds":          *[_type == "faq"]._id,
         "partnerIds":      *[_type == "partner"]._id,
         "intakeFormIds":   *[_type == "intakeForm"]._id,
-        "submissionIds":   *[_type == "formSubmission"]._id
+        "submissionIds":   *[_type == "formSubmission"]._id,
+        "blogPostIds":     *[_type == "blogPost"]._id,
+        "blogAuthorIds":   *[_type == "blogAuthor"]._id,
+        "blogCategoryIds": *[_type == "blogCategory"]._id
       }`,
       {homeId: 'home', homeDraftId: 'drafts.home'},
     )
@@ -83,11 +89,15 @@ async function getStructureCounts(context: StructureResolverContext) {
       partners:      normalize(data?.partnerIds),
       intakeForms:   normalize(data?.intakeFormIds),
       submissions:   normalize(data?.submissionIds),
+      blogPosts:     normalize(data?.blogPostIds),
+      blogAuthors:   normalize(data?.blogAuthorIds),
+      blogCategories: normalize(data?.blogCategoryIds),
     }
   } catch {
     return {
       otherPages: 0, projects: 0, services: 0, reviews: 0,
       faqs: 0, partners: 0, intakeForms: 0, submissions: 0,
+      blogPosts: 0, blogAuthors: 0, blogCategories: 0,
     }
   }
 }
@@ -161,6 +171,35 @@ function projectsSection(S: StructureBuilder, count: number) {
     )
 }
 
+function blogsSection(
+  S: StructureBuilder,
+  postCount: number,
+  authorCount: number,
+  categoryCount: number,
+) {
+  return S.listItem()
+    .id('blogs-section')
+    .title(`Kennisbank (${postCount})`)
+    .icon(DocumentTextIcon)
+    .child(
+      S.list()
+        .title('Kennisbank')
+        .items([
+          singletonItem(S, 'blogsIndex', 'Kennisbank Index Page', FolderIcon),
+          S.divider(),
+          S.documentTypeListItem('blogPost')
+            .title(`All Blog Posts (${postCount})`)
+            .icon(DocumentTextIcon),
+          S.documentTypeListItem('blogAuthor')
+            .title(`Authors (${authorCount})`)
+            .icon(UsersIcon),
+          S.documentTypeListItem('blogCategory')
+            .title(`Categories (${categoryCount})`)
+            .icon(TagIcon),
+        ]),
+    )
+}
+
 // ---------------------------------------------------------------------------
 // Root structure
 // ---------------------------------------------------------------------------
@@ -176,6 +215,7 @@ export const structure: StructureResolver = async (S, context) => {
       pagesSection(S, c.otherPages),
       servicesSection(S, c.services),
       projectsSection(S, c.projects),
+      blogsSection(S, c.blogPosts, c.blogAuthors, c.blogCategories),
 
       S.divider(),
 
