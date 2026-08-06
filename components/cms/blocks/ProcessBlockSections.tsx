@@ -222,6 +222,8 @@ export function ProcessBlockSection({ content }: { content: ProcessContent }) {
                       <img
                         alt={`${point.title} logo`}
                         className="max-h-10 w-auto max-w-full object-contain"
+                        decoding="async"
+                        loading="lazy"
                         src={point.logo}
                       />
                     </span>

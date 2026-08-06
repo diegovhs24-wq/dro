@@ -19,12 +19,22 @@ export function middleware(request: NextRequest) {
     !pathname.startsWith('/_next') &&
     pathname !== '/robots.txt' &&
     pathname !== '/sitemap.xml' &&
+    pathname !== '/llms.txt' &&
+    pathname !== '/llms-full.txt' &&
     !pathname.startsWith('/.well-known')
   ) {
     const url = request.nextUrl.clone()
     url.pathname = '/api/markdown'
     url.searchParams.set('path', pathname)
-    return withAgentHeaders(NextResponse.rewrite(url))
+
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-markdown-path', pathname)
+
+    return withAgentHeaders(
+      NextResponse.rewrite(url, {
+        request: {headers: requestHeaders},
+      })
+    )
   }
 
   return withAgentHeaders(NextResponse.next())

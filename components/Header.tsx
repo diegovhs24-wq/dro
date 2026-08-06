@@ -241,6 +241,8 @@ function MegaMenuItem({item, pathname}: {item: Extract<HeaderMenuItem, {type: "m
               <img
                 alt={item.promo.eyebrow || item.label}
                 className="h-full w-full object-cover"
+                decoding="async"
+                loading="lazy"
                 src={item.promo.image}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />

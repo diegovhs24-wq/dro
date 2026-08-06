@@ -9,6 +9,7 @@ export async function GET() {
     "Allow: /",
     "Disallow: /api/",
     "Disallow: /api/draft-mode/",
+    "Disallow: /studio",
     "",
     `Sitemap: ${getSiteUrl()}/sitemap.xml`,
     "",

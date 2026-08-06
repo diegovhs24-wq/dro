@@ -1,5 +1,5 @@
 import type React from "react";
-import type {PtBlock, RichTextContent} from "@/lib/types";
+import type {PtBlock, RichTextContent, RichTextImageBlock} from "@/lib/types";
 
 type RichTextProps = {
   blocks: RichTextContent;
@@ -8,6 +8,10 @@ type RichTextProps = {
 
 function isPtBlock(value: RichTextContent[number]): value is PtBlock {
   return Boolean(value) && typeof value === "object" && "_type" in value && value._type === "block";
+}
+
+function isImageBlock(value: RichTextContent[number]): value is RichTextImageBlock {
+  return Boolean(value) && typeof value === "object" && "_type" in value && value._type === "cmsImage";
 }
 
 function renderSpan(
@@ -52,7 +56,23 @@ export default function RichText({blocks, className}: RichTextProps) {
     if (typeof block === "string") {
       nodes.push(
         <figure className="my-10 overflow-hidden rounded-lg" key={`image-${index}`}>
-          <img alt="" className="h-auto w-full object-cover" src={block} />
+          <img alt="" className="h-auto w-full object-cover" decoding="async" loading="lazy" src={block} />
+        </figure>,
+      );
+      index++;
+      continue;
+    }
+
+    if (isImageBlock(block)) {
+      nodes.push(
+        <figure className="my-10 overflow-hidden rounded-lg" key={`image-${index}`}>
+          <img
+            alt={block.alt || ""}
+            className="h-auto w-full object-cover"
+            decoding="async"
+            loading="lazy"
+            src={block.url}
+          />
         </figure>,
       );
       index++;

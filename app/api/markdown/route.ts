@@ -2,7 +2,8 @@ import {NextRequest, NextResponse} from "next/server";
 import {buildMarkdownForPath} from "@/lib/seo/markdown";
 
 export async function GET(request: NextRequest) {
-  const path = request.nextUrl.searchParams.get("path") || "/";
+  const path =
+    request.headers.get("x-markdown-path") || request.nextUrl.searchParams.get("path") || "/";
   const markdown = await buildMarkdownForPath(path);
 
   if (!markdown) {

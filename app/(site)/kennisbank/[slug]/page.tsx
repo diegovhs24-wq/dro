@@ -139,6 +139,8 @@ export default async function BlogPostPage({params}: BlogPostPageProps) {
                     <img
                       alt={post.author.name}
                       className="h-20 w-20 rounded-lg object-cover"
+                      decoding="async"
+                      loading="lazy"
                       src={post.author.image}
                     />
                   ) : null}

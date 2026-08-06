@@ -382,7 +382,13 @@ export type ProjectItem = {
   seo?: SeoSettings;
 };
 
-export type RichTextContent = Array<PtBlock | string>;
+export type RichTextImageBlock = {
+  _type: 'cmsImage';
+  url: string;
+  alt?: string;
+};
+
+export type RichTextContent = Array<PtBlock | RichTextImageBlock | string>;
 
 export type BlogAuthor = {
   name: string;
@@ -435,6 +441,8 @@ export type OrganizationSeo = {
   areaServed?: string[];
   sameAs?: string[];
   priceRange?: string;
+  aggregateRatingValue?: number;
+  aggregateRatingCount?: number;
 };
 
 export type SiteSettings = {

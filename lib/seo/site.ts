@@ -46,6 +46,8 @@ export function resolveOrganizationSeo(
   logo?: string;
   latitude?: number;
   longitude?: number;
+  aggregateRatingValue?: number;
+  aggregateRatingCount?: number;
 } {
   const footer = siteSettings.footer;
 
@@ -73,5 +75,7 @@ export function resolveOrganizationSeo(
       : ["Zuid-Holland", "Noord-Holland", "Utrecht", "Zeeland", "Randstad"],
     sameAs: organizationSeo?.sameAs || [],
     priceRange: organizationSeo?.priceRange || "$$",
+    aggregateRatingValue: organizationSeo?.aggregateRatingValue,
+    aggregateRatingCount: organizationSeo?.aggregateRatingCount,
   };
 }

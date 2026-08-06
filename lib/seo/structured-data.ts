@@ -90,6 +90,15 @@ export function buildOrganizationGraph(
     ],
   };
 
+  const aggregateRating =
+    typeof org.aggregateRatingValue === "number" && typeof org.aggregateRatingCount === "number"
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: org.aggregateRatingValue,
+          reviewCount: org.aggregateRatingCount,
+        }
+      : undefined;
+
   const localBusiness: JsonLd = {
     "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
     "@id": localId,
@@ -101,6 +110,7 @@ export function buildOrganizationGraph(
     priceRange: org.priceRange,
     address,
     ...(geo ? {geo} : {}),
+    ...(aggregateRating ? {aggregateRating} : {}),
     areaServed: org.areaServed.map((area) => ({
       "@type": "AdministrativeArea",
       name: area,

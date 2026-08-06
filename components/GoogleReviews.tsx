@@ -56,6 +56,8 @@ export default function GoogleReviews({
                   <img
                     alt={`${review.name} Google review`}
                     className="h-11 w-11 rounded-full object-cover"
+                    decoding="async"
+                    loading="lazy"
                     src={review.image}
                   />
                 ) : (

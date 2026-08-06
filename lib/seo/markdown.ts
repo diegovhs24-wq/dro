@@ -1,6 +1,17 @@
-import {getPageBySlug, getProjectBySlug, getServiceBySlug, getSiteSettings} from "@/lib/cms";
+import {
+  getBlogPostBySlug,
+  getBlogPosts,
+  getBlogsIndex,
+  getPageBySlug,
+  getProjectBySlug,
+  getProjectsIndex,
+  getServiceBySlug,
+  getServicesIndex,
+  getSiteSettings,
+} from "@/lib/cms";
 import {absoluteUrl, getSiteUrl} from "@/lib/seo/site";
 import type {CmsDynamicPageBlock} from "@/lib/cms";
+import type {PtBlock, RichTextContent} from "@/lib/types";
 
 function heading(level: number, text: string) {
   return `${"#".repeat(level)} ${text}\n\n`;
@@ -18,6 +29,45 @@ function list(items?: string[]) {
 function link(label: string, href: string) {
   const url = href.startsWith("http") ? href : absoluteUrl(href);
   return `[${label}](${url})`;
+}
+
+function richTextSpanText(span: NonNullable<PtBlock["children"]>[number]) {
+  return span.text || "";
+}
+
+function richTextToMarkdown(blocks: RichTextContent = []): string {
+  return blocks
+    .map((block) => {
+      if (typeof block === "string") {
+        return `![](${block})\n\n`;
+      }
+
+      if (block._type === "cmsImage") {
+        const image = block as {url?: string; alt?: string};
+        return image.url ? `![${image.alt || ""}](${image.url})\n\n` : "";
+      }
+
+      const ptBlock = block as PtBlock;
+      const text = (ptBlock.children || []).map(richTextSpanText).join("");
+
+      if (ptBlock.listItem) {
+        return `${ptBlock.listItem === "number" ? "1." : "-"} ${text}\n`;
+      }
+
+      switch (ptBlock.style) {
+        case "h2":
+          return heading(2, text);
+        case "h3":
+          return heading(3, text);
+        case "h4":
+          return heading(4, text);
+        case "blockquote":
+          return `> ${text}\n\n`;
+        default:
+          return paragraph(text);
+      }
+    })
+    .join("");
 }
 
 function blockToMarkdown(block: CmsDynamicPageBlock): string {
@@ -245,14 +295,57 @@ export async function buildMarkdownForPath(pathname: string) {
   }
 
   if (normalized === "/diensten") {
-    const page = await getPageBySlug("diensten");
+    const page = await getServicesIndex();
     page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
     return lines.join("\n");
   }
 
   if (normalized === "/projecten") {
-    const page = await getPageBySlug("projecten");
+    const page = await getProjectsIndex();
     page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
+    return lines.join("\n");
+  }
+
+  if (normalized === "/kennisbank") {
+    const page = await getBlogsIndex();
+    page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
+    lines.push(heading(2, "Artikelen"));
+    const posts = await getBlogPosts();
+    posts.forEach((post) => {
+      lines.push(`- ${link(post.title, post.href)}${post.excerpt ? ` — ${post.excerpt}` : ""}\n`);
+    });
+    return lines.join("\n");
+  }
+
+  if (normalized.startsWith("/kennisbank/")) {
+    const slug = normalized.replace("/kennisbank/", "");
+    const post = await getBlogPostBySlug(slug);
+    if (!post) return null;
+    lines.push(heading(1, post.title));
+    if (post.author?.name || post.publishedAt) {
+      lines.push(
+        `${post.author?.name ? `Door ${post.author.name}` : ""}${
+          post.author?.name && post.publishedAt ? " — " : ""
+        }${post.publishedAt ? post.publishedAt : ""}\n\n`
+      );
+    }
+    lines.push(paragraph(post.excerpt));
+    lines.push(richTextToMarkdown(post.body));
+    if (post.relatedServices?.length) {
+      lines.push(heading(2, "Gerelateerde diensten"));
+      post.relatedServices.forEach((service) => {
+        lines.push(`- ${link(service.title, service.href)}\n`);
+      });
+      lines.push("\n");
+    }
+    if (post.relatedProjects?.length) {
+      lines.push(heading(2, "Gerelateerde projecten"));
+      post.relatedProjects.forEach((project) => {
+        lines.push(`- ${link(project.title, `/projecten/${project.slug}`)}\n`);
+      });
+      lines.push("\n");
+    }
+    lines.push(`Terug naar ${link("de kennisbank", "/kennisbank")}.\n`);
     return lines.join("\n");
   }
 

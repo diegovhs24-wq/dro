@@ -22,6 +22,7 @@ import type {
   ProblemSolutionContent,
   ProjectItem,
   RichTextContent,
+  RichTextImageBlock,
   ReviewItem,
   SeoSettings,
   ServiceBlock,
@@ -732,7 +733,9 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
     longitude,
     areaServed,
     sameAs,
-    priceRange
+    priceRange,
+    aggregateRatingValue,
+    aggregateRatingCount
   }
 }`;
 
@@ -1226,7 +1229,7 @@ function isRecord(value: unknown): value is RawRecord {
 
 function normalizeCmsValue(value: unknown): unknown {
   if (Array.isArray(value)) {
-    return value.map(normalizeCmsValue).filter((item) => item !== undefined);
+    return value.map(normalizeCmsValue).filter((item) => item !== undefined && item !== null);
   }
 
   if (!isRecord(value)) {
@@ -1257,7 +1260,7 @@ function asStringArray(value: unknown): string[] {
 }
 
 function asArray<T>(value: unknown): T[] {
-  return Array.isArray(value) ? (value as T[]) : [];
+  return Array.isArray(value) ? (value.filter((item) => item !== undefined && item !== null) as T[]) : [];
 }
 
 function mapSeo(rawSeo: unknown): SeoSettings {
@@ -1415,6 +1418,22 @@ function toBlogPostSummary(raw: RawRecord): BlogPostSummary | null {
   };
 }
 
+function normalizeBodyBlock(block: unknown): RichTextContent[number] | null {
+  if (isRecord(block) && block._type === "cmsImage") {
+    const url = cmsImageUrl(block as unknown as never, 1600);
+    if (!url) return null;
+    const altSource = isRecord(block.image) ? block.image.alt : undefined;
+    const imageBlock: RichTextImageBlock = {
+      _type: "cmsImage",
+      url,
+      alt: typeof altSource === "string" ? altSource : "",
+    };
+    return imageBlock;
+  }
+
+  return normalizeCmsValue(block) as RichTextContent[number];
+}
+
 function toBlogPostDetail(raw: RawRecord): BlogPostDetail | null {
   const summary = toBlogPostSummary(raw);
   if (!summary) {
@@ -1425,7 +1444,9 @@ function toBlogPostDetail(raw: RawRecord): BlogPostDetail | null {
 
   return {
     ...summary,
-    body: asArray<RichTextContent[number]>(normalized.body),
+    body: asArray<RawRecord>(raw.body)
+      .map(normalizeBodyBlock)
+      .filter((block): block is RichTextContent[number] => block !== null),
     relatedServices: asArray<RawRecord>(raw.relatedServices)
       .map(toServiceSummary)
       .filter(Boolean) as ServiceSummary[],

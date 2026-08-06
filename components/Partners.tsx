@@ -29,7 +29,7 @@ export default function Partners({partners, eyebrow, title, text}: PartnersProps
               key={partner.name}
             >
               {partner.image ? (
-                <img alt={`${partner.name} logo`} className="max-h-16 w-auto max-w-full object-contain" src={partner.image} />
+                <img alt={`${partner.name} logo`} className="max-h-16 w-auto max-w-full object-contain" decoding="async" loading="lazy" src={partner.image} />
               ) : (
                 <div className={`rounded-md px-5 py-3 text-xl font-extrabold tracking-tight ${partner.accent || ""}`}>
                   {partner.name}

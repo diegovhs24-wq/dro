@@ -140,6 +140,22 @@ export const organizationSeo = defineType({
       of: [defineArrayMember({type: 'url'})],
     }),
     defineField({name: 'priceRange', title: 'Price Range', type: 'string', initialValue: '$$'}),
+    defineField({
+      name: 'aggregateRatingValue',
+      title: 'Google Rating (average, 1-5)',
+      type: 'number',
+      description:
+        'Real current average rating from Google Business Profile, e.g. 4.8. Leave empty to omit rating markup — do not enter an estimate.',
+      validation: (Rule) => Rule.min(1).max(5),
+    }),
+    defineField({
+      name: 'aggregateRatingCount',
+      title: 'Google Review Count',
+      type: 'number',
+      description:
+        'Real current number of Google reviews behind the rating above. Both fields must be filled in for rating markup to appear.',
+      validation: (Rule) => Rule.min(1),
+    }),
   ],
 })
 

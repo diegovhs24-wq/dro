@@ -22,6 +22,8 @@ export default function Footer({services, siteSettings}: FooterProps) {
                 <img
                   alt={footer.logoAlt || footer.brandTitle}
                   className="h-10 w-auto object-contain"
+                  decoding="async"
+                  loading="lazy"
                   src={footer.logo}
                 />
               ) : (
