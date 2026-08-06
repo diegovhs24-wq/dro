@@ -8,7 +8,7 @@ export function getSiteUrl() {
     process.env.SITE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
 
-  return (configured || "https://www.drorenovaties.nl").replace(/\/+$/, "");
+  return (configured || "https://www.dro-renovaties.nl").replace(/\/+$/, "");
 }
 
 export function absoluteUrl(pathname: string) {
@@ -25,7 +25,8 @@ export function absoluteUrl(pathname: string) {
 
 export function resolveOrganizationSeo(
   siteSettings: SiteSettings,
-  organizationSeo?: OrganizationSeo | null
+  organizationSeo?: OrganizationSeo | null,
+  extraAreaServed: string[] = []
 ): Required<
   Pick<
     OrganizationSeo,
@@ -48,34 +49,50 @@ export function resolveOrganizationSeo(
   longitude?: number;
   aggregateRatingValue?: number;
   aggregateRatingCount?: number;
+  name: string;
+  slogan?: string;
+  knowsAbout: string[];
+  kvkNumber: string;
 } {
   const footer = siteSettings.footer;
+  const dedupedAreaServed = Array.from(
+    new Set([
+      ...(organizationSeo?.areaServed?.length
+        ? organizationSeo.areaServed
+        : ["Zuid-Holland", "Noord-Holland", "Utrecht", "Zeeland", "Randstad"]),
+      ...extraAreaServed,
+    ])
+  );
 
   return {
+    name: organizationSeo?.name || footer.brandTitle || siteSettings.title,
     legalName: organizationSeo?.legalName || footer.brandTitle || siteSettings.title,
+    slogan: organizationSeo?.slogan,
     siteUrl: organizationSeo?.siteUrl || getSiteUrl(),
     logo: organizationSeo?.logo || footer.logo,
     telephone:
       organizationSeo?.telephone ||
       footer.contactPhoneHref.replace(/^tel:/, "") ||
-      footer.contactPhone,
+      footer.contactPhone ||
+      "0850871814",
     email:
       organizationSeo?.email ||
       footer.contactEmailHref.replace(/^mailto:/, "") ||
-      footer.contactEmail,
-    streetAddress: organizationSeo?.streetAddress || "Den Haag en omgeving",
+      footer.contactEmail ||
+      "info@dro-renovaties.nl",
+    streetAddress: organizationSeo?.streetAddress || "Orionstraat 235",
     addressLocality: organizationSeo?.addressLocality || "Den Haag",
     postalCode: organizationSeo?.postalCode || "",
     addressRegion: organizationSeo?.addressRegion || "Zuid-Holland",
     addressCountry: organizationSeo?.addressCountry || "NL",
     latitude: organizationSeo?.latitude,
     longitude: organizationSeo?.longitude,
-    areaServed: organizationSeo?.areaServed?.length
-      ? organizationSeo.areaServed
-      : ["Zuid-Holland", "Noord-Holland", "Utrecht", "Zeeland", "Randstad"],
+    areaServed: dedupedAreaServed,
     sameAs: organizationSeo?.sameAs || [],
     priceRange: organizationSeo?.priceRange || "$$",
-    aggregateRatingValue: organizationSeo?.aggregateRatingValue,
-    aggregateRatingCount: organizationSeo?.aggregateRatingCount,
+    aggregateRatingValue: organizationSeo?.aggregateRatingValue ?? 4.8,
+    aggregateRatingCount: organizationSeo?.aggregateRatingCount ?? 273,
+    knowsAbout: organizationSeo?.knowsAbout?.length ? organizationSeo.knowsAbout : [],
+    kvkNumber: organizationSeo?.kvkNumber || "94825653",
   };
 }

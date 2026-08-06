@@ -1,7 +1,10 @@
 import type {Metadata} from "next";
+import {notFound, redirect} from "next/navigation";
 
 import DynamicPageShell from "@/components/cms/DynamicPageShell";
-import {cmsPageMetadata, requireCmsPage} from "@/lib/cms-page";
+import LocationDetailRoute from "@/components/LocationDetailRoute";
+import {getLocationSlugs} from "@/lib/cms";
+import {pageOrLocationMetadata, resolvePageOrLocation} from "@/lib/cms-page";
 
 type DynamicPageProps = {
   params: Promise<{
@@ -9,10 +12,15 @@ type DynamicPageProps = {
   }>;
 };
 
+export async function generateStaticParams() {
+  const slugs = await getLocationSlugs();
+  return slugs.map((slug) => ({slug}));
+}
+
 export async function generateMetadata({params}: DynamicPageProps): Promise<Metadata> {
   const {slug} = await params;
 
-  return cmsPageMetadata({
+  return pageOrLocationMetadata({
     slug,
     pathname: `/${slug}`,
     fallbackTitle: "DRO Renovaties",
@@ -21,7 +29,19 @@ export async function generateMetadata({params}: DynamicPageProps): Promise<Meta
 
 export default async function DynamicPage({params}: DynamicPageProps) {
   const {slug} = await params;
-  const page = await requireCmsPage(slug);
+  const result = await resolvePageOrLocation(slug);
 
-  return <DynamicPageShell page={page} pathname={`/${slug}`} />;
+  if (result.kind === "page") {
+    return <DynamicPageShell page={result.page} pathname={`/${slug}`} />;
+  }
+
+  if (result.kind === "location") {
+    return <LocationDetailRoute slug={slug} />;
+  }
+
+  if (result.kind === "redirect_home") {
+    redirect("/");
+  }
+
+  notFound();
 }

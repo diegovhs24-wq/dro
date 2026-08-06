@@ -115,11 +115,14 @@ export const organizationSeo = defineType({
   title: 'Organization SEO',
   type: 'object',
   fields: [
+    defineField({name: 'name', title: 'Brand Name', type: 'string', description: 'Short public-facing name, e.g. "DRO Renovaties".'}),
     defineField({name: 'legalName', title: 'Legal Name', type: 'string'}),
+    defineField({name: 'slogan', title: 'Slogan', type: 'string'}),
     defineField({name: 'siteUrl', title: 'Site URL Override', type: 'url'}),
     defineField({name: 'logo', title: 'Logo', type: 'cmsImage'}),
     defineField({name: 'telephone', title: 'Telephone', type: 'string'}),
     defineField({name: 'email', title: 'Email', type: 'string'}),
+    defineField({name: 'kvkNumber', title: 'KvK Number', type: 'string', description: 'Dutch Chamber of Commerce registration number.'}),
     defineField({name: 'streetAddress', title: 'Street Address', type: 'string'}),
     defineField({name: 'addressLocality', title: 'City', type: 'string'}),
     defineField({name: 'postalCode', title: 'Postal Code', type: 'string'}),
@@ -138,6 +141,13 @@ export const organizationSeo = defineType({
       title: 'Social / Profile URLs',
       type: 'array',
       of: [defineArrayMember({type: 'url'})],
+    }),
+    defineField({
+      name: 'knowsAbout',
+      title: 'Knows About (topics/services)',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      description: 'Topical/service expertise for entity and knowledge-graph optimization.',
     }),
     defineField({name: 'priceRange', title: 'Price Range', type: 'string', initialValue: '$$'}),
     defineField({

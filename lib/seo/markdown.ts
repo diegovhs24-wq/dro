@@ -2,6 +2,7 @@ import {
   getBlogPostBySlug,
   getBlogPosts,
   getBlogsIndex,
+  getLocationBySlug,
   getPageBySlug,
   getProjectBySlug,
   getProjectsIndex,
@@ -388,11 +389,69 @@ export async function buildMarkdownForPath(pathname: string) {
     return lines.join("\n");
   }
 
+  const segments = normalized.split("/").filter(Boolean);
+
+  if (segments.length === 2) {
+    const [citySlug, serviceSlug] = segments;
+    const [location, service] = await Promise.all([
+      getLocationBySlug(citySlug),
+      getServiceBySlug(serviceSlug),
+    ]);
+
+    if (location && service) {
+      // service.title is the SEO-styled page H1 (already includes a city + brand suffix);
+      // eyebrow holds the clean short service name for composing "{name} in {city}" copy.
+      const serviceName = service.eyebrow || service.title;
+      lines.push(heading(1, `${serviceName} in ${location.name}`));
+      lines.push(paragraph(service.intro));
+      lines.push(paragraph(`Actief in ${location.name} en omgeving. Vaste prijs, geen aanbetaling, 4,8 uit 273 reviews.`));
+      if (location.localContext) {
+        lines.push(heading(2, "Lokale situatie"));
+        lines.push(paragraph(location.localContext));
+      }
+      service.sections.forEach((section) => {
+        lines.push(heading(2, section.title));
+        lines.push(list(section.items));
+      });
+      service.faqs?.forEach((faq) => {
+        lines.push(`### ${faq.question}\n\n${faq.answer}\n\n`);
+      });
+      lines.push(`Terug naar ${link(location.name, `/${citySlug}`)} of ${link(`alle ${serviceName.toLowerCase()}`, `/diensten/${serviceSlug}`)}.\n`);
+      return lines.join("\n");
+    }
+  }
+
   const cmsSlug = normalized.replace(/^\//, "");
   const page = await getPageBySlug(cmsSlug);
   if (page?.contentBlocks?.length) {
     lines.push(heading(1, page.title || cmsSlug));
     page.contentBlocks.forEach((block) => lines.push(blockToMarkdown(block)));
+    return lines.join("\n");
+  }
+
+  const location = await getLocationBySlug(cmsSlug);
+  if (location) {
+    lines.push(heading(1, `Renovatie in ${location.name}`));
+    lines.push(paragraph(location.intro));
+    if (location.localContext) {
+      lines.push(heading(2, "Lokale situatie"));
+      lines.push(paragraph(location.localContext));
+    }
+    if (location.whyDro) {
+      lines.push(heading(2, "Waarom DRO"));
+      lines.push(paragraph(location.whyDro));
+    }
+    if (location.popularServices.length) {
+      lines.push(heading(2, "Populaire diensten"));
+      location.popularServices.forEach((service) => {
+        lines.push(`- ${link(service.title, `/${location.slug}/${service.slug}`)}\n`);
+      });
+      lines.push("\n");
+    }
+    if (location.nearbyCities.length) {
+      lines.push(heading(2, "Ook actief in de omgeving"));
+      lines.push(list(location.nearbyCities.map((city) => city.name)));
+    }
     return lines.join("\n");
   }
 

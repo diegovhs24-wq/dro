@@ -550,6 +550,69 @@ export const faq = defineType({
   ],
 })
 
+export const location = defineType({
+  name: 'location',
+  title: 'Location',
+  type: 'document',
+  groups: [
+    {name: 'content', title: 'Content', default: true},
+    {name: 'relations', title: 'Relations'},
+    {name: 'seo', title: 'SEO'},
+  ],
+  fields: [
+    defineField({name: 'name', title: 'City Name', type: 'string', validation: (Rule) => Rule.required(), group: 'content'}),
+    defineField({name: 'slug', title: 'Slug', type: 'slug', options: {source: 'name', maxLength: 96}, validation: (Rule) => Rule.required(), group: 'content'}),
+    defineField({name: 'sortOrder', title: 'Sort Order', type: 'number', group: 'content'}),
+    defineField({name: 'geo', title: 'Coordinates', type: 'geopoint', group: 'content'}),
+    defineField({name: 'intro', title: 'Intro', type: 'text', rows: 4, description: 'Unique local introduction shown at the top of the page.', validation: (Rule) => Rule.required(), group: 'content'}),
+    defineField({name: 'localContext', title: 'Local Context', type: 'text', rows: 4, description: 'Housing stock and renovation demand specific to this city.', group: 'content'}),
+    defineField({name: 'whyDro', title: 'Why DRO', type: 'text', rows: 4, description: 'Why DRO Renovaties works well in this city.', group: 'content'}),
+    defineField({
+      name: 'neighborhoods',
+      title: 'Neighborhoods',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      group: 'content',
+    }),
+    defineField({
+      name: 'nearbyCities',
+      title: 'Nearby Cities (slugs)',
+      description: 'Slugs of nearby Location documents, used for internal linking.',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      group: 'relations',
+    }),
+    defineField({
+      name: 'popularServices',
+      title: 'Popular Services',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'service'}]})],
+      group: 'relations',
+    }),
+    defineField({
+      name: 'relatedProjects',
+      title: 'Related Projects',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'project'}]})],
+      group: 'relations',
+    }),
+    defineField({name: 'seo', title: 'SEO', type: 'seoSettings', options: {collapsible: true, collapsed: true}, group: 'seo'}),
+  ],
+  preview: {
+    select: {title: 'name', subtitle: 'slug.current'},
+    prepare({title, subtitle}: {title?: string; subtitle?: string}) {
+      return {
+        title: title || 'Location',
+        subtitle: subtitle ? `/${subtitle}` : '',
+      }
+    },
+  },
+  orderings: [
+    {title: 'Name A–Z', name: 'nameAsc', by: [{field: 'name', direction: 'asc'}]},
+    {title: 'Sort Order', name: 'sortOrderAsc', by: [{field: 'sortOrder', direction: 'asc'}]},
+  ],
+})
+
 export const servicesIndex = defineType({
   name: 'servicesIndex',
   title: 'Services Index',
@@ -843,6 +906,7 @@ export const documentSchemaTypes = [
   faq,
   service,
   project,
+  location,
   blogPost,
   blogAuthor,
   blogCategory,

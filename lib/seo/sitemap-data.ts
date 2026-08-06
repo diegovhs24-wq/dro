@@ -12,6 +12,7 @@ type SitemapQueryResult = {
   services?: SitemapEntry[];
   projects?: SitemapEntry[];
   blogPosts?: SitemapEntry[];
+  locations?: SitemapEntry[];
 };
 
 const SITEMAP_QUERY = `{
@@ -33,6 +34,11 @@ const SITEMAP_QUERY = `{
   "blogPosts": *[_type == "blogPost" && defined(slug.current)]{
     "slug": slug.current,
     "updatedAt": coalesce(updatedAt, _updatedAt),
+    "noIndex": seo.noIndex
+  },
+  "locations": *[_type == "location" && defined(slug.current)]{
+    "slug": slug.current,
+    "updatedAt": _updatedAt,
     "noIndex": seo.noIndex
   }
 }`;
@@ -120,6 +126,29 @@ export async function getSitemapUrls(): Promise<SitemapUrl[]> {
       lastModified: post.updatedAt ? new Date(post.updatedAt) : undefined,
       changeFrequency: "monthly",
       priority: 0.65,
+    });
+  });
+
+  const indexableServices = (data?.services || []).filter((service) => !service.noIndex);
+
+  (data?.locations || []).forEach((location) => {
+    if (location.noIndex) return;
+    const path = `/${location.slug}`;
+    urls.set(path, {
+      url: absoluteUrl(path),
+      lastModified: location.updatedAt ? new Date(location.updatedAt) : undefined,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    });
+
+    indexableServices.forEach((service) => {
+      const comboPath = `/${location.slug}/${service.slug}`;
+      urls.set(comboPath, {
+        url: absoluteUrl(comboPath),
+        lastModified: location.updatedAt ? new Date(location.updatedAt) : undefined,
+        changeFrequency: "monthly",
+        priority: 0.6,
+      });
     });
   });
 

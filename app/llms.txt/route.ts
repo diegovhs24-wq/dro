@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server";
-import {getBlogPosts, getProjects, getServices, getSiteSettings} from "@/lib/cms";
-import {absoluteUrl} from "@/lib/seo/site";
+import {getBlogPosts, getLocations, getProjects, getServices, getSiteSettings} from "@/lib/cms";
+import {absoluteUrl, resolveOrganizationSeo} from "@/lib/seo/site";
 
 function section(title: string, items: string[]) {
   if (!items.length) return "";
@@ -8,13 +8,15 @@ function section(title: string, items: string[]) {
 }
 
 export async function GET() {
-  const [siteSettings, services, projects, posts] = await Promise.all([
+  const [siteSettings, services, projects, posts, locations] = await Promise.all([
     getSiteSettings(),
     getServices(),
     getProjects(),
     getBlogPosts(),
+    getLocations(),
   ]);
 
+  const org = resolveOrganizationSeo(siteSettings, siteSettings.organizationSeo);
   const description =
     siteSettings.description || siteSettings.footer.description || "Renovatiebedrijf in Nederland.";
 
@@ -23,11 +25,15 @@ export async function GET() {
     "",
     `> ${description}`,
     "",
-    "DRO Renovaties is een renovatie- en afbouwbedrijf. Deze site biedt machine-leesbare content: elke pagina retourneert Markdown in plaats van HTML wanneer opgevraagd met een 'Accept: text/markdown' header. Een volledige export van alle pagina's staat op /llms-full.txt.",
+    `DRO Renovaties (${org.legalName}, KvK ${org.kvkNumber}) is een renovatie- en afbouwbedrijf, actief in ${locations.length} plaatsen in Zuid-Holland en omstreken. Vaste prijs vooraf, geen aanbetaling, 4,8 uit 273 Google-reviews. Contact: ${org.telephone}, ${org.email}. Deze site biedt machine-leesbare content: elke pagina retourneert Markdown in plaats van HTML wanneer opgevraagd met een 'Accept: text/markdown' header. Een volledige export van alle pagina's staat op /llms-full.txt.`,
     "",
     section(
       "Diensten",
       services.map((service) => `- [${service.title}](${absoluteUrl(service.href)}): ${service.summary}`)
+    ),
+    section(
+      "Werkgebied",
+      locations.map((location) => `- [${location.name}](${absoluteUrl(location.href)}): ${location.intro}`)
     ),
     section(
       "Projecten",

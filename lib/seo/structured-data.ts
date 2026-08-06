@@ -45,9 +45,10 @@ function contractorId(siteUrl: string) {
 
 export function buildOrganizationGraph(
   siteSettings: SiteSettings,
-  organizationSeo?: OrganizationSeo | null
+  organizationSeo?: OrganizationSeo | null,
+  extraAreaServed: string[] = []
 ) {
-  const org = resolveOrganizationSeo(siteSettings, organizationSeo);
+  const org = resolveOrganizationSeo(siteSettings, organizationSeo, extraAreaServed);
   const orgId = organizationId(org.siteUrl);
   const localId = localBusinessId(org.siteUrl);
   const contractorGraphId = contractorId(org.siteUrl);
@@ -73,11 +74,23 @@ export function buildOrganizationGraph(
   const organization: JsonLd = {
     "@type": "Organization",
     "@id": orgId,
-    name: org.legalName,
+    name: org.name,
+    legalName: org.legalName,
     url: org.siteUrl,
     description: siteSettings.description || siteSettings.footer.description,
+    ...(org.slogan ? {slogan: org.slogan} : {}),
     ...(org.logo ? {logo: absoluteUrl(org.logo)} : {}),
     ...(org.sameAs.length ? {sameAs: org.sameAs} : {}),
+    ...(org.knowsAbout.length ? {knowsAbout: org.knowsAbout} : {}),
+    ...(org.kvkNumber
+      ? {
+          identifier: {
+            "@type": "PropertyValue",
+            propertyID: "KVK",
+            value: org.kvkNumber,
+          },
+        }
+      : {}),
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -102,7 +115,8 @@ export function buildOrganizationGraph(
   const localBusiness: JsonLd = {
     "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
     "@id": localId,
-    name: org.legalName,
+    name: org.name,
+    legalName: org.legalName,
     url: org.siteUrl,
     image: org.logo ? absoluteUrl(org.logo) : undefined,
     telephone: org.telephone,
@@ -122,7 +136,7 @@ export function buildOrganizationGraph(
     "@type": "HomeAndConstructionBusiness",
     additionalType: "https://schema.org/GeneralContractor",
     "@id": contractorGraphId,
-    name: org.legalName,
+    name: org.name,
     url: org.siteUrl,
     telephone: org.telephone,
     email: org.email,
@@ -174,6 +188,60 @@ export function buildServiceSchema(
     },
     areaServed: org.areaServed,
     serviceType: service.name,
+  };
+}
+
+export type LocationPlaceInput = {
+  name: string;
+  geo?: {lat: number; lng: number};
+};
+
+export function buildLocationPlace(location: LocationPlaceInput) {
+  return {
+    "@type": "City",
+    name: location.name,
+    ...(location.geo
+      ? {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: location.geo.lat,
+            longitude: location.geo.lng,
+          },
+        }
+      : {}),
+  };
+}
+
+export function buildLocationServiceSchema(
+  {
+    serviceName,
+    serviceDescription,
+    location,
+    pathname,
+  }: {
+    serviceName: string;
+    serviceDescription?: string;
+    location: LocationPlaceInput;
+    pathname: string;
+  },
+  siteSettings: SiteSettings,
+  organizationSeo?: OrganizationSeo | null
+) {
+  const org = resolveOrganizationSeo(siteSettings, organizationSeo);
+
+  return {
+    "@type": "Service",
+    "@id": `${absoluteUrl(pathname)}#service`,
+    name: serviceName,
+    description: serviceDescription,
+    url: absoluteUrl(pathname),
+    provider: {
+      "@type": "HomeAndConstructionBusiness",
+      "@id": localBusinessId(org.siteUrl),
+      name: org.name,
+    },
+    areaServed: buildLocationPlace(location),
+    serviceType: serviceName,
   };
 }
 

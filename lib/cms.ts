@@ -17,6 +17,9 @@ import type {
   HomeHeroContent,
   HomePageContent,
   IconTextItem,
+  LocationDetail,
+  LocationSummary,
+  NearbyLocation,
   PartnerLogoItem,
   PtBlock,
   ProblemSolutionContent,
@@ -719,11 +722,14 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
   },
   globalSeo{${SEO_FIELDS}},
   organizationSeo{
+    name,
     legalName,
+    slogan,
     siteUrl,
     logo{${IMAGE_SOURCE_FIELDS}},
     telephone,
     email,
+    kvkNumber,
     streetAddress,
     addressLocality,
     postalCode,
@@ -733,6 +739,7 @@ const SITE_SETTINGS_QUERY = `*[_type == "siteSettings"][0]{
     longitude,
     areaServed,
     sameAs,
+    knowsAbout,
     priceRange,
     aggregateRatingValue,
     aggregateRatingCount
@@ -882,6 +889,13 @@ const BLOG_POSTS_QUERY = `*[_type == "blogPost" && defined(slug.current)]|order(
   ${BLOG_POST_SUMMARY_FIELDS}
 }`;
 
+const BLOG_POSTS_BY_SERVICE_QUERY = `*[
+  _type == "blogPost" && defined(slug.current) &&
+  count((relatedServices[]->slug.current)[@ in $slugs]) > 0
+]|order(publishedAt desc)[0...3]{
+  ${BLOG_POST_SUMMARY_FIELDS}
+}`;
+
 const BLOG_POST_QUERY = `*[_type == "blogPost" && slug.current == $slug][0]{
   ${BLOG_POST_SUMMARY_FIELDS},
   body[]{
@@ -926,6 +940,80 @@ const PARTNERS_QUERY = `*[_type == "partner"]|order(sortOrder asc, name asc){
   category,
   image{${IMAGE_SOURCE_FIELDS}},
   accent
+}`;
+
+const LOCATION_LIST_FIELDS = `
+  name,
+  "slug": slug.current,
+  intro,
+  geo,
+  "popularServiceSlugs": popularServices[]->slug.current
+`;
+
+const LOCATIONS_QUERY = `*[_type == "location" && defined(slug.current)]|order(coalesce(sortOrder, 9999) asc, name asc){${LOCATION_LIST_FIELDS}}`;
+
+const LOCATION_SLUGS_QUERY = `*[_type == "location" && defined(slug.current)].slug.current`;
+
+const LOCATION_QUERY = `*[_type == "location" && slug.current == $slug][0]{
+  name,
+  "slug": slug.current,
+  geo,
+  intro,
+  localContext,
+  whyDro,
+  neighborhoods,
+  nearbyCities,
+  "nearbyCitiesResolved": *[_type == "location" && slug.current in ^.nearbyCities]{name, "slug": slug.current} | order(name asc),
+  popularServices[]->{
+    title,
+    "slug": slug.current,
+    icon,
+    label,
+    cardImage{${IMAGE_SOURCE_FIELDS}},
+    summary
+  },
+  relatedProjects[]->{
+    title,
+    "slug": slug.current,
+    description,
+    story,
+    images[]{${IMAGE_SOURCE_FIELDS}},
+    location,
+    type,
+    duration,
+    work_items,
+    before,
+    after,
+    beforeImage{${IMAGE_SOURCE_FIELDS}},
+    afterImage{${IMAGE_SOURCE_FIELDS}},
+    primaryLabel,
+    primaryLink{${SMART_LINK_FIELDS}},
+    secondaryLabel,
+    secondaryLink{${SMART_LINK_FIELDS}},
+    seo{${SEO_FIELDS}}
+  },
+  "matchedProjects": *[_type == "project" && location match (^.name + "*")]|order(sortOrder asc, title asc)[0...6]{
+    title,
+    "slug": slug.current,
+    description,
+    story,
+    images[]{${IMAGE_SOURCE_FIELDS}},
+    location,
+    type,
+    duration,
+    work_items,
+    before,
+    after,
+    beforeImage{${IMAGE_SOURCE_FIELDS}},
+    afterImage{${IMAGE_SOURCE_FIELDS}},
+    seo{${SEO_FIELDS}}
+  },
+  seo{${SEO_FIELDS}}
+}`;
+
+const LOCATIONS_FOR_SERVICE_QUERY = `*[_type == "location" && $serviceSlug in popularServices[]->slug.current]|order(name asc){
+  name,
+  "slug": slug.current
 }`;
 
 const EMPTY_SITE_SETTINGS: SiteSettings = {
@@ -1599,6 +1687,20 @@ export async function getBlogPostSlugs() {
   return posts.map((post) => post.slug);
 }
 
+export async function getBlogPostsForServiceSlugs(slugs: string[]): Promise<BlogPostSummary[]> {
+  if (!slugs.length) {
+    return [];
+  }
+
+  const {data, failed} = await safeFetch<RawRecord[] | null>(BLOG_POSTS_BY_SERVICE_QUERY, {slugs});
+
+  if (failed || !data) {
+    return [];
+  }
+
+  return data.map(toBlogPostSummary).filter((item): item is BlogPostSummary => item !== null);
+}
+
 export async function getReviews() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(REVIEWS_QUERY);
 
@@ -1619,6 +1721,137 @@ export async function getPartners() {
 
   const partners = normalizeCmsValue(data) as PartnerLogoItem[] | null;
   return partners || [];
+}
+
+function toLocationSummary(raw: RawRecord): LocationSummary | null {
+  const slug = typeof raw.slug === "string" ? raw.slug : "";
+  const name = typeof raw.name === "string" ? raw.name : "";
+  const intro = typeof raw.intro === "string" ? raw.intro : "";
+
+  if (!slug || !name) {
+    return null;
+  }
+
+  const geo =
+    isRecord(raw.geo) && typeof raw.geo.lat === "number" && typeof raw.geo.lng === "number"
+      ? {lat: raw.geo.lat, lng: raw.geo.lng}
+      : undefined;
+
+  return {
+    name,
+    slug,
+    href: `/${slug}`,
+    intro,
+    geo,
+  };
+}
+
+function toLocationDetail(raw: RawRecord): LocationDetail | null {
+  const summary = toLocationSummary(raw);
+
+  if (!summary) {
+    return null;
+  }
+
+  const nearbyCities = asArray<RawRecord>(raw.nearbyCitiesResolved)
+    .map((item): NearbyLocation | null => {
+      const name = typeof item.name === "string" ? item.name : "";
+      const slug = typeof item.slug === "string" ? item.slug : "";
+      return name && slug ? {name, slug} : null;
+    })
+    .filter((item): item is NearbyLocation => item !== null);
+
+  const popularServices = asArray<RawRecord>(raw.popularServices)
+    .map(toServiceSummary)
+    .filter((item): item is ServiceSummary => item !== null);
+
+  const relatedProjects = asArray<RawRecord>(raw.relatedProjects)
+    .map(toProject)
+    .filter((item): item is ProjectItem => item !== null);
+
+  const relatedSlugs = new Set(relatedProjects.map((project) => project.slug));
+  const matchedProjects = asArray<RawRecord>(raw.matchedProjects)
+    .map(toProject)
+    .filter((item): item is ProjectItem => item !== null && !relatedSlugs.has(item.slug));
+
+  return {
+    ...summary,
+    localContext: typeof raw.localContext === "string" ? raw.localContext : undefined,
+    whyDro: typeof raw.whyDro === "string" ? raw.whyDro : undefined,
+    neighborhoods: asStringArray(raw.neighborhoods),
+    nearbyCities,
+    popularServices,
+    relatedProjects,
+    matchedProjects,
+    seo: mapSeo(raw.seo),
+  };
+}
+
+export async function getLocations(): Promise<LocationSummary[]> {
+  const {data, failed} = await safeFetch<RawRecord[] | null>(LOCATIONS_QUERY);
+
+  if (failed || !data) {
+    return [];
+  }
+
+  return data.map(toLocationSummary).filter((item): item is LocationSummary => item !== null);
+}
+
+export async function getLocationSlugs(): Promise<string[]> {
+  const {data, failed} = await safeFetch<string[] | null>(LOCATION_SLUGS_QUERY);
+
+  if (failed || !data) {
+    return [];
+  }
+
+  return data.filter((slug): slug is string => typeof slug === "string");
+}
+
+export async function getLocationBySlug(slug: string): Promise<LocationDetail | null> {
+  const {data, failed} = await safeFetch<RawRecord | null>(LOCATION_QUERY, {slug});
+
+  if (failed || !data) {
+    return null;
+  }
+
+  return toLocationDetail(data);
+}
+
+export async function getLocationCityServiceParams(): Promise<Array<{city: string; service: string}>> {
+  const {data, failed} = await safeFetch<RawRecord[] | null>(LOCATIONS_QUERY);
+
+  if (failed || !data) {
+    return [];
+  }
+
+  const pairs: Array<{city: string; service: string}> = [];
+
+  data.forEach((raw) => {
+    const citySlug = typeof raw.slug === "string" ? raw.slug : "";
+    if (!citySlug) return;
+
+    asStringArray(raw.popularServiceSlugs).forEach((serviceSlug) => {
+      pairs.push({city: citySlug, service: serviceSlug});
+    });
+  });
+
+  return pairs;
+}
+
+export async function getLocationsForService(serviceSlug: string): Promise<NearbyLocation[]> {
+  const {data, failed} = await safeFetch<RawRecord[] | null>(LOCATIONS_FOR_SERVICE_QUERY, {serviceSlug});
+
+  if (failed || !data) {
+    return [];
+  }
+
+  return data
+    .map((raw): NearbyLocation | null => {
+      const name = typeof raw.name === "string" ? raw.name : "";
+      const slug = typeof raw.slug === "string" ? raw.slug : "";
+      return name && slug ? {name, slug} : null;
+    })
+    .filter((item): item is NearbyLocation => item !== null);
 }
 
 function normalizePage(raw: RawRecord | null, slug: string): CmsDynamicPage | null {
@@ -1717,6 +1950,9 @@ export type {
   ContactPageContent,
   HomePageContent,
   ListingPageContent,
+  LocationDetail,
+  LocationSummary,
+  NearbyLocation,
   ProcessPageContent,
   ProjectItem,
   ReviewItem,

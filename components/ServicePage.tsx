@@ -1,8 +1,9 @@
 import CTASection from "@/components/CTASection";
 import GoogleReviews from "@/components/GoogleReviews";
+import NearbyCitiesLinks from "@/components/NearbyCitiesLinks";
 import PageHero from "@/components/PageHero";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
-import type {FaqItem, ReviewItem, SmartLink} from "@/lib/types";
+import type {FaqItem, NearbyLocation, ReviewItem, SmartLink} from "@/lib/types";
 
 type ServiceBlock = {
   title: string;
@@ -25,6 +26,8 @@ type ServicePageProps = {
   examples?: string[];
   faqs?: FaqItem[];
   reviews?: ReviewItem[];
+  locations?: NearbyLocation[];
+  slug?: string;
 };
 
 const defaultFaqs = [
@@ -72,7 +75,9 @@ export default function ServicePage({
   situations,
   examples = ["Voorbereiding", "Uitvoering", "Oplevering"],
   faqs = defaultFaqs,
-  reviews
+  reviews,
+  locations = [],
+  slug,
 }: ServicePageProps) {
   return (
     <>
@@ -209,6 +214,13 @@ export default function ServicePage({
       </section>
 
       {reviews?.length ? <GoogleReviews compact limit={4} reviews={reviews} /> : null}
+      {slug ? (
+        <NearbyCitiesLinks
+          cities={locations}
+          serviceSlug={slug}
+          title={`${title} bij u in de buurt`}
+        />
+      ) : null}
       <CTASection />
     </>
   );

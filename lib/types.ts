@@ -382,6 +382,35 @@ export type ProjectItem = {
   seo?: SeoSettings;
 };
 
+export type LocationGeo = {
+  lat: number;
+  lng: number;
+};
+
+export type NearbyLocation = {
+  name: string;
+  slug: string;
+};
+
+export type LocationSummary = {
+  name: string;
+  slug: string;
+  href: string;
+  intro: string;
+  geo?: LocationGeo;
+};
+
+export type LocationDetail = LocationSummary & {
+  localContext?: string;
+  whyDro?: string;
+  neighborhoods: string[];
+  nearbyCities: NearbyLocation[];
+  popularServices: ServiceSummary[];
+  relatedProjects: ProjectItem[];
+  matchedProjects: ProjectItem[];
+  seo?: SeoSettings;
+};
+
 export type RichTextImageBlock = {
   _type: 'cmsImage';
   url: string;
@@ -426,11 +455,14 @@ export type BlogPostDetail = BlogPostSummary & {
 };
 
 export type OrganizationSeo = {
+  name?: string;
   legalName?: string;
+  slogan?: string;
   siteUrl?: string;
   logo?: string;
   telephone?: string;
   email?: string;
+  kvkNumber?: string;
   streetAddress?: string;
   addressLocality?: string;
   postalCode?: string;
@@ -440,6 +472,7 @@ export type OrganizationSeo = {
   longitude?: number;
   areaServed?: string[];
   sameAs?: string[];
+  knowsAbout?: string[];
   priceRange?: string;
   aggregateRatingValue?: number;
   aggregateRatingCount?: number;

@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import FloatingActions from '@/components/FloatingActions'
 import JsonLd from '@/components/seo/JsonLd'
-import {getServices, getSiteSettings} from '@/lib/cms'
+import {getLocations, getServices, getSiteSettings} from '@/lib/cms'
 import {buildPageMetadata} from '@/lib/seo/metadata'
 import {buildJsonLdGraph, buildOrganizationGraph} from '@/lib/seo/structured-data'
 import '../globals.css'
@@ -50,8 +50,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SiteLayout({children}: Readonly<{children: React.ReactNode}>) {
-  const [siteSettings, services] = await Promise.all([getSiteSettings(), getServices()])
-  const organizationGraph = buildOrganizationGraph(siteSettings, siteSettings.organizationSeo)
+  const [siteSettings, services, locations] = await Promise.all([
+    getSiteSettings(),
+    getServices(),
+    getLocations(),
+  ])
+  const organizationGraph = buildOrganizationGraph(
+    siteSettings,
+    siteSettings.organizationSeo,
+    locations.map((location) => location.name)
+  )
   const {isEnabled: isDraftMode} = draftMode()
 
   return (
@@ -59,7 +67,7 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
       <JsonLd data={buildJsonLdGraph(organizationGraph)} />
       <Header siteSettings={siteSettings} />
       {children}
-      <Footer services={services} siteSettings={siteSettings} />
+      <Footer locations={locations} services={services} siteSettings={siteSettings} />
       <FloatingActions {...siteSettings.floatingActions} />
       {isDraftMode && (
         <>

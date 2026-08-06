@@ -20,7 +20,7 @@ type SanityFetchOptions = {
 }
 
 function getProjectId() {
-  return process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'lxi5ttc2'
+  return process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cwblo9lu'
 }
 
 function getDataset() {

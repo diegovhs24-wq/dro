@@ -1,13 +1,14 @@
 import Link from "next/link";
 import CTASection from "@/components/CTASection";
-import type {ServiceSummary, SiteSettings} from "@/lib/types";
+import type {LocationSummary, ServiceSummary, SiteSettings} from "@/lib/types";
 
 type FooterProps = {
   services: ServiceSummary[];
+  locations?: LocationSummary[];
   siteSettings: SiteSettings;
 };
 
-export default function Footer({services, siteSettings}: FooterProps) {
+export default function Footer({services, locations = [], siteSettings}: FooterProps) {
   const footer = siteSettings.footer;
 
   return (
@@ -124,6 +125,24 @@ export default function Footer({services, siteSettings}: FooterProps) {
             </div>
           )}
         </div>
+
+        {locations.length > 0 && (
+          <div className="mt-6 border-t border-white/10 pt-5">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+              Werkgebied
+            </p>
+            <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-white/50">
+              {locations.map((location, index) => (
+                <span key={location.slug}>
+                  <Link className="transition hover:text-brand-orange" href={location.href}>
+                    {location.name}
+                  </Link>
+                  {index < locations.length - 1 && <span className="ml-3 text-white/20">/</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {footer.statement && (
           <div className="mt-6 border-y border-white/10 py-3">
