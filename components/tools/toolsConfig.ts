@@ -6,7 +6,7 @@ import type {ToolsConfig} from "./toolsTypes";
  * ===========================================================================
  *
  * Dit bestand bevat ALLE getallen, formules en teksten van de Handige Tools
- * bibliotheek (27 tools). Je kunt dit aanpassen zonder verstand van
+ * bibliotheek (29 tools). Je kunt dit aanpassen zonder verstand van
  * programmeren te hebben. De rekenlogica (toolsEngine.ts) en de weergave
  * (de bestanden in components/tools/*.tsx) hoef je nooit aan te raken.
  *
