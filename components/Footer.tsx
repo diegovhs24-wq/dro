@@ -52,6 +52,9 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
                 {footer.description}
               </p>
             )}
+            <Link className="mt-3 inline-flex text-xs font-bold text-brand-orange hover:text-white" href="/handige-tools">
+              Handige tools &rarr;
+            </Link>
           </div>
 
           {(footer.contactTitle || footer.contactAddress || footer.contactPhone || footer.contactEmail) && (
