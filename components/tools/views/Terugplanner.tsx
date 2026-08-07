@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {TextField, ToggleField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenTerugplanner, isRekenFout} from "../toolsEngine";
 
 export default function Terugplanner() {
@@ -49,7 +49,17 @@ export default function Terugplanner() {
             </ul>
           </ResultCard>
           <Disclaimer>{config.teksten.disclaimer}</Disclaimer>
-          <ToolCTA toolId="terugplanner" />
+
+          <ExportDocument
+            disclaimer={config.teksten.disclaimer}
+            printId="terugplanner-print"
+            toolNaam="Renovatie terugplanner"
+            uitkomstRegels={resultaat.stappen.map(({stap, datum}) => `${stap.label}: uiterlijk ${datum.toLocaleDateString("nl-NL", {day: "numeric", month: "long", year: "numeric"})}`)}
+            uitkomstTitel="Zo plan je terug"
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{startdatum}} toolId="terugplanner" />
         </>
       ) : null}
 

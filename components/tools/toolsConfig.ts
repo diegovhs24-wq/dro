@@ -6,7 +6,8 @@ import type {ToolsConfig} from "./toolsTypes";
  * ===========================================================================
  *
  * Dit bestand bevat ALLE getallen, formules en teksten van de Handige Tools
- * bibliotheek (29 tools). Je kunt dit aanpassen zonder verstand van
+ * bibliotheek (30 rekentools en checks, plus de "Is dit iets voor DRO?"
+ * conversietool). Je kunt dit aanpassen zonder verstand van
  * programmeren te hebben. De rekenlogica (toolsEngine.ts) en de weergave
  * (de bestanden in components/tools/*.tsx) hoef je nooit aan te raken.
  *
@@ -56,6 +57,70 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
 
   tools: {
     // =========================================================================
+    // K1: IS DIT IETS VOOR DRO? (conversietool, prominente eerste card op de hub)
+    // =========================================================================
+    "voor-dro": {
+      meta: {
+        naam: "Is dit iets voor DRO?",
+        categorie: "zakelijk",
+        omschrijving_kort: "3 korte vragen, direct een persoonlijk advies.",
+        uitleg: "Twijfel je of jouw project bij DRO past? Beantwoord 3 korte vragen en krijg direct een persoonlijk advies.",
+        trefwoorden: ["is dit iets voor dro", "past mijn project bij dro"],
+        volgorde: 0,
+        actief: true,
+        gerelateerd: ["bouwtijd", "vergunning", "verbouwen-verhuizen"],
+        whatsapp_tekst: "Hoi DRO, ik heb de 'is dit iets voor DRO' check ingevuld: {projecttype}, woning in {regio}, ik wil starten: {timing}. Kunnen jullie me verder helpen?",
+        dro_blok_tekst: "Wij denken graag vrijblijvend met je mee, ongeacht in welke fase je project zit.",
+        tussentijdse_cta: false,
+      },
+      project_opties: [
+        {id: "badkamer", label: "Badkamer"},
+        {id: "totaalrenovatie", label: "Totaalrenovatie"},
+        {id: "uitbouw_dakopbouw", label: "Uitbouw of dakopbouw"},
+        {id: "keuken_interieur", label: "Keuken of interieur"},
+        {id: "meerdere_dingen", label: "Meerdere dingen"},
+        {id: "anders", label: "Iets anders"},
+      ],
+      regio_opties: [
+        {id: "denhaag_eo", label: "Den Haag en omgeving"},
+        {id: "zuid_holland", label: "Elders in Zuid-Holland"},
+        {id: "utrecht_noordholland", label: "Utrecht of Noord-Holland"},
+        {id: "daarbuiten", label: "Daarbuiten"},
+      ],
+      timing_opties: [
+        {id: "zsm", label: "Zo snel mogelijk"},
+        {id: "binnen_3_maanden", label: "Binnen 3 maanden"},
+        {id: "binnen_jaar", label: "Binnen een jaar"},
+        {id: "orienteren", label: "Ik ben nog aan het oriënteren"},
+      ],
+      uitkomsten: [
+        {
+          id: "buiten_gebied",
+          titel: "Buiten ons vaste werkgebied",
+          tekst: "Dit ligt buiten ons vaste werkgebied, maar app ons gerust. Voor bijzondere projecten maken we soms een uitzondering.",
+          toon_tool_links: false,
+        },
+        {
+          id: "orienteren",
+          titel: "Slim dat je vroeg begint",
+          tekst: "Slim dat je vroeg begint. Gebruik gerust onze rekentools hieronder om alvast een beeld te krijgen, en app ons als je wilt sparren.",
+          toon_tool_links: true,
+        },
+        {
+          id: "match",
+          titel: "Dit is precies wat wij doen",
+          tekst: "Dit is precies wat wij dagelijks doen. {projecttype} in {regio}, daar kunnen we snel iets voor betekenen.",
+          toon_tool_links: false,
+        },
+      ],
+      regels: [
+        {regio_ids: ["daarbuiten"], uitkomst_id: "buiten_gebied"},
+        {timing_ids: ["orienteren"], uitkomst_id: "orienteren"},
+      ],
+      fallback_uitkomst_id: "match",
+    },
+
+    // =========================================================================
     // A1: BOUWTIJD CALCULATOR
     // =========================================================================
     bouwtijd: {
@@ -69,7 +134,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 1,
         actief: true,
         gerelateerd: ["vergunning", "terugplanner", "klusvolgorde"],
-        whatsapp_tekst: "Hoi, ik heb de bouwtijd calculator ingevuld voor een {projecttype} en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de bouwtijd calculator ingevuld: {projecttype}. Uitkomst: {weken_min} tot {weken_max} weken. Klopt dit voor mijn situatie?",
+        dro_blok_tekst: "Bij DRO plannen we elk project met een vast team en 1 aanspreekpunt, zodat de bouwtijd ook echt de bouwtijd blijft. Materiaal en planning stemmen we vooraf op elkaar af.",
+        tussentijdse_cta: false,
       },
       projecttypes: [
         {
@@ -210,7 +277,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 2,
         actief: true,
         gerelateerd: ["bouwtijd", "terugplanner", "sloopchecklist"],
-        whatsapp_tekst: "Hoi, ik heb de vergunningcheck ingevuld voor een {projecttype} en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de vergunningcheck ingevuld. Uitkomst: {uitkomst_titel}. Klopt dit voor mijn situatie?",
+        dro_blok_tekst: "Wij regelen de vergunningaanvraag mee, inclusief tekeningen en constructieberekening. Zo heb je van vergunning tot oplevering 1 aanspreekpunt.",
+        tussentijdse_cta: true,
       },
       vragen: [
         {
@@ -444,7 +513,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 3,
         actief: true,
         gerelateerd: ["bouwtijd", "vergunning", "klusvolgorde"],
-        whatsapp_tekst: "Hoi, ik heb de terugplanner ingevuld en wil graag even sparren over de planning.",
+        whatsapp_tekst: "Hoi DRO, ik heb de terugplanner ingevuld voor een start op {startdatum}. Klopt deze planning voor mijn situatie?",
+        dro_blok_tekst: "Onze planners denken vanaf de eerste offerte met je mee, zodat elke stap op deze tijdlijn ook echt op tijd geregeld is. Zo voorkom je vertraging door een laat besteld materiaal.",
+        tussentijdse_cta: false,
       },
       stappen: [
         {id: "offertes", label: "Offertes aanvragen en partner kiezen", weken_voor_start: 6},
@@ -474,7 +545,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 4,
         actief: true,
         gerelateerd: ["bouwtijd", "klusvolgorde", "sloopchecklist"],
-        whatsapp_tekst: "Hoi, ik heb de bewoningscheck ingevuld en wil graag even sparren over de planning.",
+        whatsapp_tekst: "Hoi DRO, ik heb de bewoningscheck ingevuld. Uitkomst: {titel}. Kunnen jullie hier rekening mee houden in de planning?",
+        dro_blok_tekst: "Wij werken met stofschotten en duidelijke looproutes, zodat blijven wonen tijdens de verbouwing zo comfortabel mogelijk is. Onze planning houdt rekening met de ruimtes die je nog nodig hebt.",
+        tussentijdse_cta: false,
       },
       ruimtes: [
         {id: "hele_woning", label: "Hele woning", score: 5, advies: "Bij een verbouwing van de hele woning is tijdelijk elders wonen vrijwel altijd verstandig."},
@@ -514,7 +587,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 5,
         actief: true,
         gerelateerd: ["burenbrief", "bouwtijd"],
-        whatsapp_tekst: "Hoi, ik heb de werktijden check bekeken en wil graag even sparren over de planning.",
+        whatsapp_tekst: "Hoi DRO, ik heb de werktijden check bekeken voor {gemeente}. Kunnen jullie hier rekening mee houden in de planning?",
+        dro_blok_tekst: "Onze teams houden zich standaard aan de toegestane werktijden en informeren buren netjes vooraf. Zo begint je verbouwing zonder gedoe met de buren of de gemeente.",
+        tussentijdse_cta: false,
       },
       gemeenten: [
         {id: "den-haag", label: "Den Haag", werkdagen: "07:00 - 19:00", zaterdag: "08:00 - 17:00", zondag_feestdag: "Niet toegestaan"},
@@ -549,7 +624,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 6,
         actief: true,
         gerelateerd: ["stucwerk", "egaline", "container"],
-        whatsapp_tekst: "Hoi, ik heb de tegel calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de tegel calculator ingevuld: {totaal_m2} m². Uitkomst: {dozen} dozen tegels. Kunnen jullie dit voor me regelen?",
+        dro_blok_tekst: "Bij onze badkamer- en keukenrenovaties regelen wij het complete tegelwerk, van bestelling tot strak gezet, met 1 aanspreekpunt. Jij kiest de tegel, wij regelen de rest.",
+        tussentijdse_cta: false,
       },
       formaten: [
         {id: "30x60", label: "30 x 60 cm", m2_per_doos: 1.44, ondervloer_waarschuwing: false},
@@ -560,12 +637,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         {id: "anders", label: "Anders (zelf invullen)", m2_per_doos: null, ondervloer_waarschuwing: false},
       ],
       legpatronen: [
-        {id: "recht", label: "Recht", snijverlies: 0.1},
-        {id: "halfsteens", label: "Halfsteens", snijverlies: 0.12},
-        {id: "visgraat", label: "Visgraat", snijverlies: 0.15},
-        {id: "diagonaal", label: "Diagonaal", snijverlies: 0.15},
+        {id: "recht", label: "Recht", snijverlies: 0.15},
+        {id: "halfsteens", label: "Halfsteens", snijverlies: 0.17},
+        {id: "visgraat", label: "Visgraat", snijverlies: 0.2},
+        {id: "diagonaal", label: "Diagonaal", snijverlies: 0.2},
       ],
-      mozaiek_snijverlies: 0.08,
+      mozaiek_snijverlies: 0.1,
       mozaiek_formaat_id: "mozaiek",
       aftrek_per_deur_m2: 1.6,
       m2_per_zak_lijm: 4.5,
@@ -576,6 +653,8 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         lijm_tekst: "{zakken_lijm} zak(ken) tegellijm (25 kg)",
         voeg_tekst: "{zakken_voeg} zak(ken) voegmiddel (5 kg)",
         ondervloer_tekst: "Bij grote vloertegels zoals dit formaat is een vlakke ondervloer cruciaal. Egaliseren is hierbij vaak nodig.",
+        aanbeveling_tekst:
+          "Wij rekenen bewust ruim. Er gaat altijd wat mis of stuk, een gat aan de verkeerde kant geboord, een tegel die breekt bij het snijden. Extra dozen uit dezelfde badge nu is goedkoper dan naleveren uit een andere badge later.",
         tip: "Bestel altijd 1 doos extra uit dezelfde badge. Tegels uit een andere productiebadge kunnen net een andere tint hebben en dat zie je.",
         disclaimer: "Deze hoeveelheden zijn indicatief. Jouw tegelzetter rekent het exact na.",
       },
@@ -595,8 +674,21 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 7,
         actief: true,
         gerelateerd: ["stucwerk", "behang"],
-        whatsapp_tekst: "Hoi, ik heb de verf calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de verf calculator ingevuld: {m2} m². Uitkomst: {liters} liter verf. Kunnen jullie dit voor me uitvoeren?",
+        dro_blok_tekst: "Onze schilders werken met kwaliteitsverf en denken mee over de juiste ondergrondbehandeling, zodat het resultaat langer mooi blijft.",
+        tussentijdse_cta: false,
       },
+      verfsoorten: [
+        {id: "muurverf", label: "Muurverf", m2_per_liter_min: 6, m2_per_liter_max: 8, m2_per_liter_gemiddeld: 7, default_lagen: 2},
+        {id: "grondverf", label: "Grondverf", m2_per_liter_min: 10, m2_per_liter_max: 12, m2_per_liter_gemiddeld: 11, default_lagen: 2},
+        {id: "lak", label: "Lak", m2_per_liter_min: 10, m2_per_liter_max: 14, m2_per_liter_gemiddeld: 12, default_lagen: 2},
+        {id: "beits_impregneer", label: "Beits impregneer", m2_per_liter_min: 12, m2_per_liter_max: 14, m2_per_liter_gemiddeld: 13, default_lagen: 1},
+        {id: "beits_transparant", label: "Beits transparant", m2_per_liter_min: 11, m2_per_liter_max: 16, m2_per_liter_gemiddeld: 13.5, default_lagen: 2},
+        {id: "beits_dekkend", label: "Beits dekkend", m2_per_liter_min: 12, m2_per_liter_max: 14, m2_per_liter_gemiddeld: 13, default_lagen: 2},
+        {id: "voorstrijk_transparant", label: "Voorstrijk transparant", m2_per_liter_min: 8, m2_per_liter_max: 25, m2_per_liter_gemiddeld: 16, default_lagen: 1},
+        {id: "voorstrijk_dekkend", label: "Voorstrijk dekkend", m2_per_liter_min: 6, m2_per_liter_max: 9, m2_per_liter_gemiddeld: 7.5, default_lagen: 1},
+      ],
+      muurverf_verfsoort_id: "muurverf",
       ondergronden: [
         {id: "eerder_geverfd", label: "Al eerder geverfd (lichte kleur)", default_lagen: 2, voorstrijk_nodig: false},
         {id: "nieuw_stucwerk", label: "Nieuw stucwerk", default_lagen: 2, voorstrijk_nodig: true},
@@ -607,15 +699,15 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         {liter: 2.5, label: "2,5 liter"},
         {liter: 1, label: "1 liter"},
       ],
-      dekking_m2_per_liter: 8,
-      voorstrijk_m2_per_liter: 10,
+      voorstrijk_m2_per_liter: 7.5,
       standaard_aftrek_m2: 5,
       min_lagen: 1,
       max_lagen: 3,
       teksten: {
-        resultaat_titel: "{liters} liter muurverf ({blikken_advies})",
+        resultaat_titel: "{liters} liter {verfsoort} ({blikken_advies})",
+        range_tekst: "Op basis van gemiddeld verbruik, {min} tot {max} m² per liter.",
         voorstrijk_titel: "{liters_voorstrijk} liter voorstrijk",
-        tip: "Goede kwaliteit muurverf dekt beter en scheelt vaak een hele laag werk. Goedkoop is hier duurkoop.",
+        tip: "Goede kwaliteit verf dekt beter en scheelt vaak een hele laag werk. Goedkoop is hier duurkoop.",
         disclaimer: "De dekking verschilt per merk en per ondergrond. Sterk zuigende muren hebben soms meer verf nodig dan hier berekend.",
       },
     },
@@ -634,7 +726,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 8,
         actief: true,
         gerelateerd: ["plinten", "egaline"],
-        whatsapp_tekst: "Hoi, ik heb de vloer calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de vloer calculator ingevuld. Uitkomst: {pakken} pakken nodig. Kunnen jullie dit voor me leggen?",
+        dro_blok_tekst: "Wij leggen laminaat en PVC vakkundig en strak aan, inclusief een geschikte ondervloer waar nodig.",
+        tussentijdse_cta: false,
       },
       types: [
         {id: "laminaat_klik", label: "Laminaat klik", m2_per_pak: 2.22, snijverlies: 0.07},
@@ -663,7 +757,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 9,
         actief: true,
         gerelateerd: ["verf", "stucwerk"],
-        whatsapp_tekst: "Hoi, ik heb de behang calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de behang calculator ingevuld. Uitkomst: {rollen} rollen behang nodig. Kunnen jullie dit voor me plaatsen?",
+        dro_blok_tekst: "Onze afwerkspecialisten plaatsen behang strak en zonder zichtbare naden, ook bij patroonherhaling.",
+        tussentijdse_cta: false,
       },
       rolbreedte_default: 0.53,
       rollengte_default: 10.05,
@@ -690,7 +786,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 10,
         actief: true,
         gerelateerd: ["vloer"],
-        whatsapp_tekst: "Hoi, ik heb de plinten calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de plinten calculator ingevuld. Uitkomst: {stuks} plinten nodig. Kunnen jullie dit voor me plaatsen?",
+        dro_blok_tekst: "Wij zetten plinten en profielen strak en vakkundig, inclusief nette verstek in de hoeken.",
+        tussentijdse_cta: false,
       },
       aftrek_per_deur_m: 0.9,
       lengte_per_plint_default: 2.4,
@@ -714,7 +812,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 11,
         actief: true,
         gerelateerd: ["tegels"],
-        whatsapp_tekst: "Hoi, ik heb de kitwerk calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de kitwerk calculator ingevuld. Uitkomst: {kokers} koker(s) sanitairkit. Kunnen jullie dit voor me uitvoeren?",
+        dro_blok_tekst: "Bij onze badkamerrenovaties werken wij standaard met schimmelwerende sanitairkit, netjes afgewerkt in alle hoeken en randen.",
+        tussentijdse_cta: false,
       },
       onderdelen: [
         {id: "douche", label: "Omtrek douche", standaard_meters: 4},
@@ -734,32 +834,41 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
     },
 
     // =========================================================================
-    // B7: STUCWERK CALCULATOR
+    // B7: STUCWERK M2 INDICATIE
     // =========================================================================
     stucwerk: {
       meta: {
-        naam: "Stucwerk calculator",
+        naam: "Stucwerk m2 indicatie",
         categorie: "materialen",
-        omschrijving_kort: "Bereken hoeveel zakken stucgips je nodig hebt.",
-        uitleg: "Bereken hoeveel stucgips je nodig hebt voor wanden en plafonds, en een indicatie van de werktijd.",
-        trefwoorden: ["stucwerk berekenen", "stucgips hoeveelheid", "stukadoor m2 per dag"],
+        omschrijving_kort: "Krijg een indicatie van je wand- en plafondoppervlak voor stucwerk.",
+        uitleg:
+          "Vergelijk je stucwerk offertes of wil je je project inschatten? Krijg een indicatie van hoeveel m² wand en plafond jouw woning of ruimte heeft, op basis van vuistregels.",
+        trefwoorden: ["stucwerk m2 berekenen", "wandoppervlak indicatie", "stukadoor m2 per dag"],
         volgorde: 12,
         actief: true,
         gerelateerd: ["verf", "egaline"],
-        whatsapp_tekst: "Hoi, ik heb de stucwerk calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de stucwerk m2 indicatie ingevuld. Uitkomst: circa {wand_m2} m² wand en {plafond_m2} m² plafond. Kunnen jullie dit voor me nameten?",
+        dro_blok_tekst: "Wij meten altijd exact per wand na voor een offerte, zodat je nooit verrast wordt door een afwijking met deze indicatie.",
+        tussentijdse_cta: false,
       },
-      afwerkingen: [
-        {id: "behangklaar", label: "Behangklaar", kg_per_m2: 0.8},
-        {id: "sausklaar", label: "Sausklaar", kg_per_m2: 1.2},
+      woningtypes: [
+        {id: "appartement", label: "Appartement", wand_factor: 2.4},
+        {id: "rijwoning", label: "Rijwoning", wand_factor: 2.6},
+        {id: "vrijstaand", label: "Vrijstaand (of hoekwoning)", wand_factor: 2.8},
       ],
-      factor_slechte_staat: 1.5,
+      drempel_aantal_ruimtes: 4,
+      correctie_per_extra_ruimte: 0.1,
+      aftrek_openingen_pct: 0.12,
+      standaard_plafondhoogte: 2.6,
       m2_per_dag_min: 8,
       m2_per_dag_max: 12,
-      kg_per_zak: 25,
       teksten: {
-        resultaat_titel: "{zakken} zak(ken) stucgips (25 kg) voor {totaal_m2} m²",
-        werktijd_titel: "Indicatieve werktijd: {dagen_min} tot {dagen_max} werkdagen",
-        tip: "Sausklaar is een gladdere en duurdere afwerking dan behangklaar, kies bewust.",
+        resultaat_titel: "Indicatie: circa {wand_m2} m² wand en {plafond_m2} m² plafond",
+        disclaimer:
+          "Dit is een grove indicatie op basis van vuistregels. Voor een offerte of bestelling altijd nameten per wand, de werkelijke m² kan flink afwijken door indeling, nissen en openingen.",
+        werktijd_titel: "Indicatieve werktijd stukadoor: {dagen_min} tot {dagen_max} werkdagen (sausklaar)",
+        behang_vs_sausklaar_tekst: "Sausklaar is een gladdere afwerking dan behangklaar en vergt meer laagjes, daardoor kost het meer tijd.",
+        tip: "Meet 1 ruimte na en vergelijk met de indicatie, dan weet je hoe de vuistregel bij jouw woning uitpakt.",
       },
     },
 
@@ -776,7 +885,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 13,
         actief: true,
         gerelateerd: ["vloer", "tegels"],
-        whatsapp_tekst: "Hoi, ik heb de egaline calculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de egaline calculator ingevuld: {m2} m². Uitkomst: {zakken} zakken egaline. Kunnen jullie dit voor me uitvoeren?",
+        dro_blok_tekst: "Wij egaliseren vloeren vakkundig voor je nieuwe vloer erop komt, zodat die strak en zonder oneffenheden ligt.",
+        tussentijdse_cta: false,
       },
       kg_per_m2_per_mm: 1.7,
       kg_per_zak: 25,
@@ -802,7 +913,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 14,
         actief: true,
         gerelateerd: ["sloopchecklist", "tegels"],
-        whatsapp_tekst: "Hoi, ik heb de containercalculator ingevuld en wil graag even sparren over mijn project.",
+        whatsapp_tekst: "Hoi DRO, ik heb de containercalculator ingevuld. Uitkomst: {advies}. Kunnen jullie dit voor me regelen?",
+        dro_blok_tekst: "Bij onze verbouwingen regelen wij de container en de afvoer standaard mee, gescheiden waar dat kan. Zo hoef je daar zelf niet over na te denken.",
+        tussentijdse_cta: false,
       },
       klustypes: [
         {id: "badkamer_strippen", label: "Badkamer strippen", m3_per_m2: 0.25},
@@ -812,8 +925,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         {id: "hele_woning_strippen", label: "Hele woning strippen", m3_per_m2: 0.2},
       ],
       uitzetfactor: 1.4,
+      werkafval_factor: 0.4,
+      minimum_advies_m3: 6,
       maten: [
-        {m3: 3, label: "3 m³"},
         {m3: 6, label: "6 m³"},
         {m3: 10, label: "10 m³"},
         {m3: 15, label: "15 m³"},
@@ -821,41 +935,97 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
       ],
       teksten: {
         resultaat_titel: "Geschat volume: {volume} m³",
+        opbouw_sloop_tekst: "Sloopvolume: {sloop_volume} m³",
+        opbouw_werkafval_tekst: "Werkafval tijdens de bouw: {werkafval_volume} m³",
+        werkafval_uitleg: "Tijdens de verbouwing komt er meer afval bij dan alleen het sloopwerk, daar hebben we op gerekend.",
         tip: "Puin (steen) en gemengd afval gescheiden houden scheelt fors in stortkosten.",
       },
     },
 
     // =========================================================================
-    // C1: VLOERVERWARMING CHECK
+    // C1: VLOERVERWARMING SYSTEEMKEUZE
     // =========================================================================
     vloerverwarming: {
       meta: {
-        naam: "Vloerverwarming check",
+        naam: "Vloerverwarming systeemkeuze",
         categorie: "techniek",
-        omschrijving_kort: "Check of vloerverwarming geschikt is voor jouw situatie.",
-        uitleg: "Check of vloerverwarming geschikt is als hoofd- of bijverwarming, gegeven je vloertype en de isolatie van je woning.",
-        trefwoorden: ["vloerverwarming geschikt", "vloerverwarming hoofdverwarming", "vloerverwarming vermogen"],
+        omschrijving_kort: "Welke aanlegmethode past bij jouw vloer.",
+        uitleg:
+          "Beantwoord een paar vragen over je ondervloer, of frezen mogelijk is en hoeveel opbouwhoogte je hebt, en krijg een advies: infrezen, PIR-opbouw met dekvloer, of fermacell droogbouw.",
+        trefwoorden: ["vloerverwarming systeem", "vloerverwarming infrezen", "vloerverwarming droogbouw fermacell", "vloerverwarming houten vloer"],
         volgorde: 15,
         actief: true,
         gerelateerd: ["verwarming", "isolatie"],
-        whatsapp_tekst: "Hoi, ik heb de vloerverwarming check bekeken en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de vloerverwarming systeemkeuze ingevuld. Uitkomst: {systeem}. Kunnen jullie hier naar kijken?",
+        dro_blok_tekst: "Wij beoordelen de ondervloer altijd ter plekke voor we een systeem vastleggen, en leggen vloerverwarming aan inclusief de juiste dekvloer of platen.",
+        tussentijdse_cta: false,
       },
-      isolaties: [
-        {id: "goed", label: "Goed geisoleerd (na 2000 of gerenoveerd)", watt_per_m2: 50},
-        {id: "matig", label: "Matig geisoleerd (1975 - 2000)", watt_per_m2: 70},
-        {id: "slecht", label: "Slecht geisoleerd (voor 1975)", watt_per_m2: 100},
+      ondervloer_opties: [
+        {id: "zandcement", label: "Zandcement dekvloer"},
+        {id: "beton", label: "Beton"},
+        {id: "hout", label: "Houten vloer (balken met planken of platen)"},
+        {id: "weet_niet", label: "Weet ik niet"},
       ],
-      vloertypes: [
-        {id: "tegels", label: "Tegels", geschiktheid: "ideaal", toelichting: "Tegels geleiden warmte het beste, ideale combinatie met vloerverwarming."},
-        {id: "pvc", label: "PVC", geschiktheid: "goed", toelichting: "PVC is goed geschikt, let op een geschikte onderlaag."},
-        {id: "laminaat", label: "Laminaat", geschiktheid: "goed", toelichting: "Goed geschikt mits het laminaat expliciet geschikt is voor vloerverwarming."},
-        {id: "hout", label: "Massief hout", geschiktheid: "beperkt", toelichting: "Beperkt geschikt vanwege een lagere maximale vloertemperatuur en werking van het hout."},
+      frezen_opties: [
+        {id: "ja", label: "Ja"},
+        {id: "nee", label: "Nee, bijvoorbeeld VvE of een te dunne dekvloer"},
+        {id: "weet_niet", label: "Weet ik niet"},
       ],
-      slechte_isolatie_id: "slecht",
+      hoogte_opties: [
+        {id: "geen", label: "Vrijwel geen, het vloerpeil moet gelijk blijven"},
+        {id: "midden", label: "3 tot 6 cm"},
+        {id: "veel", label: "Meer dan 6 cm"},
+      ],
+      m2_min: 2,
+      m2_max: 150,
+      m2_default: 20,
+      systemen: [
+        {
+          id: "infrezen",
+          naam: "Infrezen in de bestaande dekvloer",
+          regels_uitleg: [
+            "De snelste methode: de vloerverwarming wordt in de bestaande zandcement dekvloer gefreesd.",
+            "Geen verhoging van het vloerpeil, ideaal bij weinig opbouwhoogte.",
+            "De dekvloer is meestal in 1 dag gefreesd en er wordt niets nieuws gestort, dus nauwelijks droogtijd.",
+          ],
+          vloertype_advies: "Na infrezen kan er weer op de gebruikelijke manier getegeld worden.",
+        },
+        {
+          id: "pir_opbouw",
+          naam: "PIR isolatieplaten met nieuwe zandcement dekvloer",
+          regels_uitleg: [
+            "Isolatieplaten met leidingnetten, daarna een nieuwe zandcement dekvloer gestort.",
+            "De beste isolatie en warmteafgifte van de drie systemen.",
+            "Er is wel droogtijd nodig voor de nieuwe dekvloer voordat de vloerafwerking erop kan.",
+          ],
+          vloertype_advies: "Tegels zijn ideaal, PVC en laminaat dat geschikt is voor vloerverwarming kan ook.",
+        },
+        {
+          id: "fermacell",
+          naam: "Fermacell / droogbouw platen",
+          regels_uitleg: [
+            "Lichte, droge platen met ingefreesde leidingen, geschikt voor houten vloeren en lichte constructies.",
+            "Geen nat proces en dus geen droogtijd, de vloer is meteen beloopbaar.",
+            "Ook een goede oplossing als frezen niet mag of de opbouwhoogte beperkt is.",
+          ],
+          vloertype_advies: "Tegels kunnen op fermacell, PVC en laminaat zijn ook goed geschikt.",
+        },
+      ],
+      regels: [
+        {ondervloer: ["hout"], systeem_id: "fermacell"},
+        {frezen: ["nee"], hoogte: ["geen"], systeem_id: "fermacell"},
+        {hoogte: ["veel"], systeem_id: "pir_opbouw"},
+        {ondervloer: ["beton"], hoogte: ["midden"], systeem_id: "pir_opbouw"},
+        {ondervloer: ["zandcement"], frezen: ["ja"], hoogte: ["geen", "midden"], systeem_id: "infrezen"},
+        {ondervloer: ["zandcement"], hoogte: ["midden"], systeem_id: "infrezen"},
+      ],
+      fallback_systeem_id: "fermacell",
+      weet_niet_boodschap:
+        "Bij 'weet ik niet' zijn er meerdere systemen mogelijk. Hieronder de 2 meest waarschijnlijke, wij checken de exacte situatie altijd ter plekke voor we iets vastleggen.",
+      weet_niet_systeem_ids: ["pir_opbouw", "fermacell"],
+      droogtijd_per_cm_tekst: "Droogtijd van een nieuwe zandcement dekvloer: reken als vuistregel op circa 1 week per cm dikte.",
       teksten: {
-        resultaat_titel: "Indicatief vermogen: {watt_per_m2} W/m², totaal {totaal_watt} W",
-        hoofdverwarming_waarschuwing: "Bij een slecht geisoleerde woning volstaat vloerverwarming als hoofdverwarming meestal niet. Isoleren eerst is dan de betere volgorde.",
-        tip: "Vloerverwarming en tegels is de beste combinatie voor warmteafgifte.",
+        tip: "De ondervloer bepaalt het systeem, niet andersom. Wij beoordelen dit altijd ter plekke voor we iets vastleggen.",
       },
     },
 
@@ -872,7 +1042,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 16,
         actief: true,
         gerelateerd: ["vloerverwarming"],
-        whatsapp_tekst: "Hoi, ik heb de ventilatie calculator bekeken en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de ventilatie calculator ingevuld: {m2} m² badkamer. Uitkomst: minimaal {m3_per_uur} m³/uur nodig. Kunnen jullie dit voor me regelen?",
+        dro_blok_tekst: "Onze installateurs plaatsen mechanische afzuiging die past bij jouw badkamer, inclusief een nadraaistand of vochtsensor.",
+        tussentijdse_cta: false,
       },
       minimum_m3_per_uur: 50,
       ventilatievoud_per_uur: 6,
@@ -885,19 +1057,21 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
     },
 
     // =========================================================================
-    // C3: GROEPENKAST CHECK
+    // C3: GROEPENKAST CALCULATOR
     // =========================================================================
     groepenkast: {
       meta: {
-        naam: "Groepenkast check",
+        naam: "Groepenkast calculator",
         categorie: "techniek",
-        omschrijving_kort: "Check of je groepenkast genoeg capaciteit heeft.",
-        uitleg: "Check welke apparaten een eigen groep of krachtstroom nodig hebben en of je huidige aansluiting genoeg capaciteit biedt.",
-        trefwoorden: ["groepenkast verzwaren", "laadpaal eigen groep", "3 fasen nodig"],
+        omschrijving_kort: "Bereken het totaal aantal groepen dat je groepenkast nodig heeft.",
+        uitleg: "Bereken hoeveel groepen je in totaal nodig hebt, gebaseerd op het aantal etages en de zware apparaten in je woning, en of je aansluiting genoeg capaciteit biedt.",
+        trefwoorden: ["groepenkast berekenen", "hoeveel groepen nodig", "laadpaal eigen groep", "3 fasen nodig"],
         volgorde: 17,
         actief: true,
-        gerelateerd: ["verwarming"],
-        whatsapp_tekst: "Hoi, ik heb de groepenkast check ingevuld en wil graag even sparren.",
+        gerelateerd: ["verwarming", "radiator"],
+        whatsapp_tekst: "Hoi DRO, ik heb de groepenkast calculator ingevuld. Uitkomst: circa {totaal_groepen} groepen nodig. Kunnen jullie hier naar kijken?",
+        dro_blok_tekst: "Onze installateurs beoordelen en verzwaren de groepenkast, inclusief netverzwaring aanvragen bij de netbeheerder als dat nodig is.",
+        tussentijdse_cta: false,
       },
       apparaten: [
         {id: "inductie", label: "Inductie koken", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 7.4},
@@ -907,7 +1081,11 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         {id: "airco", label: "Airco", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 1.5},
         {id: "sauna", label: "Sauna / stoomcabine", eigen_groep: true, driefase_nodig: true, indicatief_vermogen_kw: 6},
         {id: "zonnepanelen", label: "Zonnepanelen", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 0},
-        {id: "doorstromer", label: "Doorstromer / boiler", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 18},
+        {id: "doorstromer", label: "Doorstromer / elektrische boiler", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 18},
+        {id: "wasmachine", label: "Wasmachine", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 2.3},
+        {id: "droger", label: "Droger", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 2.3},
+        {id: "vaatwasser", label: "Vaatwasser", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 2.1},
+        {id: "oven", label: "Oven (apart van inductie)", eigen_groep: true, driefase_nodig: false, indicatief_vermogen_kw: 3.5},
       ],
       aansluitingen: [
         {id: "1x25a", label: "1 x 25A", max_kw: 5.75, is_driefase: false},
@@ -916,9 +1094,16 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         {id: "weet_niet", label: "Weet ik niet", max_kw: 5.75, is_driefase: false},
       ],
       driefase_advies_vermogen_kw: 8,
+      driefase_trigger_apparaat_ids: ["inductie", "laadpaal", "warmtepomp", "sauna", "doorstromer"],
+      groepen_verlichting_per_etage: 1,
+      groepen_wcd_per_etage: 1,
+      reserve_groepen: 1,
+      max_groepen_per_aardlekschakelaar: 4,
       teksten: {
-        resultaat_titel: "{aantal_groepen} extra groep(en) nodig",
-        disclaimer: "Laat de definitieve beoordeling en aanleg altijd door een erkend installateur doen.",
+        resultaat_titel: "Je hebt in totaal circa {totaal_groepen} groepen nodig",
+        aardleklabel_tekst: "Vuistregel: reken op maximaal 4 groepen per aardlekschakelaar (aardlekautomaat).",
+        netverzwaring_tekst: "Met deze combinatie van zware apparaten op een 1 x 25A aansluiting is netverzwaring bij de netbeheerder waarschijnlijk nodig. Houd rekening met wachttijd hierop.",
+        disclaimer: "Laat de groepenkast altijd beoordelen en aanpassen door een erkend installateur, dit overzicht is een voorbereiding op dat gesprek.",
       },
     },
 
@@ -935,7 +1120,9 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         volgorde: 18,
         actief: true,
         gerelateerd: ["isolatie", "groepenkast"],
-        whatsapp_tekst: "Hoi, ik heb de verwarmingsvermogen check bekeken en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de verwarmingsvermogen check ingevuld: {m2} m². Uitkomst: circa {kw} kW nodig. Kunnen jullie hier naar kijken?",
+        dro_blok_tekst: "Voor de definitieve keuze hoort een warmteverliesberekening, die regelen wij met onze installateur in het traject.",
+        tussentijdse_cta: false,
       },
       bouwjaren: [
         {id: "voor_1975", label: "Voor 1975", watt_per_m3: 100},
@@ -953,7 +1140,46 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
     },
 
     // =========================================================================
-    // C5: ISOLATIE RC CHECK
+    // C5: RADIATOR VERMOGEN PER RUIMTE
+    // =========================================================================
+    radiator: {
+      meta: {
+        naam: "Radiator vermogen per ruimte",
+        categorie: "techniek",
+        omschrijving_kort: "Bereken het benodigd radiatorvermogen voor 1 ruimte.",
+        uitleg: "Bereken indicatief hoeveel vermogen een radiator nodig heeft voor een specifieke ruimte, op basis van het ruimtetype en het bouwjaar van je woning.",
+        trefwoorden: ["radiator vermogen berekenen", "hoe groot moet mijn radiator zijn", "radiator watt per m2"],
+        volgorde: 19,
+        actief: true,
+        gerelateerd: ["verwarming", "groepenkast"],
+        whatsapp_tekst: "Hoi DRO, ik heb de radiator calculator ingevuld voor een {ruimtetype} van {m2} m². Uitkomst: circa {watt} W nodig. Kunnen jullie hier naar kijken?",
+        dro_blok_tekst: "Onze installateurs kiezen radiatoren die passen bij de warmtevraag per ruimte, en denken mee over designradiatoren die ook echt genoeg vermogen leveren.",
+        tussentijdse_cta: false,
+      },
+      ruimtetypes: [
+        {id: "woonkamer", label: "Woonkamer", watt_per_m2: 85},
+        {id: "slaapkamer", label: "Slaapkamer", watt_per_m2: 70},
+        {id: "badkamer", label: "Badkamer", watt_per_m2: 100},
+        {id: "keuken", label: "Keuken", watt_per_m2: 70},
+        {id: "hal", label: "Hal", watt_per_m2: 60},
+      ],
+      bouwjaarfactoren: [
+        {id: "voor_1975", label: "Voor 1975", factor: 1.3},
+        {id: "1975_1990", label: "1975 - 1990", factor: 1.15},
+        {id: "1990_2010", label: "1990 - 2010", factor: 1.0},
+        {id: "na_2010", label: "Na 2010 of gerenoveerd", factor: 0.8},
+      ],
+      badkamer_ruimtetype_id: "badkamer",
+      teksten: {
+        resultaat_titel: "Benodigd vermogen: circa {watt} W",
+        verdeling_tekst: "Dit vermogen mag over meerdere radiatoren in de ruimte verdeeld worden, het gaat om het totaal.",
+        badkamer_tekst: "Let op, een designradiator alleen is in een badkamer vaak te weinig als hoofdverwarming.",
+        tip: "Na isoleren kunnen radiatoren vaak kleiner, en lagere temperatuur verwarming maakt je klaar voor een warmtepomp.",
+      },
+    },
+
+    // =========================================================================
+    // C6: ISOLATIE RC CHECK
     // =========================================================================
     isolatie: {
       meta: {
@@ -962,10 +1188,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Check hoe jouw isolatiewaarde zich verhoudt tot de norm.",
         uitleg: "Check de geschatte huidige isolatiewaarde (Rc) van dak, gevel of vloer ten opzichte van de nieuwbouwnorm.",
         trefwoorden: ["isolatie rc waarde", "dak isoleren norm", "spouwmuur isolatiewaarde"],
-        volgorde: 19,
+        volgorde: 20,
         actief: true,
         gerelateerd: ["verwarming", "vloerverwarming"],
-        whatsapp_tekst: "Hoi, ik heb de isolatie check bekeken en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de isolatie check ingevuld. Uitkomst: {huidige_waarde}. Kunnen jullie hier naar kijken?",
+        dro_blok_tekst: "Onze isolatiespecialisten brengen de huidige situatie in kaart en adviseren waar isoleren het meeste oplevert.",
+        tussentijdse_cta: false,
       },
       bouwjaren: [
         {id: "voor_1975", label: "Voor 1975"},
@@ -1001,7 +1229,7 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
     },
 
     // =========================================================================
-    // C6: AFSCHOT DOUCHE CALCULATOR
+    // C7: AFSCHOT DOUCHE CALCULATOR
     // =========================================================================
     afschot: {
       meta: {
@@ -1010,10 +1238,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Bereken het benodigde afschot van je doucheveloer.",
         uitleg: "Bereken hoeveel hoogteverschil (afschot) je doucheveloer nodig heeft om water goed te laten afvoeren.",
         trefwoorden: ["afschot douche berekenen", "doucheveloer helling"],
-        volgorde: 20,
+        volgorde: 21,
         actief: true,
         gerelateerd: ["tegels"],
-        whatsapp_tekst: "Hoi, ik heb de afschot calculator ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de afschot calculator ingevuld. Uitkomst: circa {hoogteverschil} mm hoogteverschil nodig. Kunnen jullie dit voor me uitvoeren?",
+        dro_blok_tekst: "Onze tegelzetters brengen het juiste afschot vakkundig aan, zodat het water altijd goed wegloopt.",
+        tussentijdse_cta: false,
       },
       mm_per_meter_default: 15,
       teksten: {
@@ -1032,10 +1262,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Krijg een indicatie of verbouwen of verhuizen beter bij je past.",
         uitleg: "Twijfel je tussen verbouwen en verhuizen? Beantwoord een paar vragen en krijg een persoonlijke indicatie.",
         trefwoorden: ["verbouwen of verhuizen", "uitbreiden of verhuizen woning"],
-        volgorde: 21,
+        volgorde: 22,
         actief: true,
         gerelateerd: ["ruimtewinst", "bouwtijd"],
-        whatsapp_tekst: "Hoi, ik heb de verbouwen-of-verhuizen check ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de verbouwen-of-verhuizen check ingevuld. Uitkomst: {titel}. Wil je hier met me over sparren?",
+        dro_blok_tekst: "Kies je voor verbouwen? Dan denken wij graag vrijblijvend mee over wat er mogelijk is binnen jouw woning en budget.",
+        tussentijdse_cta: true,
       },
       vragen: [
         {
@@ -1129,10 +1361,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Bereken hoeveel extra ruimte een uitbouw of opbouw oplevert.",
         uitleg: "Bereken hoeveel m2 en m3 een uitbouw, dakopbouw, dakkapel of zolderverbouwing oplevert, en wat voor ruimte daarmee mogelijk is.",
         trefwoorden: ["m2 winnen uitbouw", "ruimte erbij dakopbouw", "zolder verbouwen m2"],
-        volgorde: 22,
+        volgorde: 23,
         actief: true,
         gerelateerd: ["verbouwen-verhuizen", "bouwtijd"],
-        whatsapp_tekst: "Hoi, ik heb de ruimtewinst calculator ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de ruimtewinst calculator ingevuld: {type}. Uitkomst: circa {m2} m² extra ruimte. Wil je hier met me over sparren?",
+        dro_blok_tekst: "Wij denken graag mee over de beste invulling van je extra ruimte, van ontwerp tot uitvoering.",
+        tussentijdse_cta: false,
       },
       types: [
         {id: "uitbouw", label: "Uitbouw", hoogte: 2.6, waarde_effect_min_pct: 5, waarde_effect_max_pct: 10},
@@ -1164,10 +1398,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Check of je geplande kamermaten praktisch genoeg zijn.",
         uitleg: "Check of de geplande maten van een slaapkamer, badkamer, toilet of werkplek praktisch genoeg zijn.",
         trefwoorden: ["minimale kamermaat", "badkamer minimale afmeting", "slaapkamer m2"],
-        volgorde: 23,
+        volgorde: 24,
         actief: true,
         gerelateerd: ["ruimtewinst"],
-        whatsapp_tekst: "Hoi, ik heb de kamermaten check ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de kamermaten check ingevuld. Wil je hier met me over sparren?",
+        dro_blok_tekst: "Wij denken graag mee over een indeling die praktisch werkt, ook als de ruimte krap is.",
+        tussentijdse_cta: false,
       },
       types: [
         {
@@ -1224,10 +1460,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Genereer een checklist voor veilig en compleet slopen.",
         uitleg: "Genereer een checklist op maat voor het slopen van je badkamer, keuken, vloeren of een deel van de woning, inclusief een asbestcheck.",
         trefwoorden: ["sloopchecklist", "asbest check bouwjaar", "checklist slopen verbouwing"],
-        volgorde: 24,
+        volgorde: 25,
         actief: true,
         gerelateerd: ["container", "burenbrief", "vergunning"],
-        whatsapp_tekst: "Hoi, ik heb de sloopchecklist gegenereerd en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de sloopchecklist gegenereerd voor {projecttype}. Kunnen jullie dit voor me uitvoeren?",
+        dro_blok_tekst: "Wij verzorgen sloopwerk inclusief asbestinventarisatie waar nodig, veilig en volgens de regels.",
+        tussentijdse_cta: true,
       },
       projecttypes: [
         {id: "badkamer", label: "Badkamer"},
@@ -1264,10 +1502,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Genereer een nette brief om buren te informeren over je verbouwing.",
         uitleg: "Genereer in een paar stappen een nette brief om je buren te informeren over de verbouwing, inclusief data en contactgegevens.",
         trefwoorden: ["buren informeren verbouwing", "burenbrief voorbeeld", "brief buren renovatie"],
-        volgorde: 25,
+        volgorde: 26,
         actief: true,
         gerelateerd: ["werktijden", "sloopchecklist"],
-        whatsapp_tekst: "Hoi, ik heb de burenbrief gegenereerd en wil graag even sparren over de planning.",
+        whatsapp_tekst: "Hoi DRO, ik heb de burenbrief tool gebruikt voor mijn {projecttype} verbouwing. Wil je hier met me over sparren?",
+        dro_blok_tekst: "Een goede burenbrief is het begin van een prettige verbouwing zonder klachten. Waar gewenst informeren wij ook zelf de buren namens jou.",
+        tussentijdse_cta: false,
       },
       projecttypes: [
         {id: "badkamer", label: "Badkamer"},
@@ -1293,7 +1533,8 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
       teksten: {
         privacy_tekst: "Deze brief wordt volledig in je browser gegenereerd. Er wordt niets verstuurd of opgeslagen.",
         kopieer_knop: "Kopieer tekst",
-        print_knop: "Print",
+        print_knop: "Print of bewaar als PDF",
+        afzenderregel: "Deze brief is gemaakt met de gratis burenbrief tool van DRO Renovaties.",
         tip: "Een briefje en een keer aanbellen voorkomt 90% van de burenklachten.",
       },
     },
@@ -1308,10 +1549,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Check of het onderhoud van jouw VvE-pand op schema ligt.",
         uitleg: "Vergelijk de laatste onderhoudsmomenten van je pand met de gangbare onderhoudscycli en zie waar actie nodig is.",
         trefwoorden: ["vve onderhoud check", "mjop", "onderhoudscyclus vve pand"],
-        volgorde: 26,
+        volgorde: 27,
         actief: true,
         gerelateerd: ["transformatie"],
-        whatsapp_tekst: "Hoi, ik heb de VvE onderhoudscheck ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de VvE onderhoudscheck ingevuld. Ik wil graag sparren over de uitkomst.",
+        dro_blok_tekst: "DRO voert onderhoud en renovaties uit voor VvE's in de Randstad, van casco herstel tot badkamers bij mutaties. Wij denken graag mee bij het opstellen van een MJOP.",
+        tussentijdse_cta: false,
       },
       items: [
         {id: "schilderwerk", label: "Buitenschilderwerk (hout)", cyclus_jaren_min: 5, cyclus_jaren_max: 7, van_toepassing: {veld: "kozijnen", waarde: "hout"}},
@@ -1336,10 +1579,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Quickscan voor het transformeren van bedrijfsruimte naar wonen.",
         uitleg: "Voor ontwikkelaars en beleggers: een quickscan van de stappen en aandachtspunten bij het transformeren van kantoor-, winkel- of bedrijfsruimte naar woningen.",
         trefwoorden: ["kantoor naar wonen transformeren", "transformatie bedrijfsruimte woningen", "transformatie quickscan"],
-        volgorde: 27,
+        volgorde: 28,
         actief: true,
         gerelateerd: ["vve-onderhoud", "vergunning"],
-        whatsapp_tekst: "Hoi, ik heb de transformatie quickscan ingevuld en wil graag even sparren met Therab.",
+        whatsapp_tekst: "Hoi DRO, ik heb de transformatie quickscan ingevuld: {m2} m² BVO, {woningen} woningen. Ik wil graag sparren over mijn pand.",
+        dro_blok_tekst: "DRO heeft ervaring met transformaties, onder andere commercieel naar wonen in Den Haag. Bespreek je pand vrijblijvend met Therab.",
+        tussentijdse_cta: false,
       },
       stappen: [
         {id: "bestemmingsplan", tekst: "Bestemmingsplan check of -wijziging"},
@@ -1367,10 +1612,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Zet je klussen in de juiste volgorde.",
         uitleg: "Selecteer welke werkzaamheden je gaat doen en krijg ze in de juiste, bewezen volgorde met uitleg waarom.",
         trefwoorden: ["klusvolgorde verbouwing", "volgorde renovatie werkzaamheden"],
-        volgorde: 28,
+        volgorde: 29,
         actief: true,
         gerelateerd: ["bouwtijd", "bewoning"],
-        whatsapp_tekst: "Hoi, ik heb de klusvolgorde planner ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de klusvolgorde planner ingevuld. Wil je hier met me over sparren?",
+        dro_blok_tekst: "Wij plannen deze volgorde standaard in bij elk project, met een vast team dat precies weet wanneer welke vakman nodig is. Zo voorkom je dubbel werk en vertraging.",
+        tussentijdse_cta: false,
       },
       stappen: [
         {id: "slopen", label: "Slopen", volgorde: 1, uitleg: "Eerst ruimte maken voordat er iets nieuws wordt aangebracht."},
@@ -1403,10 +1650,12 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         omschrijving_kort: "Check of je woning voldoet aan de belangrijkste verhuureisen.",
         uitleg: "Voor verhuurders en beleggers: check of je woning voldoet aan de belangrijkste wettelijke en aanbevolen verhuureisen.",
         trefwoorden: ["woning verhuurklaar maken", "verhuureisen woning", "rookmelder verplicht verhuur"],
-        volgorde: 29,
+        volgorde: 30,
         actief: true,
         gerelateerd: ["vve-onderhoud", "transformatie"],
-        whatsapp_tekst: "Hoi, ik heb de verhuur klaar check ingevuld en wil graag even sparren.",
+        whatsapp_tekst: "Hoi DRO, ik heb de verhuur klaar check ingevuld. Uitkomst: {status}. Wil je hier met me over sparren?",
+        dro_blok_tekst: "Wij brengen verhuurwoningen snel op orde, van rookmelders tot een geldig energielabel.",
+        tussentijdse_cta: false,
       },
       items: [
         {id: "rookmelders", label: "Rookmelders op elke verdieping", verplicht: true, uitleg: "Verplicht sinds 2022 in alle woningen."},
@@ -1424,11 +1673,14 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
   },
 
   algemeen: {
-    whatsapp_nummer: "31642461987",
+    whatsapp_nummer: "31850871814",
     contact_pad: "/contact",
-    cta_titel: "Wil je zeker weten wat er bij jouw project komt kijken?",
-    cta_tekst: "Neem vrijblijvend contact op.",
-    cta_knop_gesprek: "Plan een gesprek",
-    cta_knop_whatsapp: "App Therab direct",
+    cta_titel: "Wat DRO hierin doet",
+    cta_knop_gesprek: "Plan een vrijblijvend gesprek",
+    cta_knop_whatsapp: "App ons direct",
+    whatsapp_algemeen_tekst: "Hoi DRO, ik wil graag sparren over mijn verbouwing.",
+    stuur_resultaat_knop: "Stuur dit resultaat naar DRO",
+    trust_regel: "273 reviews, 4.8 sterren. Geen aanbetaling met De DRO Zekerheid.",
+    tussentijdse_cta_tekst: "Liever dat wij even meekijken? App ons gerust.",
   },
 };

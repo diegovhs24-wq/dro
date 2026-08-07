@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {checkVveOnderhoud, isRekenFout} from "../toolsEngine";
 
 const STATUS_LABEL = {
@@ -62,7 +62,17 @@ export default function VveOnderhoud() {
             </ul>
           </ResultCard>
           <Disclaimer>{config.teksten.mjop_tekst}</Disclaimer>
-          <ToolCTA toolId="vve-onderhoud" />
+
+          <ExportDocument
+            disclaimer={config.teksten.mjop_tekst}
+            printId="vve-onderhoud-print"
+            toolNaam="VvE onderhoudscheck"
+            uitkomstRegels={resultaat.items.map((item) => `${item.item}: ${STATUS_LABEL[item.status]} (${item.cyclusTekst})`)}
+            uitkomstTitel="Onderhoudsoverzicht"
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{}} toolId="vve-onderhoud" />
         </>
       ) : null}
 

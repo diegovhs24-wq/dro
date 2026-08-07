@@ -10,6 +10,7 @@ import type {ToolId} from "./toolsTypes";
  * router lezen alles uit deze registry en uit toolsConfig.ts.
  */
 export const TOOL_REGISTRY: Record<ToolId, ReturnType<typeof dynamic>> = {
+  "voor-dro": dynamic(() => import("./views/VoorDro")),
   bouwtijd: dynamic(() => import("./views/Bouwtijd")),
   vergunning: dynamic(() => import("./views/Vergunning")),
   terugplanner: dynamic(() => import("./views/Terugplanner")),
@@ -28,6 +29,7 @@ export const TOOL_REGISTRY: Record<ToolId, ReturnType<typeof dynamic>> = {
   ventilatie: dynamic(() => import("./views/Ventilatie")),
   groepenkast: dynamic(() => import("./views/Groepenkast")),
   verwarming: dynamic(() => import("./views/Verwarming")),
+  radiator: dynamic(() => import("./views/Radiator")),
   isolatie: dynamic(() => import("./views/Isolatie")),
   afschot: dynamic(() => import("./views/Afschot")),
   "verbouwen-verhuizen": dynamic(() => import("./views/VerbouwenVerhuizen")),

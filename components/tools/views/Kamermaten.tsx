@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {checkKamermaten, formatNL, isRekenFout} from "../toolsEngine";
 
 const STATUS_LABEL = {
@@ -49,7 +49,18 @@ export default function Kamermaten() {
             ) : null}
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="kamermaten" />
+
+          <ExportDocument
+            printId="kamermaten-print"
+            tip={config.teksten.tip}
+            toolNaam="Kamermaten check"
+            uitkomstRegels={resultaat.elementen}
+            uitkomstTitel={`${STATUS_LABEL[resultaat.status]} (${formatNL(resultaat.m2, 1)} m²)`}
+            waardes={[{label: "Type ruimte", waarde: config.types.find((t) => t.id === typeId)?.label ?? ""}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{oordeel: STATUS_LABEL[resultaat.status]}} toolId="kamermaten" />
         </>
       ) : null}
 

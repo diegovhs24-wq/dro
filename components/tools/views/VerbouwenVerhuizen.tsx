@@ -4,7 +4,7 @@ import {useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {ButtonGroup} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenVerbouwenVerhuizen, isRekenFout} from "../toolsEngine";
 
 export default function VerbouwenVerhuizen() {
@@ -50,7 +50,17 @@ export default function VerbouwenVerhuizen() {
             ) : null}
           </ResultCard>
           <Disclaimer>{config.teksten.disclaimer}</Disclaimer>
-          <ToolCTA toolId="verbouwen-verhuizen" />
+
+          <ExportDocument
+            disclaimer={config.teksten.disclaimer}
+            printId="verbouwen-verhuizen-print"
+            toolNaam="Verbouwen of verhuizen check"
+            uitkomstRegels={resultaat.overwegingen}
+            uitkomstTitel={resultaat.uitkomst.titel}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{titel: resultaat.uitkomst.titel}} toolId="verbouwen-verhuizen" />
         </>
       ) : null}
     </div>

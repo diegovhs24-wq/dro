@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField, SingleCheckbox} from "../ToolFormFields";
-import {FieldsetCard, PrintableBlock, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TussentijdseCta} from "../ToolShared";
 import {genereerSloopChecklist, isRekenFout} from "../toolsEngine";
 
 export default function Sloopchecklist() {
@@ -34,7 +34,7 @@ export default function Sloopchecklist() {
       </FieldsetCard>
 
       {resultaat && !isRekenFout(resultaat) ? (
-        <PrintableBlock printId="sloopchecklist-print">
+        <>
           <ResultCard>
             <ResultHeadline>Jouw sloopchecklist</ResultHeadline>
 
@@ -57,17 +57,28 @@ export default function Sloopchecklist() {
                   </li>
                 ))}
             </ul>
-
-            <button className="btn-primary mt-5" onClick={() => window.print()} type="button">
-              {config.teksten.print_knop_label}
-            </button>
           </ResultCard>
-        </PrintableBlock>
+
+          <TussentijdseCta />
+
+          <ExportDocument
+            checklistItems={resultaat.items.filter((item) => item.id !== "asbest").map((item) => ({label: item.tekst, checked: afgevinkt.includes(item.id)}))}
+            disclaimer={resultaat.asbestVanToepassing ? `${config.teksten.asbest_titel}: ${config.teksten.asbest_tekst}` : undefined}
+            printId="sloopchecklist-print"
+            toolNaam="Sloopchecklist generator"
+            uitkomstTitel="Jouw sloopchecklist"
+            waardes={[
+              {label: "Type project", waarde: config.projecttypes.find((p) => p.id === projectTypeId)?.label ?? ""},
+              {label: "Bouwjaar", waarde: String(bouwjaar ?? "")},
+            ]}
+          />
+          <ExportKnop label={config.teksten.print_knop_label} />
+
+          <ConversieLaag samenvatting={{projecttype: config.projecttypes.find((p) => p.id === projectTypeId)?.label ?? ""}} toolId="sloopchecklist" />
+        </>
       ) : null}
 
       {resultaat && isRekenFout(resultaat) ? <p className="text-sm font-semibold text-red-600">{resultaat.fout}</p> : null}
-
-      {resultaat && !isRekenFout(resultaat) ? <ToolCTA toolId="sloopchecklist" /> : null}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {CheckboxGroup} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {checkVerhuurKlaar} from "../toolsEngine";
 
 const STATUS_LABEL = {
@@ -47,7 +47,17 @@ export default function Verhuurklaar() {
             )}
           </ResultCard>
           <Disclaimer>{config.teksten.disclaimer}</Disclaimer>
-          <ToolCTA toolId="verhuurklaar" />
+
+          <ExportDocument
+            checklistItems={config.items.map((i) => ({label: i.label, checked: aangevinkt.includes(i.id)}))}
+            disclaimer={config.teksten.disclaimer}
+            printId="verhuurklaar-print"
+            toolNaam="Verhuur klaar check"
+            uitkomstTitel={STATUS_LABEL[resultaat.status]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{status: STATUS_LABEL[resultaat.status]}} toolId="verhuurklaar" />
         </>
       ) : null}
     </div>

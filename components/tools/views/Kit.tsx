@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {CheckboxGroup, SelectField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenKit, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Kit() {
@@ -27,7 +27,16 @@ export default function Kit() {
             <ResultHeadline>{vulTemplate(config.teksten.resultaat_titel, {kokers: resultaat.kokers})}</ResultHeadline>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="kit" />
+
+          <ExportDocument
+            printId="kit-print"
+            tip={config.teksten.tip}
+            toolNaam="Kitwerk calculator"
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {kokers: resultaat.kokers})}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{kokers: String(resultaat.kokers)}} toolId="kit" />
         </>
       ) : null}
 

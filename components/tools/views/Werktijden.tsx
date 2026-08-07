@@ -4,7 +4,7 @@ import {useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {SelectField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {haalWerktijden} from "../toolsEngine";
 
 export default function Werktijden() {
@@ -54,7 +54,16 @@ export default function Werktijden() {
               Zoek je gemeente
             </a>
           </Disclaimer>
-          <ToolCTA toolId="werktijden" />
+          <ExportDocument
+            disclaimer={config.teksten.disclaimer}
+            printId="werktijden-print"
+            toolNaam="Bouwgeluid en werktijden check"
+            uitkomstRegels={isAnders ? [`Werkdagen: ${config.landelijke_vuistregel.werkdagen}`, `Zaterdag: ${config.landelijke_vuistregel.zaterdag}`] : [`Werkdagen: ${gemeente.werkdagen}`, `Zaterdag: ${gemeente.zaterdag}`, `Zondag en feestdagen: ${gemeente.zondag_feestdag}`]}
+            uitkomstTitel={`Toegestane werktijden${!isAnders ? ` in ${gemeente.label}` : ""}`}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{gemeente: gemeente.label}} toolId="werktijden" />
         </>
       ) : null}
     </div>

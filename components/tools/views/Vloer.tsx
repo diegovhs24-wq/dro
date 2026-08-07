@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField, SingleCheckbox} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenVloer, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Vloer() {
@@ -31,7 +31,20 @@ export default function Vloer() {
             {resultaat.rollenOndervloer ? <p className="mt-3 text-lg font-bold text-brand-ink">{vulTemplate(config.teksten.ondervloer_titel, {rollen: resultaat.rollenOndervloer})}</p> : null}
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="vloer" />
+
+          <ExportDocument
+            printId="vloer-print"
+            tip={config.teksten.tip}
+            toolNaam="Laminaat en PVC calculator"
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {pakken: resultaat.pakken, type_label: type?.label || "", totaal_m2: formatNL(resultaat.totaalM2, 1)})}
+            waardes={[
+              {label: "Vloeroppervlak", waarde: `${m2} m²`},
+              {label: "Type", waarde: type?.label ?? ""},
+            ]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{pakken: String(resultaat.pakken)}} toolId="vloer" />
         </>
       ) : null}
 

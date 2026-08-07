@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {CheckboxGroup} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenKlusvolgorde} from "../toolsEngine";
 
 export default function Klusvolgorde() {
@@ -36,7 +36,17 @@ export default function Klusvolgorde() {
             </ol>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="klusvolgorde" />
+
+          <ExportDocument
+            checklistItems={stappen.map((stap) => ({label: stap.label}))}
+            printId="klusvolgorde-print"
+            tip={config.teksten.tip}
+            toolNaam="Klusvolgorde planner"
+            uitkomstTitel="Jouw klusvolgorde"
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{}} toolId="klusvolgorde" />
         </>
       ) : null}
     </div>

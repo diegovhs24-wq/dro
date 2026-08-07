@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {SelectField, SingleCheckbox} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenIsolatie, formatNL, isRekenFout} from "../toolsEngine";
 
 type GecheckDeel = {bouwdeelLabel: string; huidigeWaarde: number; eisTekst: string};
@@ -65,8 +65,17 @@ export default function Isolatie() {
             <p className="mt-3 text-sm font-bold text-brand-ink">Grootste verbeterpunt: {zwaksteDeel.bouwdeelLabel}.</p>
           ) : null}
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <div className="mt-5">
-            <ToolCTA toolId="isolatie" />
+          <div className="mt-5 grid gap-5">
+            <ExportDocument
+              printId="isolatie-print"
+              tip={config.teksten.tip}
+              toolNaam="Isolatie Rc check"
+              uitkomstRegels={gecheckt.map((deel) => `${deel.bouwdeelLabel}: Rc ${formatNL(deel.huidigeWaarde, 1)} (norm ${deel.eisTekst})`)}
+              uitkomstTitel="Overzicht gecontroleerde bouwdelen"
+            />
+            <ExportKnop />
+
+            <ConversieLaag samenvatting={{huidige_waarde: zwaksteDeel ? formatNL(zwaksteDeel.huidigeWaarde, 1) : ""}} toolId="isolatie" />
           </div>
         </ResultCard>
       ) : null}

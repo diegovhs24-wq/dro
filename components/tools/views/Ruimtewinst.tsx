@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenRuimtewinst, formatNL, isRekenFout} from "../toolsEngine";
 
 export default function Ruimtewinst() {
@@ -51,7 +51,18 @@ export default function Ruimtewinst() {
             </p>
           </ResultCard>
           <Disclaimer>{config.teksten.waarde_disclaimer}</Disclaimer>
-          <ToolCTA toolId="ruimtewinst" />
+
+          <ExportDocument
+            disclaimer={config.teksten.waarde_disclaimer}
+            printId="ruimtewinst-print"
+            toolNaam="Ruimtewinst calculator"
+            uitkomstRegels={[`Mogelijk geschikt voor: ${resultaat.nieuweRuimteSuggestie}`, `Indicatief waarde-effect: ${formatNL(resultaat.waardeMinPct, 0)}% tot ${formatNL(resultaat.waardeMaxPct, 0)}%`]}
+            uitkomstTitel={`Circa ${formatNL(resultaat.m2, 1)} m² (${formatNL(resultaat.m3, 1)} m³) extra ruimte`}
+            waardes={[{label: "Type", waarde: config.types.find((t) => t.id === typeId)?.label ?? ""}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{type: config.types.find((t) => t.id === typeId)?.label ?? "", m2: formatNL(resultaat.m2, 1)}} toolId="ruimtewinst" />
         </>
       ) : null}
 

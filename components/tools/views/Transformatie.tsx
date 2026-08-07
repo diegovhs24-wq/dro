@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenTransformatie, formatNL, isRekenFout} from "../toolsEngine";
 
 export default function Transformatie() {
@@ -61,7 +61,20 @@ export default function Transformatie() {
             </div>
             <p className="mt-4 text-sm font-bold text-brand-ink">{config.doorlooptijd_tekst}</p>
           </ResultCard>
-          <ToolCTA toolId="transformatie" />
+          <ExportDocument
+            printId="transformatie-print"
+            toolNaam="Transformatie quickscan"
+            uitkomstRegels={config.stappen.map((s) => s.tekst)}
+            uitkomstTitel={`Gemiddelde woninggrootte: circa ${formatNL(resultaat.gemiddeldeWoninggrootte, 0)} m²`}
+            waardes={[
+              {label: "Huidig gebruik", waarde: huidigGebruik},
+              {label: "M² BVO", waarde: `${m2Bvo} m²`},
+              {label: "Aantal beoogde woningen", waarde: String(aantalWoningen)},
+            ]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{m2: String(m2Bvo), woningen: String(aantalWoningen)}} toolId="transformatie" />
         </>
       ) : null}
 

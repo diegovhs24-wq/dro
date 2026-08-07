@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {CheckboxGroup, ToggleField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenBewoning, isRekenFout} from "../toolsEngine";
 
 export default function Bewoning() {
@@ -50,7 +50,11 @@ export default function Bewoning() {
             ) : null}
           </ResultCard>
           <Disclaimer>Stof is het grootste onderschatte punt, laat de aannemer stofschotten plaatsen.</Disclaimer>
-          <ToolCTA toolId="bewoning" />
+
+          <ExportDocument printId="bewoning-print" toolNaam="Verbouwen tijdens bewoning check" uitkomstRegels={resultaat.adviezen} uitkomstTitel={resultaat.titel} />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{titel: resultaat.titel}} toolId="bewoning" />
         </>
       ) : null}
 

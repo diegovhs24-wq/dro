@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {CheckboxGroup, SelectField, SliderField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenBouwtijd, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Bouwtijd() {
@@ -123,7 +123,25 @@ export default function Bouwtijd() {
           </div>
 
           <Disclaimer>{config.teksten.disclaimer}</Disclaimer>
-          <ToolCTA toolId="bouwtijd" whatsappVars={{projecttype: resultaat.type.label.toLowerCase()}} />
+
+          <ExportDocument
+            disclaimer={config.teksten.disclaimer}
+            printId="bouwtijd-print"
+            toolNaam="Bouwtijd calculator"
+            uitkomstRegels={[
+              `Basis ${resultaat.type.label.toLowerCase()}: ${formatNL(resultaat.basisDagen, 1)} werkdagen`,
+              ...resultaat.gekozenOpties.map((optie) => `${optie.label}: +${formatNL(optie.extra_dagen, 1)} werkdagen`),
+              `Totaal: ${formatNL(resultaat.totaalDagen, 1)} werkdagen`,
+            ]}
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {weken_min: resultaat.wekenMin, weken_max: resultaat.wekenMax})}
+            waardes={[{label: "Projecttype", waarde: resultaat.type.label}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag
+            samenvatting={{projecttype: resultaat.type.label.toLowerCase(), weken_min: String(resultaat.wekenMin), weken_max: String(resultaat.wekenMax)}}
+            toolId="bouwtijd"
+          />
         </>
       ) : null}
 

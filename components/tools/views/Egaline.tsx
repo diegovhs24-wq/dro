@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SliderField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenEgaline, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Egaline() {
@@ -27,7 +27,17 @@ export default function Egaline() {
             <ResultHeadline>{vulTemplate(config.teksten.resultaat_titel, {zakken: resultaat.zakken})}</ResultHeadline>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="egaline" />
+
+          <ExportDocument
+            printId="egaline-print"
+            tip={config.teksten.tip}
+            toolNaam="Egaline calculator"
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {zakken: resultaat.zakken})}
+            waardes={[{label: "Vloeroppervlak", waarde: `${m2} m²`}, {label: "Laagdikte", waarde: `${mm} mm`}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{m2: String(m2), zakken: String(resultaat.zakken)}} toolId="egaline" />
         </>
       ) : null}
 

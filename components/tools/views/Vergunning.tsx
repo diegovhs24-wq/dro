@@ -4,7 +4,7 @@ import {useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {ButtonGroup} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, StoplichtBadge, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, StoplichtBadge, TussentijdseCta} from "../ToolShared";
 import {bepaalVergunningUitkomst, isVveVanToepassing, volgendeVergunningVraag} from "../toolsEngine";
 
 export default function Vergunning() {
@@ -57,6 +57,8 @@ export default function Vergunning() {
           ) : null}
         </div>
 
+        {huidigeVraag && geschiedenis.length >= 2 ? <TussentijdseCta /> : null}
+
         {huidigeVraag ? (
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-neutral-400">Vraag {geschiedenis.length + 1}</p>
@@ -100,12 +102,23 @@ export default function Vergunning() {
             </a>
           </Disclaimer>
 
-          <ToolCTA
-            toolId="vergunning"
-            whatsappVars={{
+          <ExportDocument
+            disclaimer={config.disclaimer}
+            printId="vergunning-print"
+            toolNaam="Vergunningcheck"
+            uitkomstRegels={[uitkomst.doorlooptijd]}
+            uitkomstTitel={uitkomst.titel}
+            waardes={[{label: "Werkzaamheden", waarde: config.vragen[0].antwoorden.find((a) => a.id === antwoorden[config.vragen[0].id])?.label ?? ""}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag
+            samenvatting={{
+              uitkomst_titel: uitkomst.titel,
               projecttype:
                 config.vragen[0].antwoorden.find((a) => a.id === antwoorden[config.vragen[0].id])?.label.toLowerCase() || "project",
             }}
+            toolId="vergunning"
           />
         </>
       ) : null}

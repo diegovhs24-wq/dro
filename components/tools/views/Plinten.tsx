@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenPlinten, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Plinten() {
@@ -27,7 +27,20 @@ export default function Plinten() {
             <ResultHeadline>{vulTemplate(config.teksten.resultaat_titel, {meters: formatNL(resultaat.meters, 1), stuks: resultaat.stuks, lengte: formatNL(config.lengte_per_plint_default, 1)})}</ResultHeadline>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="plinten" />
+
+          <ExportDocument
+            printId="plinten-print"
+            tip={config.teksten.tip}
+            toolNaam="Plinten en profielen calculator"
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {meters: formatNL(resultaat.meters, 1), stuks: resultaat.stuks, lengte: formatNL(config.lengte_per_plint_default, 1)})}
+            waardes={[
+              {label: "Omtrek", waarde: `${omtrekM} m`},
+              {label: "Aantal deuren", waarde: String(deuren ?? 0)},
+            ]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{stuks: String(resultaat.stuks)}} toolId="plinten" />
         </>
       ) : null}
 

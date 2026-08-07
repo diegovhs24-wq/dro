@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenVentilatie, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Ventilatie() {
@@ -28,7 +28,18 @@ export default function Ventilatie() {
             <p className="mt-3 text-sm leading-6 text-neutral-700">{config.teksten.advies_tekst}</p>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="ventilatie" />
+
+          <ExportDocument
+            printId="ventilatie-print"
+            tip={config.teksten.tip}
+            toolNaam="Ventilatie badkamer calculator"
+            uitkomstRegels={[config.teksten.advies_tekst]}
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {m3_per_uur: formatNL(resultaat.m3PerUur, 0)})}
+            waardes={[{label: "Oppervlak", waarde: `${m2} m²`}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{m2: String(m2), m3_per_uur: formatNL(resultaat.m3PerUur, 0)}} toolId="ventilatie" />
         </>
       ) : null}
 

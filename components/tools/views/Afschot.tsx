@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {ButtonGroup, NumberField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenAfschot, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Afschot() {
@@ -35,7 +35,17 @@ export default function Afschot() {
             <ResultHeadline>{vulTemplate(config.teksten.resultaat_titel, {hoogteverschil: formatNL(resultaat.hoogteverschilMm, 0)})}</ResultHeadline>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="afschot" />
+
+          <ExportDocument
+            printId="afschot-print"
+            tip={config.teksten.tip}
+            toolNaam="Afschot douche calculator"
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {hoogteverschil: formatNL(resultaat.hoogteverschilMm, 0)})}
+            waardes={[{label: "Lengte", waarde: `${lengteCm} cm`}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{hoogteverschil: formatNL(resultaat.hoogteverschilMm, 0)}} toolId="afschot" />
         </>
       ) : null}
 

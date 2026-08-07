@@ -6,10 +6,14 @@ import {useEffect, useMemo, useState} from "react";
 import SketchIcon from "@/components/SketchIcon";
 import {DRO_TOOLS_CONFIG} from "./toolsConfig";
 import {TOOL_REGISTRY} from "./toolRegistry";
-import {categorieIcoon, RelatedTools, TerugKnop, ToolBreadcrumb} from "./ToolShared";
+import {categorieIcoon, RelatedTools, TerugKnop, ToolBreadcrumb, TrustRegel} from "./ToolShared";
 import type {ToolId} from "./toolsTypes";
 
-const ALLE_TOOLS = Object.entries(DRO_TOOLS_CONFIG.tools) as Array<[ToolId, (typeof DRO_TOOLS_CONFIG.tools)[ToolId]]>;
+// "voor-dro" is de conversietool, geen rekentool: die krijgt een eigen prominente card en telt niet mee in het aanbod.
+const VOOR_DRO_ID: ToolId = "voor-dro";
+const ALLE_TOOLS = (Object.entries(DRO_TOOLS_CONFIG.tools) as Array<[ToolId, (typeof DRO_TOOLS_CONFIG.tools)[ToolId]]>).filter(
+  ([id]) => id !== VOOR_DRO_ID,
+);
 
 function isGeldigeToolId(id: string): id is ToolId {
   return id in DRO_TOOLS_CONFIG.tools && DRO_TOOLS_CONFIG.tools[id as ToolId].meta.actief;
@@ -113,6 +117,23 @@ export default function ToolsLibrary() {
 
       <section className="bg-white py-10 sm:py-12">
         <div className="section-shell">
+          <button
+            className="card flex w-full flex-col gap-3 border-2 border-brand-orange bg-brand-soft p-6 text-left sm:flex-row sm:items-center sm:justify-between sm:p-8"
+            onClick={() => openTool(VOOR_DRO_ID)}
+            type="button"
+          >
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-orange">{DRO_TOOLS_CONFIG.tools[VOOR_DRO_ID].meta.omschrijving_kort}</p>
+              <p className="mt-2 text-2xl font-extrabold text-brand-ink">{DRO_TOOLS_CONFIG.tools[VOOR_DRO_ID].meta.naam}</p>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-neutral-600">{DRO_TOOLS_CONFIG.tools[VOOR_DRO_ID].meta.uitleg}</p>
+            </div>
+            <span className="btn-primary shrink-0 text-center">Doe de check</span>
+          </button>
+        </div>
+      </section>
+
+      <section className="bg-white pb-10 sm:pb-12">
+        <div className="section-shell">
           <label className="sr-only" htmlFor="tools-zoeken">
             Zoek een tool
           </label>
@@ -144,6 +165,12 @@ export default function ToolsLibrary() {
               </button>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-6">
+        <div className="section-shell">
+          <TrustRegel />
         </div>
       </section>
 

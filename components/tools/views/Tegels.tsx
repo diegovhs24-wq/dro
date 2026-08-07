@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenTegels, berekenWandHulptool, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 import type {TegelWand} from "../toolsEngine";
 
@@ -97,9 +97,27 @@ export default function Tegels() {
           {resultaat.formaat.ondervloer_waarschuwing ? (
             <div className="rounded-lg bg-brand-soft p-4 text-sm font-semibold leading-6 text-neutral-700">{config.teksten.ondervloer_tekst}</div>
           ) : null}
+          <p className="text-sm leading-6 text-neutral-600">{config.teksten.aanbeveling_tekst}</p>
           <TipBlock>{config.teksten.tip}</TipBlock>
           <Disclaimer>{config.teksten.disclaimer}</Disclaimer>
-          <ToolCTA toolId="tegels" />
+
+          <ExportDocument
+            disclaimer={config.teksten.disclaimer}
+            printId="tegels-print"
+            tip={config.teksten.tip}
+            toolNaam="Tegel calculator"
+            uitkomstRegels={[vulTemplate(config.teksten.lijm_tekst, {zakken_lijm: resultaat.zakkenLijm}), vulTemplate(config.teksten.voeg_tekst, {zakken_voeg: resultaat.zakkenVoeg})]}
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {dozen: resultaat.dozen, totaal_m2: formatNL(resultaat.totaalM2, 1), snijverlies_pct: formatNL(resultaat.snijverlies * 100, 0)})}
+            waardes={[
+              {label: "Vloeroppervlak", waarde: `${vloerM2 ?? 0} m²`},
+              {label: "Wandoppervlak", waarde: `${wandM2 ?? 0} m²`},
+              {label: "Tegelformaat", waarde: formaat?.label ?? ""},
+              {label: "Legpatroon", waarde: config.legpatronen.find((p) => p.id === legpatroonId)?.label ?? ""},
+            ]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{totaal_m2: formatNL(resultaat.totaalM2, 1), dozen: String(resultaat.dozen)}} toolId="tegels" />
         </>
       ) : null}
 

@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField, SelectField} from "../ToolFormFields";
-import {Disclaimer, FieldsetCard, ResultCard, ResultHeadline, ToolCTA} from "../ToolShared";
+import {ConversieLaag, Disclaimer, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline} from "../ToolShared";
 import {berekenVerwarming, formatNL, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Verwarming() {
@@ -30,7 +30,18 @@ export default function Verwarming() {
             <p className="mt-3 text-sm font-bold text-brand-ink">{resultaat.advies}</p>
           </ResultCard>
           <Disclaimer>{config.teksten.disclaimer}</Disclaimer>
-          <ToolCTA toolId="verwarming" />
+
+          <ExportDocument
+            disclaimer={config.teksten.disclaimer}
+            printId="verwarming-print"
+            toolNaam="Verwarmingsvermogen check"
+            uitkomstRegels={[resultaat.advies]}
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {kw: formatNL(resultaat.kw, 1)})}
+            waardes={[{label: "Woonoppervlak", waarde: `${m2} m²`}, {label: "Bouwjaar categorie", waarde: config.bouwjaren.find((b) => b.id === bouwjaarId)?.label ?? ""}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{m2: String(m2), kw: formatNL(resultaat.kw, 1)}} toolId="verwarming" />
         </>
       ) : null}
 

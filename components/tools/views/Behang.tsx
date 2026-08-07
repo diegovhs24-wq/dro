@@ -4,7 +4,7 @@ import {useMemo, useState} from "react";
 
 import {DRO_TOOLS_CONFIG} from "../toolsConfig";
 import {NumberField} from "../ToolFormFields";
-import {FieldsetCard, ResultCard, ResultHeadline, TipBlock, ToolCTA} from "../ToolShared";
+import {ConversieLaag, ExportDocument, ExportKnop, FieldsetCard, ResultCard, ResultHeadline, TipBlock} from "../ToolShared";
 import {berekenBehang, isRekenFout, vulTemplate} from "../toolsEngine";
 
 export default function Behang() {
@@ -52,7 +52,17 @@ export default function Behang() {
             <p className="mt-3 text-sm text-neutral-600">{vulTemplate(config.teksten.aanname_tekst, {rolbreedte: resultaat.rolbreedte, rollengte: resultaat.rollengte})}</p>
           </ResultCard>
           <TipBlock>{config.teksten.tip}</TipBlock>
-          <ToolCTA toolId="behang" />
+
+          <ExportDocument
+            printId="behang-print"
+            tip={config.teksten.tip}
+            toolNaam="Behang calculator"
+            uitkomstTitel={vulTemplate(config.teksten.resultaat_titel, {rollen: resultaat.rollen})}
+            waardes={modus === "afmeting" ? [{label: "Omtrek", waarde: `${omtrek} m`}, {label: "Muurhoogte", waarde: `${muurhoogte} m`}] : [{label: "Muuroppervlak", waarde: `${m2} m²`}]}
+          />
+          <ExportKnop />
+
+          <ConversieLaag samenvatting={{rollen: String(resultaat.rollen)}} toolId="behang" />
         </>
       ) : null}
 

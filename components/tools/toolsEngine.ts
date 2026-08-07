@@ -10,6 +10,7 @@ import type {
   TerugplannerStap,
   VerfBlikmaat,
   VerfOndergrond,
+  VerfSoort,
   VloerType,
   WizardUitkomst,
   WizardVraag,
@@ -44,6 +45,44 @@ export function formatNL(getal: number, decimalen = 0): string {
 
 function rondAfOpHalf(getal: number): number {
   return Math.ceil(getal * 2) / 2;
+}
+
+// ---------------------------------------------------------------------------
+// K1: Conversietool "Is dit iets voor DRO?"
+// ---------------------------------------------------------------------------
+
+export type VoorDroInput = {projectId: string; regioId: string; timingId: string};
+export type VoorDroResultaat = {
+  titel: string;
+  tekst: string;
+  toonToolLinks: boolean;
+  projectLabel: string;
+  regioLabel: string;
+  timingLabel: string;
+};
+
+/** Eerste regel in config.regels die matcht wint. Daarbuiten weegt zwaarder dan oriënteren, wat weer zwaarder weegt dan de standaard match. */
+export function bepaalVoorDroAdvies(input: VoorDroInput): VoorDroResultaat | RekenFout {
+  const config = DRO_TOOLS_CONFIG.tools["voor-dro"];
+  const project = config.project_opties.find((p) => p.id === input.projectId);
+  const regio = config.regio_opties.find((r) => r.id === input.regioId);
+  const timing = config.timing_opties.find((t) => t.id === input.timingId);
+  if (!project) return {fout: "Kies wat je wilt laten doen."};
+  if (!regio) return {fout: "Kies waar de woning staat."};
+  if (!timing) return {fout: "Kies wanneer je wilt starten."};
+
+  const regel = config.regels.find(
+    (r) =>
+      (!r.project_ids || r.project_ids.includes(input.projectId)) &&
+      (!r.regio_ids || r.regio_ids.includes(input.regioId)) &&
+      (!r.timing_ids || r.timing_ids.includes(input.timingId)),
+  );
+  const uitkomst = config.uitkomsten.find((u) => u.id === (regel?.uitkomst_id ?? config.fallback_uitkomst_id));
+  if (!uitkomst) return {fout: "Kon geen advies bepalen."};
+
+  const tekst = uitkomst.tekst.replace("{projecttype}", project.label.toLowerCase()).replace("{regio}", regio.label);
+
+  return {titel: uitkomst.titel, tekst, toonToolLinks: uitkomst.toon_tool_links, projectLabel: project.label, regioLabel: regio.label, timingLabel: timing.label};
 }
 
 // ---------------------------------------------------------------------------
@@ -351,6 +390,7 @@ export function berekenTegels(input: TegelInput): TegelResultaat | RekenFout {
 // ---------------------------------------------------------------------------
 
 export type VerfInput = {
+  verfsoortId: string;
   modus: "direct" | "help";
   m2Direct?: number;
   lengte?: number;
@@ -358,12 +398,13 @@ export type VerfInput = {
   hoogte?: number;
   aftrekM2?: number;
   plafondMeeschilderen?: boolean;
-  ondergrondId: string;
+  ondergrondId?: string;
   lagen?: number;
 };
 
 export type VerfResultaat = {
-  ondergrond: VerfOndergrond;
+  verfsoort: VerfSoort;
+  ondergrond?: VerfOndergrond;
   wandM2: number;
   plafondM2: number;
   totaalM2: number;
@@ -413,8 +454,11 @@ function bepaalBlikkenAdvies(benodigdeLiters: number, blikmaten: VerfBlikmaat[])
  */
 export function berekenVerf(input: VerfInput): VerfResultaat | RekenFout {
   const config = DRO_TOOLS_CONFIG.tools.verf;
-  const ondergrond = config.ondergronden.find((o) => o.id === input.ondergrondId);
-  if (!ondergrond) return {fout: "Kies een ondergrond."};
+  const verfsoort = config.verfsoorten.find((v) => v.id === input.verfsoortId);
+  if (!verfsoort) return {fout: "Kies een verfsoort."};
+  const isMuurverf = verfsoort.id === config.muurverf_verfsoort_id;
+  const ondergrond = isMuurverf ? config.ondergronden.find((o) => o.id === input.ondergrondId) : undefined;
+  if (isMuurverf && !ondergrond) return {fout: "Kies een ondergrond."};
 
   let wandM2 = 0;
   let plafondM2 = 0;
@@ -429,18 +473,19 @@ export function berekenVerf(input: VerfInput): VerfResultaat | RekenFout {
     if (!(lengte > 0) || !(breedte > 0) || !(hoogte > 0)) return {fout: "Vul lengte, breedte en hoogte in."};
     const aftrek = Number.isFinite(input.aftrekM2) ? (input.aftrekM2 as number) : config.standaard_aftrek_m2;
     wandM2 = Math.max(0, 2 * (lengte + breedte) * hoogte - aftrek);
-    if (input.plafondMeeschilderen) plafondM2 = lengte * breedte;
+    if (isMuurverf && input.plafondMeeschilderen) plafondM2 = lengte * breedte;
   }
 
   const totaalM2 = wandM2 + plafondM2;
   if (totaalM2 <= 0) return {fout: "Er is geen oppervlak om te schilderen."};
 
-  const lagen = Number.isFinite(input.lagen) ? (input.lagen as number) : ondergrond.default_lagen;
-  const liters = rondAfOpHalf((totaalM2 * lagen) / config.dekking_m2_per_liter);
-  const litersVoorstrijk = ondergrond.voorstrijk_nodig ? rondAfOpHalf(totaalM2 / config.voorstrijk_m2_per_liter) : undefined;
+  const standaardLagen = ondergrond?.default_lagen ?? verfsoort.default_lagen;
+  const lagen = Number.isFinite(input.lagen) ? (input.lagen as number) : standaardLagen;
+  const liters = rondAfOpHalf((totaalM2 * lagen) / verfsoort.m2_per_liter_gemiddeld);
+  const litersVoorstrijk = isMuurverf && ondergrond?.voorstrijk_nodig ? rondAfOpHalf(totaalM2 / config.voorstrijk_m2_per_liter) : undefined;
   const blikkenAdvies = bepaalBlikkenAdvies(liters, config.blikmaten);
 
-  return {ondergrond, wandM2, plafondM2, totaalM2, lagen, liters, litersVoorstrijk, blikkenAdvies};
+  return {verfsoort, ondergrond, wandM2, plafondM2, totaalM2, lagen, liters, litersVoorstrijk, blikkenAdvies};
 }
 
 // ---------------------------------------------------------------------------
@@ -576,38 +621,48 @@ export function berekenKit(input: KitInput): KitResultaat | RekenFout {
 }
 
 // ---------------------------------------------------------------------------
-// B7: Stucwerk calculator
+// B7: Stucwerk m2 indicatie
 // ---------------------------------------------------------------------------
 
 export type StucwerkInput = {
-  wandenM2: number;
-  plafondsM2: number;
-  afwerkingId: string;
-  slechteStaat: boolean;
+  vloerM2: number;
+  aantalRuimtes: number;
+  woningtypeId: string;
+  plafondsMeenemen: boolean;
+  plafondhoogte?: number;
 };
 
 export type StucwerkResultaat = {
-  totaalM2: number;
-  zakken: number;
+  wandM2: number;
+  plafondM2: number;
   dagenMin: number;
   dagenMax: number;
 };
 
-/** Verbruik per m2 komt uit de gekozen afwerking, x1,5 bij slechte staat. Werktijd is indicatief op basis van m2 per dag min/max. */
+/**
+ * Wandoppervlak = vloeroppervlak x factor van het woningtype, plus een
+ * correctie voor extra ruimtes boven de drempel (meer ruimtes = meer
+ * tussenwanden), min de standaard aftrek voor deur- en raamopeningen.
+ * Plafondoppervlak = vloeroppervlak (alleen als plafonds meegenomen worden).
+ */
 export function berekenStucwerk(input: StucwerkInput): StucwerkResultaat | RekenFout {
   const config = DRO_TOOLS_CONFIG.tools.stucwerk;
-  const afwerking = config.afwerkingen.find((a) => a.id === input.afwerkingId);
-  if (!afwerking) return {fout: "Kies een afwerking."};
+  const woningtype = config.woningtypes.find((w) => w.id === input.woningtypeId);
+  if (!woningtype) return {fout: "Kies een woningtype."};
+  if (!Number.isFinite(input.vloerM2) || input.vloerM2 <= 0) return {fout: "Vul het vloeroppervlak in."};
+  if (!Number.isFinite(input.aantalRuimtes) || input.aantalRuimtes <= 0) return {fout: "Vul het aantal ruimtes in."};
 
-  const totaalM2 = (input.wandenM2 || 0) + (input.plafondsM2 || 0);
-  if (totaalM2 <= 0) return {fout: "Vul wand- of plafondoppervlak in."};
+  const extraRuimtes = Math.max(0, input.aantalRuimtes - config.drempel_aantal_ruimtes);
+  const factor = woningtype.wand_factor + extraRuimtes * config.correctie_per_extra_ruimte;
+  const wandM2Bruto = input.vloerM2 * factor;
+  const wandM2 = Math.round(wandM2Bruto * (1 - config.aftrek_openingen_pct));
+  const plafondM2 = input.plafondsMeenemen ? Math.round(input.vloerM2) : 0;
 
-  const kgPerM2 = afwerking.kg_per_m2 * (input.slechteStaat ? config.factor_slechte_staat : 1);
-  const zakken = Math.ceil((totaalM2 * kgPerM2) / config.kg_per_zak);
+  const totaalM2 = wandM2 + plafondM2;
   const dagenMin = Math.ceil(totaalM2 / config.m2_per_dag_max);
   const dagenMax = Math.ceil(totaalM2 / config.m2_per_dag_min);
 
-  return {totaalM2, zakken, dagenMin, dagenMax};
+  return {wandM2, plafondM2, dagenMin, dagenMax};
 }
 
 // ---------------------------------------------------------------------------
@@ -632,16 +687,26 @@ export function berekenEgaline(input: EgalineInput): EgalineResultaat | RekenFou
 // ---------------------------------------------------------------------------
 
 export type ContainerInput = {klusTypeId: string; m2: number};
-export type ContainerResultaat = {volume: number; advies: string};
+export type ContainerResultaat = {sloopVolume: number; werkafvalVolume: number; volume: number; advies: string};
 
-/** Volume = m2 x m3 per m2 van het klustype x uitzetfactor. Advies kiest de kleinste container die past, of het aantal wissels van de grootste maat. */
+/**
+ * Sloopvolume = m2 x m3 per m2 van het klustype x uitzetfactor (los puin).
+ * Daarbovenop komt werkafval tijdens de bouw (verpakkingen, zaagresten,
+ * restmateriaal), als vast percentage van het sloopvolume. Het containeradvies
+ * kiest de kleinste maat uit de config die past, of het aantal wissels van de
+ * grootste maat. De kleinste maat in config.maten is bewust nooit kleiner dan
+ * config.minimum_advies_m3, kleine containers zijn in de praktijk altijd te
+ * krap zodra het werk eenmaal loopt.
+ */
 export function berekenContainer(input: ContainerInput): ContainerResultaat | RekenFout {
   const config = DRO_TOOLS_CONFIG.tools.container;
   const klustype = config.klustypes.find((k) => k.id === input.klusTypeId);
   if (!klustype) return {fout: "Kies een type klus."};
   if (!Number.isFinite(input.m2) || input.m2 <= 0) return {fout: "Vul het aantal m² in."};
 
-  const volume = input.m2 * klustype.m3_per_m2 * config.uitzetfactor;
+  const sloopVolume = input.m2 * klustype.m3_per_m2 * config.uitzetfactor;
+  const werkafvalVolume = sloopVolume * config.werkafval_factor;
+  const volume = sloopVolume + werkafvalVolume;
   const sortedMaten = [...config.maten].sort((a, b) => a.m3 - b.m3);
   const grootste = sortedMaten[sortedMaten.length - 1];
   const passendeMaat = sortedMaten.find((maat) => maat.m3 >= volume);
@@ -650,35 +715,52 @@ export function berekenContainer(input: ContainerInput): ContainerResultaat | Re
     ? `1x ${passendeMaat.label} container`
     : `${Math.ceil(volume / grootste.m3)} wissels van ${grootste.label}`;
 
-  return {volume, advies};
+  return {sloopVolume, werkafvalVolume, volume, advies};
 }
 
 // ---------------------------------------------------------------------------
-// C1: Vloerverwarming check
+// C1: Vloerverwarming systeemkeuze
 // ---------------------------------------------------------------------------
 
-export type VloerverwarmingInput = {m2: number; isolatieId: string; vloertypeId: string; hoofdverwarming: boolean};
+export type VloerverwarmingInput = {ondervloerId: string; frezenId: string; hoogteId: string; m2: number};
 export type VloerverwarmingResultaat = {
-  wattPerM2: number;
-  totaalWatt: number;
-  vloertypeGeschiktheid: string;
-  toonHoofdverwarmingWaarschuwing: boolean;
+  weetNiet: boolean;
+  boodschap: string | null;
+  systemen: {naam: string; regelsUitleg: string[]; vloertypeAdvies: string}[];
 };
 
-/** Vermogen W/m2 komt uit de isolatiecategorie. Bij slechte isolatie en gewenste hoofdverwarming wordt een waarschuwing getoond. */
-export function berekenVloerverwarming(input: VloerverwarmingInput): VloerverwarmingResultaat | RekenFout {
+/**
+ * Kiest het aanlegsysteem via de eerste regel in config.regels die matcht op
+ * ondervloer, frezen en hoogte. Bij "weet ik niet" op ondervloer of frezen
+ * worden de 2 meest waarschijnlijke systemen getoond in plaats van 1 advies.
+ */
+export function bepaalVloerverwarmingSysteem(input: VloerverwarmingInput): VloerverwarmingResultaat | RekenFout {
   const config = DRO_TOOLS_CONFIG.tools.vloerverwarming;
-  const isolatie = config.isolaties.find((i) => i.id === input.isolatieId);
-  const vloertype = config.vloertypes.find((v) => v.id === input.vloertypeId);
-  if (!isolatie) return {fout: "Kies de isolatie van de woning."};
-  if (!vloertype) return {fout: "Kies een vloertype."};
+  if (!input.ondervloerId || !input.frezenId || !input.hoogteId) return {fout: "Beantwoord alle vragen."};
   if (!Number.isFinite(input.m2) || input.m2 <= 0) return {fout: "Vul het aantal m² in."};
 
+  if (input.ondervloerId === "weet_niet" || input.frezenId === "weet_niet") {
+    const systemen = config.weet_niet_systeem_ids
+      .map((id) => config.systemen.find((s) => s.id === id))
+      .filter((s): s is (typeof config.systemen)[number] => Boolean(s))
+      .map((s) => ({naam: s.naam, regelsUitleg: s.regels_uitleg, vloertypeAdvies: s.vloertype_advies}));
+    return {weetNiet: true, boodschap: config.weet_niet_boodschap, systemen};
+  }
+
+  const regel = config.regels.find(
+    (r) =>
+      (!r.ondervloer || r.ondervloer.includes(input.ondervloerId)) &&
+      (!r.frezen || r.frezen.includes(input.frezenId)) &&
+      (!r.hoogte || r.hoogte.includes(input.hoogteId)),
+  );
+  const systeemId = regel?.systeem_id ?? config.fallback_systeem_id;
+  const systeem = config.systemen.find((s) => s.id === systeemId);
+  if (!systeem) return {fout: "Kon geen systeem bepalen."};
+
   return {
-    wattPerM2: isolatie.watt_per_m2,
-    totaalWatt: input.m2 * isolatie.watt_per_m2,
-    vloertypeGeschiktheid: vloertype.toelichting,
-    toonHoofdverwarmingWaarschuwing: input.hoofdverwarming && isolatie.id === config.slechte_isolatie_id,
+    weetNiet: false,
+    boodschap: null,
+    systemen: [{naam: systeem.naam, regelsUitleg: systeem.regels_uitleg, vloertypeAdvies: systeem.vloertype_advies}],
   };
 }
 
@@ -701,30 +783,45 @@ export function berekenVentilatie(input: VentilatieInput): VentilatieResultaat |
 }
 
 // ---------------------------------------------------------------------------
-// C3: Groepenkast check
+// C3: Groepenkast calculator
 // ---------------------------------------------------------------------------
 
-export type GroepenkastInput = {apparaatIds: string[]; aansluitingId: string};
+export type GroepenkastInput = {etages: number; apparaatIds: string[]; aansluitingId: string};
 export type GroepenkastResultaat = {
-  aantalGroepen: number;
+  totaalGroepen: number;
+  groepenVerlichting: number;
+  groepenWcd: number;
+  groepenApparaten: number;
+  reserveGroepen: number;
   totaalVermogenKw: number;
   driefaseAdvies: boolean;
   netverzwaringAdvies: boolean;
 };
 
-/** Telt de geselecteerde apparaten die een eigen groep vragen. Adviseert 3 fasen als een apparaat dat vereist of het totale vermogen boven de drempel komt. */
+/**
+ * Totaal aantal groepen = basisgroepen per etage (verlichting + wcd) plus 1
+ * groep per geselecteerd zwaar apparaat plus een vaste reservegroep. 3 fasen
+ * wordt geadviseerd zodra een apparaat uit de triggerlijst is aangevinkt of
+ * het totale vermogen boven de drempel komt.
+ */
 export function berekenGroepenkast(input: GroepenkastInput): GroepenkastResultaat | RekenFout {
   const config = DRO_TOOLS_CONFIG.tools.groepenkast;
   const aansluiting = config.aansluitingen.find((a) => a.id === input.aansluitingId);
   if (!aansluiting) return {fout: "Kies je huidige aansluiting."};
+  if (!Number.isFinite(input.etages) || input.etages < 1) return {fout: "Vul het aantal etages in."};
 
   const apparaten = config.apparaten.filter((a) => input.apparaatIds.includes(a.id));
-  const aantalGroepen = apparaten.filter((a) => a.eigen_groep).length;
+  const groepenVerlichting = input.etages * config.groepen_verlichting_per_etage;
+  const groepenWcd = input.etages * config.groepen_wcd_per_etage;
+  const groepenApparaten = apparaten.filter((a) => a.eigen_groep).length;
+  const reserveGroepen = config.reserve_groepen;
+  const totaalGroepen = groepenVerlichting + groepenWcd + groepenApparaten + reserveGroepen;
+
   const totaalVermogenKw = apparaten.reduce((totaal, a) => totaal + a.indicatief_vermogen_kw, 0);
-  const driefaseAdvies = apparaten.some((a) => a.driefase_nodig) || totaalVermogenKw > config.driefase_advies_vermogen_kw;
+  const driefaseAdvies = apparaten.some((a) => config.driefase_trigger_apparaat_ids.includes(a.id)) || totaalVermogenKw > config.driefase_advies_vermogen_kw;
   const netverzwaringAdvies = totaalVermogenKw > aansluiting.max_kw || (driefaseAdvies && !aansluiting.is_driefase);
 
-  return {aantalGroepen, totaalVermogenKw, driefaseAdvies, netverzwaringAdvies};
+  return {totaalGroepen, groepenVerlichting, groepenWcd, groepenApparaten, reserveGroepen, totaalVermogenKw, driefaseAdvies, netverzwaringAdvies};
 }
 
 // ---------------------------------------------------------------------------
@@ -752,7 +849,28 @@ export function berekenVerwarming(input: VerwarmingInput): VerwarmingResultaat |
 }
 
 // ---------------------------------------------------------------------------
-// C5: Isolatie Rc check
+// C5: Radiator vermogen per ruimte
+// ---------------------------------------------------------------------------
+
+export type RadiatorInput = {m2: number; ruimtetypeId: string; bouwjaarId: string};
+export type RadiatorResultaat = {watt: number; isBadkamer: boolean; ruimtetypeLabel: string};
+
+/** Vermogen W = m2 x W/m2 van het ruimtetype x de bouwjaarfactor. */
+export function berekenRadiator(input: RadiatorInput): RadiatorResultaat | RekenFout {
+  const config = DRO_TOOLS_CONFIG.tools.radiator;
+  const ruimtetype = config.ruimtetypes.find((r) => r.id === input.ruimtetypeId);
+  const bouwjaar = config.bouwjaarfactoren.find((b) => b.id === input.bouwjaarId);
+  if (!ruimtetype) return {fout: "Kies een ruimtetype."};
+  if (!bouwjaar) return {fout: "Kies een bouwjaar categorie."};
+  if (!Number.isFinite(input.m2) || input.m2 <= 0) return {fout: "Vul het oppervlak van de ruimte in."};
+
+  const watt = Math.round(input.m2 * ruimtetype.watt_per_m2 * bouwjaar.factor);
+
+  return {watt, isBadkamer: ruimtetype.id === config.badkamer_ruimtetype_id, ruimtetypeLabel: ruimtetype.label};
+}
+
+// ---------------------------------------------------------------------------
+// C6: Isolatie Rc check
 // ---------------------------------------------------------------------------
 
 export type IsolatieInput = {bouwdeelId: string; bouwjaarId: string; naGeisoleerd: boolean};
@@ -773,7 +891,7 @@ export function berekenIsolatie(input: IsolatieInput): IsolatieResultaat | Reken
 }
 
 // ---------------------------------------------------------------------------
-// C6: Afschot douche calculator
+// C7: Afschot douche calculator
 // ---------------------------------------------------------------------------
 
 export type AfschotInput = {lengteCm: number; type: "goot" | "putje_midden"};

@@ -21,7 +21,12 @@ export type ToolMeta = {
   volgorde: number;
   actief: boolean;
   gerelateerd: string[];
+  /** WhatsApp-bericht voor "Stuur dit resultaat naar DRO", met placeholders voor invoer EN uitkomst. */
   whatsapp_tekst: string;
+  /** 2 zinnen die het resultaat koppelen aan de dienst van DRO, in het "Wat DRO hierin doet" blok. */
+  dro_blok_tekst: string;
+  /** Zet een subtiele tussentijdse CTA-regel aan bij lange tools (wizards, checklists). */
+  tussentijdse_cta: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -86,6 +91,38 @@ export type ScoreUitkomst = {
   id: string;
   titel: string;
   tekst: string;
+};
+
+// ---------------------------------------------------------------------------
+// K1: Conversietool "Is dit iets voor DRO?"
+// ---------------------------------------------------------------------------
+
+export type VoorDroKeuze = {id: string; label: string};
+
+export type VoorDroUitkomst = {
+  id: string;
+  titel: string;
+  /** Mag {projecttype} en {regio} bevatten, die worden automatisch ingevuld. */
+  tekst: string;
+  toon_tool_links: boolean;
+};
+
+/** Eerste regel die matcht wint. Een leeg veld betekent: geldt voor elk antwoord op die vraag. */
+export type VoorDroRegel = {
+  project_ids?: string[];
+  regio_ids?: string[];
+  timing_ids?: string[];
+  uitkomst_id: string;
+};
+
+export type VoorDroConfig = {
+  meta: ToolMeta;
+  project_opties: VoorDroKeuze[];
+  regio_opties: VoorDroKeuze[];
+  timing_opties: VoorDroKeuze[];
+  uitkomsten: VoorDroUitkomst[];
+  regels: VoorDroRegel[];
+  fallback_uitkomst_id: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -258,6 +295,7 @@ export type TegelConfig = {
     lijm_tekst: string;
     voeg_tekst: string;
     ondervloer_tekst: string;
+    aanbeveling_tekst: string;
     tip: string;
     disclaimer: string;
   };
@@ -275,17 +313,28 @@ export type VerfBlikmaat = {
   label: string;
 };
 
+export type VerfSoort = {
+  id: string;
+  label: string;
+  m2_per_liter_min: number;
+  m2_per_liter_max: number;
+  m2_per_liter_gemiddeld: number;
+  default_lagen: number;
+};
+
 export type VerfConfig = {
   meta: ToolMeta;
+  verfsoorten: VerfSoort[];
+  muurverf_verfsoort_id: string;
   ondergronden: VerfOndergrond[];
   blikmaten: VerfBlikmaat[];
-  dekking_m2_per_liter: number;
   voorstrijk_m2_per_liter: number;
   standaard_aftrek_m2: number;
   min_lagen: number;
   max_lagen: number;
   teksten: {
     resultaat_titel: string;
+    range_tekst: string;
     voorstrijk_titel: string;
     tip: string;
     disclaimer: string;
@@ -357,22 +406,26 @@ export type KitConfig = {
   };
 };
 
-export type StucwerkAfwerking = {
+export type StucwerkWoningtype = {
   id: string;
   label: string;
-  kg_per_m2: number;
+  wand_factor: number;
 };
 
 export type StucwerkConfig = {
   meta: ToolMeta;
-  afwerkingen: StucwerkAfwerking[];
-  factor_slechte_staat: number;
+  woningtypes: StucwerkWoningtype[];
+  drempel_aantal_ruimtes: number;
+  correctie_per_extra_ruimte: number;
+  aftrek_openingen_pct: number;
+  standaard_plafondhoogte: number;
   m2_per_dag_min: number;
   m2_per_dag_max: number;
-  kg_per_zak: number;
   teksten: {
     resultaat_titel: string;
+    disclaimer: string;
     werktijd_titel: string;
+    behang_vs_sausklaar_tekst: string;
     tip: string;
   };
 };
@@ -405,9 +458,14 @@ export type ContainerConfig = {
   meta: ToolMeta;
   klustypes: ContainerKlusType[];
   uitzetfactor: number;
+  werkafval_factor: number;
+  minimum_advies_m3: number;
   maten: ContainerMaat[];
   teksten: {
     resultaat_titel: string;
+    opbouw_sloop_tekst: string;
+    opbouw_werkafval_tekst: string;
+    werkafval_uitleg: string;
     tip: string;
   };
 };
@@ -416,27 +474,38 @@ export type ContainerConfig = {
 // CATEGORIE C: Techniek en installaties
 // ---------------------------------------------------------------------------
 
-export type VloerverwarmingIsolatie = {
+export type VloerverwarmingOptie = {id: string; label: string};
+
+export type VloerverwarmingSysteem = {
   id: string;
-  label: string;
-  watt_per_m2: number;
+  naam: string;
+  regels_uitleg: string[];
+  vloertype_advies: string;
 };
 
-export type VloerverwarmingVloertype = {
-  id: string;
-  label: string;
-  geschiktheid: "ideaal" | "goed" | "beperkt";
-  toelichting: string;
+/** Een regel matcht als voor elk ingevuld veld het antwoord in de lijst voorkomt. Leeg veld = geldt voor elk antwoord. */
+export type VloerverwarmingRegel = {
+  ondervloer?: string[];
+  frezen?: string[];
+  hoogte?: string[];
+  systeem_id: string;
 };
 
 export type VloerverwarmingConfig = {
   meta: ToolMeta;
-  isolaties: VloerverwarmingIsolatie[];
-  vloertypes: VloerverwarmingVloertype[];
-  slechte_isolatie_id: string;
+  ondervloer_opties: VloerverwarmingOptie[];
+  frezen_opties: VloerverwarmingOptie[];
+  hoogte_opties: VloerverwarmingOptie[];
+  m2_min: number;
+  m2_max: number;
+  m2_default: number;
+  systemen: VloerverwarmingSysteem[];
+  regels: VloerverwarmingRegel[];
+  fallback_systeem_id: string;
+  weet_niet_boodschap: string;
+  weet_niet_systeem_ids: string[];
+  droogtijd_per_cm_tekst: string;
   teksten: {
-    resultaat_titel: string;
-    hoofdverwarming_waarschuwing: string;
     tip: string;
   };
 };
@@ -473,8 +542,15 @@ export type GroepenkastConfig = {
   apparaten: GroepenkastApparaat[];
   aansluitingen: GroepenkastAansluiting[];
   driefase_advies_vermogen_kw: number;
+  driefase_trigger_apparaat_ids: string[];
+  groepen_verlichting_per_etage: number;
+  groepen_wcd_per_etage: number;
+  reserve_groepen: number;
+  max_groepen_per_aardlekschakelaar: number;
   teksten: {
     resultaat_titel: string;
+    aardleklabel_tekst: string;
+    netverzwaring_tekst: string;
     disclaimer: string;
   };
 };
@@ -494,6 +570,31 @@ export type VerwarmingConfig = {
   teksten: {
     resultaat_titel: string;
     disclaimer: string;
+  };
+};
+
+export type RadiatorRuimtetype = {
+  id: string;
+  label: string;
+  watt_per_m2: number;
+};
+
+export type RadiatorBouwjaarFactor = {
+  id: string;
+  label: string;
+  factor: number;
+};
+
+export type RadiatorConfig = {
+  meta: ToolMeta;
+  ruimtetypes: RadiatorRuimtetype[];
+  bouwjaarfactoren: RadiatorBouwjaarFactor[];
+  badkamer_ruimtetype_id: string;
+  teksten: {
+    resultaat_titel: string;
+    verdeling_tekst: string;
+    badkamer_tekst: string;
+    tip: string;
   };
 };
 
@@ -630,6 +731,7 @@ export type BurenbriefConfig = {
     privacy_tekst: string;
     kopieer_knop: string;
     print_knop: string;
+    afzenderregel: string;
     tip: string;
   };
 };
@@ -700,6 +802,7 @@ export type VerhuurConfig = {
 // ---------------------------------------------------------------------------
 
 export type ToolsRegistry = {
+  "voor-dro": VoorDroConfig;
   bouwtijd: BouwtijdConfig;
   vergunning: VergunningConfig;
   terugplanner: TerugplannerConfig;
@@ -718,6 +821,7 @@ export type ToolsRegistry = {
   ventilatie: VentilatieConfig;
   groepenkast: GroepenkastConfig;
   verwarming: VerwarmingConfig;
+  radiator: RadiatorConfig;
   isolatie: IsolatieConfig;
   afschot: AfschotConfig;
   "verbouwen-verhuizen": VerbouwenVerhuizenConfig;
@@ -740,8 +844,11 @@ export type ToolsConfig = {
     whatsapp_nummer: string;
     contact_pad: string;
     cta_titel: string;
-    cta_tekst: string;
     cta_knop_gesprek: string;
     cta_knop_whatsapp: string;
+    whatsapp_algemeen_tekst: string;
+    stuur_resultaat_knop: string;
+    trust_regel: string;
+    tussentijdse_cta_tekst: string;
   };
 };
