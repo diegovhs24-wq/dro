@@ -191,7 +191,7 @@ export default function LocationServicePage({
           <Link className="text-brand-orange hover:text-brand-ink" href={`/${location.slug}`}>
             &larr; Meer over {location.name}
           </Link>
-          <Link className="text-brand-orange hover:text-brand-ink" href={`/diensten/${service.slug}`}>
+          <Link className="text-brand-orange hover:text-brand-ink" href={`/${service.slug}`}>
             &larr; Meer over {serviceName}
           </Link>
         </div>

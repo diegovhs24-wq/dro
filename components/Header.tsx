@@ -23,7 +23,7 @@ function resolveSmartLink(link: SmartLink | undefined): {href: string; openInNew
     if (!ref.slug) return {href: "#", openInNewTab: false};
     let href = "/";
     if (ref._type === "page") href = ref.slug === "home" ? "/" : `/${ref.slug}`;
-    else if (ref._type === "service") href = `/diensten/${ref.slug}`;
+    else if (ref._type === "service") href = `/${ref.slug}`;
     else if (ref._type === "project") href = `/projecten/${ref.slug}`;
     else if (ref._type === "blogPost") href = `/kennisbank/${ref.slug}`;
     else if (ref._type === "blogCategory") href = `/kennisbank?categorie=${ref.slug}`;

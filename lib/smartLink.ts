@@ -9,7 +9,7 @@ export function resolveSmartLink(link: SmartLink | null | undefined): {href: str
     if (ref._type === "projectsIndex") return {href: "/projecten", openInNewTab: false};
     if (ref._type === "blogsIndex") return {href: "/kennisbank", openInNewTab: false};
     if (!ref.slug) return {href: "#", openInNewTab: false};
-    if (ref._type === "service") return {href: `/diensten/${ref.slug}`, openInNewTab: false};
+    if (ref._type === "service") return {href: `/${ref.slug}`, openInNewTab: false};
     if (ref._type === "project") return {href: `/projecten/${ref.slug}`, openInNewTab: false};
     if (ref._type === "blogPost") return {href: `/kennisbank/${ref.slug}`, openInNewTab: false};
     if (ref._type === "blogCategory") return {href: `/kennisbank?categorie=${ref.slug}`, openInNewTab: false};

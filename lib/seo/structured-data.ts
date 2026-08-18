@@ -180,7 +180,7 @@ export function buildServiceSchema(
     "@type": "Service",
     name: service.name,
     description: service.description,
-    url: service.url || absoluteUrl(`/diensten/${service.slug}`),
+    url: service.url || absoluteUrl(`/${service.slug}`),
     provider: {
       "@type": "HomeAndConstructionBusiness",
       "@id": localBusinessId(org.siteUrl),

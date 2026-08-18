@@ -39,7 +39,7 @@ export const fallbackSiteSettings: SiteSettings = {
 export const fallbackServices: ServiceSummary[] = [
   {
     slug: "badkamer-renovatie",
-    href: "/diensten/badkamer-renovatie",
+    href: "/badkamer-renovatie",
     title: "Badkamer renovatie",
     summary: "Badkamer renovatie met planning, coördinatie en strakke oplevering.",
     image:
@@ -49,7 +49,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "totaalrenovatie",
-    href: "/diensten/totaalrenovatie",
+    href: "/totaalrenovatie",
     title: "Totaalrenovatie",
     summary: "Complete woningrenovatie met vaste teams en één aanspreekpunt.",
     image:
@@ -59,7 +59,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "uitbouw-aanbouw",
-    href: "/diensten/uitbouw-aanbouw",
+    href: "/uitbouw-aanbouw",
     title: "Uitbouw / aanbouw",
     summary: "Meer leefruimte met technische voorbereiding en nette afwerking.",
     image:
@@ -69,7 +69,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "afbouw-nieuwbouw",
-    href: "/diensten/afbouw-nieuwbouw",
+    href: "/afbouw-nieuwbouw",
     title: "Afbouw nieuwbouw",
     summary: "Van casco naar woonklaar met één planning.",
     image:
@@ -79,7 +79,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "vloerverwarming",
-    href: "/diensten/vloerverwarming",
+    href: "/vloerverwarming",
     title: "Vloerverwarming",
     summary: "Vloerverwarming netjes afgestemd, aangesloten en getest.",
     image:
@@ -89,7 +89,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "warmtepomp",
-    href: "/diensten/warmtepomp",
+    href: "/warmtepomp",
     title: "Warmtepomp",
     summary: "Warmtepomp installatie met advies, aansluiting en controle.",
     image:
@@ -99,7 +99,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "zonnepanelen",
-    href: "/diensten/zonnepanelen",
+    href: "/zonnepanelen",
     title: "Zonnepanelen",
     summary: "Zonnepanelen veilig geplaatst en aangesloten.",
     image:
@@ -109,7 +109,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "stuc-schilderwerk",
-    href: "/diensten/stuc-schilderwerk",
+    href: "/stuc-schilderwerk",
     title: "Stuc- en schilderwerk",
     summary: "Strakke wanden, plafonds en schilderwerk.",
     image:
@@ -119,7 +119,7 @@ export const fallbackServices: ServiceSummary[] = [
   },
   {
     slug: "onderhoud",
-    href: "/diensten/onderhoud",
+    href: "/onderhoud",
     title: "Onderhoud",
     summary: "Onderhoud en herstelwerk helder afgestemd.",
     image:
@@ -239,7 +239,7 @@ export function mergeServicesWithFallback(services: ServiceSummary[]) {
   services.forEach((service) => {
     bySlug.set(service.slug, {
       ...service,
-      href: normalizeHref(service.href || `/diensten/${service.slug}`),
+      href: normalizeHref(service.href || `/${service.slug}`),
     });
   });
 
