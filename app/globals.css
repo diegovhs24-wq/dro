@@ -17,14 +17,14 @@
 body {
   margin: 0;
   background: #ffffff;
-  color: #171717;
+  color: #181613;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: #ff6a00;
+  background: #d95b16;
   color: #ffffff;
 }
 

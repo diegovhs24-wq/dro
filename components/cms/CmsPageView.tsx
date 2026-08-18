@@ -3,6 +3,9 @@ import type {PtBlock} from "@/lib/types";
 import {resolveSmartLink} from "@/lib/smartLink";
 import CTASection from "@/components/CTASection";
 import Hero from "@/components/Hero";
+import HomeFeitenBalk from "@/components/HomeFeitenBalk";
+import DoorlopendeLijn from "@/components/DoorlopendeLijn";
+import HomeSlotSection from "@/components/HomeSlotSection";
 import LeadForm from "@/components/LeadForm";
 import PageHero from "@/components/PageHero";
 import MetricsBandBlockSection from "@/components/cms/blocks/MetricsBandBlockSection";
@@ -201,7 +204,15 @@ function ContactFormSection({ block }: { block: ContactFormBlock }) {
 async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
   switch (block._type) {
     case "homeHeroBlock":
-      return block.hero ? <Hero content={block.hero} /> : null;
+      return block.hero ? (
+        <>
+          <Hero content={block.hero} />
+          <HomeFeitenBalk />
+          {block.hero.processSteps?.length ? (
+            <DoorlopendeLijn intro={block.hero.processIntro || ""} steps={block.hero.processSteps} />
+          ) : null}
+        </>
+      ) : null;
     case "pageHeroBlock":
       return block.hero ? (
         <PageHero
@@ -309,6 +320,8 @@ export async function CmsPageView({ page }: { page: CmsDynamicPage }) {
     );
   }
 
+  const heroBlock = blocks.find((block) => block._type === "homeHeroBlock");
+
   return (
     <>
       {await Promise.all(
@@ -316,6 +329,7 @@ export async function CmsPageView({ page }: { page: CmsDynamicPage }) {
           <div key={block._key || `${block._type}-${index}`}>{await RenderBlock({ block })}</div>
         ))
       )}
+      {heroBlock?.hero ? <HomeSlotSection intakeForm={heroBlock.hero.intakeForm} /> : null}
     </>
   );
 }

@@ -778,7 +778,14 @@ export const homeHeroBlock = defineType({
       type: 'object',
       fields: [
         defineField({name: 'coverageText', title: 'Coverage Text', type: 'text', rows: 2}),
-        defineField({name: 'backgroundImage', title: 'Background Image', type: 'cmsImage'}),
+        defineField({name: 'backgroundImage', title: 'Background Image (poster / fallback)', type: 'cmsImage'}),
+        defineField({
+          name: 'backgroundVideo',
+          title: 'Background Video (mp4, optioneel, overschrijft de standaardvideo)',
+          type: 'file',
+          options: {accept: 'video/mp4'},
+        }),
+        defineField({name: 'backgroundVideoCaption', title: 'Video Caption (bijv. "Totaalrenovatie · opgeleverd 2026")', type: 'string'}),
         defineField({name: 'headlineTop', title: 'Headline Top', type: 'string'}),
         defineField({name: 'headlineHighlight', title: 'Headline Highlight', type: 'string'}),
         defineField({name: 'headlineBottom', title: 'Headline Bottom', type: 'string'}),
@@ -2028,10 +2035,11 @@ export const darkAssuranceGridBlock = defineType({
     defineField({name: 'eyebrow', title: 'Eyebrow', type: 'string'}),
     defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Title (zet *cursief gedeelte* tussen sterretjes voor de italic stijl)',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({name: 'intro', title: 'Intro (optioneel, naast de titel)', type: 'text', rows: 2}),
     defineField({
       name: 'items',
       title: 'Assurance Items',
@@ -2039,6 +2047,9 @@ export const darkAssuranceGridBlock = defineType({
       of: [defineArrayMember({type: 'assurancePointItem'})],
       validation: (Rule) => Rule.required().min(1).max(6),
     }),
+    defineField({name: 'footerNote', title: 'Footer note (optioneel)', type: 'string'}),
+    defineField({name: 'footerButtonLabel', title: 'Footer button label (optioneel)', type: 'string'}),
+    defineField({name: 'footerButtonLink', title: 'Footer button link (optioneel)', type: 'smartLink'}),
   ],
   preview: {
     select: {title: 'title', items: 'items'},

@@ -322,7 +322,11 @@ export type CenteredActionBannerContent = {
 export type DarkAssuranceGridContent = {
   eyebrow?: string;
   title?: string;
+  intro?: string;
   items?: AssurancePointItem[];
+  footerNote?: string;
+  footerButtonLabel?: string;
+  footerButtonLink?: SmartLink;
 };
 
 export type ServiceBlock = {
@@ -554,6 +558,8 @@ export type IntakeFormConfig = {
 export type HomeHeroContent = {
   coverageText: string;
   backgroundImage: string;
+  backgroundVideoUrl?: string | null;
+  backgroundVideoCaption?: string | null;
   headlineTop: string;
   headlineHighlight: string;
   headlineBottom: string;

@@ -278,10 +278,14 @@ const SPLIT_FEATURE_LIST_FIELDS = `
 const DARK_ASSURANCE_GRID_FIELDS = `
   eyebrow,
   title,
+  intro,
   items[]{
     title,
     text
-  }
+  },
+  footerNote,
+  footerButtonLabel,
+  footerButtonLink{${SMART_LINK_FIELDS}}
 `;
 
 const CENTERED_ACTION_BANNER_FIELDS = `
@@ -337,6 +341,8 @@ const INTAKE_FORM_FIELDS = `
 const HOME_HERO_FIELDS = `
   coverageText,
   backgroundImage{${IMAGE_SOURCE_FIELDS}},
+  "backgroundVideoUrl": backgroundVideo.asset->url,
+  backgroundVideoCaption,
   headlineTop,
   headlineHighlight,
   headlineBottom,
@@ -393,6 +399,8 @@ const INDEX_CONTENT_BLOCKS = `
         title,
         "slug": slug.current,
         description,
+        location,
+        type,
         before,
         after,
         "beforeImage": beforeImage{${IMAGE_SOURCE_FIELDS}},
@@ -519,6 +527,8 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
         title,
         "slug": slug.current,
         description,
+        location,
+        type,
         before,
         after,
         "beforeImage": beforeImage{${IMAGE_SOURCE_FIELDS}},
@@ -1116,6 +1126,8 @@ export type FeaturedProjectsBlock = CmsBaseBlock & {
     title: string;
     slug: string;
     description: string;
+    location?: string;
+    type?: string;
     before: string;
     after: string;
     beforeImage?: string;

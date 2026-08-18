@@ -1,5 +1,5 @@
 import type {Metadata, Viewport} from 'next'
-import {Patrick_Hand, Poppins} from 'next/font/google'
+import {Newsreader, Patrick_Hand, Poppins} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {VisualEditing} from 'next-sanity'
 import Footer from '@/components/Footer'
@@ -22,6 +22,14 @@ const patrickHand = Patrick_Hand({
   weight: '400',
   display: 'swap',
   variable: '--font-hand',
+})
+
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['italic'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-newsreader',
 })
 
 export const viewport: Viewport = {
@@ -63,7 +71,7 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
   const {isEnabled: isDraftMode} = draftMode()
 
   return (
-    <div className={`${poppins.className} ${patrickHand.variable}`}>
+    <div className={`${poppins.className} ${patrickHand.variable} ${newsreader.variable}`}>
       <JsonLd data={buildJsonLdGraph(organizationGraph)} />
       <Header siteSettings={siteSettings} />
       {children}

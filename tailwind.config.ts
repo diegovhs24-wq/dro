@@ -9,16 +9,21 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          orange: "rgb(224,97,26)",
-          ink: "#171717",
-          soft: "#f6f5f2"
+          orange: "#d95b16",
+          ink: "#181613",
+          "ink-soft": "#3a3733",
+          soft: "#fbfaf7",
+          "soft-deep": "#f3f0ea",
+          stone: "#87816f",
+          line: "#e7e3da"
         },
         "deep-slate": "var(--color-deep-slate)",
         "muted-slate": "var(--color-muted-slate)",
         "rich-ink": "var(--color-rich-ink)",
       },
       fontFamily: {
-        hand: ['"Comic Sans MS"', '"Comic Sans"', 'var(--font-hand)', 'cursive']
+        hand: ['"Comic Sans MS"', '"Comic Sans"', 'var(--font-hand)', 'cursive'],
+        serif: ['var(--font-newsreader)', 'Georgia', 'serif']
       },
       boxShadow: {
         premium: "0 24px 70px rgba(23, 23, 23, 0.10)"
