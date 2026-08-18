@@ -97,17 +97,6 @@ export async function getSitemapUrls(): Promise<SitemapUrl[]> {
     });
   });
 
-  (data?.services || []).forEach((service) => {
-    if (service.noIndex) return;
-    const path = `/diensten/${service.slug}`;
-    urls.set(path, {
-      url: absoluteUrl(path),
-      lastModified: service.updatedAt ? new Date(service.updatedAt) : undefined,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    });
-  });
-
   (data?.projects || []).forEach((project) => {
     if (project.noIndex) return;
     const path = `/projecten/${project.slug}`;

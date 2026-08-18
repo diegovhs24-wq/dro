@@ -380,7 +380,7 @@ const INDEX_CONTENT_BLOCKS = `
       services[]->{
         title,
         "slug": slug.current,
-        "href": "/diensten/" + slug.current,
+        "href": "/" + slug.current,
         summary,
         "image": cardImage{${IMAGE_SOURCE_FIELDS}},
         icon,
@@ -503,7 +503,7 @@ const PAGE_BUILDER_QUERY = `*[_type == "page" && slug.current == $slug][0]{
       services[]->{
         title,
         "slug": slug.current,
-        "href": "/diensten/" + slug.current,
+        "href": "/" + slug.current,
         summary,
         "image": cardImage{${IMAGE_SOURCE_FIELDS}},
         icon,
@@ -1368,7 +1368,7 @@ function toServiceSummary(raw: RawRecord): ServiceSummary | null {
 
   return {
     slug,
-    href: `/diensten/${slug}`,
+    href: `/${slug}`,
     title,
     summary,
     image,

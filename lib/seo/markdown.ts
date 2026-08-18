@@ -416,7 +416,7 @@ export async function buildMarkdownForPath(pathname: string) {
       service.faqs?.forEach((faq) => {
         lines.push(`### ${faq.question}\n\n${faq.answer}\n\n`);
       });
-      lines.push(`Terug naar ${link(location.name, `/${citySlug}`)} of ${link(`alle ${serviceName.toLowerCase()}`, `/diensten/${serviceSlug}`)}.\n`);
+      lines.push(`Terug naar ${link(location.name, `/${citySlug}`)} of ${link(`alle ${serviceName.toLowerCase()}`, `/${serviceSlug}`)}.\n`);
       return lines.join("\n");
     }
   }
