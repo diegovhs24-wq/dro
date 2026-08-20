@@ -117,6 +117,7 @@ export default function Header({siteSettings}: HeaderProps) {
         buttons={siteSettings.headerButtons}
         pathname={pathname}
         onClose={() => setMobileOpen(false)}
+        logo={siteSettings.headerLogo}
       />
     </>
   );
@@ -277,9 +278,10 @@ type MobileMenuProps = {
   buttons: SiteSettings["headerButtons"];
   pathname: string;
   onClose: () => void;
+  logo?: string;
 };
 
-function MobileMenu({id, open, items, buttons, pathname, onClose}: MobileMenuProps) {
+function MobileMenu({id, open, items, buttons, pathname, onClose, logo}: MobileMenuProps) {
   return (
     <>
       {/* Backdrop */}
@@ -303,7 +305,7 @@ function MobileMenu({id, open, items, buttons, pathname, onClose}: MobileMenuPro
       >
         {/* Drawer header */}
         <div className="flex h-[68px] shrink-0 items-center justify-between border-b border-black/10 px-5">
-          <Logo />
+          <Logo logo={logo} />
           <button
             type="button"
             aria-label="Menu sluiten"

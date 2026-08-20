@@ -1,5 +1,5 @@
 import Link from "next/link";
-import CTASection from "@/components/CTASection";
+import FooterCtaGate from "@/components/FooterCtaGate";
 import type {LocationSummary, ServiceSummary, SiteSettings} from "@/lib/types";
 
 type FooterProps = {
@@ -13,7 +13,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
 
   return (
     <>
-      {siteSettings.footerCta && <CTASection {...siteSettings.footerCta} />}
+      {siteSettings.footerCta && <FooterCtaGate cta={siteSettings.footerCta} />}
       <footer className="bg-brand-ink text-white">
       <div className="section-shell py-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.15fr_0.85fr_1.1fr_1fr]">

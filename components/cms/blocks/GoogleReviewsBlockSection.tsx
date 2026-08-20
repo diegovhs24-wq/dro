@@ -5,6 +5,19 @@ type GoogleReviewsBlockSectionProps = {
   compact?: boolean;
 };
 
+// Het "location"-veld op review-documenten wordt in de praktijk gevuld met
+// tekst die rechtstreeks van Google is gekopieerd ("8 maanden geleden",
+// "Bewerkt: 3 weken geleden"). Soms ontbreekt het aantal ("maanden geleden").
+// Die onvolledige varianten tonen we als "recent" in plaats van kaal.
+function formatReviewMeta(location: string | undefined): string {
+  const text = (location || "").trim();
+  if (!text) return "recent";
+  const isRelativeTime = /geleden\s*$/i.test(text);
+  const hasCount = /\d/.test(text);
+  if (isRelativeTime && !hasCount) return "recent";
+  return text;
+}
+
 export default async function GoogleReviewsBlockSection({limit = 3}: GoogleReviewsBlockSectionProps) {
   const [reviews, siteSettings] = await Promise.all([getReviews(), getSiteSettings()]);
   const visibleReviews = reviews.slice(0, limit);
@@ -29,11 +42,11 @@ export default async function GoogleReviewsBlockSection({limit = 3}: GoogleRevie
         </div>
 
         <div className="grid gap-11 sm:grid-cols-3">
-          {visibleReviews.map((review) => (
-            <div className="flex flex-col gap-5 border-t border-brand-ink pt-6" key={`${review.name}-${review.location}`}>
+          {visibleReviews.map((review, index) => (
+            <div className="flex flex-col gap-5 border-t border-brand-ink pt-6" key={`${review.name}-${index}`}>
               <blockquote className="font-serif text-[19.5px] italic leading-[1.55] text-brand-ink-soft">{review.quote}</blockquote>
               <p className="mt-auto text-[13.5px] text-brand-stone">
-                <b className="font-medium not-italic text-brand-ink">{review.name}</b> — {review.location}
+                <b className="font-medium not-italic text-brand-ink">{review.name}</b> — {formatReviewMeta(review.location)}
               </p>
             </div>
           ))}
