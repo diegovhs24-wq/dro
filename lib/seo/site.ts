@@ -8,7 +8,16 @@ export function getSiteUrl() {
     process.env.SITE_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
 
-  return (configured || "https://www.dro-renovaties.nl").replace(/\/+$/, "");
+  const base = (configured || "https://www.dro-renovaties.nl").replace(/\/+$/, "");
+
+  // Forceert de canonical www-host voor het productiedomein, ook als een
+  // env var (NEXT_PUBLIC_SITE_URL/SITE_URL) verkeerd op de apex-host staat.
+  // Andere hosts (Vercel-previews) blijven ongemoeid.
+  if (/^https?:\/\/(www\.)?dro-renovaties\.nl$/i.test(base)) {
+    return "https://www.dro-renovaties.nl";
+  }
+
+  return base;
 }
 
 export function absoluteUrl(pathname: string) {
