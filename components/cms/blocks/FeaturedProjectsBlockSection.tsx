@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {resolveSmartLink} from "@/lib/smartLink";
 import type {FeaturedProjectsBlock} from "@/lib/cms";
@@ -26,10 +27,17 @@ export default function FeaturedProjectsBlockSection({block}: {block: FeaturedPr
             const meta = [project.type, project.location].filter(Boolean).join(" · ");
             return (
               <Link className="group" href={`/projecten/${project.slug}`} key={project.slug}>
-                <div
-                  className="aspect-[4/3] bg-brand-soft-deep bg-cover bg-center saturate-[0.92] transition duration-300 group-hover:saturate-100"
-                  style={image ? {backgroundImage: `url('${image}')`} : undefined}
-                />
+                <div className="relative aspect-[4/3] overflow-hidden bg-brand-soft-deep">
+                  {image ? (
+                    <Image
+                      alt={project.description || project.title || ""}
+                      className="object-cover object-center saturate-[0.92] transition duration-300 group-hover:saturate-100"
+                      fill
+                      sizes="(min-width: 640px) 33vw, 100vw"
+                      src={image}
+                    />
+                  ) : null}
+                </div>
                 {meta ? <p className="mb-2.5 mt-5 text-[11.5px] font-semibold uppercase tracking-[0.16em] text-brand-stone">{meta}</p> : null}
                 <h3 className="font-serif text-[19.5px] italic leading-[1.5] text-brand-ink">{project.description || project.title}</h3>
                 <span className="mt-3 inline-block border-b border-brand-line pb-0.5 text-sm font-medium text-brand-ink transition group-hover:border-brand-orange">

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const team = [
   {
     name: "Therab",
@@ -79,10 +81,9 @@ export default function TeamFaqSection() {
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               {team.map((member) => (
                 <article className="group" key={member.name}>
-                  <div
-                    className="min-h-[280px] rounded-lg bg-cover bg-center shadow-premium transition duration-300 group-hover:-translate-y-1 sm:min-h-[340px]"
-                    style={{ backgroundImage: `url(${member.image})` }}
-                  />
+                  <div className="relative min-h-[280px] overflow-hidden rounded-lg shadow-premium transition duration-300 group-hover:-translate-y-1 sm:min-h-[340px]">
+                    <Image alt={member.name} className="object-cover object-center" fill sizes="(min-width: 640px) 33vw, 100vw" src={member.image} />
+                  </div>
                   <div className="-mt-10 mx-4 rounded-lg bg-white p-5 shadow-sm">
                     <h3 className="text-xl font-bold text-brand-ink">
                       {member.name} — {member.role}
@@ -95,7 +96,9 @@ export default function TeamFaqSection() {
               ))}
             </div>
             <div className="mt-5 overflow-hidden rounded-lg bg-neutral-950 text-white shadow-premium">
-              <div className="min-h-[220px] bg-[url('/dro-renovaties-team.jpg')] bg-cover bg-center opacity-85" />
+              <div className="relative min-h-[220px]">
+                <Image alt="Het team van DRO Renovaties" className="object-cover object-center opacity-85" fill sizes="(min-width: 1024px) 50vw, 100vw" src="/dro-renovaties-team.jpg" />
+              </div>
               <p className="p-5 text-sm font-semibold leading-7 text-white/80">
                 Daarachter staat een vast team van vakmensen dat dagelijks
                 samenwerkt aan projecten.

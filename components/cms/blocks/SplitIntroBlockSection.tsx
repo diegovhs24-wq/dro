@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import {resolveSmartLink} from "@/lib/smartLink";
@@ -87,10 +88,11 @@ export default function SplitIntroBlockSection({
 
           <div className="lg:justify-self-end lg:pl-4">
             <div className="relative overflow-hidden rounded-[1.25rem] border border-black/10 bg-brand-soft shadow-premium">
-              <div
-                className="min-h-[320px] bg-cover bg-center sm:min-h-[420px] lg:min-h-[620px] lg:min-w-[460px]"
-                style={{backgroundImage: `url(${content.image})`}}
-              />
+              <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-[620px] lg:min-w-[460px]">
+                {content.image ? (
+                  <Image alt={content.titlePrefix || content.titleSuffix || "DRO Renovaties"} className="object-cover object-center" fill priority sizes="(min-width: 1024px) 46vw, 100vw" src={content.image} />
+                ) : null}
+              </div>
               {content.imageCaption ? (
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-5 py-4">
                   <p className="text-xs font-semibold text-white/85 sm:text-sm">{content.imageCaption}</p>

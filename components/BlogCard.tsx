@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type {BlogPostSummary} from "@/lib/types";
 
@@ -27,12 +28,9 @@ export default function BlogCard({
   return (
     <article className="card flex h-full flex-col overflow-hidden">
       {featuredImage ? (
-        <Link
-          aria-label={`Lees artikel ${title}`}
-          className="block h-56 bg-cover bg-center"
-          href={href}
-          style={{backgroundImage: `url(${featuredImage})`}}
-        />
+        <Link aria-label={`Lees artikel ${title}`} className="relative block h-56 overflow-hidden" href={href}>
+          <Image alt={title} className="object-cover object-center" fill sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" src={featuredImage} />
+        </Link>
       ) : null}
       <div className="flex flex-1 flex-col p-6">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-bold uppercase tracking-[0.14em] text-brand-orange">

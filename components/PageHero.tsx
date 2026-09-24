@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {resolveSmartLink} from "@/lib/smartLink";
 import GoogleRatingBadge from "@/components/GoogleRatingBadge";
@@ -18,7 +19,7 @@ export default function PageHero({
   eyebrow,
   title,
   text,
-  backgroundImage = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=85",
+  backgroundImage,
   primaryLabel = "Start intake",
   primaryLink,
   secondaryLabel = "Bespreek uw project met ons",
@@ -26,11 +27,17 @@ export default function PageHero({
 }: PageHeroProps) {
   const primary = resolveSmartLink(primaryLink ?? {linkType: "internal", internalRef: {_type: "page", slug: "contact"}});
   const secondary = resolveSmartLink(secondaryLink ?? {linkType: "external", externalUrl: "tel:+31850871814"});
+  const resolvedBackgroundImage =
+    backgroundImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1800&q=85";
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink py-14 text-white sm:py-16">
-      <div
-        className="absolute inset-0 -z-10 bg-cover bg-center opacity-30"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
+      <Image
+        alt=""
+        className="absolute inset-0 -z-10 object-cover object-center opacity-30"
+        fill
+        priority
+        sizes="100vw"
+        src={resolvedBackgroundImage}
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/60 to-black/20" />
       <div className="section-shell">

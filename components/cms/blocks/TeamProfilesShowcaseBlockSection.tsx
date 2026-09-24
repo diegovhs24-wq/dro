@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import type {TeamProfilesShowcaseBlock} from "@/lib/cms";
 
 function SectionLabel({
@@ -27,10 +29,10 @@ function ProfileCard({
 }: NonNullable<TeamProfilesShowcaseBlock["profiles"]>[number]) {
   return (
     <article className="overflow-hidden rounded-[1.15rem] border border-black/10 bg-white shadow-sm">
-      <div
-        className="relative min-h-[320px] bg-[#e7dfcf] bg-cover bg-center sm:min-h-[420px] lg:min-h-[520px]"
-        style={image ? {backgroundImage: `url(${image})`} : undefined}
-      >
+      <div className="relative min-h-[320px] overflow-hidden bg-[#e7dfcf] sm:min-h-[420px] lg:min-h-[520px]">
+        {image ? (
+          <Image alt={name || "Teamlid"} className="object-cover object-center" fill sizes="(min-width: 1024px) 33vw, 100vw" src={image} />
+        ) : null}
         {photoCredit ? (
           <p className="absolute bottom-4 left-4 text-[12px] font-medium text-[#7d7d7d] sm:bottom-5 sm:left-5">
             {photoCredit}
@@ -97,10 +99,10 @@ export default function TeamProfilesShowcaseBlockSection({
           ))}
         </div>
 
-        <div
-          className="relative mt-8 min-h-[280px] overflow-hidden rounded-[1.15rem] border border-black/10 bg-[#e7dfcf] bg-cover bg-center sm:min-h-[420px] lg:min-h-[520px]"
-          style={block.teamImage ? {backgroundImage: `url(${block.teamImage})`} : undefined}
-        >
+        <div className="relative mt-8 min-h-[280px] overflow-hidden rounded-[1.15rem] border border-black/10 bg-[#e7dfcf] sm:min-h-[420px] lg:min-h-[520px]">
+          {block.teamImage ? (
+            <Image alt="Het team" className="object-cover object-center" fill sizes="100vw" src={block.teamImage} />
+          ) : null}
           {block.teamImageCredit ? (
             <p className="absolute bottom-4 left-4 text-[12px] font-medium text-[#7d7d7d] sm:bottom-5 sm:left-5">
               {block.teamImageCredit}

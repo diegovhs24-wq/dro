@@ -1,5 +1,10 @@
-import IntakeWizard from "@/components/IntakeWizard";
+import dynamic from "next/dynamic";
+
 import type {IntakeFormConfig} from "@/lib/types";
+
+// Onder de vouw op een lange homepage: pas laden zodra deze sectie nodig is,
+// niet al meegenomen in de initiële JS voor iedereen die de hero net ziet.
+const IntakeWizard = dynamic(() => import("@/components/IntakeWizard"));
 
 type HomeSlotSectionProps = {
   intakeForm: IntakeFormConfig | null;

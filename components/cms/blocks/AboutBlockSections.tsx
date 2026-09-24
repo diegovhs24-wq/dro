@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 import type {AboutPageContent, IconTextItem} from "@/lib/types";
 
@@ -172,10 +174,11 @@ export function AboutTeamBlockSection({ content }: { content: AboutTeamContent }
               className="rounded-lg bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-premium"
               key={member.name}
             >
-              <div
-                className="min-h-[360px] rounded-md bg-cover bg-center sm:min-h-[430px]"
-                style={{ backgroundImage: `url(${member.image})` }}
-              />
+              <div className="relative min-h-[360px] overflow-hidden rounded-md sm:min-h-[430px]">
+                {member.image ? (
+                  <Image alt={member.name} className="object-cover object-center" fill sizes="(min-width: 1024px) 33vw, 100vw" src={member.image} />
+                ) : null}
+              </div>
               <div className="p-3 pt-5">
                 <h3 className="text-2xl font-bold text-brand-ink">{member.name}</h3>
                 <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-brand-orange">{member.role}</p>
@@ -203,10 +206,11 @@ export function AboutTeamImageBlockSection({ content }: { content: AboutTeamImag
           <p className="eyebrow">{content.teamImageEyebrow}</p>
           <h2 className="mt-3 text-3xl font-bold tracking-tight text-brand-ink sm:text-4xl">{content.teamImageTitle}</h2>
         </div>
-        <div
-          className="mt-8 min-h-[360px] rounded-lg bg-cover bg-center shadow-premium sm:min-h-[520px]"
-          style={{ backgroundImage: `url(${content.teamImage})` }}
-        />
+        <div className="relative mt-8 min-h-[360px] overflow-hidden rounded-lg shadow-premium sm:min-h-[520px]">
+          {content.teamImage ? (
+            <Image alt={content.teamImageTitle || "Team"} className="object-cover object-center" fill sizes="100vw" src={content.teamImage} />
+          ) : null}
+        </div>
       </div>
     </section>
   );

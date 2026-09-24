@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 type ProjectCardProps = {
@@ -22,24 +23,22 @@ export default function ProjectCard({
   description,
   before,
   after,
-  beforeImage = defaultBeforeImage,
-  afterImage = defaultAfterImage,
+  beforeImage,
+  afterImage,
   slug
 }: ProjectCardProps) {
+  const resolvedBeforeImage = beforeImage || defaultBeforeImage;
+  const resolvedAfterImage = afterImage || defaultAfterImage;
   const content = (
     <article className="card overflow-hidden">
       <div className="grid h-64 grid-cols-2">
-        <div
-          className="flex items-end bg-cover bg-center p-4"
-          style={{ backgroundImage: `url(${beforeImage})` }}
-        >
-          <span className="rounded bg-black/65 px-3 py-1 text-xs font-semibold text-white">{before}</span>
+        <div className="relative flex items-end overflow-hidden p-4">
+          <Image alt={before} className="object-cover object-center" fill sizes="(min-width: 1024px) 25vw, 50vw" src={resolvedBeforeImage} />
+          <span className="relative rounded bg-black/65 px-3 py-1 text-xs font-semibold text-white">{before}</span>
         </div>
-        <div
-          className="flex items-end bg-cover bg-center p-4"
-          style={{ backgroundImage: `url(${afterImage})` }}
-        >
-          <span className="rounded bg-brand-orange px-3 py-1 text-xs font-semibold text-white">{after}</span>
+        <div className="relative flex items-end overflow-hidden p-4">
+          <Image alt={after} className="object-cover object-center" fill sizes="(min-width: 1024px) 25vw, 50vw" src={resolvedAfterImage} />
+          <span className="relative rounded bg-brand-orange px-3 py-1 text-xs font-semibold text-white">{after}</span>
         </div>
       </div>
       <div className="p-6">

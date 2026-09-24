@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import {resolveSmartLink} from "@/lib/smartLink";
+import {getSanityImageDimensions} from "@/lib/imageDimensions";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 import type {IconTextItem, ProcessPageContent, SmartLink} from "@/lib/types";
 
@@ -219,12 +221,12 @@ export function ProcessBlockSection({ content }: { content: ProcessContent }) {
                 <div className="flex gap-4" key={point.title}>
                   {point.logo ? (
                     <span className="mt-1 flex h-10 w-20 shrink-0 items-center">
-                      <img
+                      <Image
                         alt={`${point.title} logo`}
                         className="max-h-10 w-auto max-w-full object-contain"
-                        decoding="async"
-                        loading="lazy"
+                        height={getSanityImageDimensions(point.logo)?.height ?? 40}
                         src={point.logo}
+                        width={getSanityImageDimensions(point.logo)?.width ?? 80}
                       />
                     </span>
                   ) : (

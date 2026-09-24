@@ -1,3 +1,6 @@
+import Image from "next/image";
+
+import {getSanityImageDimensions} from "@/lib/imageDimensions";
 import type {PartnerLogoItem} from "@/lib/types";
 
 type PartnersProps = {
@@ -29,7 +32,13 @@ export default function Partners({partners, eyebrow, title, text}: PartnersProps
               key={partner.name}
             >
               {partner.image ? (
-                <img alt={`${partner.name} logo`} className="max-h-16 w-auto max-w-full object-contain" decoding="async" loading="lazy" src={partner.image} />
+                <Image
+                  alt={`${partner.name} logo`}
+                  className="max-h-16 w-auto max-w-full object-contain"
+                  height={getSanityImageDimensions(partner.image)?.height ?? 64}
+                  src={partner.image}
+                  width={getSanityImageDimensions(partner.image)?.width ?? 160}
+                />
               ) : (
                 <div className={`rounded-md px-5 py-3 text-xl font-extrabold tracking-tight ${partner.accent || ""}`}>
                   {partner.name}
