@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const teamMembers = [
   {
     name: "Therab",
@@ -69,10 +71,9 @@ export default function TeamMember() {
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {teamMembers.map((member) => (
             <article className="card overflow-hidden bg-white" key={member.name}>
-            <div
-              className="min-h-[340px] bg-cover bg-center sm:min-h-[420px]"
-              style={{ backgroundImage: `url(${member.image})` }}
-            />
+            <div className="relative min-h-[340px] sm:min-h-[420px]">
+              <Image alt={member.name} className="object-cover object-center" fill sizes="(min-width: 1024px) 33vw, 100vw" src={member.image} />
+            </div>
             <div className="p-6 sm:p-8">
               <p className="eyebrow">{member.role}</p>
               <h3 className="mt-3 text-2xl font-bold tracking-tight text-brand-ink">

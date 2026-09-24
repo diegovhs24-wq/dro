@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import type { HeaderMenuItem, SmartLink, SiteSettings } from "@/lib/types";
 import SmartButton from "@/components/SmartButton";
+import { getSanityImageDimensions } from "@/lib/imageDimensions";
 
 type HeaderProps = {
   siteSettings: SiteSettings;
@@ -127,7 +129,14 @@ function Logo({logo}: {logo?: string}) {
   return (
     <Link className="flex w-[170px] shrink-0 items-center" href="/" aria-label="DRO Renovaties home">
       {logo ? (
-        <img src={logo} alt="DRO Renovaties" className="h-10 w-auto object-contain" />
+        <Image
+          alt="DRO Renovaties"
+          className="h-10 w-auto object-contain"
+          height={getSanityImageDimensions(logo)?.height ?? 40}
+          priority
+          src={logo}
+          width={getSanityImageDimensions(logo)?.width ?? 160}
+        />
       ) : (
         <span className="flex items-end gap-1.5 leading-none text-brand-ink">
           <svg className="h-10 w-12 shrink-0 text-brand-orange" fill="none" viewBox="0 0 64 46" aria-hidden="true">
@@ -239,11 +248,11 @@ function MegaMenuItem({item, pathname}: {item: Extract<HeaderMenuItem, {type: "m
 
           {item.promo?.image && (
             <div className="relative hidden min-h-[260px] overflow-hidden rounded-lg bg-neutral-950 xl:block">
-              <img
+              <Image
                 alt={item.promo.eyebrow || item.label}
-                className="h-full w-full object-cover"
-                decoding="async"
-                loading="lazy"
+                className="object-cover"
+                fill
+                sizes="320px"
                 src={item.promo.image}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />

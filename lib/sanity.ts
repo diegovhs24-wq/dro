@@ -71,12 +71,16 @@ export async function fetchSanity<T>(
     })
   }
 
+  // 1 uur i.p.v. 60s: er is geen Sanity-webhook voor on-demand revalidatie,
+  // dus elke pagina probeerde tot nu toe elke minuut opnieuw te bouwen voor
+  // content die zelden wijzigt. Individuele calls kunnen nog steeds een
+  // kortere `options.revalidate` opgeven waar dat echt nodig is.
   return client.fetch<T>(query, params, {
-    next: {revalidate: process.env.NODE_ENV === 'production' ? (options.revalidate ?? 60) : 0},
+    next: {revalidate: process.env.NODE_ENV === 'production' ? (options.revalidate ?? 3600) : 0},
   })
 }
 
-export function sanityImageUrl(image: SanityImage | null | undefined, width = 1200) {
+export function sanityImageUrl(image: SanityImage | null | undefined, width = 1200, quality = 75) {
   const ref = image?.asset?._ref
 
   if (!ref || !ref.startsWith('image-')) {
@@ -93,10 +97,10 @@ export function sanityImageUrl(image: SanityImage | null | undefined, width = 12
   const dimensions = parts[2]
   const format = parts[3]
 
-  return `https://cdn.sanity.io/images/${getProjectId()}/${getDataset()}/${id}-${dimensions}.${format}?w=${width}&auto=format`
+  return `https://cdn.sanity.io/images/${getProjectId()}/${getDataset()}/${id}-${dimensions}.${format}?w=${width}&auto=format&q=${quality}`
 }
 
-export function cmsImageUrl(source: CmsImageSource | SanityImage | string | null | undefined, width = 1200) {
+export function cmsImageUrl(source: CmsImageSource | SanityImage | string | null | undefined, width = 1200, quality = 75) {
   if (!source) {
     return null
   }
@@ -110,11 +114,17 @@ export function cmsImageUrl(source: CmsImageSource | SanityImage | string | null
   }
 
   if ('image' in source) {
-    return sanityImageUrl(source.image, width)
+    return sanityImageUrl(source.image, width, quality)
   }
 
-  return sanityImageUrl(source as SanityImage, width)
+  return sanityImageUrl(source as SanityImage, width, quality)
 }
+
+// Neutrale, statische blur-placeholder (geen extra netwerkcall of LQIP-query
+// nodig) voor next/image `placeholder="blur"` op afbeeldingen zonder eigen
+// LQIP-data. Zorgt voor een rustiger laadovergang zonder harde flits.
+export const NEUTRAL_BLUR_DATA_URL =
+  'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNlN2UzZGEiLz48L3N2Zz4='
 
 export function cleanString(value: string | null | undefined) {
   return typeof value === 'string' ? value.trim() : ''

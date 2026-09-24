@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import SketchIcon, {type SketchIconName} from "@/components/SketchIcon";
 import type {StackedStepsListBlock} from "@/lib/cms";
 
@@ -48,10 +50,11 @@ export default function StackedStepsListBlockSection({
               return (
                 <article className={`px-5 py-7 sm:px-8 sm:py-9 lg:px-10 ${borderClass}`} key={`media-${index}`}>
                   <div className="overflow-hidden rounded-[1.15rem] bg-[#ddd4c3] shadow-[0_8px_22px_rgba(17,17,17,0.04)]">
-                    <div
-                      className="min-h-[260px] bg-cover bg-center sm:min-h-[360px] lg:min-h-[420px]"
-                      style={item.image ? {backgroundImage: `url(${item.image})`} : undefined}
-                    />
+                    <div className="relative min-h-[260px] sm:min-h-[360px] lg:min-h-[420px]">
+                      {item.image ? (
+                        <Image alt={item.caption || "Stap"} className="object-cover object-center" fill sizes="(min-width: 1024px) 56vw, 100vw" src={item.image} />
+                      ) : null}
+                    </div>
                     {item.caption ? (
                       <p className="px-3 py-3 text-[12px] font-normal text-[#6f6b61] sm:px-4">
                         {item.caption}

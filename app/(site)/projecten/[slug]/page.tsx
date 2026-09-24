@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import PageStructuredData from "@/components/seo/PageStructuredData";
@@ -99,10 +100,16 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
                 </Link>
               </div>
             </div>
-            <div
-              className="min-h-[430px] rounded-lg bg-cover bg-center shadow-premium"
-              style={{backgroundImage: `url(${project.images[0]})`}}
-            />
+            <div className="relative min-h-[430px] overflow-hidden rounded-lg shadow-premium">
+              <Image
+                alt={title}
+                className="object-cover object-center"
+                fill
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                src={project.images[0]}
+              />
+            </div>
           </div>
         </section>
 
@@ -143,12 +150,19 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
             <div className="grid gap-4 sm:grid-cols-2">
               {project.images.map((image, index) => (
                 <div
-                  className={`min-h-72 rounded-lg bg-cover bg-center shadow-sm ${
+                  className={`relative min-h-72 overflow-hidden rounded-lg shadow-sm ${
                     index === 0 ? "sm:col-span-2" : ""
                   }`}
                   key={image}
-                  style={{backgroundImage: `url(${image})`}}
-                />
+                >
+                  <Image
+                    alt={`${title} - foto ${index + 1}`}
+                    className="object-cover object-center"
+                    fill
+                    sizes="(min-width: 640px) 50vw, 100vw"
+                    src={image}
+                  />
+                </div>
               ))}
             </div>
           </div>

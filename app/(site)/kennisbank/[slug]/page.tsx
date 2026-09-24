@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 
@@ -118,10 +119,16 @@ export default async function BlogPostPage({params}: BlogPostPageProps) {
               ) : null}
             </div>
             {post.featuredImage ? (
-              <div
-                className="min-h-[430px] rounded-lg bg-cover bg-center shadow-premium"
-                style={{backgroundImage: `url(${post.featuredImage})`}}
-              />
+              <div className="relative min-h-[430px] overflow-hidden rounded-lg shadow-premium">
+                <Image
+                  alt={post.title}
+                  className="object-cover object-center"
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  src={post.featuredImage}
+                />
+              </div>
             ) : null}
           </div>
         </section>
@@ -136,13 +143,9 @@ export default async function BlogPostPage({params}: BlogPostPageProps) {
               {post.author ? (
                 <div className="rounded-lg bg-brand-soft p-6">
                   {post.author.image ? (
-                    <img
-                      alt={post.author.name}
-                      className="h-20 w-20 rounded-lg object-cover"
-                      decoding="async"
-                      loading="lazy"
-                      src={post.author.image}
-                    />
+                    <div className="relative h-20 w-20 overflow-hidden rounded-lg">
+                      <Image alt={post.author.name} className="object-cover" fill sizes="80px" src={post.author.image} />
+                    </div>
                   ) : null}
                   <p className="mt-4 text-sm font-bold uppercase tracking-[0.14em] text-brand-orange">
                     Auteur

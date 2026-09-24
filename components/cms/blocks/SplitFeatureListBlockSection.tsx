@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import SketchIcon, {type SketchIconName} from "@/components/SketchIcon";
 import type {SplitFeatureListBlock} from "@/lib/cms";
 
@@ -17,10 +19,9 @@ export default function SplitFeatureListBlockSection({
       <div className="section-shell grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-start lg:gap-16">
         <div className="lg:sticky lg:top-24">
           <div className="overflow-hidden rounded-[1rem] border border-black/5 bg-[#ddd4c3] shadow-[0_12px_30px_rgba(17,17,17,0.05)]">
-            <div
-              className="min-h-[340px] bg-cover bg-center sm:min-h-[480px] lg:min-h-[500px]"
-              style={{backgroundImage: `url(${block.image})`}}
-            />
+            <div className="relative min-h-[340px] sm:min-h-[480px] lg:min-h-[500px]">
+              <Image alt={block.title} className="object-cover object-center" fill sizes="(min-width: 1024px) 46vw, 100vw" src={block.image} />
+            </div>
             {block.imageCaption ? (
               <p className="px-5 py-4 text-[13px] font-medium text-[#6f6b61] sm:px-6 sm:text-[14px]">
                 {block.imageCaption}

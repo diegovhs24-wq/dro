@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import GoogleRatingBadge from "@/components/GoogleRatingBadge";
 import type {ReviewItem} from "@/lib/types";
 
@@ -53,13 +55,9 @@ export default function GoogleReviews({
             >
               <div className="flex items-center gap-3">
                 {review.image ? (
-                  <img
-                    alt={`${review.name} Google review`}
-                    className="h-11 w-11 rounded-full object-cover"
-                    decoding="async"
-                    loading="lazy"
-                    src={review.image}
-                  />
+                  <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full">
+                    <Image alt={`${review.name} Google review`} className="object-cover" fill sizes="44px" src={review.image} />
+                  </div>
                 ) : (
                   <div
                     aria-hidden="true"

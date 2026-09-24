@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const services = [
   {
     title: "Badkamer renovatie",
@@ -34,10 +36,9 @@ export default function Services() {
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service) => (
             <article className="card overflow-hidden" key={service.title}>
-              <div
-                className="h-52 bg-cover bg-center"
-                style={{ backgroundImage: `url(${service.image})` }}
-              />
+              <div className="relative h-52">
+                <Image alt={service.title} className="object-cover object-center" fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" src={service.image} />
+              </div>
               <div className="p-6">
                 <h3 className="text-xl font-bold text-brand-ink">{service.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-neutral-600">{service.text}</p>

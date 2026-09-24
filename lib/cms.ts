@@ -1,3 +1,4 @@
+import {cache} from "react";
 import {cmsImageUrl, fetchSanity} from "@/lib/sanity";
 import {
   fallbackHomePage,
@@ -1337,7 +1338,10 @@ function normalizeCmsValue(value: unknown): unknown {
   }
 
   if ("externalImageUrl" in value || "image" in value) {
-    const imageUrl = cmsImageUrl(value, 1800);
+    // 1200px is ruim voor volle-breedte gebruik (heroes/achtergronden) op
+    // de meeste viewports; kleinere contexten (kaarten/avatars) vragen elders
+    // al expliciet een kleinere breedte op via cmsImageUrl(..., width).
+    const imageUrl = cmsImageUrl(value, 1200);
 
     if (imageUrl) {
       return imageUrl;
@@ -1613,7 +1617,7 @@ function mapSiteSettings(raw: unknown): SiteSettings {
   };
 }
 
-export async function getSiteSettings() {
+export const getSiteSettings = cache(async function getSiteSettings() {
   const {data, failed} = await safeFetch<RawRecord | null>(SITE_SETTINGS_QUERY);
 
   if (failed || !data) {
@@ -1621,9 +1625,9 @@ export async function getSiteSettings() {
   }
 
   return withSiteSettingsFallback(mapSiteSettings(data));
-}
+});
 
-export async function getServices() {
+export const getServices = cache(async function getServices() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(SERVICES_QUERY);
 
   if (failed) {
@@ -1632,7 +1636,7 @@ export async function getServices() {
 
   const services = data?.map(toServiceSummary).filter(Boolean) as ServiceSummary[] | undefined;
   return mergeServicesWithFallback(services || []);
-}
+});
 
 export async function getServiceBySlug(slug: string) {
   const {data, failed} = await safeFetch<RawRecord | null>(SERVICE_QUERY, {slug});
@@ -1654,7 +1658,7 @@ export async function getServiceSlugs() {
   return services.map((service) => service.slug);
 }
 
-export async function getProjects() {
+export const getProjects = cache(async function getProjects() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(PROJECTS_QUERY);
 
   if (failed || !data) {
@@ -1662,7 +1666,7 @@ export async function getProjects() {
   }
 
   return (data.map(toProject).filter(Boolean) as ProjectItem[]) || [];
-}
+});
 
 export async function getProjectBySlug(slug: string) {
   const {data, failed} = await safeFetch<RawRecord | null>(PROJECT_QUERY, {slug});
@@ -1674,7 +1678,7 @@ export async function getProjectBySlug(slug: string) {
   return data ? toProject(data) : null;
 }
 
-export async function getBlogPosts() {
+export const getBlogPosts = cache(async function getBlogPosts() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(BLOG_POSTS_QUERY);
 
   if (failed || !data) {
@@ -1682,7 +1686,7 @@ export async function getBlogPosts() {
   }
 
   return (data.map(toBlogPostSummary).filter(Boolean) as BlogPostSummary[]) || [];
-}
+});
 
 export async function getBlogPostBySlug(slug: string) {
   const {data, failed} = await safeFetch<RawRecord | null>(BLOG_POST_QUERY, {slug});
@@ -1713,7 +1717,7 @@ export async function getBlogPostsForServiceSlugs(slugs: string[]): Promise<Blog
   return data.map(toBlogPostSummary).filter((item): item is BlogPostSummary => item !== null);
 }
 
-export async function getReviews() {
+export const getReviews = cache(async function getReviews() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(REVIEWS_QUERY);
 
   if (failed || !data) {
@@ -1722,9 +1726,9 @@ export async function getReviews() {
 
   const reviews = normalizeCmsValue(data) as ReviewItem[] | null;
   return reviews || [];
-}
+});
 
-export async function getPartners() {
+export const getPartners = cache(async function getPartners() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(PARTNERS_QUERY);
 
   if (failed || !data) {
@@ -1733,7 +1737,7 @@ export async function getPartners() {
 
   const partners = normalizeCmsValue(data) as PartnerLogoItem[] | null;
   return partners || [];
-}
+});
 
 function toLocationSummary(raw: RawRecord): LocationSummary | null {
   const slug = typeof raw.slug === "string" ? raw.slug : "";
@@ -1799,7 +1803,7 @@ function toLocationDetail(raw: RawRecord): LocationDetail | null {
   };
 }
 
-export async function getLocations(): Promise<LocationSummary[]> {
+export const getLocations = cache(async function getLocations(): Promise<LocationSummary[]> {
   const {data, failed} = await safeFetch<RawRecord[] | null>(LOCATIONS_QUERY);
 
   if (failed || !data) {
@@ -1807,7 +1811,7 @@ export async function getLocations(): Promise<LocationSummary[]> {
   }
 
   return data.map(toLocationSummary).filter((item): item is LocationSummary => item !== null);
-}
+});
 
 export async function getLocationSlugs(): Promise<string[]> {
   const {data, failed} = await safeFetch<string[] | null>(LOCATION_SLUGS_QUERY);

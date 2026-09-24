@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import type {ProjectsShowcaseGridBlock} from "@/lib/cms";
@@ -68,16 +69,17 @@ export default function ProjectsShowcaseGridBlockSection({
                 : null;
             const card = (
               <article className="overflow-hidden rounded-[1.45rem] border border-black/10 bg-white shadow-[0_10px_28px_rgba(17,17,17,0.05)]">
-                <div
-                  className="relative min-h-[310px] bg-[#ddd4c3] bg-cover bg-center sm:min-h-[410px] lg:min-h-[320px] xl:min-h-[350px]"
-                  style={image ? {backgroundImage: `url(${image})`} : undefined}
-                >
+                <div className="relative min-h-[310px] overflow-hidden bg-[#ddd4c3] sm:min-h-[410px] lg:min-h-[320px] xl:min-h-[350px]">
+                  {image ? (
+                    <Image alt={mediaLabel} className="object-cover object-center" fill sizes="(min-width: 1024px) 33vw, 100vw" src={image} />
+                  ) : null}
                   {mediaLabel ? (
                     <p className="absolute bottom-5 left-5 text-[12px] font-medium text-[rgb(124,118,106)] sm:bottom-6 sm:left-6 ">
                       {mediaLabel}
                     </p>
                   ) : null}
                 </div>
+
 
                 <div className="px-5 py-5 sm:px-6 sm:py-6">
                   {project.title ? (

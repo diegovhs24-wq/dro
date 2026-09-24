@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import {resolveSmartLink} from "@/lib/smartLink";
@@ -58,10 +59,9 @@ export default function VisitInvitationBlockSection({
         </div>
 
         <div className="relative min-h-[320px] bg-[#2a261f]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={block.image ? {backgroundImage: `url(${block.image})`} : undefined}
-          />
+          {block.image ? (
+            <Image alt={block.title} className="object-cover object-center" fill sizes="(min-width: 1024px) 48vw, 100vw" src={block.image} />
+          ) : null}
           {block.imageCaption ? (
             <p className="absolute bottom-5 left-5 text-[13px] font-medium text-[#b7b39f] sm:bottom-6 sm:left-6">
               {block.imageCaption}

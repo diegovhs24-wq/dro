@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import FooterCtaGate from "@/components/FooterCtaGate";
+import {getSanityImageDimensions} from "@/lib/imageDimensions";
 import type {LocationSummary, ServiceSummary, SiteSettings} from "@/lib/types";
 
 type FooterProps = {
@@ -20,12 +22,12 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
           <div>
             <Link className="inline-flex items-center" href="/">
               {footer.logo ? (
-                <img
+                <Image
                   alt={footer.logoAlt || footer.brandTitle}
                   className="h-10 w-auto object-contain"
-                  decoding="async"
-                  loading="lazy"
+                  height={getSanityImageDimensions(footer.logo)?.height ?? 40}
                   src={footer.logo}
+                  width={getSanityImageDimensions(footer.logo)?.width ?? 160}
                 />
               ) : (
                 <span className="flex items-end gap-1.5 leading-none text-white">

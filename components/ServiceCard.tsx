@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 
@@ -13,7 +14,8 @@ type ServiceCardProps = {
 export default function ServiceCard({ title, summary, image, href, icon, label }: ServiceCardProps) {
   return (
     <article className="card overflow-hidden">
-      <div className="relative h-56 bg-cover bg-center" style={{ backgroundImage: `url(${image})` }}>
+      <div className="relative h-56 overflow-hidden">
+        <Image alt={title} className="object-cover object-center" fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" src={image} />
         {icon ? (
           <div className="absolute bottom-4 left-4 grid h-16 w-16 place-items-center rounded-lg border border-white/70 bg-white/92 text-brand-ink shadow-lg backdrop-blur">
             <SketchIcon name={icon as SketchIconName} className="h-10 w-10" />
