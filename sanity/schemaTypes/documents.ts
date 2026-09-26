@@ -861,11 +861,13 @@ export const formSubmission = defineType({
   title: 'Form Submission',
   type: 'document',
   fields: [
-    defineField({name: 'submittedAt', title: 'Submitted At', type: 'datetime', readOnly: true}),
-    defineField({name: 'intakeFormRef', title: 'Intake Form', type: 'reference', to: [{type: 'intakeForm'}], readOnly: true}),
+    // Legacy velden: gevuld door de oude, generieke intakeForm-gedreven
+    // wizard. Blijven bestaan zodat bestaande inzendingen leesbaar blijven,
+    // maar worden niet meer geschreven door de nieuwe slimme intake hieronder.
+    defineField({name: 'intakeFormRef', title: 'Intake Form (legacy)', type: 'reference', to: [{type: 'intakeForm'}], readOnly: true}),
     defineField({
       name: 'entries',
-      title: 'Form Data',
+      title: 'Form Data (legacy)',
       type: 'array',
       readOnly: true,
       of: [
@@ -885,15 +887,107 @@ export const formSubmission = defineType({
         }),
       ],
     }),
+
+    // Velden van de nieuwe slimme, meebewegende intake.
+    defineField({name: 'name', title: 'Naam', type: 'string', readOnly: true}),
+    defineField({name: 'email', title: 'E-mail', type: 'string', readOnly: true}),
+    defineField({name: 'phone', title: 'Telefoon', type: 'string', readOnly: true}),
+    defineField({
+      name: 'services',
+      title: 'Gekozen diensten',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      readOnly: true,
+    }),
+    defineField({name: 'postcode', title: 'Postcode', type: 'string', readOnly: true}),
+    defineField({name: 'houseNumber', title: 'Huisnummer', type: 'string', readOnly: true}),
+    defineField({
+      name: 'address',
+      title: 'Adres (via PDOK)',
+      type: 'string',
+      description: 'Volledig adres zoals bevestigd door de klant, opgezocht via de PDOK Locatieserver (of handmatig ingevuld als terugval).',
+      readOnly: true,
+    }),
+    defineField({name: 'location', title: 'Plaats', type: 'string', readOnly: true}),
+    defineField({name: 'fundaLink', title: 'Funda-link', type: 'url', readOnly: true}),
+    defineField({name: 'priorities', title: 'Wat vindt de klant belangrijkst', type: 'text', rows: 3, readOnly: true}),
+    defineField({name: 'budget', title: 'Budgetindicatie', type: 'string', readOnly: true}),
+    defineField({name: 'timeline', title: 'Planning', type: 'string', readOnly: true}),
+    defineField({
+      name: 'serviceAnswers',
+      title: 'Antwoorden per dienst',
+      type: 'array',
+      readOnly: true,
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'serviceAnswerGroup',
+          fields: [
+            defineField({name: 'service', title: 'Dienst', type: 'string'}),
+            defineField({
+              name: 'answers',
+              title: 'Antwoorden',
+              type: 'array',
+              of: [
+                defineArrayMember({
+                  type: 'object',
+                  fields: [
+                    defineField({name: 'question', title: 'Vraag', type: 'string'}),
+                    defineField({name: 'answer', title: 'Antwoord', type: 'string'}),
+                  ],
+                  preview: {
+                    select: {title: 'question', subtitle: 'answer'},
+                    prepare({title, subtitle}) {
+                      return {title: title || 'Vraag', subtitle: subtitle || ''}
+                    },
+                  },
+                }),
+              ],
+            }),
+          ],
+          preview: {
+            select: {title: 'service', answers: 'answers'},
+            prepare({title, answers}) {
+              const count = Array.isArray(answers) ? answers.length : 0
+              return {title: title || 'Dienst', subtitle: `${count} ${count === 1 ? 'antwoord' : 'antwoorden'}`}
+            },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'source',
+      title: 'Bron',
+      type: 'string',
+      readOnly: true,
+      description: 'Onderscheidt inzendingen van de nieuwe slimme intake van legacy-inzendingen.',
+    }),
+    defineField({name: 'submittedAt', title: 'Verzonden op', type: 'datetime', readOnly: true}),
   ],
   preview: {
-    select: {title: 'submittedAt'},
-    prepare({title}) {
-      return {title: title ? new Date(title).toLocaleString('nl-NL') : 'Submission', media: DocumentIcon}
+    select: {name: 'name', services: 'services', location: 'location', submittedAt: 'submittedAt', legacyTitle: 'entries.0.value'},
+    prepare({name, services, location, submittedAt, legacyTitle}) {
+      const dateLabel = submittedAt ? new Date(submittedAt).toLocaleString('nl-NL') : ''
+      const servicesLabel = Array.isArray(services) && services.length ? services.join(', ') : ''
+
+      if (name || servicesLabel) {
+        return {
+          title: name || 'Aanvraag',
+          subtitle: [servicesLabel, location, dateLabel].filter(Boolean).join(' · '),
+          media: DocumentIcon,
+        }
+      }
+
+      // Legacy-inzending zonder de nieuwe velden.
+      return {
+        title: legacyTitle || dateLabel || 'Submission',
+        subtitle: dateLabel,
+        media: DocumentIcon,
+      }
     },
   },
   orderings: [
-    {title: 'Newest First', name: 'submittedAtDesc', by: [{field: 'submittedAt', direction: 'desc'}]},
+    {title: 'Nieuwste eerst', name: 'submittedAtDesc', by: [{field: 'submittedAt', direction: 'desc'}]},
   ],
 })
 

@@ -1,15 +1,18 @@
-import IntakeWizard from "@/components/IntakeWizard";
+import SmartIntakeWizard from "@/components/SmartIntakeWizard";
 import type {IntakeFormConfig} from "@/lib/types";
 
 type HomeSlotSectionProps = {
-  intakeForm: IntakeFormConfig | null;
+  // Niet meer gebruikt door de nieuwe SmartIntakeWizard (die is code-driven,
+  // niet CMS-driven), maar de prop blijft bestaan zodat CmsPageView niets
+  // hoeft te wijzigen aan hoe dit component wordt aangeroepen.
+  intakeForm?: IntakeFormConfig | null;
 };
 
 // Afwijking van het prototype: daar staat hier alleen een CTA-knop (statisch
 // mockup). In productie moet het intakeformulier hier daadwerkelijk bereikbaar
-// zijn, dus de echte IntakeWizard staat in de rechterkolom in plaats van een
+// zijn, dus de echte wizard staat in de rechterkolom in plaats van een
 // knoppenrij.
-export default function HomeSlotSection({intakeForm}: HomeSlotSectionProps) {
+export default function HomeSlotSection(_props: HomeSlotSectionProps) {
   return (
     <section className="border-t border-brand-line py-24 sm:py-28" id="start">
       <div className="section-shell grid gap-14 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
@@ -32,11 +35,9 @@ export default function HomeSlotSection({intakeForm}: HomeSlotSectionProps) {
           </div>
         </div>
 
-        {intakeForm ? (
-          <div className="rounded border border-brand-line bg-brand-soft p-5 sm:p-6">
-            <IntakeWizard config={intakeForm} embedded />
-          </div>
-        ) : null}
+        <div className="rounded border border-brand-line bg-brand-soft p-5 sm:p-6">
+          <SmartIntakeWizard embedded />
+        </div>
       </div>
     </section>
   );
