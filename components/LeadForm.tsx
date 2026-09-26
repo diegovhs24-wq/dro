@@ -1,4 +1,4 @@
-import IntakeWizard from "@/components/IntakeWizard";
+import SmartIntakeWizard from "@/components/SmartIntakeWizard";
 import type {ContactPageContent} from "@/lib/types";
 
 type LeadFormProps = {
@@ -22,7 +22,7 @@ export default function LeadForm({content}: LeadFormProps) {
           </div>
         </div>
 
-        {content.intakeForm ? <IntakeWizard config={content.intakeForm} /> : null}
+        <SmartIntakeWizard />
       </div>
     </section>
   );
