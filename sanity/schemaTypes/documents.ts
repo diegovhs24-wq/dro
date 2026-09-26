@@ -994,6 +994,66 @@ export const formSubmission = defineType({
   ],
 })
 
+// Losstaand van formSubmission zodat leads uit de IamExpat-campagne (QR-code,
+// flyers, e-mail op de beurs) nooit tussen de reguliere site-aanvragen komen
+// te staan. Typed fields i.p.v. de generieke entries[]-array van
+// formSubmission, omdat deze funnel een vaste, bekende vraagstructuur heeft.
+export const iamexpatSubmission = defineType({
+  name: 'iamexpatSubmission',
+  title: 'IamExpat Submission',
+  type: 'document',
+  fields: [
+    defineField({name: 'name', title: 'Name', type: 'string', readOnly: true}),
+    defineField({name: 'email', title: 'Email', type: 'string', readOnly: true}),
+    defineField({name: 'phone', title: 'Phone', type: 'string', readOnly: true}),
+    defineField({
+      name: 'services',
+      title: 'Services',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      readOnly: true,
+    }),
+    defineField({name: 'propertyType', title: 'Property Type', type: 'string', readOnly: true}),
+    defineField({name: 'postcode', title: 'Postcode', type: 'string', readOnly: true}),
+    defineField({name: 'houseNumber', title: 'House Number', type: 'string', readOnly: true}),
+    defineField({
+      name: 'address',
+      title: 'Address (found via PDOK)',
+      type: 'string',
+      description: 'Full address as confirmed by the visitor, resolved via the PDOK Locatieserver (or entered manually as a fallback).',
+      readOnly: true,
+    }),
+    defineField({name: 'location', title: 'City', type: 'string', readOnly: true}),
+    defineField({name: 'timeline', title: 'Timeline', type: 'string', readOnly: true}),
+    defineField({name: 'budget', title: 'Budget', type: 'string', readOnly: true}),
+    defineField({name: 'message', title: 'Message', type: 'text', rows: 4, readOnly: true}),
+    defineField({
+      name: 'source',
+      title: 'Source',
+      type: 'string',
+      readOnly: true,
+      initialValue: 'iamexpat',
+      description: 'Fixed to "iamexpat" so these leads can always be traced back to the campaign funnel.',
+    }),
+    defineField({name: 'submittedAt', title: 'Submitted At', type: 'datetime', readOnly: true}),
+  ],
+  preview: {
+    select: {title: 'name', services: 'services', submittedAt: 'submittedAt'},
+    prepare({title, services, submittedAt}) {
+      const servicesLabel = Array.isArray(services) && services.length ? services.join(', ') : 'No services selected'
+      const dateLabel = submittedAt ? new Date(submittedAt).toLocaleString('nl-NL') : ''
+      return {
+        title: title || 'IamExpat submission',
+        subtitle: [servicesLabel, dateLabel].filter(Boolean).join(' · '),
+        media: DocumentIcon,
+      }
+    },
+  },
+  orderings: [
+    {title: 'Newest First', name: 'submittedAtDesc', by: [{field: 'submittedAt', direction: 'desc'}]},
+  ],
+})
+
 export const documentSchemaTypes = [
   siteSettings,
   page,
@@ -1012,4 +1072,5 @@ export const documentSchemaTypes = [
   redirect,
   intakeForm,
   formSubmission,
+  iamexpatSubmission,
 ]

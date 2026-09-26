@@ -5,6 +5,7 @@ import {
   ClipboardIcon,
   DocumentTextIcon,
   DocumentsIcon,
+  EarthGlobeIcon,
   EnvelopeIcon,
   FolderIcon,
   HelpCircleIcon,
@@ -60,6 +61,7 @@ async function getStructureCounts(context: StructureResolverContext) {
       partnerIds: string[]
       intakeFormIds: string[]
       submissionIds: string[]
+      iamexpatSubmissionIds: string[]
       blogPostIds: string[]
       blogAuthorIds: string[]
       blogCategoryIds: string[]
@@ -73,6 +75,7 @@ async function getStructureCounts(context: StructureResolverContext) {
         "partnerIds":      *[_type == "partner"]._id,
         "intakeFormIds":   *[_type == "intakeForm"]._id,
         "submissionIds":   *[_type == "formSubmission"]._id,
+        "iamexpatSubmissionIds": *[_type == "iamexpatSubmission"]._id,
         "blogPostIds":     *[_type == "blogPost"]._id,
         "blogAuthorIds":   *[_type == "blogAuthor"]._id,
         "blogCategoryIds": *[_type == "blogCategory"]._id
@@ -89,6 +92,7 @@ async function getStructureCounts(context: StructureResolverContext) {
       partners:      normalize(data?.partnerIds),
       intakeForms:   normalize(data?.intakeFormIds),
       submissions:   normalize(data?.submissionIds),
+      iamexpatSubmissions: normalize(data?.iamexpatSubmissionIds),
       blogPosts:     normalize(data?.blogPostIds),
       blogAuthors:   normalize(data?.blogAuthorIds),
       blogCategories: normalize(data?.blogCategoryIds),
@@ -97,6 +101,7 @@ async function getStructureCounts(context: StructureResolverContext) {
     return {
       otherPages: 0, projects: 0, services: 0, reviews: 0,
       faqs: 0, partners: 0, intakeForms: 0, submissions: 0,
+      iamexpatSubmissions: 0,
       blogPosts: 0, blogAuthors: 0, blogCategories: 0,
     }
   }
@@ -226,6 +231,13 @@ export const structure: StructureResolver = async (S, context) => {
       S.documentTypeListItem('formSubmission')
         .title(`Submissions (${c.submissions})`)
         .icon(EnvelopeIcon),
+
+      S.divider(),
+
+      // ── Campaigns ────────────────────────────────────────────
+      S.documentTypeListItem('iamexpatSubmission')
+        .title(`IamExpat Leads (${c.iamexpatSubmissions})`)
+        .icon(EarthGlobeIcon),
 
       S.divider(),
 

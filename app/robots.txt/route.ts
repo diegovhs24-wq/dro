@@ -22,6 +22,7 @@ export async function GET() {
     "Disallow: /api/",
     "Disallow: /api/draft-mode/",
     "Disallow: /studio",
+    "Disallow: /iamexpat",
     "",
     ...aiCrawlers.flatMap((agent) => [`User-agent: ${agent}`, "Allow: /", ""]),
     `Sitemap: ${getSiteUrl()}/sitemap.xml`,
