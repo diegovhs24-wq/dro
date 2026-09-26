@@ -1,374 +1,164 @@
-// Config-driven vraagdefinities voor de slimme intake. Bewust in code i.p.v.
-// Sanity: de voorwaardelijke logica (rietplafond-melding, totaalrenovatie-
-// bevestiging, dynamische vervolgvragen) is te complex voor het generieke
-// intakeForm-schema en verandert zelden genoeg om CMS-redigeerbaar te hoeven
-// zijn.
+// Vraagdefinities voor de premium intake, 1-op-1 overgenomen uit het
+// goedgekeurde klikbare voorbeeld (dro-intake-full.html). Bewust in code i.p.v.
+// Sanity: de voorwaardelijke logica (totaalrenovatie-bevestiging die
+// terugstuurt naar de dienstkeuze) is te complex voor het generieke
+// intakeForm-schema en verandert zelden genoeg om CMS-redigeerbaar te
+// hoeven zijn.
 
-export type Answers = Record<string, string | string[]>;
+export type QuestionOption = string | {l: string; d?: string; back?: boolean};
 
-export type QuestionField = {
-  key: string;
-  label: string;
-  type: "choice" | "multiChoice" | "text" | "number" | "yesno";
-  options?: string[];
-  placeholder?: string;
-  helpText?: string;
-  unit?: string;
-  showIf?: (answers: Answers) => boolean;
-  note?: (answers: Answers) => string | null;
+export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "summary" | "contact" | "thanks" | "services";
+
+export type QuestionDef = {
+  id: string;
+  t: QuestionType;
+  q: string;
+  s?: string;
+  o?: QuestionOption[];
+  ph?: string;
+  optional?: boolean;
 };
 
-export type QuestionBlock = {
-  title: string;
-  subtitle?: string;
-  fields: QuestionField[];
-};
-
-export type ServiceConfirmation = {
-  title: string;
-  body: string;
-  confirmLabel: string;
-  declineLabel: string;
-};
-
-export type ServiceConfig = {
-  key: string;
-  label: string;
-  confirmation?: ServiceConfirmation;
-  blocks: QuestionBlock[];
-};
-
-const YES_NO = ["Ja", "Nee"];
-
-export const SERVICES: ServiceConfig[] = [
-  {
-    key: "badkamer",
-    label: "Badkamer",
-    blocks: [
-      {
-        title: "De ruimte",
-        fields: [
-          {key: "m2", label: "Hoeveel vierkante meter vloeroppervlakte heeft de badkamer ongeveer?", type: "number", unit: "m²"},
-          {key: "verdieping", label: "Op welke verdieping ligt de badkamer?", type: "choice", options: ["Begane grond", "Verdieping"], helpText: "Belangrijk voor de afvoer en het leidingwerk."},
-          {key: "aantal", label: "Gaat het om één badkamer of meerdere?", type: "choice", options: ["Eén badkamer", "Meerdere badkamers"]},
-        ],
-      },
-      {
-        title: "Sloop en installatie",
-        fields: [
-          {key: "traject", label: "Wilt u dat wij het volledige traject doen, van sloop tot oplevering, of sloopt u de oude badkamer zelf?", type: "choice", options: ["Wij doen alles, van sloop tot oplevering", "Ik sloop de oude badkamer zelf"]},
-          {key: "leidingwerk", label: "Wilt u dat wij ook het leidingwerk, de elektra en de ventilatie meenemen?", type: "yesno", options: YES_NO},
-          {key: "sanitair", label: "Regelen wij het sanitair en de materialen, of heeft u dit al (deels) besteld of uitgezocht?", type: "choice", options: ["DRO regelt het sanitair en de materialen", "Ik heb het al (deels) besteld of uitgezocht"]},
-        ],
-      },
-      {
-        title: "Indeling en afwerking",
-        fields: [
-          {key: "kranen", label: "Inbouwkranen of opbouwkranen?", type: "choice", options: ["Inbouwkranen", "Opbouwkranen", "Weet ik nog niet"], helpText: "Inbouwkranen zitten weggewerkt in de wand, opbouwkranen zijn zichtbaar gemonteerd op de wand of het bad."},
-          {key: "douchebad", label: "Wilt u een inloopdouche, een ligbad, of allebei?", type: "choice", options: ["Inloopdouche", "Ligbad", "Allebei"]},
-          {key: "toilet", label: "Moet het toilet in de badkamer, of blijft dat apart?", type: "choice", options: ["Toilet in de badkamer", "Toilet blijft apart"]},
-          {key: "vloerverwarming", label: "Wilt u vloerverwarming in de badkamer?", type: "yesno", options: YES_NO},
-          {key: "wandtegels", label: "Wandtegels tot aan het plafond of tot halverhoogte?", type: "choice", options: ["Tot aan het plafond", "Tot halverhoogte"]},
-          {key: "tegelsoort", label: "Komen er standaardtegels, of mozaïek-, miniatuur- of patroontegels?", type: "choice", options: ["Standaardtegels", "Mozaïek- of miniatuurtegels", "Patroontegels"], helpText: "Mozaïek-, miniatuur- en patroontegels kosten meer legwerk, dat is belangrijk voor de prijs."},
-          {key: "tegelsoortM2", label: "Om hoeveel vierkante meter gaat dat ongeveer?", type: "number", unit: "m²", showIf: (a) => a.tegelsoort === "Mozaïek- of miniatuurtegels" || a.tegelsoort === "Patroontegels"},
-        ],
-      },
-    ],
-  },
-  {
-    key: "keuken",
-    label: "Keuken",
-    blocks: [
-      {
-        title: "Levering en sloop",
-        fields: [
-          {key: "levering", label: "Heeft u de keuken al uitgezocht of besteld, of moeten wij die leveren?", type: "choice", options: ["DRO levert de keuken", "Ik heb de keuken al uitgezocht of besteld"]},
-          {key: "sloop", label: "Alleen plaatsen, of ook de oude keuken slopen en afvoeren?", type: "choice", options: ["Alleen plaatsen", "Ook slopen en afvoeren"]},
-          {key: "vloertegelwerk", label: "Nemen wij ook het vloer- en tegelwerk mee?", type: "yesno", options: YES_NO},
-        ],
-      },
-      {
-        title: "Indeling en leidingen",
-        fields: [
-          {key: "leidingen", label: "Moeten er leidingen worden verplaatst (water, afvoer, gas of elektra)?", type: "yesno", options: YES_NO},
-          {key: "openKeuken", label: "Wilt u een open keuken, waarbij eventueel een muur (deels) weg moet?", type: "yesno", options: YES_NO},
-          {key: "dragendeMuur", label: "Weet u of dat een dragende muur is?", type: "choice", options: ["Ja, dat is een dragende muur", "Nee, geen dragende muur", "Weet ik niet"], showIf: (a) => a.openKeuken === "Ja"},
-          {key: "opstelling", label: "Wat is ongeveer de lengte of opstelling van de keuken?", type: "choice", options: ["Rechte wand", "Hoekopstelling", "Kookeiland", "Anders"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "totaalrenovatie",
-    label: "Totaalrenovatie",
-    confirmation: {
-      title: "Even checken",
-      body: "Een totaalrenovatie betekent dat we de hele woning aanpakken, van vloer tot plafond en alle onderdelen. Weet u zeker dat u dit bedoelt?",
-      confirmLabel: "Ja, de hele woning",
-      declineLabel: "Nee, alleen bepaalde onderdelen",
-    },
-    blocks: [
-      {
-        title: "De woning",
-        fields: [
-          {key: "m2", label: "Hoeveel woonoppervlakte heeft de woning ongeveer?", type: "number", unit: "m²"},
-          {key: "kamers", label: "Hoeveel kamers heeft de woning?", type: "number"},
-          {key: "verdiepingen", label: "En hoeveel verdiepingen?", type: "number"},
-          {key: "type", label: "Gaat het om een casco- of stripbeurt, waarbij alles eruit gaat tot op de muren, of een gedeeltelijke renovatie?", type: "choice", options: ["Casco- of stripbeurt", "Gedeeltelijke renovatie"]},
-        ],
-      },
-      {
-        title: "Onderdelen en planning",
-        fields: [
-          {
-            key: "onderdelen",
-            label: "Welke onderdelen moeten sowieso mee?",
-            type: "multiChoice",
-            options: ["Badkamer", "Keuken", "Toilet", "Vloeren", "Stucwerk", "Schilderwerk", "Elektra", "Loodgieterswerk", "Isolatie of verduurzaming", "Indeling wijzigen of muren verplaatsen"],
-          },
-          {key: "bewoond", label: "Wordt de woning bewoond tijdens de renovatie, of staat hij leeg?", type: "choice", options: ["Bewoond tijdens de renovatie", "Staat leeg"]},
-          {key: "bouwjaar", label: "Wat is het bouwjaar van de woning?", type: "number"},
-          {key: "monument", label: "Is het een monument of beschermd stadsgezicht?", type: "choice", options: ["Ja", "Nee", "Weet ik niet"], helpText: "Belangrijk voor de vergunningen."},
-        ],
-      },
-    ],
-  },
-  {
-    key: "aanbouw",
-    label: "Aanbouw, uitbouw of opbouw",
-    blocks: [
-      {
-        title: "De uitbreiding",
-        fields: [
-          {key: "type", label: "Wat voor uitbreiding wilt u?", type: "choice", options: ["Uitbouw achter", "Aanbouw aan de zijkant", "Dakopbouw", "Optopping"]},
-          {key: "afmetingen", label: "Wat zijn ongeveer de gewenste afmetingen?", type: "text", placeholder: "Bijvoorbeeld 4 bij 3 meter, of 12 m²"},
-          {key: "functie", label: "Wat wordt de functie van de ruimte?", type: "choice", options: ["Extra slaapkamer", "Grotere woonkamer", "Keuken", "Badkamer", "Anders"]},
-        ],
-      },
-      {
-        title: "Vergunning en tekeningen",
-        fields: [
-          {key: "vergunning", label: "Is er al een vergunning aangevraagd, of moeten wij dat regelen?", type: "choice", options: ["Er is al een vergunning aangevraagd", "DRO regelt de vergunning"], helpText: "Wij kunnen het volledige vergunningstraject voor u verzorgen."},
-          {key: "tekening", label: "Is er al een constructieberekening of tekening, of moet die nog gemaakt worden?", type: "choice", options: ["Die is er al", "Moet nog gemaakt worden"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "dakkapel",
-    label: "Dakkapel",
-    blocks: [
-      {
-        title: "De dakkapel",
-        fields: [
-          {key: "aantal", label: "Om hoeveel dakkapellen gaat het?", type: "choice", options: ["1", "2", "3 of meer"]},
-          {key: "breedte", label: "Wat is ongeveer de gewenste breedte?", type: "number", unit: "meter"},
-          {key: "zijde", label: "Aan de voor- of achterzijde van het dak, of allebei?", type: "choice", options: ["Voorzijde", "Achterzijde", "Allebei"]},
-        ],
-      },
-      {
-        title: "Nieuw of vervangen",
-        fields: [
-          {key: "nieuwOfVervangen", label: "Gaat het om een nieuwe dakkapel of het vervangen van een bestaande?", type: "choice", options: ["Nieuwe dakkapel", "Vervangen van een bestaande"]},
-          {key: "uitvoering", label: "Heeft u voorkeur voor prefab of volledig maatwerk?", type: "choice", options: ["Prefab, sneller en vaste maten", "Volledig op maat", "Weet ik nog niet"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "stucwerk",
-    label: "Stucwerk",
-    blocks: [
-      {
-        title: "De ondergrond",
-        fields: [
-          {
-            key: "ondergrond",
-            label: "Wat is de staat van de ondergrond?",
-            type: "choice",
-            options: ["Kaal metselwerk, vanaf de steen", "Bestaand stucwerk dat overgestuukt moet worden", "Gipsplaat of gipsblokken", "Beschadigd of oud stucwerk dat hersteld moet worden"],
-          },
-          {key: "onderdeel", label: "Gaat het om wanden, plafonds, of allebei?", type: "choice", options: ["Wanden", "Plafonds", "Allebei"]},
-          {
-            key: "plafondtype",
-            label: "Wat voor plafond is het nu?",
-            type: "choice",
-            options: ["Standaard plafond of gipsplaat", "Rietplafond", "Rietplafond met stuc", "Anders"],
-            showIf: (a) => a.onderdeel === "Plafonds" || a.onderdeel === "Allebei",
-            note: (a) =>
-              a.plafondtype === "Rietplafond" || a.plafondtype === "Rietplafond met stuc"
-                ? "Bij rietplafonds adviseren wij meestal een volledig nieuw plafond in plaats van overstucen, omdat het resultaat dan duurzamer en strakker is. We bespreken dit graag met u."
-                : null,
-          },
-        ],
-      },
-      {
-        title: "Oppervlak en afwerking",
-        fields: [
-          {key: "m2", label: "Om hoeveel vierkante meter gaat het ongeveer?", type: "number", unit: "m²"},
-          {key: "afwerking", label: "Welke afwerking wilt u?", type: "choice", options: ["Glad pleister- of spuitwerk", "Sierpleister of granol"]},
-          {key: "oplevering", label: "Moet het sausklaar of behangklaar opgeleverd worden?", type: "choice", options: ["Sausklaar", "Behangklaar"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "schilderwerk",
-    label: "Schilderwerk",
-    blocks: [
-      {
-        title: "Binnen of buiten",
-        fields: [
-          {key: "binnenBuiten", label: "Binnenschilderwerk, buitenschilderwerk, of allebei?", type: "choice", options: ["Binnenschilderwerk", "Buitenschilderwerk", "Allebei"]},
-          {key: "onderdelen", label: "Wat moet er geschilderd worden?", type: "multiChoice", options: ["Wanden", "Plafonds", "Kozijnen", "Deuren", "Trap", "Gevel"]},
-          {key: "omvang", label: "Om hoeveel ruimtes of ongeveer hoeveel vierkante meter gaat het?", type: "text", placeholder: "Bijvoorbeeld 4 kamers, of 120 m² gevel"},
-        ],
-      },
-      {
-        title: "Staat en kleuren",
-        fields: [
-          {
-            key: "houtrot",
-            label: "Is er houtrot of achterstallig onderhoud aan de kozijnen?",
-            type: "yesno",
-            options: YES_NO,
-            helpText: "Belangrijk om te weten, want dan is herstel nodig voordat er geschilderd kan worden.",
-            showIf: (a) => a.binnenBuiten === "Buitenschilderwerk" || a.binnenBuiten === "Allebei",
-          },
-          {key: "kleuren", label: "Weet u al welke kleuren u wilt, of denken wij mee?", type: "choice", options: ["Ik weet het al", "DRO denkt graag mee"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "warmtepomp",
-    label: "Warmtepomp",
-    blocks: [
-      {
-        title: "Installatie",
-        fields: [
-          {key: "afstand", label: "Wat is ongeveer de afstand tussen de binnenunit en de buitenunit?", type: "number", unit: "meter", helpText: "Belangrijk voor de leidinglengte en de installatie."},
-          {key: "m2", label: "Hoeveel woonoppervlakte moet verwarmd worden?", type: "number", unit: "m²"},
-          {key: "opstelling", label: "Wilt u de bestaande cv-ketel volledig vervangen, of een hybride opstelling naast de ketel?", type: "choice", options: ["Cv-ketel volledig vervangen", "Hybride opstelling naast de ketel"]},
-        ],
-      },
-      {
-        title: "Locatie en aansluiting",
-        fields: [
-          {key: "vloerverwarming", label: "Is er vloerverwarming aanwezig of gewenst?", type: "choice", options: ["Aanwezig", "Gewenst", "Nee"], helpText: "Warmtepompen werken het best op lage temperatuur."},
-          {key: "buitenunit", label: "Waar kan de buitenunit komen?", type: "choice", options: ["Tuin", "Plat dak", "Aan de gevel"]},
-          {key: "meterkast", label: "Weet u of er ruimte is in de meterkast voor een zwaardere aansluiting?", type: "choice", options: ["Ja", "Nee", "Weet ik niet"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "airco",
-    label: "Airco of klimaat",
-    blocks: [
-      {
-        title: "Installatie",
-        fields: [
-          {key: "afstand", label: "Wat is ongeveer de afstand tussen de binnenunit en de buitenunit?", type: "number", unit: "meter"},
-          {key: "ruimtes", label: "Hoeveel ruimtes wilt u koelen?", type: "number"},
-          {key: "opstelling", label: "Één binnenunit (single-split) of meerdere (multi-split)?", type: "choice", options: ["Eén binnenunit (single-split)", "Meerdere binnenunits (multi-split)"]},
-        ],
-      },
-      {
-        title: "Locatie en functie",
-        fields: [
-          {key: "buitenunit", label: "Waar kan de buitenunit komen?", type: "choice", options: ["Tuin", "Plat dak", "Aan de gevel"]},
-          {key: "koelenVerwarmen", label: "Alleen koelen, of ook verwarmen?", type: "choice", options: ["Alleen koelen", "Ook verwarmen"], helpText: "Een airco kan in de winter ook bijverwarmen."},
-        ],
-      },
-    ],
-  },
-  {
-    key: "verduurzaming",
-    label: "Verduurzaming en isolatie",
-    blocks: [
-      {
-        title: "Wat wilt u verduurzamen?",
-        fields: [
-          {
-            key: "onderdelen",
-            label: "Wat wilt u verduurzamen?",
-            type: "multiChoice",
-            options: ["Dakisolatie", "Vloerisolatie", "Spouwmuurisolatie", "Gevelisolatie", "HR++ glas", "Zonnepanelen"],
-          },
-        ],
-      },
-      {
-        title: "Details isolatie",
-        subtitle: "Nog een paar korte vragen over de isolatie.",
-        fields: [
-          {key: "isolatieM2", label: "Om hoeveel vierkante meter gaat het ongeveer?", type: "number", unit: "m²", showIf: (a) => Array.isArray(a.onderdelen) && a.onderdelen.some((o) => o.toLowerCase().includes("isolatie") || o === "HR++ glas")},
-          {key: "bouwjaar", label: "Wat is het bouwjaar van de woning?", type: "number", showIf: (a) => Array.isArray(a.onderdelen) && a.onderdelen.some((o) => o.toLowerCase().includes("isolatie") || o === "HR++ glas")},
-        ],
-      },
-      {
-        title: "Details zonnepanelen",
-        subtitle: "Nog een paar korte vragen over de zonnepanelen.",
-        fields: [
-          {key: "zonnepanelenOmvang", label: "Hoeveel panelen of hoeveel dakoppervlak heeft u ongeveer in gedachten?", type: "text", placeholder: "Bijvoorbeeld 12 panelen, of 30 m² dak", showIf: (a) => Array.isArray(a.onderdelen) && a.onderdelen.includes("Zonnepanelen")},
-          {key: "orientatie", label: "Wat is de oriëntatie van het dak?", type: "choice", options: ["Zuid", "Oost", "West", "Meerdere richtingen"], showIf: (a) => Array.isArray(a.onderdelen) && a.onderdelen.includes("Zonnepanelen")},
-        ],
-      },
-      {
-        title: "Subsidies",
-        fields: [
-          {key: "subsidie", label: "Bent u op de hoogte van subsidies zoals de ISDE, of wilt u dat wij daarin meedenken?", type: "choice", options: ["Ik ben op de hoogte", "DRO denkt graag mee"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "vloeren",
-    label: "Vloeren en vloerverwarming",
-    blocks: [
-      {
-        title: "De vloer",
-        fields: [
-          {key: "m2", label: "Om hoeveel vierkante meter gaat het?", type: "number", unit: "m²"},
-          {key: "type", label: "Wat voor vloer wilt u?", type: "choice", options: ["Gietvloer", "Tegels", "PVC", "Hout of parket"]},
-          {key: "vloerverwarming", label: "Wilt u vloerverwarming?", type: "choice", options: ["Nee", "Ja, ingefreesd in de bestaande vloer", "Ja, met een nieuwe vloeropbouw"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "kozijnen",
-    label: "Kozijnen",
-    blocks: [
-      {
-        title: "De kozijnen",
-        fields: [
-          {key: "aantal", label: "Om hoeveel kozijnen gaat het ongeveer?", type: "number"},
-          {key: "materiaal", label: "Welk materiaal heeft uw voorkeur?", type: "choice", options: ["Kunststof", "Hout", "Aluminium", "Weet ik nog niet"]},
-          {key: "vervangen", label: "Moeten de hele kozijnen vervangen worden, of alleen het glas?", type: "choice", options: ["De hele kozijnen vervangen", "Alleen het glas, bijvoorbeeld naar HR++"]},
-          {key: "zijde", label: "Aan de voorzijde, achterzijde of het hele huis?", type: "choice", options: ["Voorzijde", "Achterzijde", "Het hele huis"]},
-        ],
-      },
-    ],
-  },
-  {
-    key: "anders",
-    label: "Iets anders",
-    blocks: [
-      {
-        title: "Waar kunnen wij u mee helpen?",
-        fields: [
-          {key: "omschrijving", label: "Waar zoekt u hulp bij?", type: "text", placeholder: "Omschrijf hier vrij waar u hulp bij zoekt"},
-        ],
-      },
-    ],
-  },
+export const SERVICES: string[] = [
+  "Badkamer",
+  "Keuken",
+  "Totaalrenovatie",
+  "Aanbouw of opbouw",
+  "Dakkapel",
+  "Stucwerk",
+  "Schilderwerk",
+  "Warmtepomp",
+  "Airco of klimaat",
+  "Kozijnen",
+  "Bouwkundige keuring",
+  "Iets anders",
 ];
 
-export const BUDGET_OPTIONS = ["Tot EUR 15.000", "EUR 15.000 tot 30.000", "EUR 30.000 tot 75.000", "EUR 75.000+", "Weet ik nog niet"];
+export const SERVICE_LABEL: Record<string, string> = {
+  "Aanbouw of opbouw": "Aanbouw, uitbouw of opbouw",
+};
 
-export const TIMELINE_OPTIONS = ["Zo snel mogelijk", "Binnen 3 maanden", "Over 3 tot 6 maanden", "Oriënterend"];
+export function serviceLabel(service: string): string {
+  return SERVICE_LABEL[service] || service;
+}
 
-export function getServiceConfig(key: string): ServiceConfig | undefined {
-  return SERVICES.find((service) => service.key === key);
+// Innerlijke SVG-paden (viewBox 0 0 24 24), 1-op-1 uit het voorbeeld.
+export const SERVICE_ICON: Record<string, string> = {
+  Badkamer: '<path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M6 12V6a2 2 0 0 1 4 0"/><path d="M8 19l-1 2M17 19l1 2"/>',
+  Keuken: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M8 3v6"/>',
+  Totaalrenovatie: '<path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-5h6v5M9 11h6"/>',
+  "Aanbouw of opbouw": '<path d="M3 21V10l9-7 9 7v11"/><path d="M9 21v-6h6v6"/>',
+  Dakkapel: '<path d="M3 20h18M4 20v-6l4-3 4 3v6M12 11l4-2 4 2v9"/>',
+  Stucwerk: '<path d="M3 7h14v4H3z"/><path d="M17 9h3v4a2 2 0 0 1-2 2h-6v3"/><rect x="10" y="18" width="4" height="4" rx="1"/>',
+  Schilderwerk: '<path d="M5 3h11a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H8v3"/><rect x="6" y="14" width="4" height="7" rx="1"/>',
+  Warmtepomp: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M6 10h.01M6 14h.01M10 10c1 1 3 1 4 0M10 14c1 1 3 1 4 0"/>',
+  "Airco of klimaat": '<rect x="3" y="5" width="18" height="8" rx="2"/><path d="M7 17c0 1-1 2-1 2M12 17c0 1-1 2-1 2M17 17c0 1-1 2-1 2"/>',
+  Kozijnen: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 3v18M4 12h16"/>',
+  "Bouwkundige keuring": '<path d="M9 3h6a1 1 0 0 1 1 1v1h2a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h2V4a1 1 0 0 1 1-1z"/><path d="M9 13l2 2 4-4"/>',
+  "Iets anders": '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+};
+
+export const QUESTIONS: Record<string, QuestionDef[]> = {
+  Badkamer: [
+    {id: "bad1", t: "single", q: "Hoeveel m² is de badkamer ongeveer?", o: ["Tot 4 m²", "4 tot 6 m²", "6 tot 9 m²", "Meer dan 9 m²", "Weet ik nog niet"]},
+    {id: "bad2", t: "single", q: "Inbouwkranen of opbouwkranen?", s: "Inbouwkranen zitten weggewerkt in de wand, opbouwkranen zijn zichtbaar gemonteerd.", o: ["Inbouwkranen", "Opbouwkranen", "Weet ik nog niet"]},
+    {id: "bad3", t: "single", q: "Wilt u dat wij alles doen, van sloop tot oplevering?", o: ["Ja, van sloop tot oplevering", "Ik sloop zelf de oude badkamer"]},
+    {id: "bad4", t: "single", q: "Wilt u een inloopdouche, een ligbad, of allebei?", o: ["Inloopdouche", "Ligbad", "Allebei"]},
+    {id: "bad5", t: "single", q: "Moet het toilet in de badkamer, of blijft dat apart?", o: ["In de badkamer", "Apart", "Weet ik nog niet"]},
+    {id: "bad6", t: "single", q: "Wilt u vloerverwarming in de badkamer?", o: ["Ja", "Nee", "Weet ik nog niet"]},
+    {id: "bad7", t: "single", q: "Wat voor tegels wilt u?", o: [{l: "Standaardtegels"}, {l: "Mozaïek- of patroontegels", d: "meer legwerk, hogere prijs"}, {l: "Weet ik nog niet"}]},
+    {id: "bad8", t: "single", q: "Regelen wij het sanitair en de materialen?", o: ["Ja, graag via DRO", "Ik heb dit al (deels) besteld"]},
+  ],
+  Keuken: [
+    {id: "keu1", t: "single", q: "Heeft u de keuken al uitgezocht of besteld?", o: ["Ja, die is er al", "Nee, graag via DRO leveren"]},
+    {id: "keu2", t: "single", q: "Alleen plaatsen, of ook de oude keuken slopen?", o: ["Alleen plaatsen", "Ook slopen en afvoeren"]},
+    {id: "keu3", t: "single", q: "Moeten er leidingen worden verplaatst?", s: "Denk aan water, afvoer, gas of elektra.", o: ["Ja", "Nee", "Weet ik nog niet"]},
+    {id: "keu4", t: "single", q: "Wilt u een open keuken, waarbij een muur (deels) weg moet?", o: [{l: "Ja", d: "mogelijk een dragende muur"}, {l: "Nee"}, {l: "Weet ik nog niet"}]},
+  ],
+  Totaalrenovatie: [
+    {id: "tot0", t: "confirm", q: "Een totaalrenovatie betekent de hele woning aanpakken", s: "Van vloer tot plafond en alle onderdelen. Weet u zeker dat u dit bedoelt?", o: [{l: "Ja, de hele woning"}, {l: "Nee, alleen bepaalde onderdelen", back: true}]},
+    {id: "tot1", t: "single", q: "Hoeveel woonoppervlakte heeft de woning ongeveer?", o: ["Tot 80 m²", "80 tot 120 m²", "120 tot 180 m²", "Meer dan 180 m²", "Weet ik nog niet"]},
+    {id: "tot2", t: "single", q: "Casco (alles eruit tot op de muren) of gedeeltelijk?", o: ["Casco / strippen", "Gedeeltelijk", "Weet ik nog niet"]},
+    {id: "tot3", t: "single", q: "Wordt de woning bewoond tijdens de renovatie?", o: ["Bewoond", "Leeg / niet bewoond"]},
+    {id: "tot4", t: "single", q: "Wat is het bouwjaar, en is het een monument?", o: ["Voor 1945", "1945 tot 1980", "Na 1980", "Monument of beschermd stadsgezicht", "Weet ik niet"]},
+  ],
+  "Aanbouw of opbouw": [
+    {id: "aan1", t: "single", q: "Wat voor uitbreiding wilt u?", o: ["Uitbouw achter", "Aanbouw aan de zijkant", "Dakopbouw", "Optopping / extra verdieping"]},
+    {id: "aan2", t: "single", q: "Weet u ongeveer de gewenste afmeting?", o: ["Tot 10 m²", "10 tot 20 m²", "Meer dan 20 m²", "Weet ik nog niet"]},
+    {id: "aan3", t: "single", q: "Is er al een vergunning aangevraagd?", s: "Wij kunnen het vergunningstraject voor u verzorgen.", o: ["Ja", "Nee", "Weet ik niet"]},
+  ],
+  Dakkapel: [
+    {id: "dak1", t: "single", q: "Om hoeveel dakkapellen gaat het?", o: ["1", "2", "Meer dan 2"]},
+    {id: "dak2", t: "single", q: "Een nieuwe dakkapel of een bestaande vervangen?", o: ["Nieuw", "Vervangen", "Weet ik niet"]},
+    {id: "dak3", t: "single", q: "Voorkeur voor prefab of maatwerk?", o: [{l: "Prefab", d: "sneller, vaste maten"}, {l: "Op maat"}, {l: "Geen voorkeur"}]},
+  ],
+  Stucwerk: [
+    {id: "stu1", t: "single", q: "Wat is de staat van de ondergrond?", o: ["Kaal metselwerk (vanaf steen)", "Bestaand stucwerk overstucen", "Gipsplaat of gipsblokken", "Beschadigd, moet hersteld"]},
+    {id: "stu2", t: "single", q: "Gaat het om wanden, plafonds, of allebei?", o: ["Wanden", "Plafonds", "Allebei"]},
+    {id: "stu3", t: "single", q: "Om hoeveel m² gaat het ongeveer?", o: ["Tot 25 m²", "25 tot 60 m²", "Meer dan 60 m²", "Weet ik niet"]},
+    {id: "stu4", t: "single", q: "Welke afwerking wilt u?", o: ["Glad (pleister- of spuitwerk)", "Sierpleister of granol", "Weet ik niet"]},
+  ],
+  Schilderwerk: [
+    {id: "sch1", t: "single", q: "Binnen, buiten, of allebei?", o: ["Binnen", "Buiten", "Allebei"]},
+    {id: "sch2", t: "multi", q: "Wat moet er geschilderd worden?", o: ["Wanden", "Plafonds", "Kozijnen", "Deuren", "Trap", "Gevel"]},
+    {id: "sch3", t: "single", q: "Is er houtrot of achterstallig onderhoud?", s: "Vooral bij buitenschilderwerk belangrijk.", o: ["Ja", "Nee", "Weet ik niet"]},
+  ],
+  Warmtepomp: [
+    {id: "wp1", t: "single", q: "Wat is de afstand tussen binnen- en buitenunit?", s: "Bepalend voor de leidinglengte.", o: ["Tot 5 meter", "5 tot 10 meter", "Meer dan 10 meter", "Weet ik niet"]},
+    {id: "wp2", t: "single", q: "Volledige warmtepomp of hybride naast de ketel?", o: ["Volledig", "Hybride", "Weet ik niet"]},
+    {id: "wp3", t: "single", q: "Is er vloerverwarming aanwezig of gewenst?", o: ["Aanwezig", "Gewenst", "Nee"]},
+  ],
+  "Airco of klimaat": [
+    {id: "ac1", t: "single", q: "Wat is de afstand tussen binnen- en buitenunit?", o: ["Tot 5 meter", "5 tot 10 meter", "Meer dan 10 meter", "Weet ik niet"]},
+    {id: "ac2", t: "single", q: "Hoeveel ruimtes wilt u koelen?", o: ["1 ruimte", "2 ruimtes", "3 of meer"]},
+    {id: "ac3", t: "single", q: "Alleen koelen, of ook verwarmen?", o: ["Alleen koelen", "Ook verwarmen", "Weet ik niet"]},
+  ],
+  Kozijnen: [
+    {id: "koz1", t: "single", q: "Om hoeveel kozijnen gaat het ongeveer?", o: ["1 tot 3", "4 tot 8", "Meer dan 8", "Weet ik niet"]},
+    {id: "koz2", t: "single", q: "Welk materiaal heeft uw voorkeur?", o: ["Kunststof", "Hout", "Aluminium", "Geen voorkeur"]},
+    {id: "koz3", t: "single", q: "Hele kozijnen vervangen of alleen het glas?", o: ["Hele kozijnen", "Alleen glas (bijv. HR++)", "Weet ik niet"]},
+  ],
+  "Bouwkundige keuring": [
+    {id: "keu_a", t: "single", q: "Waarvoor heeft u de keuring nodig?", s: "Het rapport kost €399. Verbouwen wij daarna? Dan is de keuring kosteloos.", o: ["Voor de aankoop van een woning", "Voor een verbouwing", "Algemeen onderhoud / advies"]},
+  ],
+  "Iets anders": [
+    {id: "and1", t: "text", q: "Vertel ons waar u hulp bij zoekt", s: "Omschrijf kort wat u van plan bent.", ph: "Bijvoorbeeld: ik wil advies over de indeling van mijn woning..."},
+  ],
+};
+
+export const PLANNING_OPTIONS = ["Zo snel mogelijk", "Binnen 3 maanden", "Over 3 tot 6 maanden", "Ik oriënteer me nog"];
+
+export const FOUND_OPTIONS = [
+  "Google of zoekmachine",
+  "Via IamExpat of een beurs",
+  "Social media (Instagram, Facebook)",
+  "Via iemand die ik ken",
+  "Langs een project gereden of gelopen",
+  "Anders",
+];
+
+// Gemeenschappelijke afsluiting, na de dienst-specifieke vragen.
+export const COMMON: QuestionDef[] = [
+  {id: "loc", t: "address", q: "Waar bevindt de woning zich?", s: "Vul postcode en huisnummer in, wij vullen het adres automatisch aan."},
+  {id: "plan", t: "single", q: "Wat is uw planning?", o: PLANNING_OPTIONS},
+  {id: "budget", t: "budget", q: "Welk budget heeft u in gedachten?", s: "Sleep een minimum en maximum. Zo kunnen wij goed meedenken in wat mogelijk is."},
+  {id: "found", t: "single", q: "Hoe heeft u ons gevonden?", o: FOUND_OPTIONS},
+  {
+    id: "more",
+    t: "text",
+    q: "Vertel ons wat we nog niet weten",
+    s: "Dit is het leuke deel. Uw ideeën, uw must-haves, die ene muur die u het liefst zou doorbreken. Hoe meer u deelt, hoe beter we kunnen meedenken.",
+    ph: "Bijvoorbeeld: we hebben net een jaren '30 woning gekocht en willen de keuken openbreken...",
+    optional: true,
+  },
+  {id: "summary", t: "summary", q: "Uw projectoverzicht"},
+  {id: "contact", t: "contact", q: "Waar kunnen we u bereiken?", s: "We reageren binnen één werkdag."},
+  {id: "thanks", t: "thanks", q: ""},
+];
+
+export function findServiceForQuestionId(id: string): string | null {
+  for (const service of SERVICES) {
+    if ((QUESTIONS[service] || []).some((question) => question.id === id)) return service;
+  }
+  return null;
 }

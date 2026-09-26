@@ -16,10 +16,13 @@ type SubmitPayload = {
   houseNumber?: string;
   address?: string;
   location?: string;
-  fundaLink?: string;
-  priorities?: string;
-  budget?: string;
+  fundaUrl?: string;
   timeline?: string;
+  budgetMin?: number;
+  budgetMax?: number;
+  budgetLabel?: string;
+  hoeGevonden?: string;
+  message?: string;
   serviceAnswers?: ServiceAnswerGroup[];
 };
 
@@ -27,6 +30,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function cleanString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function cleanNumber(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
 
 function cleanServiceAnswers(input: unknown): Array<{service: string; answers: Array<{question: string; answer: string}>}> {
@@ -62,14 +69,12 @@ export async function POST(request: NextRequest) {
   const email = cleanString(payload.email);
   const phone = cleanString(payload.phone);
   const services = Array.isArray(payload.services) ? payload.services.filter((s) => typeof s === "string" && s.trim()) : [];
-  const budget = cleanString(payload.budget);
 
   const missing: string[] = [];
   if (!name) missing.push("name");
   if (!email || !EMAIL_RE.test(email)) missing.push("email");
   if (!phone) missing.push("phone");
   if (!services.length) missing.push("services");
-  if (!budget) missing.push("budget");
 
   if (missing.length) {
     return NextResponse.json({error: "Missing or invalid fields", fields: missing}, {status: 400});
@@ -83,9 +88,13 @@ export async function POST(request: NextRequest) {
   const houseNumber = cleanString(payload.houseNumber);
   const address = cleanString(payload.address);
   const location = cleanString(payload.location);
-  const fundaLink = cleanString(payload.fundaLink);
-  const priorities = cleanString(payload.priorities);
+  const fundaUrl = cleanString(payload.fundaUrl);
   const timeline = cleanString(payload.timeline);
+  const budgetMin = cleanNumber(payload.budgetMin);
+  const budgetMax = cleanNumber(payload.budgetMax);
+  const budgetLabel = cleanString(payload.budgetLabel);
+  const hoeGevonden = cleanString(payload.hoeGevonden);
+  const message = cleanString(payload.message);
   const serviceAnswers = cleanServiceAnswers(payload.serviceAnswers);
   const submittedAt = new Date().toISOString();
 
@@ -100,10 +109,13 @@ export async function POST(request: NextRequest) {
       houseNumber,
       address,
       location,
-      fundaLink,
-      priorities,
-      budget,
+      fundaUrl,
       timeline,
+      ...(budgetMin !== undefined ? {budgetMin} : {}),
+      ...(budgetMax !== undefined ? {budgetMax} : {}),
+      budgetLabel,
+      hoeGevonden,
+      message,
       serviceAnswers: serviceAnswers.map((group, i) => ({
         _key: `service-${i}`,
         service: group.service,
@@ -127,10 +139,11 @@ export async function POST(request: NextRequest) {
       {fieldKey: "services", label: "Diensten", value: services.join(", ")},
       {fieldKey: "address", label: "Adres", value: address || `${postcode} ${houseNumber}`.trim()},
       {fieldKey: "location", label: "Plaats", value: location},
-      {fieldKey: "fundaLink", label: "Funda-link", value: fundaLink},
-      {fieldKey: "budget", label: "Budget", value: budget},
+      {fieldKey: "fundaUrl", label: "Funda-link", value: fundaUrl},
+      {fieldKey: "budget", label: "Budget", value: budgetLabel},
       {fieldKey: "timeline", label: "Planning", value: timeline},
-      {fieldKey: "priorities", label: "Belangrijkst", value: priorities},
+      {fieldKey: "hoeGevonden", label: "Hoe gevonden", value: hoeGevonden},
+      {fieldKey: "message", label: "Vertel ons wat we nog niet weten", value: message},
       ...serviceAnswers.flatMap((group) =>
         group.answers.map((entry) => ({
           fieldKey: `${group.service}: ${entry.question}`,

@@ -1,405 +1,235 @@
 "use client";
 
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
+import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
-  BUDGET_OPTIONS,
+  COMMON,
+  QUESTIONS,
   SERVICES,
-  TIMELINE_OPTIONS,
-  getServiceConfig,
-  type Answers,
-  type QuestionBlock,
-  type QuestionField,
-  type ServiceConfig,
+  SERVICE_ICON,
+  findServiceForQuestionId,
+  serviceLabel,
+  type QuestionDef,
+  type QuestionOption,
 } from "@/lib/serviceIntakeConfig";
 
-type UniversalState = {
-  postcode: string;
-  houseNumber: string;
-  address: string;
-  location: string;
-  fundaLink: string;
-  priorities: string;
-  budget: string;
-  timeline: string;
-  name: string;
-  email: string;
-  phone: string;
-};
+const bricolage = Bricolage_Grotesque({subsets: ["latin"], weight: ["600", "700", "800"], variable: "--intake-font-display", display: "swap"});
+const hanken = Hanken_Grotesk({subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--intake-font-body", display: "swap"});
 
-const initialUniversal: UniversalState = {
-  postcode: "",
-  houseNumber: "",
-  address: "",
-  location: "",
-  fundaLink: "",
-  priorities: "",
-  budget: "",
-  timeline: "",
-  name: "",
-  email: "",
-  phone: "",
-};
+const SERVICES_STEP: QuestionDef = {id: "services", t: "services", q: ""};
 
-type StepDescriptor =
-  | {kind: "confirmation"; service: ServiceConfig}
-  | {kind: "block"; service: ServiceConfig; block: QuestionBlock; blockIndex: number}
-  | {kind: "location"}
-  | {kind: "funda"}
-  | {kind: "priorities"}
-  | {kind: "budget"}
-  | {kind: "timeline"}
-  | {kind: "contact"};
+type Answers = Record<string, string | string[] | undefined>;
 
-function visibleFields(block: QuestionBlock, answers: Answers): QuestionField[] {
-  return block.fields.filter((field) => !field.showIf || field.showIf(answers));
+function optionLabel(o: QuestionOption): string {
+  return typeof o === "string" ? o : o.l;
+}
+function optionDesc(o: QuestionOption): string | undefined {
+  return typeof o === "string" ? undefined : o.d;
+}
+function optionBack(o: QuestionOption): boolean {
+  return typeof o === "object" && Boolean(o.back);
 }
 
-function computeSteps(
-  selectedServices: string[],
-  answersByService: Record<string, Answers>,
-  confirmations: Record<string, "yes" | "no">
-): StepDescriptor[] {
-  const steps: StepDescriptor[] = [];
-
-  for (const key of selectedServices) {
-    const service = getServiceConfig(key);
-    if (!service) continue;
-
-    if (service.confirmation) {
-      steps.push({kind: "confirmation", service});
-      if (confirmations[key] !== "yes") continue;
-    }
-
-    const answers = answersByService[key] || {};
-    service.blocks.forEach((block, blockIndex) => {
-      if (visibleFields(block, answers).length > 0) {
-        steps.push({kind: "block", service, block, blockIndex});
-      }
-    });
-  }
-
-  steps.push({kind: "location"}, {kind: "funda"}, {kind: "priorities"}, {kind: "budget"}, {kind: "timeline"}, {kind: "contact"});
-  return steps;
+function formatBudget(value: number): string {
+  if (value >= 150000) return "€150k+";
+  if (value <= 0) return "€0";
+  return `€${value / 1000}k`;
 }
 
-const inputClass =
-  "w-full rounded-xl border border-black/10 bg-white px-4 py-3.5 text-base font-medium text-brand-ink outline-none transition placeholder:text-neutral-400 focus:border-brand-orange focus:ring-4 focus:ring-orange-100";
+function coachMessage(flow: QuestionDef[], idx: number): string {
+  const def = flow[idx];
+  if (!def || ["services", "thanks", "contact", "confirm"].includes(def.t)) return "";
+  const total = flow.filter((f) => f.t !== "thanks").length;
+  const n = idx + 1;
+  const left = total - n;
+  if (n === 2) return "We stellen alleen vragen die op u van toepassing zijn";
+  if (left === 1) return "Nog één vraag en u bent klaar";
+  if (left <= 3) return "Bijna klaar, nog een paar korte vragen";
+  return "";
+}
 
-function OptionCard({active, onClick, children}: {active: boolean; onClick: () => void; children: React.ReactNode}) {
+function CheckIcon({className}: {className?: string}) {
   return (
-    <button
-      className={`flex min-h-[58px] w-full items-center justify-between gap-3 rounded-xl border-2 px-5 py-3.5 text-left text-base font-semibold transition-all duration-200 ${
-        active
-          ? "border-brand-orange bg-brand-orange/5 text-brand-ink shadow-lg shadow-orange-500/10"
-          : "border-black/10 bg-white text-brand-ink hover:border-brand-orange/50 hover:-translate-y-0.5"
-      }`}
-      onClick={onClick}
-      type="button"
-    >
-      <span>{children}</span>
-      <span
-        className={`grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition ${
-          active ? "border-brand-orange bg-brand-orange" : "border-black/15"
-        }`}
-      >
-        {active ? (
-          <svg className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        ) : null}
-      </span>
-    </button>
+    <svg className={className} fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function BackIcon() {
+  return (
+    <svg fill="none" height="18" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width="18">
+      <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function ArrowIcon() {
+  return (
+    <svg fill="none" height="18" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width="18">
+      <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function StarIcon() {
+  return (
+    <svg fill="currentColor" height="13" viewBox="0 0 24 24" width="13">
+      <path d="M12 2l3 6.9 7.5.6-5.7 5 1.7 7.4L12 18l-6.5 3.9 1.7-7.4-5.7-5 7.5-.6z" />
+    </svg>
+  );
+}
+function InfoIcon() {
+  return (
+    <svg fill="none" height="17" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width="17">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" strokeLinecap="round" />
+    </svg>
+  );
+}
+function ShieldCheckIcon() {
+  return (
+    <svg fill="none" height="17" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" width="17">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function LockIcon() {
+  return (
+    <svg fill="none" height="16" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <rect height="10" rx="2" width="16" x="4" y="10" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </svg>
+  );
+}
+function SealIcon() {
+  return (
+    <svg fill="none" height="32" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24" width="32">
+      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function ServiceIcon({service}: {service: string}) {
+  return (
+    <svg fill="none" height="20" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" width="20" dangerouslySetInnerHTML={{__html: SERVICE_ICON[service] || ""}} />
   );
 }
 
-function ProgressBar({current, total}: {current: number; total: number}) {
-  const percent = total > 0 ? Math.round((Math.min(current, total) / total) * 100) : 0;
-  return (
-    <div className="mb-6">
-      <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.14em] text-brand-ink/50">
-        <span>Stap {Math.min(current, total)} van {total}</span>
-        <span>{percent}%</span>
-      </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/10">
-        <div className="h-full rounded-full bg-brand-orange transition-all duration-500" style={{width: `${percent}%`}} />
-      </div>
-    </div>
-  );
-}
+const inputClass = "intake-inp";
 
-function BackButton({onClick}: {onClick: () => void}) {
-  return (
-    <button
-      className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-ink/60 transition hover:text-brand-ink"
-      onClick={onClick}
-      type="button"
-    >
-      <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-        <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      Terug
-    </button>
-  );
-}
-
-function FieldRenderer({
-  field,
-  value,
-  onChange,
-}: {
-  field: QuestionField;
-  value: string | string[] | undefined;
-  onChange: (value: string | string[]) => void;
-}) {
-  if (field.type === "choice" || field.type === "yesno") {
-    return (
-      <div className="grid gap-2.5">
-        {(field.options ?? []).map((option) => (
-          <OptionCard active={value === option} key={option} onClick={() => onChange(option)}>
-            {option}
-          </OptionCard>
-        ))}
-      </div>
-    );
-  }
-
-  if (field.type === "multiChoice") {
-    const selected = Array.isArray(value) ? value : [];
-    return (
-      <div className="grid gap-2.5">
-        {(field.options ?? []).map((option) => (
-          <OptionCard
-            active={selected.includes(option)}
-            key={option}
-            onClick={() =>
-              onChange(selected.includes(option) ? selected.filter((item) => item !== option) : [...selected, option])
-            }
-          >
-            {option}
-          </OptionCard>
-        ))}
-      </div>
-    );
-  }
-
-  if (field.type === "number") {
-    return (
-      <div className="relative">
-        <input
-          className={inputClass}
-          inputMode="decimal"
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={field.placeholder ?? "0"}
-          type="text"
-          value={typeof value === "string" ? value : ""}
-        />
-        {field.unit ? (
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-neutral-400">
-            {field.unit}
-          </span>
-        ) : null}
-      </div>
-    );
-  }
-
-  return (
-    <input
-      className={inputClass}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={field.placeholder}
-      type="text"
-      value={typeof value === "string" ? value : ""}
-    />
-  );
-}
-
-function BlockStep({
-  service,
-  block,
-  answers,
-  onChange,
-  onNext,
-  onBack,
-  current,
-  total,
-}: {
-  service: ServiceConfig;
-  block: QuestionBlock;
-  answers: Answers;
-  onChange: (fieldKey: string, value: string | string[]) => void;
-  onNext: () => void;
-  onBack: () => void;
-  current: number;
-  total: number;
-}) {
-  const fields = visibleFields(block, answers);
-  const singleAutoAdvance = fields.length === 1 && (fields[0].type === "choice" || fields[0].type === "yesno");
-
-  return (
-    <div className="animate-float-in">
-      <BackButton onClick={onBack} />
-      <ProgressBar current={current} total={total} />
-      <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-orange">{service.label}</p>
-      <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-ink">{block.title}</h2>
-      {block.subtitle ? <p className="mt-2 text-sm font-medium text-neutral-600">{block.subtitle}</p> : null}
-
-      <div className="mt-6 grid gap-6">
-        {fields.map((field) => {
-          const note = field.note?.(answers);
-          return (
-            <div key={field.key}>
-              <label className="mb-2 block text-[15px] font-bold leading-6 text-brand-ink">{field.label}</label>
-              {field.helpText ? <p className="mb-2.5 text-sm leading-5 text-neutral-500">{field.helpText}</p> : null}
-              <FieldRenderer
-                field={field}
-                onChange={(value) => {
-                  onChange(field.key, value);
-                  if (singleAutoAdvance) window.setTimeout(onNext, 380);
-                }}
-                value={answers[field.key]}
-              />
-              {note ? (
-                <p className="mt-2.5 rounded-lg bg-brand-orange/5 px-3.5 py-2.5 text-sm leading-5 text-brand-ink/80">{note}</p>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-
-      {!singleAutoAdvance ? (
-        <button className="btn-primary mt-7 w-full text-base" onClick={onNext} type="button">
-          Volgende
-        </button>
-      ) : null}
-    </div>
-  );
-}
-
-export default function SmartIntakeWizard({embedded = false}: {embedded?: boolean}) {
-  const shellClass = embedded ? "" : "rounded-lg border border-black/10 bg-brand-soft p-5 shadow-premium sm:p-7";
-  const [phase, setPhase] = useState<"services" | "flow" | "done">("services");
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [flowIndex, setFlowIndex] = useState(0);
-  const [answersByService, setAnswersByService] = useState<Record<string, Answers>>({});
-  const [confirmations, setConfirmations] = useState<Record<string, "yes" | "no">>({});
-  const [universal, setUniversal] = useState<UniversalState>(initialUniversal);
+export default function SmartIntakeWizard() {
+  const [services, setServices] = useState<string[]>([]);
+  const [flow, setFlow] = useState<QuestionDef[]>([SERVICES_STEP, ...COMMON]);
+  const [idx, setIdx] = useState(0);
+  const [answers, setAnswers] = useState<Answers>({});
   const [company, setCompany] = useState(""); // honeypot
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
 
-  // Location step's own working state.
+  const [budgetMin, setBudgetMin] = useState(15000);
+  const [budgetMax, setBudgetMax] = useState(45000);
+  const [budgetLabel, setBudgetLabel] = useState("€15k – €45k");
+
   const [postcodeInput, setPostcodeInput] = useState("");
   const [houseNumberInput, setHouseNumberInput] = useState("");
-  const [searching, setSearching] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [pdokResults, setPdokResults] = useState<PdokAddress[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<PdokAddress | null>(null);
-  const [manualMode, setManualMode] = useState(false);
-  const [manualStreet, setManualStreet] = useState("");
-  const [manualCity, setManualCity] = useState("");
-  const [locationSkipped, setLocationSkipped] = useState(false);
+  const [addressStatus, setAddressStatus] = useState<"idle" | "searching" | "found" | "notfound">("idle");
+  const [foundAddress, setFoundAddress] = useState<PdokAddress | null>(null);
 
-  const steps = useMemo(
-    () => computeSteps(selectedServices, answersByService, confirmations),
-    [selectedServices, answersByService, confirmations]
-  );
-
-  function updateAnswer(serviceKey: string, fieldKey: string, value: string | string[]) {
-    setAnswersByService((prev) => ({
-      ...prev,
-      [serviceKey]: {...(prev[serviceKey] || {}), [fieldKey]: value},
-    }));
-  }
-
-  function toggleService(key: string) {
-    setSelectedServices((prev) => {
-      if (key === "totaalrenovatie") {
-        return prev.includes("totaalrenovatie") ? [] : ["totaalrenovatie"];
-      }
-      const withoutTotaal = prev.filter((item) => item !== "totaalrenovatie");
-      return withoutTotaal.includes(key) ? withoutTotaal.filter((item) => item !== key) : [...withoutTotaal, key];
-    });
-  }
-
-  function startFlow() {
-    setFlowIndex(0);
-    setPhase("flow");
-  }
-
-  function goNext() {
-    setFlowIndex((current) => Math.min(current + 1, steps.length));
-  }
-
-  function goBack() {
-    if (flowIndex === 0) {
-      setPhase("services");
+  useEffect(() => {
+    const normalizedPostcode = normalizeDutchPostcode(postcodeInput);
+    if (!normalizedPostcode || !houseNumberInput.trim()) {
+      setAddressStatus("idle");
+      setFoundAddress(null);
       return;
     }
-    setFlowIndex((current) => Math.max(current - 1, 0));
+
+    setAddressStatus("searching");
+    const timeout = setTimeout(async () => {
+      const results = await lookupPdokAddress(postcodeInput, houseNumberInput);
+      if (results.length > 0) {
+        setFoundAddress(results[0]);
+        setAddressStatus("found");
+      } else {
+        setFoundAddress(null);
+        setAddressStatus("notfound");
+      }
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [postcodeInput, houseNumberInput]);
+
+  const total = useMemo(() => flow.filter((f) => f.t !== "thanks").length, [flow]);
+  const current = flow[idx];
+  const isThanks = current?.t === "thanks";
+
+  function updateAnswer(id: string, value: string | string[]) {
+    setAnswers((prev) => ({...prev, [id]: value}));
   }
 
-  function declineTotaalrenovatie() {
-    setConfirmations((prev) => ({...prev, totaalrenovatie: "no"}));
-    setSelectedServices([]);
-    setAnswersByService({});
-    setPhase("services");
+  function go(n: number) {
+    setIdx(Math.max(0, Math.min(flow.length - 1, n)));
+  }
+  function next() {
+    go(idx + 1);
+  }
+  function goBack() {
+    if (idx > 0) go(idx - 1);
   }
 
-  async function handleAddressSearch() {
-    setSearching(true);
-    setSearched(false);
-    setSelectedAddress(null);
-    setManualMode(false);
+  function buildFlowAndStart() {
+    const questions = services.flatMap((s) => QUESTIONS[s] || []);
+    setFlow([SERVICES_STEP, ...questions, ...COMMON]);
+    go(1);
+  }
 
-    const results = await lookupPdokAddress(postcodeInput, houseNumberInput);
+  function toggleService(service: string) {
+    setServices((prev) => (prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service]));
+  }
 
-    setPdokResults(results);
-    setSearching(false);
-    setSearched(true);
+  function selectSingle(def: QuestionDef, option: QuestionOption) {
+    if (def.t === "confirm" && optionBack(option)) {
+      go(0);
+      return;
+    }
+    updateAnswer(def.id, optionLabel(option));
+    window.setTimeout(next, 300);
+  }
 
-    if (results.length === 0) setManualMode(true);
-    else if (results.length === 1) setSelectedAddress(results[0]);
+  function toggleMulti(def: QuestionDef, option: string) {
+    const current = (answers[def.id] as string[] | undefined) || [];
+    const nextValue = current.includes(option) ? current.filter((v) => v !== option) : [...current, option];
+    updateAnswer(def.id, nextValue);
   }
 
   function confirmAddress() {
-    if (selectedAddress) {
-      setUniversal((prev) => ({
-        ...prev,
-        postcode: selectedAddress.postcode,
-        houseNumber: selectedAddress.houseNumber,
-        address: selectedAddress.displayName,
-        location: selectedAddress.city,
-      }));
-    } else if (manualMode) {
-      setUniversal((prev) => ({
-        ...prev,
-        postcode: postcodeInput.trim(),
-        houseNumber: houseNumberInput.trim(),
-        address: `${manualStreet.trim()}, ${manualCity.trim()}`,
-        location: manualCity.trim(),
-      }));
+    updateAnswer("pc", postcodeInput.trim());
+    updateAnswer("hn", houseNumberInput.trim());
+    if (foundAddress) {
+      updateAnswer("address", `${foundAddress.street} ${foundAddress.houseNumber}, ${foundAddress.city}`);
+      updateAnswer("city", foundAddress.city);
     }
-    goNext();
+    next();
+  }
+
+  function primaryLabel(): string {
+    if (!services.length) return "uw project";
+    const s = services[0];
+    if (s === "Iets anders") return "uw project";
+    return serviceLabel(s).toLowerCase();
   }
 
   async function handleSubmit() {
     setSubmitting(true);
     setSubmitError(false);
 
-    const serviceAnswers = selectedServices.map((key) => {
-      const service = getServiceConfig(key);
-      const answers = answersByService[key] || {};
-      const qa = Object.entries(answers)
-        .filter(([, value]) => (Array.isArray(value) ? value.length > 0 : Boolean(value)))
-        .map(([fieldKey, value]) => {
-          const field = service?.blocks.flatMap((b) => b.fields).find((f) => f.key === fieldKey);
-          return {
-            question: field?.label || fieldKey,
-            answer: Array.isArray(value) ? value.join(", ") : value,
-          };
-        });
-      return {service: service?.label || key, answers: qa};
+    const serviceAnswers = services.map((service) => {
+      const questions = QUESTIONS[service] || [];
+      const qa = questions
+        .filter((q) => q.t !== "confirm" && answers[q.id])
+        .map((q) => ({
+          question: q.q,
+          answer: Array.isArray(answers[q.id]) ? (answers[q.id] as string[]).join(", ") : (answers[q.id] as string),
+        }));
+      return {service: serviceLabel(service), answers: qa};
     });
 
     try {
@@ -407,424 +237,1221 @@ export default function SmartIntakeWizard({embedded = false}: {embedded?: boolea
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
-          ...universal,
-          services: selectedServices.map((key) => getServiceConfig(key)?.label || key),
-          serviceAnswers,
           company,
+          name: answers.nm,
+          email: answers.em,
+          phone: answers.ph,
+          services: services.map(serviceLabel),
+          postcode: answers.pc,
+          houseNumber: answers.hn,
+          address: answers.address,
+          location: answers.city,
+          fundaUrl: answers.funda,
+          timeline: answers.plan,
+          budgetMin: budgetLabel === "Weet ik nog niet" ? undefined : budgetMin,
+          budgetMax: budgetLabel === "Weet ik nog niet" ? undefined : budgetMax,
+          budgetLabel,
+          hoeGevonden: answers.found,
+          message: answers.more,
+          serviceAnswers,
         }),
       });
 
       if (!res.ok) throw new Error("Submit failed");
       setSubmitting(false);
-      setPhase("done");
+      next();
     } catch {
       setSubmitting(false);
       setSubmitError(true);
     }
   }
 
-  // ── Phase: kies diensten ─────────────────────────────────────────
-  if (phase === "services") {
+  function renderHeader(def: QuestionDef, eyebrow: string) {
+    const coach = coachMessage(flow, idx);
     return (
-      <div className={shellClass}>
-        <h2 className="text-2xl font-extrabold tracking-[-0.03em] text-brand-ink">Waar kunnen we u mee helpen?</h2>
-        <p className="mt-3 text-sm font-semibold leading-6 text-brand-ink">
-          Kies één of meer diensten. We stellen daarna alleen de vragen die voor u van toepassing zijn.
-        </p>
-
-        <div className="mt-6 grid gap-2.5">
-          {SERVICES.map((service) => (
-            <OptionCard active={selectedServices.includes(service.key)} key={service.key} onClick={() => toggleService(service.key)}>
-              {service.label}
-            </OptionCard>
-          ))}
-        </div>
-
-        <button
-          className="btn-primary mt-6 w-full text-base disabled:pointer-events-none disabled:opacity-40"
-          disabled={selectedServices.length === 0}
-          onClick={startFlow}
-          type="button"
-        >
-          Volgende
-        </button>
-      </div>
-    );
-  }
-
-  // ── Phase: klaar ──────────────────────────────────────────────────
-  if (phase === "done") {
-    return (
-      <div className={shellClass}>
-        <p className="eyebrow">Aanvraag ontvangen</p>
-        <h2 className="mt-3 text-2xl font-bold tracking-tight text-brand-ink sm:text-3xl">
-          Bedankt{universal.name ? `, ${universal.name.split(" ")[0]}` : ""}.
-        </h2>
-        <p className="mt-4 max-w-2xl text-sm font-semibold leading-6 text-neutral-700">
-          We hebben uw aanvraag ontvangen en nemen binnen één werkdag contact met u op.
-        </p>
-      </div>
-    );
-  }
-
-  // ── Phase: flow ───────────────────────────────────────────────────
-  const step = steps[flowIndex];
-  const total = steps.length;
-  const current = flowIndex + 1;
-
-  if (!step) return null;
-
-  if (step.kind === "confirmation") {
-    const {service} = step;
-    if (!service.confirmation) return null;
-    return (
-      <div className={`animate-float-in ${shellClass}`}>
-        <BackButton onClick={goBack} />
-        <h2 className="text-2xl font-bold tracking-tight text-brand-ink">{service.confirmation.title}</h2>
-        <p className="mt-3 text-[15px] leading-7 text-neutral-700">{service.confirmation.body}</p>
-        <div className="mt-6 grid gap-3">
-          <button
-            className="btn-primary text-base"
-            onClick={() => {
-              setConfirmations((prev) => ({...prev, [service.key]: "yes"}));
-              goNext();
-            }}
-            type="button"
-          >
-            {service.confirmation.confirmLabel}
-          </button>
-          <button
-            className="rounded-md border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:bg-black/5"
-            onClick={declineTotaalrenovatie}
-            type="button"
-          >
-            {service.confirmation.declineLabel}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (step.kind === "block") {
-    return (
-      <div className={shellClass}>
-        <BlockStep
-          answers={answersByService[step.service.key] || {}}
-          block={step.block}
-          current={current}
-          onBack={goBack}
-          onChange={(fieldKey, value) => updateAnswer(step.service.key, fieldKey, value)}
-          onNext={goNext}
-          service={step.service}
-          total={total}
-        />
-      </div>
-    );
-  }
-
-  if (step.kind === "location") {
-    const locationReady = Boolean(selectedAddress) || (manualMode && manualStreet.trim() && manualCity.trim());
-    return (
-      <div className={`animate-float-in ${shellClass}`}>
-        <BackButton onClick={goBack} />
-        <ProgressBar current={current} total={total} />
-        <h2 className="text-2xl font-bold tracking-tight text-brand-ink">Waar staat de woning?</h2>
-        <p className="mt-2 text-sm font-medium text-neutral-600">
-          Vul uw postcode en huisnummer in, dan vullen we straat en plaats automatisch aan.
-        </p>
-
-        {!manualMode ? (
-          <>
-            <div className="mt-6 grid grid-cols-[1.4fr_1fr] gap-3">
-              <div>
-                <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.1em] text-brand-ink/60">Postcode</label>
-                <input className={inputClass} onChange={(e) => setPostcodeInput(e.target.value)} placeholder="1234 AB" value={postcodeInput} />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.1em] text-brand-ink/60">Huisnummer</label>
-                <input className={inputClass} onChange={(e) => setHouseNumberInput(e.target.value)} placeholder="12" value={houseNumberInput} />
-              </div>
-            </div>
-
-            <button
-              className="btn-primary mt-4 w-full text-base disabled:pointer-events-none disabled:opacity-40"
-              disabled={!normalizeDutchPostcode(postcodeInput) || !houseNumberInput.trim() || searching}
-              onClick={handleAddressSearch}
-              type="button"
-            >
-              {searching ? "Zoeken…" : "Vind mijn adres"}
-            </button>
-
-            <button
-              className="mt-3 w-full text-center text-sm font-semibold text-brand-ink/50 transition hover:text-brand-ink"
-              onClick={() => setManualMode(true)}
-              type="button"
-            >
-              Ik vul mijn adres liever handmatig in
-            </button>
-
-            {searched && !searching && pdokResults.length === 0 ? (
-              <p className="mt-4 text-sm font-medium text-brand-ink/60">
-                We konden dit niet automatisch vinden. Geen probleem, vul uw adres hieronder in.
-              </p>
-            ) : null}
-
-            {pdokResults.length === 1 && selectedAddress ? (
-              <div className="mt-5 rounded-xl border-2 border-brand-orange/30 bg-brand-orange/5 p-5">
-                <p className="text-sm font-semibold text-brand-ink">
-                  We vonden: {selectedAddress.street} {selectedAddress.houseNumber}, {selectedAddress.city}. Klopt dat?
-                </p>
-                <div className="mt-4 flex gap-3">
-                  <button className="btn-primary flex-1 text-sm" onClick={confirmAddress} type="button">
-                    Ja, dat klopt
-                  </button>
-                  <button
-                    className="flex-1 rounded-md border border-black/10 bg-white px-4 py-3 text-sm font-semibold text-brand-ink transition hover:bg-black/5"
-                    onClick={() => {
-                      setSelectedAddress(null);
-                      setManualMode(true);
-                    }}
-                    type="button"
-                  >
-                    Niet helemaal
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
-            {pdokResults.length > 1 ? (
-              <div className="mt-5">
-                <p className="mb-3 text-sm font-semibold text-brand-ink">We vonden een paar mogelijke adressen. Welke is de juiste?</p>
-                <div className="grid gap-2.5">
-                  {pdokResults.map((result) => (
-                    <OptionCard active={selectedAddress?.id === result.id} key={result.id} onClick={() => setSelectedAddress(result)}>
-                      {result.displayName}
-                    </OptionCard>
-                  ))}
-                </div>
-                {selectedAddress ? (
-                  <button className="btn-primary mt-4 w-full text-base" onClick={confirmAddress} type="button">
-                    Volgende
-                  </button>
-                ) : null}
-              </div>
-            ) : null}
-          </>
-        ) : (
-          <div className="mt-6">
-            <div className="grid gap-3">
-              <div>
-                <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.1em] text-brand-ink/60">Straat en huisnummer</label>
-                <input className={inputClass} onChange={(e) => setManualStreet(e.target.value)} placeholder="Bijvoorbeeld Orionstraat 235" value={manualStreet} />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.1em] text-brand-ink/60">Plaats</label>
-                <input className={inputClass} onChange={(e) => setManualCity(e.target.value)} placeholder="Bijvoorbeeld Den Haag" value={manualCity} />
-              </div>
-            </div>
-
-            <button
-              className="btn-primary mt-4 w-full text-base disabled:pointer-events-none disabled:opacity-40"
-              disabled={!locationReady}
-              onClick={confirmAddress}
-              type="button"
-            >
-              Volgende
-            </button>
-
-            <button
-              className="mt-3 w-full text-center text-sm font-semibold text-brand-ink/50 transition hover:text-brand-ink"
-              onClick={() => {
-                setManualMode(false);
-                setSearched(false);
-                setPdokResults([]);
-              }}
-              type="button"
-            >
-              Toch via postcode zoeken
-            </button>
+      <>
+        {coach ? (
+          <div className="intake-coach">
+            <span className="intake-coach-dot" />
+            {coach}
           </div>
-        )}
-
-        {!locationSkipped ? (
-          <button
-            className="mt-5 w-full text-center text-sm font-semibold text-brand-ink/40 transition hover:text-brand-ink/70"
-            onClick={() => {
-              setLocationSkipped(true);
-              goNext();
-            }}
-            type="button"
-          >
-            Deze stap overslaan
-          </button>
         ) : null}
+        {eyebrow ? <div className="intake-eyebrow">{eyebrow}</div> : null}
+        <h1 className="intake-h1">{def.q}</h1>
+        {def.s ? <p className="intake-sub">{def.s}</p> : null}
+      </>
+    );
+  }
+
+  function renderOptions(def: QuestionDef) {
+    return (
+      <div className="intake-opts">
+        {(def.o || []).map((o) => {
+          const label = optionLabel(o);
+          const desc = optionDesc(o);
+          const selected = answers[def.id] === label;
+          return (
+            <button className={`intake-opt${selected ? " intake-sel" : ""}`} key={label} onClick={() => selectSingle(def, o)} type="button">
+              <span className="intake-opt-lab">
+                <span className="intake-opt-t">{label}</span>
+                {desc ? <span className="intake-opt-d">{desc}</span> : null}
+              </span>
+              <span className="intake-opt-rc">
+                <CheckIcon className={selected ? "intake-check-on" : "intake-check-off"} />
+              </span>
+            </button>
+          );
+        })}
       </div>
     );
   }
 
-  if (step.kind === "funda") {
+  function renderMultiOptions(def: QuestionDef) {
+    const selectedValues = (answers[def.id] as string[] | undefined) || [];
     return (
-      <div className={`animate-float-in ${shellClass}`}>
-        <BackButton onClick={goBack} />
-        <ProgressBar current={current} total={total} />
-        <h2 className="text-2xl font-bold tracking-tight text-brand-ink">Staat de woning (nog) op Funda?</h2>
-        <p className="mt-2 text-sm leading-6 text-neutral-600">
-          Optioneel: plak hier de link. Zo hebben we in één klik de plattegronden, oppervlaktes, het bouwjaar en foto&apos;s
-          bij de hand, en kunnen we een snellere en preciezere inschatting maken.
-        </p>
-        <input
-          className={`${inputClass} mt-5`}
-          onChange={(e) => setUniversal((prev) => ({...prev, fundaLink: e.target.value}))}
-          placeholder="https://www.funda.nl/koop/..."
-          type="url"
-          value={universal.fundaLink}
-        />
-        <button className="btn-primary mt-6 w-full text-base" onClick={goNext} type="button">
-          Volgende
-        </button>
+      <div className="intake-opts">
+        {(def.o || []).map((o) => {
+          const label = optionLabel(o);
+          const selected = selectedValues.includes(label);
+          return (
+            <button className={`intake-opt${selected ? " intake-sel" : ""}`} key={label} onClick={() => toggleMulti(def, label)} type="button">
+              <span className="intake-opt-lab">
+                <span className="intake-opt-t">{label}</span>
+              </span>
+              <span className="intake-opt-rc">
+                <CheckIcon className={selected ? "intake-check-on" : "intake-check-off"} />
+              </span>
+            </button>
+          );
+        })}
       </div>
     );
   }
 
-  if (step.kind === "priorities") {
+  function renderServicesScreen() {
     return (
-      <div className={`animate-float-in ${shellClass}`}>
-        <BackButton onClick={goBack} />
-        <ProgressBar current={current} total={total} />
-        <h2 className="text-2xl font-bold tracking-tight text-brand-ink">Wat vindt u het belangrijkst aan dit project?</h2>
-        <p className="mt-2 text-sm leading-6 text-neutral-600">
-          Vertel gerust vrijuit. Denk aan stijl, kwaliteit, snelheid, budget, specifieke wensen, of iets waar wij rekening
-          mee moeten houden.
-        </p>
-        <textarea
-          className={`${inputClass} mt-5 min-h-[160px] resize-none`}
-          onChange={(e) => setUniversal((prev) => ({...prev, priorities: e.target.value}))}
-          placeholder="Bijvoorbeeld: wij hechten vooral aan een strakke afwerking en een realistische planning, budget is voor ons net zo belangrijk als snelheid..."
-          value={universal.priorities}
-        />
-        <button className="btn-primary mt-6 w-full text-base" onClick={goNext} type="button">
-          Volgende
-        </button>
-      </div>
-    );
-  }
-
-  if (step.kind === "budget") {
-    return (
-      <div className={`animate-float-in ${shellClass}`}>
-        <BackButton onClick={goBack} />
-        <ProgressBar current={current} total={total} />
-        <h2 className="text-2xl font-bold tracking-tight text-brand-ink">Wat is uw budgetindicatie?</h2>
-        <p className="mt-2 text-sm font-medium text-neutral-600">Een globale inschatting is genoeg, er ligt nog niets vast.</p>
-        <div className="mt-6 grid gap-2.5">
-          {BUDGET_OPTIONS.map((option) => (
-            <OptionCard
-              active={universal.budget === option}
-              key={option}
-              onClick={() => {
-                setUniversal((prev) => ({...prev, budget: option}));
-                window.setTimeout(goNext, 380);
-              }}
-            >
-              {option}
-            </OptionCard>
-          ))}
+      <>
+        <div className="intake-eyebrow">Uw project</div>
+        <h1 className="intake-h1">Waar kunnen we u mee helpen?</h1>
+        <p className="intake-sub">Kies één of meer diensten. We stellen daarna alleen de vragen die voor u van toepassing zijn.</p>
+        <div className="intake-sp">
+          <span className="intake-stars">
+            <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
+          </span>
+          <span>
+            <b>4.8</b> uit 273 reviews, huiseigenaren in de regio gingen u voor
+          </span>
         </div>
-      </div>
-    );
-  }
-
-  if (step.kind === "timeline") {
-    return (
-      <div className={`animate-float-in ${shellClass}`}>
-        <BackButton onClick={goBack} />
-        <ProgressBar current={current} total={total} />
-        <h2 className="text-2xl font-bold tracking-tight text-brand-ink">Wat is uw planning?</h2>
-        <div className="mt-6 grid gap-2.5">
-          {TIMELINE_OPTIONS.map((option) => (
-            <OptionCard
-              active={universal.timeline === option}
-              key={option}
-              onClick={() => {
-                setUniversal((prev) => ({...prev, timeline: option}));
-                window.setTimeout(goNext, 380);
-              }}
-            >
-              {option}
-            </OptionCard>
-          ))}
+        <div className="intake-grid">
+          {SERVICES.map((service) => {
+            const selected = services.includes(service);
+            const wide = service === "Iets anders";
+            return (
+              <button
+                className={`intake-tile${wide ? " intake-tile-wide" : ""}${selected ? " intake-sel" : ""}`}
+                key={service}
+                onClick={() => toggleService(service)}
+                type="button"
+              >
+                <span className="intake-tile-ic">
+                  <ServiceIcon service={service} />
+                </span>
+                <span className="intake-tile-t">{serviceLabel(service)}</span>
+                <span className="intake-tile-chk">
+                  <CheckIcon className={selected ? "intake-check-on" : "intake-check-off"} />
+                </span>
+              </button>
+            );
+          })}
         </div>
-      </div>
+      </>
     );
   }
 
-  // step.kind === "contact"
-  const canSubmit = universal.name.trim() && universal.email.trim() && universal.phone.trim() && !submitting;
+  function renderAddressScreen(def: QuestionDef) {
+    return (
+      <>
+        {renderHeader(def, "Locatie")}
+        <div className="intake-row2">
+          <div className="intake-field">
+            <label>Postcode</label>
+            <input className={inputClass} onChange={(e) => setPostcodeInput(e.target.value)} placeholder="2516 AH" value={postcodeInput} />
+          </div>
+          <div className="intake-field">
+            <label>Huisnr.</label>
+            <input className={inputClass} onChange={(e) => setHouseNumberInput(e.target.value)} placeholder="235" value={houseNumberInput} />
+          </div>
+        </div>
 
-  return (
-    <div className={`animate-float-in ${shellClass}`}>
-      <BackButton onClick={goBack} />
-      <ProgressBar current={current} total={total} />
-      <h2 className="text-2xl font-bold tracking-tight text-brand-ink">Uw gegevens</h2>
-      <p className="mt-2 text-sm font-medium text-neutral-600">
-        Bijna klaar. Hiermee kunnen we binnen één werkdag contact met u opnemen.
-      </p>
+        {addressStatus === "found" && foundAddress ? (
+          <div className="intake-found">
+            <CheckIcon className="intake-found-check" />
+            <div>
+              <div style={{fontWeight: 600}}>
+                {foundAddress.street} {foundAddress.houseNumber}, {foundAddress.city}
+              </div>
+              <div style={{fontSize: "12.5px", opacity: 0.8}}>Klopt dat?</div>
+            </div>
+          </div>
+        ) : null}
+        {addressStatus === "notfound" ? (
+          <p className="intake-sub" style={{marginTop: 10, marginBottom: 0}}>
+            We konden dit adres niet automatisch vinden. Geen probleem, u kunt gewoon doorgaan.
+          </p>
+        ) : null}
 
-      <div className="mt-6 grid gap-3">
-        <input
-          autoComplete="name"
-          className={inputClass}
-          onChange={(e) => setUniversal((prev) => ({...prev, name: e.target.value}))}
-          placeholder="Naam"
-          type="text"
-          value={universal.name}
-        />
-        <input
-          autoComplete="email"
-          className={inputClass}
-          onChange={(e) => setUniversal((prev) => ({...prev, email: e.target.value}))}
-          placeholder="E-mailadres"
-          type="email"
-          value={universal.email}
-        />
-        <input
-          autoComplete="tel"
-          className={inputClass}
-          onChange={(e) => setUniversal((prev) => ({...prev, phone: e.target.value}))}
-          placeholder="Telefoonnummer"
-          type="tel"
-          value={universal.phone}
-        />
-
-        {/* Honeypot: onzichtbaar voor bezoekers, bots vullen doorgaans elk veld. */}
-        <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
-          <label htmlFor="company">Bedrijf</label>
+        <div className="intake-field" style={{marginTop: 14}}>
+          <label>
+            Funda-link <span className="intake-optnl">(optioneel)</span>
+          </label>
           <input
-            autoComplete="off"
-            id="company"
-            name="company"
-            onChange={(e) => setCompany(e.target.value)}
-            tabIndex={-1}
-            type="text"
-            value={company}
+            className={inputClass}
+            onChange={(e) => updateAnswer("funda", e.target.value)}
+            placeholder="Plak de Funda-link als u die heeft"
+            value={(answers.funda as string) || ""}
           />
         </div>
+        <div className="intake-note">
+          <InfoIcon />
+          Een Funda-link geeft ons in één klik de plattegronden en maten, zo denken we sneller mee.
+        </div>
+      </>
+    );
+  }
+
+  function renderBudgetScreen(def: QuestionDef) {
+    function handleRange(which: "min" | "max", value: number) {
+      let mn = which === "min" ? value : budgetMin;
+      let mx = which === "max" ? value : budgetMax;
+      if (mn > mx) {
+        if (which === "min") mn = mx;
+        else mx = mn;
+      }
+      setBudgetMin(mn);
+      setBudgetMax(mx);
+      setBudgetLabel(`${formatBudget(mn)} – ${formatBudget(mx)}`);
+    }
+
+    const fillLeft = (budgetMin / 150000) * 100;
+    const fillWidth = ((budgetMax - budgetMin) / 150000) * 100;
+
+    return (
+      <>
+        {renderHeader(def, "Budget")}
+        <div className="intake-rvals">
+          <div>
+            <div className="intake-rvals-l">Minimum</div>
+            <div className="intake-rvals-b">{formatBudget(budgetMin)}</div>
+          </div>
+          <div style={{textAlign: "right"}}>
+            <div className="intake-rvals-l">Maximum</div>
+            <div className="intake-rvals-b">{formatBudget(budgetMax)}</div>
+          </div>
+        </div>
+        <div className="intake-slider">
+          <div className="intake-slider-base" />
+          <div className="intake-slider-fill" style={{left: `${fillLeft}%`, width: `${fillWidth}%`}} />
+          <input max={150000} min={0} onChange={(e) => handleRange("min", Number(e.target.value))} step={5000} type="range" value={budgetMin} />
+          <input max={150000} min={0} onChange={(e) => handleRange("max", Number(e.target.value))} step={5000} type="range" value={budgetMax} />
+        </div>
+        <div className="intake-rscale">
+          <span>€0</span>
+          <span>€150k+</span>
+        </div>
+        <button
+          className="intake-unsure"
+          onClick={() => {
+            setBudgetLabel("Weet ik nog niet");
+            next();
+          }}
+          type="button"
+        >
+          Weet ik nog niet
+        </button>
+      </>
+    );
+  }
+
+  function renderSummaryScreen() {
+    type Row = {label: string; val: string; to: number};
+    const rows: Row[] = [{label: "Wat we voor u doen", val: services.map(serviceLabel).join(", "), to: 0}];
+
+    for (let i = 1; i < idx; i++) {
+      const d = flow[i];
+      if (d.t === "confirm" || d.t === "services") continue;
+      let val = "";
+      if (d.id === "loc") val = (answers.address as string) || `${answers.pc || ""} ${answers.hn || ""}`.trim();
+      else if (d.id === "budget") val = budgetLabel;
+      else if (d.t === "multi") val = ((answers[d.id] as string[]) || []).join(", ");
+      else val = (answers[d.id] as string) || "";
+      if (!val) continue;
+      if (val.length > 60) val = `${val.slice(0, 60)}...`;
+      rows.push({label: d.q, val, to: i});
+    }
+
+    return (
+      <>
+        <div className="intake-eyebrow">Overzicht</div>
+        <h1 className="intake-h1">Klopt dit zo?</h1>
+        <p className="intake-sub">Dit is uw aanvraag in het kort. Tik op een regel om iets aan te passen.</p>
+        <div className="intake-sum">
+          {rows.map((r) => (
+            <button className="intake-sum-row" key={r.label} onClick={() => go(r.to)} type="button">
+              <span className="intake-sr-l">{r.label}</span>
+              <span className="intake-sr-v">{r.val}</span>
+              <span className="intake-sr-e">wijzig</span>
+            </button>
+          ))}
+        </div>
+        <div className="intake-assure">
+          <LockIcon />
+          Uw gegevens en plannen behandelen we vertrouwelijk. We delen ze met niemand.
+        </div>
+      </>
+    );
+  }
+
+  function renderTrustStrip() {
+    return (
+      <div className="intake-tstrip">
+        <span className="intake-tstrip-c">VLOK-erkend</span>
+        <span className="intake-tstrip-c">VCA</span>
+        <span className="intake-tstrip-c">Verzekerd</span>
+        <span className="intake-tstrip-rate">
+          <span className="intake-stars">
+            <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
+          </span>
+          <b>4.8</b> uit 273 reviews
+        </span>
       </div>
+    );
+  }
 
-      {submitError ? (
-        <p className="mt-4 rounded-md bg-orange-50 px-4 py-3 text-sm font-semibold text-brand-orange">
-          Er ging iets mis bij het versturen. Probeer het nog eens, of bel of WhatsApp ons op 085 087 1814.
+  function renderContactScreen() {
+    const canSubmit = Boolean((answers.nm as string)?.trim() && (answers.em as string)?.trim() && (answers.ph as string)?.trim()) && !submitting;
+    return (
+      <>
+        <div className="intake-eyebrow">Voor {primaryLabel()}</div>
+        <h1 className="intake-h1">Waar mogen we uw plan naartoe sturen?</h1>
+        <p className="intake-sub">
+          U bent klaar. Uw aanvraag komt direct bij Therab en het team terecht, wij nemen binnen één werkdag persoonlijk contact met u op.
         </p>
-      ) : null}
+        <div className="intake-field">
+          <label>Naam</label>
+          <input autoComplete="name" className={inputClass} onChange={(e) => updateAnswer("nm", e.target.value)} placeholder="Uw naam" value={(answers.nm as string) || ""} />
+        </div>
+        <div className="intake-field">
+          <label>E-mail</label>
+          <input autoComplete="email" className={inputClass} onChange={(e) => updateAnswer("em", e.target.value)} placeholder="u@email.nl" type="email" value={(answers.em as string) || ""} />
+        </div>
+        <div className="intake-field">
+          <label>Telefoon</label>
+          <input autoComplete="tel" className={inputClass} onChange={(e) => updateAnswer("ph", e.target.value)} placeholder="06 ..." type="tel" value={(answers.ph as string) || ""} />
+        </div>
 
-      <button
-        className="btn-primary mt-6 w-full text-base disabled:pointer-events-none disabled:opacity-40"
-        disabled={!canSubmit}
-        onClick={handleSubmit}
-        type="button"
-      >
-        {submitting ? "Versturen…" : "Aanvraag versturen"}
-      </button>
+        {/* Honeypot: onzichtbaar voor bezoekers, bots vullen doorgaans elk veld. */}
+        <div aria-hidden="true" style={{position: "absolute", left: -9999, top: 0, height: 0, width: 0, overflow: "hidden"}}>
+          <label htmlFor="company">Bedrijf</label>
+          <input autoComplete="off" id="company" name="company" onChange={(e) => setCompany(e.target.value)} tabIndex={-1} type="text" value={company} />
+        </div>
+
+        <div className="intake-note">
+          <ShieldCheckIcon />U zit nergens aan vast. Geen aanbetaling, volledig vrijblijvend, en uw gegevens blijven vertrouwelijk.
+        </div>
+        {submitError ? (
+          <p className="intake-sub" style={{color: "var(--intake-accent-deep)", marginTop: 10}}>
+            Er ging iets mis bij het versturen. Probeer het nog eens, of bel of WhatsApp ons op 085 087 1814.
+          </p>
+        ) : null}
+        {renderTrustStrip()}
+        <div className="intake-foot-inline">
+          <button className="intake-btn" disabled={!canSubmit} onClick={handleSubmit} type="button">
+            {submitting ? "Bezig…" : "Mijn aanvraag versturen"} <ArrowIcon />
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  function renderThanksScreen() {
+    const firstName = ((answers.nm as string) || "").split(" ")[0];
+    return (
+      <div className="intake-ty">
+        <div className="intake-seal">
+          <SealIcon />
+        </div>
+        <h1 className="intake-h1">Bedankt{firstName ? `, ${firstName}` : ""}!</h1>
+        <p>
+          We hebben uw aanvraag voor {primaryLabel()} ontvangen. Wij nemen binnen één werkdag persoonlijk contact met u op.
+        </p>
+        <div className="intake-ns">
+          <div className="intake-ns-h">Wat er nu gebeurt</div>
+          <div className="intake-ns-r">
+            <span className="intake-ns-n">1</span>
+            <span className="intake-ns-tx">
+              <b>Therab of een collega neemt binnen één werkdag contact op</b>, per telefoon, e-mail of WhatsApp.
+            </span>
+          </div>
+          <div className="intake-ns-r">
+            <span className="intake-ns-n">2</span>
+            <span className="intake-ns-tx">
+              <b>Een persoonlijk adviesgesprek</b>, online of bij ons op kantoor in Den Haag, om uw plannen door te nemen.
+            </span>
+          </div>
+          <div className="intake-ns-r">
+            <span className="intake-ns-n">3</span>
+            <span className="intake-ns-tx">
+              <b>Een heldere, vaste prijsopgave.</b> Geen verrassingen, geen aanbetaling.
+            </span>
+          </div>
+        </div>
+        <div className="intake-sel-note">
+          We nemen bewust een beperkt aantal projecten tegelijk aan, zodat elk project de aandacht en het vakmanschap krijgt dat het verdient.
+        </div>
+        <p style={{marginTop: 18, fontSize: "13.5px", color: "var(--intake-ink-3)"}}>Tot snel, Therab en het team van DRO.</p>
+      </div>
+    );
+  }
+
+  function renderScreen() {
+    if (!current) return null;
+    if (current.t === "services") return renderServicesScreen();
+    if (current.t === "single" || current.t === "confirm") return <>{renderHeader(current, current.t === "confirm" ? "Even bevestigen" : serviceLabel(findServiceForQuestionId(current.id) || "") || "Uw aanvraag")}{renderOptions(current)}</>;
+    if (current.t === "multi") return <>{renderHeader(current, serviceLabel(findServiceForQuestionId(current.id) || "") || "Uw aanvraag")}{renderMultiOptions(current)}</>;
+    if (current.t === "text") {
+      return (
+        <>
+          {renderHeader(current, serviceLabel(findServiceForQuestionId(current.id) || "") || "Uw aanvraag")}
+          <div className="intake-field">
+            <textarea
+              className="intake-ta"
+              onChange={(e) => updateAnswer(current.id, e.target.value)}
+              placeholder={current.ph}
+              value={(answers[current.id] as string) || ""}
+            />
+          </div>
+        </>
+      );
+    }
+    if (current.t === "address") return renderAddressScreen(current);
+    if (current.t === "budget") return renderBudgetScreen(current);
+    if (current.t === "summary") return renderSummaryScreen();
+    if (current.t === "contact") return renderContactScreen();
+    if (current.t === "thanks") return renderThanksScreen();
+    return null;
+  }
+
+  function showsFooterButton(): {label: string; onClick: () => void; disabled: boolean} | null {
+    if (!current) return null;
+    if (current.t === "services") return {label: "Verder", onClick: buildFlowAndStart, disabled: services.length === 0};
+    if (current.t === "multi") return {label: "Verder", onClick: next, disabled: !((answers[current.id] as string[] | undefined)?.length)};
+    if (current.t === "text") return {label: "Verder", onClick: next, disabled: false};
+    if (current.t === "address") return {label: "Verder", onClick: confirmAddress, disabled: !(postcodeInput.trim() && houseNumberInput.trim())};
+    if (current.t === "budget") return {label: "Verder", onClick: next, disabled: false};
+    if (current.t === "summary") return {label: "Alles klopt, verder", onClick: next, disabled: false};
+    return null;
+  }
+
+  const footerButton = showsFooterButton();
+  const showSkip = current?.t === "text" && current.optional;
+  const percent = total > 0 ? Math.round((Math.min(idx + 1, total) / total) * 100) : 0;
+
+  return (
+    <div className={`intake-widget ${bricolage.variable} ${hanken.variable}`}>
+      <style jsx global>{`
+        .intake-widget {
+          --intake-bg: #ffffff;
+          --intake-ink: #111111;
+          --intake-ink-2: #454545;
+          --intake-ink-3: #6e6e6e;
+          --intake-line: #e7e7e7;
+          --intake-line-2: #dbdbdb;
+          --intake-sand: #f4f3f1;
+          --intake-accent: #e85a26;
+          --intake-accent-deep: #c6471a;
+          --intake-accent-tint: #fceee6;
+          --intake-good: #2e7d50;
+          --intake-fd: var(--intake-font-display), system-ui, sans-serif;
+          --intake-fb: var(--intake-font-body), system-ui, -apple-system, sans-serif;
+          font-family: var(--intake-fb);
+          color: var(--intake-ink);
+        }
+        .intake-card {
+          width: 100%;
+          max-width: 460px;
+          margin: 0 auto;
+          background: var(--intake-bg);
+          border-radius: 26px;
+          overflow: hidden;
+          border: 1px solid #e4e2de;
+          box-shadow: 0 2px 6px rgba(17, 17, 17, 0.05), 0 24px 60px rgba(17, 17, 17, 0.13);
+          display: flex;
+          flex-direction: column;
+          height: 660px;
+          max-height: 85vh;
+        }
+        .intake-top {
+          padding: 18px 22px 10px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          background: var(--intake-bg);
+        }
+        .intake-brand {
+          font-family: var(--intake-fd);
+          font-weight: 700;
+          font-size: 15px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          color: var(--intake-ink);
+        }
+        .intake-brand-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--intake-accent);
+          box-shadow: 0 0 0 4px var(--intake-accent-tint);
+        }
+        .intake-back {
+          margin-left: auto;
+          appearance: none;
+          border: 1px solid var(--intake-line-2);
+          background: var(--intake-bg);
+          width: 38px;
+          height: 38px;
+          border-radius: 11px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: var(--intake-ink-2);
+        }
+        .intake-back:hover {
+          background: var(--intake-sand);
+        }
+        .intake-prog {
+          padding: 0 22px 14px;
+          background: var(--intake-bg);
+        }
+        .intake-prog-meta {
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+          color: var(--intake-ink-3);
+          margin-bottom: 8px;
+        }
+        .intake-prog-meta b {
+          color: var(--intake-ink);
+        }
+        .intake-track {
+          height: 4px;
+          border-radius: 99px;
+          background: #eaeaea;
+          overflow: hidden;
+        }
+        .intake-bar {
+          height: 100%;
+          background: linear-gradient(90deg, var(--intake-accent), #f0793f);
+          border-radius: 99px;
+          transition: width 0.45s cubic-bezier(0.4, 0, 0.1, 1);
+        }
+        .intake-screen {
+          flex: 1 1 auto;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 6px 22px 26px;
+          background: var(--intake-bg);
+        }
+        .intake-screen-enter {
+          animation: intakeIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+        @keyframes intakeIn {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        .intake-eyebrow {
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: var(--intake-accent);
+          margin: 8px 0 10px;
+        }
+        .intake-h1 {
+          font-family: var(--intake-fd);
+          font-weight: 700;
+          font-size: 26px;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          margin: 0 0 8px;
+          color: var(--intake-ink);
+        }
+        .intake-sub {
+          color: var(--intake-ink-3);
+          font-size: 14.5px;
+          line-height: 1.45;
+          margin: 0 0 20px;
+        }
+        .intake-coach {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: var(--intake-ink-2);
+          background: var(--intake-sand);
+          border-radius: 99px;
+          padding: 6px 13px;
+          margin: 6px 0 14px;
+        }
+        .intake-coach-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: var(--intake-accent);
+        }
+        .intake-sp {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12.5px;
+          color: var(--intake-ink-3);
+          margin: -8px 0 18px;
+        }
+        .intake-stars {
+          color: var(--intake-accent);
+          display: flex;
+          gap: 1px;
+        }
+        .intake-sp b {
+          color: var(--intake-ink-2);
+          font-weight: 700;
+        }
+        .intake-opts {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .intake-opt {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          width: 100%;
+          text-align: left;
+          cursor: pointer;
+          background: var(--intake-bg);
+          border: 1.5px solid var(--intake-line);
+          border-radius: 14px;
+          padding: 16px 16px;
+          color: var(--intake-ink);
+          transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        }
+        .intake-opt:hover {
+          border-color: var(--intake-line-2);
+          transform: translateY(-1px);
+          box-shadow: 0 5px 16px rgba(17, 17, 17, 0.06);
+        }
+        .intake-opt-lab {
+          flex: 1 1 auto;
+        }
+        .intake-opt-t {
+          font-weight: 600;
+          font-size: 15.5px;
+          letter-spacing: -0.005em;
+        }
+        .intake-opt-d {
+          display: block;
+          font-size: 12.5px;
+          color: var(--intake-ink-3);
+          margin-top: 2px;
+        }
+        .intake-opt-rc {
+          flex: 0 0 auto;
+          width: 23px;
+          height: 23px;
+          border-radius: 50%;
+          border: 1.5px solid var(--intake-line-2);
+          background: var(--intake-bg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: 0.15s ease;
+        }
+        .intake-check-off,
+        .intake-check-on {
+          width: 13px;
+          height: 13px;
+          transition: 0.15s ease;
+        }
+        .intake-check-off {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        .intake-check-on {
+          opacity: 1;
+          transform: scale(1);
+          color: #fff;
+        }
+        .intake-opt.intake-sel {
+          border-color: var(--intake-accent);
+          background: var(--intake-accent-tint);
+        }
+        .intake-opt.intake-sel .intake-opt-rc {
+          border-color: var(--intake-accent);
+          background: var(--intake-accent);
+        }
+        .intake-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+        }
+        .intake-tile {
+          position: relative;
+          text-align: left;
+          cursor: pointer;
+          background: var(--intake-bg);
+          border: 1.5px solid var(--intake-line);
+          border-radius: 15px;
+          padding: 15px 14px 14px;
+          min-height: 104px;
+          display: flex;
+          flex-direction: column;
+          gap: 11px;
+          color: var(--intake-ink);
+          transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+        }
+        .intake-tile:hover {
+          border-color: var(--intake-line-2);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(17, 17, 17, 0.07);
+        }
+        .intake-tile-ic {
+          width: 38px;
+          height: 38px;
+          border-radius: 11px;
+          background: var(--intake-sand);
+          color: var(--intake-ink-2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: 0.15s ease;
+        }
+        .intake-tile-t {
+          font-weight: 600;
+          font-size: 14.5px;
+          line-height: 1.2;
+        }
+        .intake-tile-chk {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: 1.5px solid var(--intake-line-2);
+          background: var(--intake-bg);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: 0.15s ease;
+        }
+        .intake-tile.intake-sel {
+          border-color: var(--intake-accent);
+          background: var(--intake-accent-tint);
+        }
+        .intake-tile.intake-sel .intake-tile-ic {
+          background: var(--intake-accent);
+          color: #fff;
+        }
+        .intake-tile.intake-sel .intake-tile-chk {
+          border-color: var(--intake-accent);
+          background: var(--intake-accent);
+        }
+        .intake-tile-wide {
+          grid-column: 1 / -1;
+          flex-direction: row;
+          align-items: center;
+          min-height: 0;
+          padding: 14px;
+        }
+        .intake-field {
+          margin-bottom: 15px;
+        }
+        .intake-field label {
+          display: block;
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--intake-ink-2);
+          margin: 0 0 7px;
+        }
+        .intake-optnl {
+          color: var(--intake-ink-3);
+          font-weight: 500;
+        }
+        .intake-inp,
+        .intake-ta {
+          width: 100%;
+          font-family: var(--intake-fb);
+          font-size: 16px;
+          color: var(--intake-ink);
+          background: var(--intake-bg);
+          border: 1.5px solid var(--intake-line);
+          border-radius: 12px;
+          padding: 14px 15px;
+          transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .intake-inp::placeholder,
+        .intake-ta::placeholder {
+          color: #a9a9a9;
+        }
+        .intake-inp:focus,
+        .intake-ta:focus {
+          outline: none;
+          border-color: var(--intake-accent);
+          box-shadow: 0 0 0 3px var(--intake-accent-tint);
+        }
+        .intake-ta {
+          min-height: 150px;
+          resize: vertical;
+          line-height: 1.55;
+        }
+        .intake-row2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 11px;
+        }
+        .intake-found {
+          display: flex;
+          gap: 11px;
+          align-items: center;
+          margin-top: 6px;
+          padding: 13px 15px;
+          border-radius: 12px;
+          background: #f1f7f3;
+          border: 1px solid #d5e7dc;
+          color: #1f5238;
+          font-size: 14px;
+        }
+        .intake-found-check {
+          flex: 0 0 auto;
+          width: 19px;
+          height: 19px;
+          color: var(--intake-good);
+        }
+        .intake-note {
+          display: flex;
+          gap: 11px;
+          align-items: flex-start;
+          margin-top: 18px;
+          padding: 14px 15px;
+          border-radius: 13px;
+          background: var(--intake-sand);
+          color: var(--intake-ink-2);
+          font-size: 13px;
+          line-height: 1.5;
+        }
+        .intake-note svg {
+          flex: 0 0 auto;
+          color: var(--intake-accent);
+          margin-top: 1px;
+        }
+        .intake-rvals {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin: 8px 0 20px;
+        }
+        .intake-rvals-l {
+          font-size: 10.5px;
+          color: var(--intake-ink-3);
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
+          font-weight: 600;
+          margin-bottom: 5px;
+        }
+        .intake-rvals-b {
+          font-family: var(--intake-fd);
+          font-weight: 700;
+          font-size: 26px;
+          letter-spacing: -0.01em;
+          color: var(--intake-ink);
+          font-variant-numeric: tabular-nums;
+        }
+        .intake-slider {
+          position: relative;
+          height: 40px;
+        }
+        .intake-slider-base {
+          position: absolute;
+          top: 50%;
+          left: 2px;
+          right: 2px;
+          height: 5px;
+          transform: translateY(-50%);
+          background: #e6e6e6;
+          border-radius: 99px;
+        }
+        .intake-slider-fill {
+          position: absolute;
+          top: 50%;
+          height: 5px;
+          transform: translateY(-50%);
+          background: var(--intake-accent);
+          border-radius: 99px;
+        }
+        .intake-slider input {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 40px;
+          margin: 0;
+          background: none;
+          pointer-events: none;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+        .intake-slider input:focus {
+          outline: none;
+        }
+        .intake-slider input::-webkit-slider-runnable-track {
+          height: 40px;
+          background: transparent;
+        }
+        .intake-slider input::-moz-range-track {
+          height: 40px;
+          background: transparent;
+        }
+        .intake-slider input::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          pointer-events: auto;
+          margin-top: 7px;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: #fff;
+          border: 2.5px solid var(--intake-accent);
+          box-shadow: 0 2px 8px rgba(17, 17, 17, 0.2);
+          cursor: grab;
+        }
+        .intake-slider input::-moz-range-thumb {
+          pointer-events: auto;
+          width: 26px;
+          height: 26px;
+          border-radius: 50%;
+          background: #fff;
+          border: 2.5px solid var(--intake-accent);
+          box-shadow: 0 2px 8px rgba(17, 17, 17, 0.2);
+          cursor: grab;
+        }
+        .intake-rscale {
+          display: flex;
+          justify-content: space-between;
+          font-size: 11.5px;
+          color: var(--intake-ink-3);
+          margin-top: 11px;
+          font-weight: 500;
+        }
+        .intake-unsure {
+          display: block;
+          margin: 20px auto 0;
+          background: none;
+          border: none;
+          color: var(--intake-ink-3);
+          font-size: 13px;
+          font-family: var(--intake-fb);
+          cursor: pointer;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
+        .intake-unsure:hover {
+          color: var(--intake-ink);
+        }
+        .intake-foot {
+          padding: 12px 22px calc(16px + env(safe-area-inset-bottom, 0px));
+          background: linear-gradient(to top, var(--intake-bg) 66%, rgba(255, 255, 255, 0));
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .intake-foot-inline {
+          margin-top: 22px;
+        }
+        .intake-btn {
+          width: 100%;
+          appearance: none;
+          border: none;
+          cursor: pointer;
+          font-family: var(--intake-fb);
+          font-weight: 600;
+          font-size: 16px;
+          border-radius: 13px;
+          padding: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          background: var(--intake-accent);
+          color: #fff;
+          box-shadow: 0 6px 16px rgba(232, 90, 38, 0.28);
+          transition: 0.15s ease;
+        }
+        .intake-btn:hover {
+          background: var(--intake-accent-deep);
+          transform: translateY(-1px);
+        }
+        .intake-btn[disabled] {
+          background: #e6e4e0;
+          color: #a7a29a;
+          box-shadow: none;
+          cursor: not-allowed;
+          transform: none;
+        }
+        .intake-skip {
+          text-align: center;
+          font-size: 13px;
+          color: var(--intake-ink-3);
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 6px;
+          font-family: var(--intake-fb);
+        }
+        .intake-skip:hover {
+          color: var(--intake-ink);
+        }
+        .intake-tstrip {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px 14px;
+          align-items: center;
+          margin-top: 16px;
+          padding-top: 16px;
+          border-top: 1px solid var(--intake-line);
+        }
+        .intake-tstrip-c {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: var(--intake-ink-3);
+        }
+        .intake-tstrip-rate {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12.5px;
+          color: var(--intake-ink-2);
+          margin-left: auto;
+        }
+        .intake-tstrip-rate b {
+          color: var(--intake-ink);
+        }
+        .intake-sum {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .intake-sum-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 3px 12px;
+          align-items: center;
+          text-align: left;
+          width: 100%;
+          cursor: pointer;
+          background: var(--intake-bg);
+          border: 1.5px solid var(--intake-line);
+          border-radius: 13px;
+          padding: 13px 15px;
+          transition: 0.15s ease;
+        }
+        .intake-sum-row:hover {
+          border-color: var(--intake-line-2);
+          background: var(--intake-sand);
+        }
+        .intake-sr-l {
+          grid-column: 1;
+          grid-row: 1;
+          font-size: 11.5px;
+          color: var(--intake-ink-3);
+          font-weight: 600;
+          letter-spacing: 0.02em;
+        }
+        .intake-sr-v {
+          grid-column: 1;
+          grid-row: 2;
+          font-size: 14.5px;
+          font-weight: 600;
+          color: var(--intake-ink);
+          line-height: 1.3;
+        }
+        .intake-sr-e {
+          grid-column: 2;
+          grid-row: 1 / span 2;
+          font-size: 12px;
+          color: var(--intake-accent);
+          font-weight: 600;
+          align-self: center;
+        }
+        .intake-assure {
+          display: flex;
+          gap: 11px;
+          align-items: flex-start;
+          margin-top: 16px;
+          font-size: 12.5px;
+          color: var(--intake-ink-3);
+          line-height: 1.5;
+        }
+        .intake-assure svg {
+          flex: 0 0 auto;
+          color: var(--intake-ink-3);
+          margin-top: 1px;
+        }
+        .intake-ty {
+          text-align: center;
+          padding-top: 36px;
+        }
+        .intake-seal {
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          margin: 0 auto 22px;
+          background: var(--intake-accent-tint);
+          color: var(--intake-accent);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .intake-ty h1 {
+          font-size: 27px;
+          margin-bottom: 10px;
+        }
+        .intake-ty p {
+          color: var(--intake-ink-3);
+          font-size: 15px;
+          line-height: 1.55;
+          margin: 0 auto 24px;
+          max-width: 32ch;
+        }
+        .intake-ns {
+          text-align: left;
+          background: var(--intake-sand);
+          border-radius: 16px;
+          padding: 18px;
+        }
+        .intake-ns-h {
+          font-family: var(--intake-fd);
+          font-weight: 700;
+          font-size: 15px;
+          margin-bottom: 14px;
+        }
+        .intake-ns-r {
+          display: flex;
+          gap: 12px;
+          align-items: flex-start;
+          margin-bottom: 12px;
+        }
+        .intake-ns-r:last-child {
+          margin-bottom: 0;
+        }
+        .intake-ns-n {
+          flex: 0 0 auto;
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: var(--intake-accent);
+          color: #fff;
+          font-weight: 700;
+          font-size: 12px;
+          font-family: var(--intake-fd);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .intake-ns-tx {
+          font-size: 13.5px;
+          color: var(--intake-ink-2);
+          line-height: 1.45;
+          padding-top: 2px;
+        }
+        .intake-ns-tx b {
+          color: var(--intake-ink);
+        }
+        .intake-sel-note {
+          margin-top: 18px;
+          padding: 15px 16px;
+          border-radius: 13px;
+          background: var(--intake-sand);
+          font-size: 13px;
+          color: var(--intake-ink-2);
+          line-height: 1.5;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .intake-widget * {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
+
+      <div className="intake-card">
+        <div className="intake-top">
+          <span className="intake-brand">
+            <span className="intake-brand-dot" />
+            DRO Renovaties
+          </span>
+          {idx > 0 && !isThanks ? (
+            <button aria-label="Terug" className="intake-back" onClick={goBack} type="button">
+              <BackIcon />
+            </button>
+          ) : null}
+        </div>
+
+        {!isThanks ? (
+          <div className="intake-prog">
+            <div className="intake-prog-meta">
+              <span>
+                Stap <b>{Math.min(idx + 1, total)}</b> van {total}
+              </span>
+              <span>{percent}%</span>
+            </div>
+            <div className="intake-track">
+              <div className="intake-bar" style={{width: `${percent}%`}} />
+            </div>
+          </div>
+        ) : null}
+
+        <div className="intake-screen intake-screen-enter" key={idx}>
+          {renderScreen()}
+        </div>
+
+        {footerButton || showSkip ? (
+          <div className="intake-foot">
+            {footerButton ? (
+              <button className="intake-btn" disabled={footerButton.disabled} onClick={footerButton.onClick} type="button">
+                {footerButton.label} <ArrowIcon />
+              </button>
+            ) : null}
+            {showSkip ? (
+              <button className="intake-skip" onClick={next} type="button">
+                Sla deze vraag over
+              </button>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

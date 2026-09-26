@@ -35,9 +35,7 @@ export default function HomeSlotSection(_props: HomeSlotSectionProps) {
           </div>
         </div>
 
-        <div className="rounded border border-brand-line bg-brand-soft p-5 sm:p-6">
-          <SmartIntakeWizard embedded />
-        </div>
+        <SmartIntakeWizard />
       </div>
     </section>
   );
