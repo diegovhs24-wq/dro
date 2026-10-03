@@ -959,6 +959,13 @@ export const formSubmission = defineType({
       ],
     }),
     defineField({
+      name: 'attachments',
+      title: 'Bijlagen',
+      type: 'array',
+      of: [defineArrayMember({type: 'attachmentItem'})],
+      readOnly: true,
+    }),
+    defineField({
       name: 'source',
       title: 'Bron',
       type: 'string',
