@@ -4,6 +4,7 @@ import {sendSubmissionNotificationEmail} from "@/lib/email";
 
 type ServiceAnswer = {question?: string; answer?: string};
 type ServiceAnswerGroup = {service?: string; answers?: ServiceAnswer[]};
+type Attachment = {assetId?: string; kind?: string; originalFilename?: string};
 
 type SubmitPayload = {
   // Honeypot: echte bezoekers vullen dit nooit in (onzichtbaar in de UI).
@@ -24,6 +25,7 @@ type SubmitPayload = {
   hoeGevonden?: string;
   message?: string;
   serviceAnswers?: ServiceAnswerGroup[];
+  attachments?: Attachment[];
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,6 +36,18 @@ function cleanString(value: unknown): string {
 
 function cleanNumber(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function cleanAttachments(input: unknown): Array<{kind: "image" | "file"; assetId: string; originalFilename: string}> {
+  if (!Array.isArray(input)) return [];
+
+  return input
+    .map((item: Attachment) => ({
+      kind: item?.kind === "image" ? ("image" as const) : ("file" as const),
+      assetId: cleanString(item?.assetId),
+      originalFilename: cleanString(item?.originalFilename),
+    }))
+    .filter((item) => item.assetId.startsWith("image-") || item.assetId.startsWith("file-"));
 }
 
 function cleanServiceAnswers(input: unknown): Array<{service: string; answers: Array<{question: string; answer: string}>}> {
@@ -96,6 +110,7 @@ export async function POST(request: NextRequest) {
   const hoeGevonden = cleanString(payload.hoeGevonden);
   const message = cleanString(payload.message);
   const serviceAnswers = cleanServiceAnswers(payload.serviceAnswers);
+  const attachments = cleanAttachments(payload.attachments);
   const submittedAt = new Date().toISOString();
 
   try {
@@ -121,6 +136,15 @@ export async function POST(request: NextRequest) {
         service: group.service,
         answers: group.answers.map((entry, j) => ({_key: `answer-${i}-${j}`, ...entry})),
       })),
+      attachments: attachments.map((item, i) => ({
+        _key: `attachment-${i}`,
+        _type: "attachmentItem",
+        kind: item.kind,
+        originalFilename: item.originalFilename,
+        ...(item.kind === "image"
+          ? {image: {_type: "image", asset: {_type: "reference", _ref: item.assetId}}}
+          : {file: {_type: "file", asset: {_type: "reference", _ref: item.assetId}}}),
+      })),
       source: "smart-intake",
       submittedAt,
     });
@@ -144,6 +168,9 @@ export async function POST(request: NextRequest) {
       {fieldKey: "timeline", label: "Planning", value: timeline},
       {fieldKey: "hoeGevonden", label: "Hoe gevonden", value: hoeGevonden},
       {fieldKey: "message", label: "Vertel ons wat we nog niet weten", value: message},
+      ...(attachments.length
+        ? [{fieldKey: "attachments", label: "Bijlagen", value: `${attachments.length} bestand(en), zie de inzending in Sanity Studio`}]
+        : []),
       ...serviceAnswers.flatMap((group) =>
         group.answers.map((entry) => ({
           fieldKey: `${group.service}: ${entry.question}`,

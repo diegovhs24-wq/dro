@@ -2282,11 +2282,40 @@ export const videoChecklistBlock = defineType({
   },
 })
 
+// Bijlage bij een aanvraag (foto of document), geüpload via de server-side
+// /api/upload-attachment route. image/file zijn Sanity's eigen veldtypes,
+// zodat de Studio er gratis thumbnails resp. een downloadbare bestandskaart
+// voor rendert, zonder dat wij dat zelf hoeven te bouwen.
+export const attachmentItem = defineType({
+  name: 'attachmentItem',
+  title: 'Bijlage',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'kind',
+      title: 'Soort',
+      type: 'string',
+      options: {list: ['image', 'file']},
+      readOnly: true,
+    }),
+    defineField({name: 'originalFilename', title: 'Oorspronkelijke bestandsnaam', type: 'string', readOnly: true}),
+    defineField({name: 'image', title: 'Afbeelding', type: 'image', readOnly: true}),
+    defineField({name: 'file', title: 'Bestand', type: 'file', readOnly: true}),
+  ],
+  preview: {
+    select: {title: 'originalFilename', kind: 'kind', media: 'image'},
+    prepare({title, kind, media}) {
+      return {title: title || 'Bijlage', subtitle: kind === 'image' ? 'Afbeelding' : 'Document', media}
+    },
+  },
+})
+
 export const objectSchemaTypes = [
   cmsImage,
   seoSettings,
   organizationSeo,
   linkItem,
+  attachmentItem,
   smartLink,
   megaMenuLink,
   megaMenuColumn,
