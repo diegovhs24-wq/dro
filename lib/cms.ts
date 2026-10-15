@@ -1323,6 +1323,44 @@ async function safeFetch<T>(
   }
 }
 
+// Het hoofdmenu is CMS-beheerd, maar de overgang van "Werkwijze" naar
+// "Ervaringen" moet live gaan zonder dat iemand eerst Studio-content hoeft aan
+// te passen: de Werkwijze-pagina verhuist naar Over ons en /werkwijze
+// redirect. Idempotent: staat Ervaringen al in het CMS-menu, dan wordt er niets
+// toegevoegd en verdwijnt alleen Werkwijze.
+function isNavItemFor(item: SiteSettings["headerMenu"][number], slug: string): boolean {
+  if (item.type !== "link") return false;
+  const link = item.link;
+  const label = item.label.trim().toLowerCase();
+  const refSlug = link?.linkType === "internal" ? link.internalRef?.slug : undefined;
+  return refSlug === slug || label === slug;
+}
+
+function applyNavigationOverrides(menu: SiteSettings["headerMenu"]): SiteSettings["headerMenu"] {
+  const hasErvaringen = menu.some((item) => isNavItemFor(item, "ervaringen"));
+  const ervaringenItem: SiteSettings["headerMenu"][number] = {
+    type: "link",
+    label: "Ervaringen",
+    link: {linkType: "internal", internalRef: {_type: "page", slug: "ervaringen"}},
+  };
+
+  const result: SiteSettings["headerMenu"] = [];
+  let inserted = hasErvaringen;
+
+  for (const item of menu) {
+    if (isNavItemFor(item, "werkwijze")) {
+      if (!inserted) {
+        result.push(ervaringenItem);
+        inserted = true;
+      }
+      continue;
+    }
+    result.push(item);
+  }
+
+  return result;
+}
+
 function isRecord(value: unknown): value is RawRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
@@ -1571,7 +1609,7 @@ function mapSiteSettings(raw: unknown): SiteSettings {
     description: asString(normalized.description) || undefined,
     favicon: asString(normalized.favicon) || undefined,
     headerLogo: asString(normalized.headerLogo) || undefined,
-    headerMenu: asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu),
+    headerMenu: applyNavigationOverrides(asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu)),
     headerButtons: asArray<SiteSettings["headerButtons"][number]>(normalized.headerButtons),
     footer: {
       logo: asString(footer.logo) || undefined,
@@ -1722,6 +1760,56 @@ export async function getReviews() {
 
   const reviews = normalizeCmsValue(data) as ReviewItem[] | null;
   return reviews || [];
+}
+
+export type VideoTestimonial = {
+  id: string;
+  clientName: string;
+  caption: string;
+  quote?: string;
+  videoUrl: string;
+  posterUrl: string;
+  featured: boolean;
+};
+
+const VIDEO_TESTIMONIALS_QUERY = `*[_type == "videoTestimonial" && defined(poster.asset) && (defined(video.asset) || defined(externalVideoUrl))] | order(sortOrder asc, _createdAt desc){
+  _id,
+  clientName,
+  projectType,
+  location,
+  quote,
+  featured,
+  "fileUrl": video.asset->url,
+  externalVideoUrl,
+  "posterUrl": poster.asset->url
+}`;
+
+export async function getVideoTestimonials(): Promise<VideoTestimonial[]> {
+  const {data, failed} = await safeFetch<RawRecord[] | null>(VIDEO_TESTIMONIALS_QUERY);
+
+  if (failed || !Array.isArray(data)) {
+    return [];
+  }
+
+  return data
+    .map((raw): VideoTestimonial | null => {
+      const videoUrl = asString(raw.fileUrl) || asString(raw.externalVideoUrl);
+      const posterBase = asString(raw.posterUrl);
+      const clientName = asString(raw.clientName);
+
+      if (!videoUrl || !posterBase || !clientName) return null;
+
+      return {
+        id: asString(raw._id),
+        clientName,
+        caption: [asString(raw.projectType), asString(raw.location)].filter(Boolean).join(", "),
+        quote: asString(raw.quote) || undefined,
+        videoUrl,
+        posterUrl: `${posterBase}?w=1280&auto=format&q=75`,
+        featured: raw.featured === true,
+      };
+    })
+    .filter((item): item is VideoTestimonial => item !== null);
 }
 
 export async function getPartners() {

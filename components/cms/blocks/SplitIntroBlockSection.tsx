@@ -38,9 +38,12 @@ function InlineNote({
 
 export default function SplitIntroBlockSection({
   content,
+  demoteHeading = false,
 }: {
   content: SplitIntroContent;
+  demoteHeading?: boolean;
 }) {
+  const Heading = demoteHeading ? "h2" : "h1";
   const primary = resolveSmartLink(content.primaryButtonLink);
   const secondary = resolveSmartLink(content.secondaryNoteLink);
 
@@ -51,11 +54,11 @@ export default function SplitIntroBlockSection({
           <div className="max-w-3xl">
             {content.eyebrow ? <p className="eyebrow-slate">{content.eyebrow}</p> : null}
 
-            <h1 className="mt-4 text-4xl font-bold  tracking-[-0.03em] leading-tight  text-brand-ink text-[38px] lg:text-[56px] max-w-[500px">
+            <Heading className="mt-4 text-4xl font-bold  tracking-[-0.03em] leading-tight  text-brand-ink text-[38px] lg:text-[56px] max-w-[500px">
               {content.titlePrefix ? <span>{content.titlePrefix} </span> : null}
               {content.titleHighlight ? <span className="text-brand-orange">{content.titleHighlight}</span> : null}
               {content.titleSuffix ? <span>{content.titleHighlight ? " " : ""}{content.titleSuffix}</span> : null}
-            </h1>
+            </Heading>
 
             {content.description ? (
               <p className="mt-6 max-w-2xl text-base font-normal leading-7 text-deep-slate sm:text-lg">

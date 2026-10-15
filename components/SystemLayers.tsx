@@ -34,7 +34,7 @@ export default function SystemLayers() {
             U hoeft niet alles zelf te regelen. Wij houden overzicht en nemen u
             stap voor stap mee.
           </p>
-          <a className="btn-primary mt-7" href="/werkwijze">
+          <a className="btn-primary mt-7" href="/over-ons">
             Bekijk werkwijze
           </a>
         </div>

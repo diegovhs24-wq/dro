@@ -12,6 +12,7 @@ import {
   ImageIcon,
   InlineIcon,
   LinkIcon,
+  PlayIcon,
   StarIcon,
   TagIcon,
   UsersIcon,
@@ -56,6 +57,7 @@ async function getStructureCounts(context: StructureResolverContext) {
       projectIds: string[]
       serviceIds: string[]
       reviewIds: string[]
+      videoTestimonialIds: string[]
       faqIds: string[]
       partnerIds: string[]
       intakeFormIds: string[]
@@ -69,6 +71,7 @@ async function getStructureCounts(context: StructureResolverContext) {
         "projectIds":      *[_type == "project"]._id,
         "serviceIds":      *[_type == "service"]._id,
         "reviewIds":       *[_type == "review"]._id,
+        "videoTestimonialIds": *[_type == "videoTestimonial"]._id,
         "faqIds":          *[_type == "faq"]._id,
         "partnerIds":      *[_type == "partner"]._id,
         "intakeFormIds":   *[_type == "intakeForm"]._id,
@@ -85,6 +88,7 @@ async function getStructureCounts(context: StructureResolverContext) {
       projects:      normalize(data?.projectIds),
       services:      normalize(data?.serviceIds),
       reviews:       normalize(data?.reviewIds),
+      videoTestimonials: normalize(data?.videoTestimonialIds),
       faqs:          normalize(data?.faqIds),
       partners:      normalize(data?.partnerIds),
       intakeForms:   normalize(data?.intakeFormIds),
@@ -95,7 +99,7 @@ async function getStructureCounts(context: StructureResolverContext) {
     }
   } catch {
     return {
-      otherPages: 0, projects: 0, services: 0, reviews: 0,
+      otherPages: 0, projects: 0, services: 0, reviews: 0, videoTestimonials: 0,
       faqs: 0, partners: 0, intakeForms: 0, submissions: 0,
       blogPosts: 0, blogAuthors: 0, blogCategories: 0,
     }
@@ -230,6 +234,9 @@ export const structure: StructureResolver = async (S, context) => {
       S.divider(),
 
       // ── Social Proof ──────────────────────────────────────────
+      S.documentTypeListItem('videoTestimonial')
+        .title(`Video Testimonials (${c.videoTestimonials})`)
+        .icon(PlayIcon),
       S.documentTypeListItem('review')
         .title(`Reviews (${c.reviews})`)
         .icon(StarIcon),

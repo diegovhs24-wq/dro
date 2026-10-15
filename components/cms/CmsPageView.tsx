@@ -202,6 +202,10 @@ function ContactFormSection({ block }: { block: ContactFormBlock }) {
 }
 
 async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
+  // Gezet door withWerkwijzeBlocks: blokken die naar een andere pagina verhuisd
+  // zijn mogen geen tweede h1 renderen.
+  const demoteHeading = Boolean((block as { _demoteHeading?: boolean })._demoteHeading);
+
   switch (block._type) {
     case "homeHeroBlock":
       return block.hero ? (
@@ -227,7 +231,7 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
         />
       ) : null;
     case "splitIntroBlock":
-      return <SplitIntroBlockSection content={block} />;
+      return <SplitIntroBlockSection content={block} demoteHeading={demoteHeading} />;
     case "editorialPrinciplesBlock":
       return <EditorialPrinciplesBlockSection content={block} />;
     case "metricsBandBlock":
@@ -281,7 +285,7 @@ async function RenderBlock({ block }: { block: CmsDynamicPageBlock }) {
     case "centeredActionBannerBlock":
       return <CenteredActionBannerBlockSection block={block} />;
     case "processBlock":
-      return <ProcessBlockSection content={block} />;
+      return <ProcessBlockSection content={block} demoteHeading={demoteHeading} />;
     case "processFaqBlock":
       return <ProcessFaqBlockSection content={block} />;
     case "processIntakeBannerBlock":

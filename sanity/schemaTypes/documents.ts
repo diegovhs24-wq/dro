@@ -994,6 +994,73 @@ export const formSubmission = defineType({
   ],
 })
 
+// Videoverhalen van klanten voor /ervaringen. Therab uploadt hier een
+// horizontale mp4 plus een poster. `externalVideoUrl` is bewust een tweede,
+// optionele bron: groeit dit uit tot veel of lange video's, dan kan een echte
+// videohost (Mux, Cloudinary) de Sanity-assets vervangen zonder
+// schemawijziging.
+export const videoTestimonial = defineType({
+  name: 'videoTestimonial',
+  title: 'Video Testimonial',
+  type: 'document',
+  fields: [
+    defineField({name: 'clientName', title: 'Naam klant', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({
+      name: 'projectType',
+      title: 'Project',
+      type: 'string',
+      description: 'Bijvoorbeeld "Totaalrenovatie". Wordt samen met de plaats als onderschrift getoond.',
+    }),
+    defineField({name: 'location', title: 'Plaats', type: 'string', description: 'Bijvoorbeeld "Den Haag".'}),
+    defineField({
+      name: 'video',
+      title: 'Video (mp4)',
+      type: 'file',
+      options: {accept: 'video/mp4'},
+      description:
+        'Horizontaal (16:9), kort en gecomprimeerd: liefst onder 1 tot 2 minuten en met nette webcompressie. Zware video\'s maken de pagina traag.',
+    }),
+    defineField({
+      name: 'externalVideoUrl',
+      title: 'Externe video-URL (optioneel)',
+      type: 'url',
+      description: 'Directe mp4-link bij een videohost. Wordt alleen gebruikt als er geen bestand is geüpload.',
+    }),
+    defineField({
+      name: 'poster',
+      title: 'Poster',
+      type: 'image',
+      options: {hotspot: true},
+      description: 'De still die voor het afspelen te zien is. Liefst 16:9, minimaal 1280 pixels breed.',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({name: 'quote', title: 'Korte quote (optioneel)', type: 'text', rows: 2}),
+    defineField({
+      name: 'featured',
+      title: 'Uitgelicht verhaal',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Het uitgelichte verhaal krijgt de meeste ruimte bovenaan. Is er niets gekozen, dan wordt de eerste video uitgelicht.',
+    }),
+    defineField({
+      name: 'sortOrder',
+      title: 'Volgorde',
+      type: 'number',
+      description: 'Laagste nummer eerst.',
+    }),
+  ],
+  preview: {
+    select: {title: 'clientName', projectType: 'projectType', location: 'location', featured: 'featured', media: 'poster'},
+    prepare({title, projectType, location, featured, media}) {
+      const subtitle = [projectType, location].filter(Boolean).join(', ')
+      return {title: title || 'Video testimonial', subtitle: featured ? `Uitgelicht${subtitle ? ' · ' + subtitle : ''}` : subtitle, media}
+    },
+  },
+  orderings: [
+    {title: 'Volgorde', name: 'sortOrderAsc', by: [{field: 'sortOrder', direction: 'asc'}]},
+  ],
+})
+
 export const documentSchemaTypes = [
   siteSettings,
   page,
@@ -1012,4 +1079,5 @@ export const documentSchemaTypes = [
   redirect,
   intakeForm,
   formSubmission,
+  videoTestimonial,
 ]

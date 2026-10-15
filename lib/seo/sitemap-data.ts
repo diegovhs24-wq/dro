@@ -50,10 +50,14 @@ const STATIC_PATHS = [
   {path: "/kennisbank", priority: 0.8, changeFrequency: "weekly" as const},
   {path: "/handige-tools", priority: 0.85, changeFrequency: "monthly" as const},
   {path: "/over-ons", priority: 0.8, changeFrequency: "monthly" as const},
-  {path: "/werkwijze", priority: 0.8, changeFrequency: "monthly" as const},
+  {path: "/ervaringen", priority: 0.8, changeFrequency: "weekly" as const},
   {path: "/zakelijk", priority: 0.8, changeFrequency: "monthly" as const},
   {path: "/contact", priority: 0.8, changeFrequency: "monthly" as const},
 ];
+
+// Pagina's die nog als CMS-document bestaan maar via een redirect naar een
+// andere URL verwijzen, zodat ze niet in de sitemap horen.
+const REDIRECTED_PAGE_SLUGS = ["werkwijze"];
 
 export type SitemapUrl = {
   url: string;
@@ -87,7 +91,7 @@ export async function getSitemapUrls(): Promise<SitemapUrl[]> {
   });
 
   (data?.pages || []).forEach((page) => {
-    if (page.noIndex) return;
+    if (page.noIndex || REDIRECTED_PAGE_SLUGS.includes(page.slug)) return;
     const path = pagePath(page.slug);
     urls.set(path, {
       url: absoluteUrl(path),

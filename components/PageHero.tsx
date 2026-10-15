@@ -12,6 +12,8 @@ type PageHeroProps = {
   primaryLink?: SmartLink;
   secondaryLabel?: string;
   secondaryLink?: SmartLink;
+  ratingScore?: number;
+  ratingLabel?: string;
 };
 
 export default function PageHero({
@@ -23,6 +25,8 @@ export default function PageHero({
   primaryLink,
   secondaryLabel = "Bespreek uw project met ons",
   secondaryLink,
+  ratingScore,
+  ratingLabel,
 }: PageHeroProps) {
   const primary = resolveSmartLink(primaryLink ?? {linkType: "internal", internalRef: {_type: "page", slug: "contact"}});
   const secondary = resolveSmartLink(secondaryLink ?? {linkType: "external", externalUrl: "tel:+31850871814"});
@@ -57,7 +61,7 @@ export default function PageHero({
             </Link>
           </div>
           <div className="mt-6">
-            <GoogleRatingBadge compact variant="dark" />
+            <GoogleRatingBadge compact ratingLabel={ratingLabel} ratingScore={ratingScore} variant="dark" />
           </div>
         </div>
       </div>

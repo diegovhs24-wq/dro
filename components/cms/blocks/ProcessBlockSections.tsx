@@ -117,20 +117,28 @@ type ProcessContent = Pick<
   trustPoints?: IconTextItem[];
 };
 
-export function ProcessBlockSection({ content }: { content: ProcessContent }) {
+export function ProcessBlockSection({
+  content,
+  demoteHeading = false,
+}: {
+  content: ProcessContent;
+  demoteHeading?: boolean;
+}) {
+  const Heading = demoteHeading ? "h2" : "h1";
+
   return (
     <>
-      <section className="relative overflow-hidden bg-white py-6 lg:py-7">
+      <section className="relative overflow-hidden bg-white py-6 lg:py-7" id="werkwijze">
         <div className="section-shell relative grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <div className="pt-2">
             <p className="eyebrow">{content.eyebrow}</p>
-            <h1 className="mt-4 max-w-2xl text-5xl font-black leading-[0.98] tracking-[-0.04em] text-brand-ink sm:text-6xl lg:text-[64px]">
+            <Heading className="mt-4 max-w-2xl text-5xl font-black leading-[0.98] tracking-[-0.04em] text-brand-ink sm:text-6xl lg:text-[64px]">
               {content.titlePrefix}{" "}
               <span className="relative inline-block">
                 {content.titleHighlight}
                 <HandUnderline />
               </span>
-            </h1>
+            </Heading>
             <p className="mt-5 max-w-lg text-base font-bold leading-7 text-neutral-600">
               <MultilineText text={content.intro} />
             </p>
