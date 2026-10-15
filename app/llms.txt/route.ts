@@ -52,7 +52,7 @@ export async function GET() {
     ),
     section("Bedrijfsinformatie", [
       `- [Over ons](${absoluteUrl("/over-ons")})`,
-      `- [Werkwijze](${absoluteUrl("/werkwijze")})`,
+      `- [Ervaringen](${absoluteUrl("/ervaringen")})`,
       `- [Zakelijk](${absoluteUrl("/zakelijk")})`,
       `- [Contact](${absoluteUrl("/contact")})`,
     ]),

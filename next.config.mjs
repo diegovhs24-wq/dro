@@ -23,6 +23,13 @@ const nextConfig = {
         destination: `/${slug}`,
         permanent: true,
       })),
+      // Werkwijze is opgegaan in Over ons. Eerst de redirect, daarna pas de
+      // losse route laten vervallen.
+      {
+        source: '/werkwijze',
+        destination: '/over-ons',
+        statusCode: 301,
+      },
       {
         source: '/badkamerrenovatie',
         destination: '/badkamer-renovatie',

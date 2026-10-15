@@ -6,6 +6,7 @@ const LABELS: Record<string, string> = {
   "/projecten": "Projecten",
   "/over-ons": "Over ons",
   "/werkwijze": "Werkwijze",
+  "/ervaringen": "Ervaringen",
   "/zakelijk": "Zakelijk",
   "/contact": "Contact",
 };

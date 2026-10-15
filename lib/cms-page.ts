@@ -117,3 +117,46 @@ export async function cmsPageMetadata({
 export async function getHomePageForRoute(): Promise<CmsDynamicPage> {
   return requireCmsPage("home");
 }
+
+/**
+ * De Werkwijze-pagina is opgegaan in Over ons. De inhoud blijft in Sanity
+ * staan (document "werkwijze") en wordt hier in de Over ons-pagina gehangen,
+ * zodat teksten en blokken ongewijzigd blijven. Plaatsing: vóór de eerste
+ * FAQ-sectie van Over ons, zodat FAQ, projecten en slotbanner onderaan
+ * blijven staan. Blokken die Over ons al zelf heeft (partners, slotbanner)
+ * worden niet dubbel getoond. Staat de werkwijze-inhoud al in het Over
+ * ons-document zelf, dan gebeurt er niets.
+ */
+const DUPLICATE_WHEN_PRESENT = ["partnersBlock", "centeredActionBannerBlock"];
+
+export async function withWerkwijzeBlocks(page: CmsDynamicPage): Promise<CmsDynamicPage> {
+  const ownBlocks = page.contentBlocks || [];
+
+  if (ownBlocks.some((block) => block._type === "processBlock" || block._type === "stackedStepsListBlock")) {
+    return page;
+  }
+
+  const result = await getPageFetchResult("werkwijze");
+
+  if (result.status !== "ok" || !result.page.contentBlocks?.length) {
+    return page;
+  }
+
+  const ownTypes = new Set(ownBlocks.map((block) => block._type));
+
+  const werkwijzeBlocks = result.page.contentBlocks
+    .filter((block) => !(DUPLICATE_WHEN_PRESENT.includes(block._type) && ownTypes.has(block._type)))
+    .map((block) => ({
+      ...block,
+      _key: `werkwijze-${block._key}`,
+      _demoteHeading: true,
+    })) as unknown as NonNullable<CmsDynamicPage["contentBlocks"]>;
+
+  const insertAt = ownBlocks.findIndex((block) => block._type === "faqAnswersGridBlock");
+  const index = insertAt === -1 ? ownBlocks.length : insertAt;
+
+  return {
+    ...page,
+    contentBlocks: [...ownBlocks.slice(0, index), ...werkwijzeBlocks, ...ownBlocks.slice(index)],
+  };
+}
