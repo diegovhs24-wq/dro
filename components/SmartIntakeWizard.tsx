@@ -1,7 +1,8 @@
 "use client";
 
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
+import {trackLead} from "@/lib/analytics";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
   COMMON,
@@ -124,6 +125,8 @@ export default function SmartIntakeWizard() {
   const [company, setCompany] = useState(""); // honeypot
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
+  const leadTrackedRef = useRef(false);
+  const submitInFlightRef = useRef(false);
 
   const [budgetMin, setBudgetMin] = useState(15000);
   const [budgetMax, setBudgetMax] = useState(45000);
@@ -218,6 +221,9 @@ export default function SmartIntakeWizard() {
   }
 
   async function handleSubmit() {
+    // Snel dubbelklikken mag nooit twee aanvragen versturen: state is te traag.
+    if (submitInFlightRef.current) return;
+    submitInFlightRef.current = true;
     setSubmitting(true);
     setSubmitError(false);
 
@@ -258,9 +264,14 @@ export default function SmartIntakeWizard() {
       });
 
       if (!res.ok) throw new Error("Submit failed");
+      if (!leadTrackedRef.current) {
+        leadTrackedRef.current = true;
+        trackLead();
+      }
       setSubmitting(false);
       next();
     } catch {
+      submitInFlightRef.current = false;
       setSubmitting(false);
       setSubmitError(true);
     }
