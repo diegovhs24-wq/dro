@@ -42,7 +42,7 @@ function renderEntryRows(entries: SubmissionEntry[]): string {
 // Studio-workspace "Aanvragen". De intent-link opent de juiste aanvraag,
 // ongeacht hoe de lijst is ingericht.
 function studioLink(documentId?: string): string {
-  const base = `${SITE_URL.replace(/\/$/, "")}/studio/aanvragen`;
+  const base = `${SITE_URL.replace(/\/$/, "")}/studio-aanvragen`;
   return documentId
     ? `${base}/intent/edit/id=${encodeURIComponent(documentId)};type=formSubmission`
     : base;

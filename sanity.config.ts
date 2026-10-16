@@ -81,7 +81,7 @@ const leadsWorkspace = defineConfig({
   title: 'Aanvragen',
   projectId: 'cwblo9lu',
   dataset: 'leads',
-  basePath: '/studio/aanvragen',
+  basePath: '/studio-aanvragen',
   plugins: [structureTool({structure: leadsStructure})],
   document: {
     newDocumentOptions: () => [],

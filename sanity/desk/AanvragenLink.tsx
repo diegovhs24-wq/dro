@@ -13,7 +13,7 @@ export function AanvragenLink() {
           Omdat aanvragen persoonsgegevens bevatten, worden ze niet meer in deze workspace bewaard.
         </Text>
         <Text size={1}>
-          <a href="/studio/aanvragen">Open de omgeving Aanvragen</a>
+          <a href="/studio-aanvragen">Open de omgeving Aanvragen</a>
         </Text>
       </Stack>
     </Card>

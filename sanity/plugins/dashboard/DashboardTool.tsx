@@ -100,7 +100,7 @@ function StatCard({
 // Aanvragen staan in de aparte workspace "Aanvragen" (private dataset "leads").
 function AanvragenLink() {
   return (
-    <a href="/studio/aanvragen" style={{textDecoration: 'none'}}>
+    <a href="/studio-aanvragen" style={{textDecoration: 'none'}}>
       <Card padding={3} radius={2} shadow={1} tone="default" style={{cursor: 'pointer', transition: 'box-shadow 150ms'}}>
         <Flex align="center" gap={2}>
           <Box style={{fontSize: 18, color: 'var(--card-muted-fg-color)'}}>
