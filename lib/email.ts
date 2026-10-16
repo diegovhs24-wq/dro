@@ -38,12 +38,23 @@ function renderEntryRows(entries: SubmissionEntry[]): string {
     .join("");
 }
 
+// Aanvragen staan in de private dataset "leads" en zijn alleen te openen in de
+// Studio-workspace "Aanvragen". De intent-link opent de juiste aanvraag,
+// ongeacht hoe de lijst is ingericht.
+function studioLink(documentId?: string): string {
+  const base = `${SITE_URL.replace(/\/$/, "")}/studio-aanvragen`;
+  return documentId
+    ? `${base}/intent/edit/id=${encodeURIComponent(documentId)};type=formSubmission`
+    : base;
+}
+
 export function renderSubmissionNotificationEmail(params: {
   formTitle: string;
   submittedAt: string;
   entries: SubmissionEntry[];
+  documentId?: string;
 }): { subject: string; html: string } {
-  const { formTitle, submittedAt, entries } = params;
+  const { formTitle, submittedAt, entries, documentId } = params;
 
   const formattedDate = new Date(submittedAt).toLocaleString("nl-NL", {
     dateStyle: "long",
@@ -91,7 +102,7 @@ export function renderSubmissionNotificationEmail(params: {
             </tr>
             <tr>
               <td style="padding:24px 32px 32px 32px;">
-                <a href="${SITE_URL}/studio/structure/formSubmission"
+                <a href="${studioLink(documentId)}"
                    style="display:inline-block;background:${BRAND.orange};color:#ffffff;font-family:'Poppins',Arial,sans-serif;font-size:14px;font-weight:600;text-decoration:none;padding:12px 24px;border-radius:8px;">
                   Bekijk in Sanity Studio
                 </a>
@@ -121,6 +132,7 @@ export async function sendSubmissionNotificationEmail(params: {
   formTitle: string;
   submittedAt: string;
   entries: SubmissionEntry[];
+  documentId?: string;
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
