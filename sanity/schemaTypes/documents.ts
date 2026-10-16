@@ -864,7 +864,7 @@ export const formSubmission = defineType({
     // Legacy velden: gevuld door de oude, generieke intakeForm-gedreven
     // wizard. Blijven bestaan zodat bestaande inzendingen leesbaar blijven,
     // maar worden niet meer geschreven door de nieuwe slimme intake hieronder.
-    defineField({name: 'intakeFormRef', title: 'Intake Form (legacy)', type: 'reference', to: [{type: 'intakeForm'}], readOnly: true}),
+    defineField({name: 'intakeFormRef', title: 'Intake Form (legacy)', type: 'reference', to: [{type: 'intakeForm'}], weak: true, readOnly: true}),
     defineField({
       name: 'entries',
       title: 'Form Data (legacy)',

@@ -8,10 +8,11 @@ import {
   singletonSchemaTypes,
   structure,
 } from '@/sanity/desk/structure'
-import {schemaTypes} from '@/sanity/schemaTypes'
+import {leadsStructure} from '@/sanity/leads/structure'
+import {leadsSchemaTypes, productionSchemaTypes} from '@/sanity/schemaTypes'
 import {dashboardPlugin} from '@/sanity/plugins/dashboard'
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'lxi5ttc2'
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cwblo9lu'
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
@@ -25,7 +26,7 @@ function isHomepageDocument(schemaType: string, documentId: string | undefined) 
   return schemaType === 'page' && normalizeDocumentId(documentId) === 'home'
 }
 
-export default defineConfig({
+const productionWorkspace = defineConfig({
   name: 'default',
   title: 'DRO Renovaties',
   projectId,
@@ -67,6 +68,27 @@ export default defineConfig({
     },
   },
   schema: {
-    types: schemaTypes,
+    types: productionSchemaTypes,
   },
 })
+
+// Aanvragen bevatten persoonsgegevens en staan in de private dataset "leads".
+// Vaste project/dataset (geen env-terugval), inloggen via de Studio-gebruiker:
+// er komt geen token in de browser. Aanmaken van documenten is hier uit; de
+// aanvragen komen via /api/submit-request binnen.
+const leadsWorkspace = defineConfig({
+  name: 'aanvragen',
+  title: 'Aanvragen',
+  projectId: 'cwblo9lu',
+  dataset: 'leads',
+  basePath: '/studio/aanvragen',
+  plugins: [structureTool({structure: leadsStructure})],
+  document: {
+    newDocumentOptions: () => [],
+  },
+  schema: {
+    types: leadsSchemaTypes,
+  },
+})
+
+export default [productionWorkspace, leadsWorkspace]

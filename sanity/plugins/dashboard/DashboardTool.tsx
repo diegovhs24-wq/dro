@@ -35,7 +35,6 @@ type Counts = {
   reviews: number
   faqs: number
   partners: number
-  submissions: number
 }
 
 type HealthItem = {_id: string; title: string}
@@ -59,8 +58,7 @@ const QUERY = `{
     "pages":       count(*[_type == "page" && !(_id in ["home", "drafts.home"])]),
     "reviews":     count(*[_type == "review"]),
     "faqs":        count(*[_type == "faq"]),
-    "partners":    count(*[_type == "partner"]),
-    "submissions": count(*[_type == "formSubmission"])
+    "partners":    count(*[_type == "partner"])
   },
   "health": {
     "servicesNoImage":       *[_type == "service" && !defined(cardImage.image) && !defined(cardImage.externalImageUrl)]{_id, title},
@@ -96,6 +94,24 @@ function StatCard({
         </Stack>
       </Stack>
     </Card>
+  )
+}
+
+// Aanvragen staan in de aparte workspace "Aanvragen" (private dataset "leads").
+function AanvragenLink() {
+  return (
+    <a href="/studio/aanvragen" style={{textDecoration: 'none'}}>
+      <Card padding={3} radius={2} shadow={1} tone="default" style={{cursor: 'pointer', transition: 'box-shadow 150ms'}}>
+        <Flex align="center" gap={2}>
+          <Box style={{fontSize: 18, color: 'var(--card-muted-fg-color)'}}>
+            <EnvelopeIcon />
+          </Box>
+          <Text size={1} weight="semibold">
+            Aanvragen bekijken
+          </Text>
+        </Flex>
+      </Card>
+    </a>
   )
 }
 
@@ -215,7 +231,6 @@ export function DashboardTool() {
     {icon: <StarIcon />,      label: 'Reviews',     key: 'reviews'},
     {icon: <HelpCircleIcon />,label: 'FAQs',        key: 'faqs'},
     {icon: <UsersIcon />,     label: 'Partners',    key: 'partners'},
-    {icon: <EnvelopeIcon />,  label: 'Aanvragen',   key: 'submissions'},
   ]
 
   const healthGroups: IssueGroup[] = data
@@ -273,7 +288,7 @@ export function DashboardTool() {
             <QuickLink icon={<AddIcon />}      label="Nieuwe dienst toevoegen"  intent="create" params={{type: 'service'}} />
             <QuickLink icon={<AddIcon />}      label="Nieuw project toevoegen"  intent="create" params={{type: 'project'}} />
             <QuickLink icon={<AddIcon />}      label="Nieuwe review toevoegen"  intent="create" params={{type: 'review'}} />
-            <QuickLink icon={<EnvelopeIcon />}  label="Aanvragen bekijken"       intent="create" params={{type: 'formSubmission'}} />
+            <AanvragenLink />
           </Grid>
         </Stack>
 
