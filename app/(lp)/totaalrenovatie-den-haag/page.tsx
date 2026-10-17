@@ -1,4 +1,5 @@
 import type {Metadata} from 'next'
+import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import LandingForm from '@/components/landing/LandingForm'
 import {getProjects, getReviews} from '@/lib/cms'
 import type {ProjectItem, ReviewItem} from '@/lib/types'
@@ -332,6 +333,7 @@ export default async function TotaalrenovatieLandingPage({
         <a className="underline underline-offset-2" href="/privacypolicy">
           Privacyverklaring
         </a>
+        <CookieSettingsLink className="underline underline-offset-2" />
       </footer>
 
       {/* Vaste balk onderaan op mobiel: bellen of naar het formulier. */}
