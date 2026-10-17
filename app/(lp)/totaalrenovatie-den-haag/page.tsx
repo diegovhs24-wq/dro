@@ -231,7 +231,7 @@ const LOGOS = [
   {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
   {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
   {name: 'VLOK', src: '/landing/logos/logo-vlok.png', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
-  {name: 'SBB', src: '', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
+  {name: 'SBB', src: '/landing/logos/logo-sbb.png', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
 ]
 
 // Klantvideo's (alleen tonen met schriftelijke toestemming van de klant).
