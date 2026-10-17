@@ -157,6 +157,17 @@ function pickVariant(value: string | string[] | undefined): Variant {
   return v === 'woning' || v === 'kosten' ? v : 'aannemer'
 }
 
+// Typografie: koppen breed (font-stretch) en stevig, tekst normaal.
+const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
+const H2 = 'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1]'
+const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
+
+function heroImageOf(projects: ProjectItem[]): string | null {
+  const project = projects.find((p) => p.afterImage) || projects.find((p) => p.images?.[0])
+  const url = project?.afterImage || project?.images?.[0]
+  return url ? sizedImage(url, 1800) : null
+}
+
 export default async function TotaalrenovatieLandingPage({
   searchParams,
 }: {
@@ -166,42 +177,34 @@ export default async function TotaalrenovatieLandingPage({
   const hero = HERO[variant]
   const [projects, reviews, teamPhoto] = await Promise.all([getProjects(), getReviews(), getTeamPhoto()])
   const shownProjects = pickProjects(projects)
+  const heroImage = heroImageOf(projects)
   const shownReviews = (reviews as ReviewItem[]).filter((r) => r.quote).slice(0, 6)
 
-  const proofList = (
-    <ul className="mt-5 grid gap-2">
-      {PROOF.map((item) => (
-        <li className="flex gap-2 text-[15px]" key={item}>
-          <span aria-hidden="true" className="font-bold text-brand-orange">✓</span>
-          {item}
-        </li>
-      ))}
-    </ul>
-  )
-
   const priceSection = (
-    <section className="border-t border-brand-line bg-[#ffffff]" id="prijs">
-      <div className="section-shell py-12">
-        <h2 className="text-2xl font-semibold">Wat kost een totaalrenovatie?</h2>
-        <div className="mt-6 grid gap-6 md:grid-cols-[1fr_1.2fr]">
-          <div className="rounded-lg border border-brand-line bg-brand-soft p-5">
-            <p className="text-sm text-brand-stone">Indicatie per m², inclusief btw</p>
-            <p className="mt-1 text-3xl font-semibold tabular-nums">
-              € {PRICE_MIN_INCL.toLocaleString('nl-NL')} tot € {PRICE_MAX_INCL.toLocaleString('nl-NL')}
+    <section className="border-t border-lp-line" id="prijs">
+      <div className="section-shell py-14">
+        <h2 className={H2}>Wat kost een totaalrenovatie?</h2>
+        <div className="mt-8 grid gap-10 md:grid-cols-[1fr_1.15fr] md:items-start">
+          <div>
+            <p className="text-sm text-lp-muted">Indicatie per m², inclusief btw</p>
+            <p className="mt-2 text-[40px] font-bold [font-stretch:112%] leading-none tabular-nums sm:text-[52px]">
+              € {PRICE_MIN_INCL.toLocaleString('nl-NL')}
+              <span className="px-2 text-[0.5em] font-semibold text-lp-muted">tot</span>
+              {PRICE_MAX_INCL.toLocaleString('nl-NL')}
             </p>
-            <p className="mt-3 text-sm text-brand-ink-soft">
+            <p className="mt-4 text-[15px] text-lp-muted">
               Woning van 100 m²: ongeveer € {(PRICE_MIN_INCL * 100).toLocaleString('nl-NL')} tot €{' '}
               {(PRICE_MAX_INCL * 100).toLocaleString('nl-NL')}.
             </p>
           </div>
-          <div className="text-[15px] leading-7 text-brand-ink-soft">
-            <p>Waar u binnen die bandbreedte uitkomt, hangt vooral af van:</p>
-            <ul className="mt-2 list-disc pl-5">
-              <li>de staat van de woning en de installaties (leidingen, elektra, verwarming)</li>
-              <li>of er constructief iets verandert, zoals een muur eruit</li>
+          <div className={BODY}>
+            <p className="text-lp-ink">Waar u binnen die bandbreedte uitkomt, hangt vooral af van:</p>
+            <ul className="mt-3 space-y-2 border-l-2 border-lp-orange pl-4">
+              <li>de staat van de woning en de installaties: leidingen, elektra, verwarming</li>
+              <li>of er constructief iets verandert, zoals een muur die eruit gaat</li>
               <li>uw keuzes in afwerking, keuken en badkamer</li>
             </ul>
-            <p className="mt-3">Na de bezichtiging krijgt u een offerte op maat met een betaalschema per fase.</p>
+            <p className="mt-4">Na de bezichtiging krijgt u een offerte op maat, met een betaalschema per fase.</p>
           </div>
         </div>
       </div>
@@ -210,98 +213,119 @@ export default async function TotaalrenovatieLandingPage({
 
   return (
     <main className="pb-24 md:pb-0">
-      {/* Topbalk: alleen logo-tekst, reviews en bellen. Geen menu. */}
-      <header className="border-b border-brand-line bg-white">
-        <div className="section-shell flex min-h-[60px] items-center justify-between gap-4">
-          <span className="text-lg font-semibold tracking-tight">DRO Renovaties</span>
-          <div className="flex items-center gap-4">
-            <span className="hidden text-sm text-brand-ink-soft sm:inline">
-              <span className="text-brand-orange">★</span> {REVIEW_SCORE} uit {REVIEW_COUNT} Google reviews
-            </span>
-            <a
-              className="inline-flex min-h-[44px] items-center rounded-md border border-brand-ink px-3 text-sm font-semibold hover:bg-brand-ink hover:text-white"
-              href={PHONE_HREF}
-            >
-              {PHONE_LABEL}
-            </a>
-          </div>
+      <header className="border-b border-lp-line bg-white">
+        <div className="section-shell flex min-h-[64px] items-center justify-between gap-4">
+          <span className="text-[19px] font-bold [font-stretch:120%] tracking-[-0.01em]">DRO Renovaties</span>
+          <a
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-ink px-4 text-[15px] font-semibold transition-colors hover:bg-lp-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
+            href={PHONE_HREF}
+          >
+            <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z" />
+            </svg>
+            {PHONE_LABEL}
+          </a>
         </div>
       </header>
 
-      {/* Bovenkant: kop, bewijs en het formulier direct zichtbaar. */}
-      <section className="section-shell grid gap-8 py-8 md:grid-cols-[1.1fr_1fr] md:py-12" id="aanvraag">
-        <div>
-          <p className="text-sm font-medium text-brand-orange">Den Haag, Rijswijk, Voorburg, Wassenaar, Delft en Zoetermeer</p>
-          <h1 className="mt-2 text-[28px] font-semibold leading-tight sm:text-4xl">{hero.title}</h1>
-          <p className="mt-4 text-[16px] leading-7 text-brand-ink-soft">{hero.intro}</p>
-          {/* Desktop: bewijs naast het formulier. Mobiel: onder het formulier, zodat het formulier hoger staat. */}
-          <div className="hidden md:block">{proofList}</div>
+      {/* Bovenkant: echt project op de achtergrond, kop en formulier direct zichtbaar. */}
+      <section className="relative isolate overflow-hidden bg-lp-slate text-white" id="aanvraag">
+        {heroImage && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img alt="" aria-hidden="true" className="absolute inset-0 -z-20 h-full w-full object-cover" fetchPriority="high" src={heroImage} />
+            <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-lp-slate via-lp-slate/90 to-lp-slate/40" />
+          </>
+        )}
+        <div className="section-shell grid gap-10 py-10 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
+          <div>
+            <h1 className={`${H1} text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title}</h1>
+            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-white/85">{hero.intro}</p>
+            <ul className="mt-7 hidden gap-3 md:grid">
+              {PROOF.map((item) => (
+                <li className="flex items-start gap-3 text-[15px] text-white/90" key={item}>
+                  <span aria-hidden="true" className="mt-[9px] h-[2px] w-4 shrink-0 bg-lp-orange" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="text-lp-ink">
+            <LandingForm phoneHref={PHONE_HREF} phoneLabel={PHONE_LABEL} variant={variant} />
+          </div>
         </div>
-        <LandingForm phoneHref={PHONE_HREF} phoneLabel={PHONE_LABEL} variant={variant} />
-        <div className="md:hidden">{proofList}</div>
       </section>
 
-      {/* Cijferbalk: bewijs in een oogopslag. */}
-      <section aria-label="Beoordelingen en beloften" className="border-y border-brand-line bg-[#ffffff]">
-        <dl className="section-shell grid grid-cols-2 gap-4 py-5 md:grid-cols-4">
+      {/* Cijferbalk */}
+      <section aria-label="Beoordelingen en beloften" className="bg-lp-plaster">
+        <dl className="section-shell grid grid-cols-2 gap-x-6 gap-y-5 py-6 md:grid-cols-4">
           <div>
-            <dt className="text-xs text-brand-stone">Google</dt>
-            <dd className="text-lg font-semibold tabular-nums">
-              {REVIEW_SCORE} <span className="text-brand-orange">★</span>{' '}
-              <span className="text-sm font-normal text-brand-ink-soft">{REVIEW_COUNT} reviews</span>
+            <dt className="text-[13px] text-lp-muted">Google</dt>
+            <dd className="mt-0.5 text-[20px] font-bold [font-stretch:110%] tabular-nums">
+              {REVIEW_SCORE}<span className="text-lp-orange"> ★</span>{' '}
+              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-brand-stone">Trustoo</dt>
-            <dd className="text-lg font-semibold tabular-nums">
-              {TRUSTOO_SCORE}/10 <span className="text-sm font-normal text-brand-ink-soft">{TRUSTOO_COUNT} reviews</span>
+            <dt className="text-[13px] text-lp-muted">Trustoo</dt>
+            <dd className="mt-0.5 text-[20px] font-bold [font-stretch:110%] tabular-nums">
+              {TRUSTOO_SCORE}/10{' '}
+              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{TRUSTOO_COUNT} reviews</span>
             </dd>
           </div>
           <div>
-            <dt className="text-xs text-brand-stone">Uitvoering</dt>
-            <dd className="text-lg font-semibold">Vaste eigen ploegen</dd>
+            <dt className="text-[13px] text-lp-muted">Uitvoering</dt>
+            <dd className="mt-0.5 text-[17px] font-semibold">Vaste eigen ploegen</dd>
           </div>
           <div>
-            <dt className="text-xs text-brand-stone">Na uw aanvraag</dt>
-            <dd className="text-lg font-semibold">{RESPONSE_PROMISE}</dd>
+            <dt className="text-[13px] text-lp-muted">Na uw aanvraag</dt>
+            <dd className="mt-0.5 text-[17px] font-semibold">{RESPONSE_PROMISE}</dd>
           </div>
         </dl>
+      </section>
+
+      {/* Op mobiel staan de beloften onder het formulier. */}
+      <section className="section-shell py-8 md:hidden">
+        <ul className="grid gap-3">
+          {PROOF.map((item) => (
+            <li className="flex items-start gap-3 text-[15px]" key={item}>
+              <span aria-hidden="true" className="mt-[9px] h-[2px] w-4 shrink-0 bg-lp-orange" />
+              {item}
+            </li>
+          ))}
+        </ul>
       </section>
 
       {variant === 'kosten' && priceSection}
 
       {shownProjects.length > 0 && (
-        <section className="border-t border-brand-line bg-[#ffffff]">
-          <div className="section-shell py-12">
-            <h2 className="text-2xl font-semibold">Recente projecten in de regio</h2>
-            <div className="mt-6 grid gap-6 md:grid-cols-3">
+        <section className="border-t border-lp-line">
+          <div className="section-shell py-14">
+            <h2 className={H2}>Recente projecten in de regio</h2>
+            <div className="mt-8 grid gap-8 md:grid-cols-3">
               {shownProjects.map((project) => {
                 const hasBeforeAfter = Boolean(project.beforeImage && project.afterImage)
                 return (
-                  <article className="overflow-hidden rounded-lg border border-brand-line bg-brand-soft" key={project.slug}>
+                  <article key={project.slug}>
                     {hasBeforeAfter ? (
-                      <div className="grid grid-cols-2">
-                        <figure className="relative">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={`${project.title} voor`} className="aspect-[4/5] w-full object-cover" decoding="async" loading="lazy" src={sizedImage(project.beforeImage!, 400)} />
-                          <figcaption className="absolute left-2 top-2 rounded bg-white/90 px-2 py-0.5 text-xs font-semibold">Voor</figcaption>
-                        </figure>
-                        <figure className="relative">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={`${project.title} na`} className="aspect-[4/5] w-full object-cover" decoding="async" loading="lazy" src={sizedImage(project.afterImage!, 400)} />
-                          <figcaption className="absolute left-2 top-2 rounded bg-white/90 px-2 py-0.5 text-xs font-semibold">Na</figcaption>
-                        </figure>
+                      <div className="grid grid-cols-2 gap-1 overflow-hidden rounded-lg">
+                        {[
+                          {src: project.beforeImage!, label: 'Voor'},
+                          {src: project.afterImage!, label: 'Na'},
+                        ].map((img) => (
+                          <figure className="relative" key={img.label}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img alt={`${project.title}, ${img.label.toLowerCase()}`} className="aspect-[4/5] w-full object-cover" decoding="async" loading="lazy" src={sizedImage(img.src, 500)} />
+                            <figcaption className="absolute bottom-2 left-2 rounded bg-lp-ink/80 px-2 py-0.5 text-xs font-semibold text-white">{img.label}</figcaption>
+                          </figure>
+                        ))}
                       </div>
                     ) : (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img alt={project.title} className="aspect-[4/3] w-full object-cover" decoding="async" loading="lazy" src={sizedImage(project.images[0], 800)} />
+                      <img alt={project.title} className="aspect-[4/3] w-full rounded-lg object-cover" decoding="async" loading="lazy" src={sizedImage(project.images[0], 900)} />
                     )}
-                    <div className="p-4">
-                      <h3 className="font-semibold">{project.title}</h3>
-                      <p className="mt-1 text-sm text-brand-stone">
-                        {[project.location, project.type, project.duration].filter(Boolean).join(' · ')}
-                      </p>
-                    </div>
+                    <h3 className="mt-3 text-[17px] font-semibold">{project.title}</h3>
+                    <p className="mt-1 text-sm text-lp-muted">{[project.location, project.type, project.duration].filter(Boolean).join(', ')}</p>
                   </article>
                 )
               })}
@@ -310,30 +334,27 @@ export default async function TotaalrenovatieLandingPage({
         </section>
       )}
 
-      <section className="border-t border-brand-line">
-        <div className="section-shell py-12">
-          <h2 className="text-2xl font-semibold">Zelf partijen regelen, of alles bij één aannemer?</h2>
-          <p className="mt-2 max-w-2xl text-[15px] leading-7 text-brand-ink-soft">
+      <section className="border-t border-lp-line">
+        <div className="section-shell py-14">
+          <h2 className={`${H2} max-w-[22ch]`}>Zelf partijen regelen, of alles bij één aannemer?</h2>
+          <p className={`mt-3 max-w-[60ch] ${BODY}`}>
             Bij een totaalrenovatie werken vaak vijf of meer vakgebieden in uw woning. Het verschil zit in wie dat regelt.
           </p>
-          <div className="mt-6 overflow-x-auto rounded-lg border border-brand-line bg-[#ffffff]">
-            <table className="w-full min-w-[560px] text-left text-[15px]">
+          <div className="mt-8 overflow-x-auto">
+            <table className="w-full min-w-[600px] border-collapse text-left text-[15px]">
               <thead>
-                <tr className="border-b border-brand-line bg-brand-soft text-sm">
-                  <th className="w-[22%] px-4 py-3 font-semibold" scope="col"></th>
-                  <th className="px-4 py-3 font-semibold text-brand-stone" scope="col">Zelf partijen regelen</th>
-                  <th className="px-4 py-3 font-semibold" scope="col">Met DRO Renovaties</th>
+                <tr className="border-b-2 border-lp-ink text-[14px]">
+                  <th className="w-[20%] py-3 pr-4 font-semibold" scope="col"><span className="sr-only">Onderwerp</span></th>
+                  <th className="py-3 pr-6 font-semibold text-lp-muted" scope="col">Zelf partijen regelen</th>
+                  <th className="bg-lp-plaster px-4 py-3 font-semibold" scope="col">Met DRO Renovaties</th>
                 </tr>
               </thead>
               <tbody>
                 {COMPARE.map((row) => (
-                  <tr className="border-b border-brand-line last:border-0" key={row.topic}>
-                    <th className="px-4 py-3 align-top font-semibold" scope="row">{row.topic}</th>
-                    <td className="px-4 py-3 align-top text-brand-stone">{row.self}</td>
-                    <td className="px-4 py-3 align-top">
-                      <span aria-hidden="true" className="mr-1 font-bold text-brand-orange">✓</span>
-                      {row.dro}
-                    </td>
+                  <tr className="border-b border-lp-line" key={row.topic}>
+                    <th className="py-4 pr-4 align-top font-semibold" scope="row">{row.topic}</th>
+                    <td className="py-4 pr-6 align-top text-lp-muted">{row.self}</td>
+                    <td className="bg-lp-plaster px-4 py-4 align-top font-medium">{row.dro}</td>
                   </tr>
                 ))}
               </tbody>
@@ -342,15 +363,19 @@ export default async function TotaalrenovatieLandingPage({
         </div>
       </section>
 
-      <section className="border-t border-brand-line">
-        <div className="section-shell py-12">
-          <h2 className="text-2xl font-semibold">Zo werken we</h2>
-          <ol className="mt-6 grid gap-4 md:grid-cols-5">
+      {/* Werkwijze: echte volgorde, dus genummerd langs één lijn. */}
+      <section className="border-t border-lp-line bg-lp-plaster">
+        <div className="section-shell py-14">
+          <h2 className={H2}>Zo werken we</h2>
+          <ol className="relative mt-10 grid gap-8 md:grid-cols-5 md:gap-6">
+            <span aria-hidden="true" className="absolute left-[15px] top-2 h-[calc(100%-16px)] w-[2px] bg-lp-line md:left-0 md:top-[15px] md:h-[2px] md:w-full" />
             {STEPS.map((step, i) => (
-              <li className="rounded-lg border border-brand-line bg-white p-4" key={step.title}>
-                <span className="text-sm font-semibold text-brand-orange">{i + 1}</span>
-                <h3 className="mt-1 font-semibold">{step.title}</h3>
-                <p className="mt-1 text-sm leading-6 text-brand-ink-soft">{step.text}</p>
+              <li className="relative pl-12 md:pl-0 md:pt-12" key={step.title}>
+                <span className="absolute left-0 top-0 flex h-8 w-8 items-center justify-center rounded-full bg-lp-ink text-sm font-bold text-white tabular-nums">
+                  {i + 1}
+                </span>
+                <h3 className="text-[17px] font-semibold">{step.title}</h3>
+                <p className="mt-1.5 text-[15px] leading-[1.6] text-lp-muted">{step.text}</p>
               </li>
             ))}
           </ol>
@@ -359,25 +384,25 @@ export default async function TotaalrenovatieLandingPage({
 
       {variant !== 'kosten' && priceSection}
 
-      <section className="border-t border-brand-line">
-        <div className="section-shell py-12">
-          <h2 className="text-2xl font-semibold">
+      <section className="border-t border-lp-line">
+        <div className="section-shell py-14">
+          <h2 className={H2}>
             {REVIEW_SCORE} uit {REVIEW_COUNT} Google reviews
           </h2>
-          {shownReviews.length === 0 && (
-            <p className="mt-3 text-[15px] leading-7 text-brand-ink-soft">
+          {shownReviews.length === 0 ? (
+            <p className={`mt-3 ${BODY}`}>
               Klanten beoordelen ons gemiddeld met {REVIEW_SCORE} sterren op Google ({REVIEW_COUNT} reviews) en met een{' '}
               {TRUSTOO_SCORE} op Trustoo ({TRUSTOO_COUNT} reviews).
             </p>
-          )}
-          {shownReviews.length > 0 && (
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+          ) : (
+            <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-3">
               {shownReviews.map((review) => (
-                <figure className="rounded-lg border border-brand-line bg-white p-5" key={`${review.name}-${review.quote.slice(0, 20)}`}>
-                  <blockquote className="text-[15px] leading-7 text-brand-ink-soft">&ldquo;{review.quote}&rdquo;</blockquote>
+                <figure className="border-t-2 border-lp-ink pt-4" key={`${review.name}-${review.quote.slice(0, 20)}`}>
+                  <p aria-label="5 sterren" className="text-lp-orange">★★★★★</p>
+                  <blockquote className="mt-2 text-[15px] leading-[1.65]">{review.quote}</blockquote>
                   <figcaption className="mt-3 text-sm font-semibold">
                     {review.name}
-                    {review.location ? <span className="font-normal text-brand-stone">, {review.location}</span> : null}
+                    {review.location ? <span className="font-normal text-lp-muted">, {review.location}</span> : null}
                   </figcaption>
                 </figure>
               ))}
@@ -386,85 +411,78 @@ export default async function TotaalrenovatieLandingPage({
         </div>
       </section>
 
-      <section className="border-t border-brand-line bg-[#ffffff]">
-        <div className="section-shell grid gap-6 py-12 md:grid-cols-2">
+      <section className="border-t border-lp-line">
+        <div className="section-shell py-14">
           {teamPhoto && (
-            <figure className="md:col-span-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt={teamPhoto.title}
-                className="aspect-[16/7] w-full rounded-lg object-cover"
-                decoding="async"
-                loading="lazy"
-                src={teamPhoto.url}
-              />
-            </figure>
+            // eslint-disable-next-line @next/next/no-img-element
+            <img alt={teamPhoto.title} className="mb-10 aspect-[16/7] w-full rounded-lg object-cover" decoding="async" loading="lazy" src={teamPhoto.url} />
           )}
-          <div>
-            <h2 className="text-2xl font-semibold">Een Haags familiebedrijf</h2>
-            <p className="mt-4 text-[15px] leading-7 text-brand-ink-soft">
-              DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste eigen
-              ploegen, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
-              één aanspreekpunt van de eerste bezichtiging tot de oplevering.
-            </p>
+          <div className="grid gap-8 md:grid-cols-[1.4fr_1fr]">
+            <div>
+              <h2 className={H2}>Een Haags familiebedrijf</h2>
+              <p className={`mt-4 max-w-[60ch] ${BODY}`}>
+                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste eigen
+                ploegen, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
+                één aanspreekpunt van de eerste bezichtiging tot de oplevering.
+              </p>
+            </div>
+            <ul className="grid content-start gap-3 text-[15px] md:border-l md:border-lp-line md:pl-8">
+              <li>VCA-gecertificeerd</li>
+              <li>CAR-verzekerd en aansprakelijkheidsverzekerd</li>
+              <li>SBB-erkend leerbedrijf</li>
+              <li>Kantoor aan de Orionstraat in Den Haag</li>
+            </ul>
           </div>
-          <ul className="grid content-start gap-2 text-[15px]">
-            <li>VCA-gecertificeerd</li>
-            <li>CAR-verzekerd en aansprakelijkheidsverzekerd</li>
-            <li>SBB-erkend leerbedrijf</li>
-            <li>Kantoor aan de Orionstraat in Den Haag</li>
-          </ul>
         </div>
       </section>
 
-      <section className="border-t border-brand-line">
-        <div className="section-shell py-12">
-          <h2 className="text-2xl font-semibold">Veelgestelde vragen</h2>
-          <div className="mt-6 divide-y divide-brand-line rounded-lg border border-brand-line bg-white">
+      <section className="border-t border-lp-line">
+        <div className="section-shell max-w-3xl py-14">
+          <h2 className={H2}>Veelgestelde vragen</h2>
+          <div className="mt-6 border-t border-lp-line">
             {FAQ.map((item) => (
-              <details className="group p-4" key={item.q}>
-                <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between font-semibold">
+              <details className="group border-b border-lp-line" key={item.q}>
+                <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 text-[17px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-lp-orange">
                   {item.q}
-                  <span aria-hidden="true" className="ml-4 text-brand-stone group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="text-xl font-normal text-lp-muted transition-transform group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-2 text-[15px] leading-7 text-brand-ink-soft">{item.a}</p>
+                <p className={`pb-5 ${BODY}`}>{item.a}</p>
               </details>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-brand-line bg-brand-ink text-white">
-        <div className="section-shell flex flex-col items-start gap-4 py-10 md:flex-row md:items-center md:justify-between">
+      <section className="bg-lp-slate text-white">
+        <div className="section-shell flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold">Plannen voor een totaalrenovatie?</h2>
-            <p className="mt-1 text-white/80">Vraag vrijblijvend een bezichtiging aan, of bel ons direct.</p>
+            <h2 className={H2}>Plannen voor een totaalrenovatie?</h2>
+            <p className="mt-2 text-white/75">Vraag vrijblijvend een bezichtiging aan, of bel ons direct.</p>
           </div>
           <div className="flex w-full gap-3 md:w-auto">
-            <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-brand-orange px-5 font-semibold md:flex-none" href="#aanvraag">
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
               Aanvraag starten
             </a>
-            <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-white px-5 font-semibold md:flex-none" href={PHONE_HREF}>
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink md:flex-none" href={PHONE_HREF}>
               Bel {PHONE_LABEL}
             </a>
           </div>
         </div>
       </section>
 
-      <footer className="section-shell flex flex-wrap gap-x-6 gap-y-2 py-6 text-xs text-brand-stone">
-        <span>DRO Bouw en Aannemingsbedrijf B.V. · Orionstraat 235, Den Haag · KvK 94825653</span>
+      <footer className="section-shell flex flex-wrap gap-x-6 gap-y-2 py-6 text-[13px] text-lp-muted">
+        <span>DRO Bouw en Aannemingsbedrijf B.V., Orionstraat 235, Den Haag, KvK 94825653</span>
         <a className="underline underline-offset-2" href="/privacypolicy">
           Privacyverklaring
         </a>
         <CookieSettingsLink className="underline underline-offset-2" />
       </footer>
 
-      {/* Vaste balk onderaan op mobiel: bellen of naar het formulier. */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-brand-line bg-white p-3 md:hidden">
-        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-brand-ink font-semibold" href={PHONE_HREF}>
+      <div className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-lp-line bg-white p-3 md:hidden">
+        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-lp-ink font-semibold" href={PHONE_HREF}>
           Bellen
         </a>
-        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-brand-orange font-semibold text-white" href="#aanvraag">
+        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-lp-orange font-semibold text-white" href="#aanvraag">
           Aanvraag starten
         </a>
       </div>

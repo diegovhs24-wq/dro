@@ -48,13 +48,13 @@ const TOTAL_STEPS = 5;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const choiceClass =
-  "flex min-h-[52px] w-full items-center justify-between rounded-md border border-brand-line bg-white px-4 py-3 text-left text-[15px] font-medium text-brand-ink transition hover:border-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-orange";
-const choiceActive = "border-brand-ink ring-1 ring-brand-ink";
+  "flex min-h-[52px] w-full items-center justify-between rounded-md border border-lp-line bg-white px-4 py-3 text-left text-[15px] font-medium text-lp-ink transition-colors hover:border-lp-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-lp-orange";
+const choiceActive = "border-lp-ink bg-lp-plaster ring-1 ring-lp-ink";
 const inputClass =
-  "mt-1 block min-h-[48px] w-full rounded-md border border-brand-line bg-white px-3 py-2 text-[16px] text-brand-ink focus:border-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-orange";
+  "mt-1 block min-h-[48px] w-full rounded-md border border-lp-line bg-white px-3 py-2 text-[16px] text-lp-ink focus:border-lp-ink focus:outline-none focus:ring-2 focus:ring-lp-orange";
 const primaryButton =
-  "inline-flex min-h-[52px] w-full items-center justify-center rounded-md bg-brand-orange px-5 py-3 text-base font-semibold text-white transition hover:bg-[#c04f12] disabled:cursor-not-allowed disabled:opacity-60";
-const backButton = "min-h-[44px] px-2 text-sm font-medium text-brand-stone underline underline-offset-2 hover:text-brand-ink";
+  "inline-flex min-h-[52px] w-full items-center justify-center rounded-md bg-lp-orange px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-lp-orange-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-lp-ink focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+const backButton = "min-h-[44px] px-2 text-sm font-medium text-lp-muted underline underline-offset-2 hover:text-lp-ink";
 
 type Props = {variant: string; phoneHref: string; phoneLabel: string};
 
@@ -193,17 +193,17 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
   if (status === "done") {
     const firstName = name.trim().split(" ")[0];
     return (
-      <div className="rounded-lg border border-brand-line bg-white p-6" ref={formTopRef}>
-        <p className="text-xl font-semibold">Bedankt{firstName ? `, ${firstName}` : ""}. Uw aanvraag is binnen.</p>
-        <p className="mt-3 text-[15px] leading-6 text-brand-ink-soft">
+      <div className="rounded-lg bg-white p-6 shadow-[0_24px_60px_rgba(16,22,28,0.28)] sm:p-7" ref={formTopRef}>
+        <p className="text-[22px] font-bold [font-stretch:110%] leading-tight">Bedankt{firstName ? `, ${firstName}` : ""}. Uw aanvraag is binnen.</p>
+        <p className="mt-3 text-[15px] leading-6 text-lp-muted">
           Scott Huisman neemt contact met u op om uw plannen te bespreken en een bezichtiging in te plannen. Liever zelf
           bellen? Dat kan op{" "}
-          <a className="font-semibold text-brand-ink underline underline-offset-2" href={phoneHref}>
+          <a className="font-semibold text-lp-ink underline underline-offset-2" href={phoneHref}>
             {phoneLabel}
           </a>
           .
         </p>
-        <p className="mt-3 text-sm leading-6 text-brand-stone">
+        <p className="mt-3 text-sm leading-6 text-lp-muted">
           Tip: heeft u een plattegrond, Funda-link of foto&apos;s van de woning? Houd ze bij de hand voor het gesprek.
         </p>
       </div>
@@ -211,15 +211,15 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
   }
 
   return (
-    <div className="rounded-lg border border-brand-line bg-white p-5 sm:p-6" ref={formTopRef}>
-      <div className="flex items-center justify-between text-xs font-medium text-brand-stone">
+    <div className="rounded-lg bg-white p-5 shadow-[0_24px_60px_rgba(16,22,28,0.28)] sm:p-7" ref={formTopRef}>
+      <div className="flex items-center justify-between text-xs font-medium text-lp-muted">
         <span>
           Stap {step} van {TOTAL_STEPS}
         </span>
         <span>Vrijblijvend, ongeveer 1 minuut</span>
       </div>
-      <div aria-hidden="true" className="mt-2 h-1.5 w-full rounded-full bg-brand-soft-deep">
-        <div className="h-1.5 rounded-full bg-brand-orange transition-all" style={{width: `${(step / TOTAL_STEPS) * 100}%`}} />
+      <div aria-hidden="true" className="mt-2 h-1.5 w-full rounded-full bg-lp-plaster">
+        <div className="h-1.5 rounded-full bg-lp-orange transition-all" style={{width: `${(step / TOTAL_STEPS) * 100}%`}} />
       </div>
 
       {/* Honeypot: onzichtbaar voor bezoekers. */}
@@ -232,7 +232,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
 
       {step === 1 && (
         <fieldset className="mt-5">
-          <legend className="text-lg font-semibold">Om wat voor woning gaat het?</legend>
+          <legend className="text-[19px] font-bold [font-stretch:108%] leading-tight">Om wat voor woning gaat het?</legend>
           <div className="mt-3 grid gap-2">
             {HOUSE_TYPES.map((option) => (
               <button
@@ -245,7 +245,6 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
                 type="button"
               >
                 {option.label}
-                <span aria-hidden="true" className="text-brand-stone">→</span>
               </button>
             ))}
           </div>
@@ -254,7 +253,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
 
       {step === 2 && (
         <fieldset className="mt-5">
-          <legend className="text-lg font-semibold">Wat is uw situatie?</legend>
+          <legend className="text-[19px] font-bold [font-stretch:108%] leading-tight">Wat is uw situatie?</legend>
           <div className="mt-3 grid gap-2">
             {SITUATIONS.map((option) => (
               <button
@@ -267,7 +266,6 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
                 type="button"
               >
                 {option.label}
-                <span aria-hidden="true" className="text-brand-stone">→</span>
               </button>
             ))}
           </div>
@@ -279,8 +277,8 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
 
       {step === 3 && (
         <div className="mt-5">
-          <p className="text-lg font-semibold">Waar staat de woning?</p>
-          <p className="mt-1 text-sm text-brand-stone">
+          <p className="text-[19px] font-bold [font-stretch:108%] leading-tight">Waar staat de woning?</p>
+          <p className="mt-1 text-sm text-lp-muted">
             {situation === "Nog op zoek" ? "Nog geen woning? Vul uw huidige adres of de gewenste buurt in." : "Zo weten we of de woning in ons werkgebied ligt."}
           </p>
           <div className="mt-3 grid grid-cols-[1.4fr_1fr] gap-3">
@@ -308,7 +306,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
               {errors.houseNumber && <span className="mt-1 block text-xs text-red-700">{errors.houseNumber}</span>}
             </label>
           </div>
-          <p aria-live="polite" className="mt-2 min-h-[20px] text-sm text-brand-ink-soft">
+          <p aria-live="polite" className="mt-2 min-h-[20px] text-sm text-lp-muted">
             {lookupState === "loading" && "Adres opzoeken..."}
             {lookupState === "found" && address && `${address.street} ${address.houseNumber}, ${address.city}`}
           </p>
@@ -331,8 +329,8 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
       {step === 4 && (
         <div className="mt-5">
           <fieldset>
-            <legend className="text-lg font-semibold">Welk budget heeft u ongeveer in gedachten?</legend>
-            <p className="mt-1 text-sm text-brand-stone">Inclusief btw. Een grove inschatting is genoeg.</p>
+            <legend className="text-[19px] font-bold [font-stretch:108%] leading-tight">Welk budget heeft u ongeveer in gedachten?</legend>
+            <p className="mt-1 text-sm text-lp-muted">Inclusief btw. Een grove inschatting is genoeg.</p>
             <div className="mt-3 grid gap-2">
               {BUDGETS.map((option) => (
                 <button
@@ -348,7 +346,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
             </div>
           </fieldset>
           <fieldset className="mt-5">
-            <legend className="text-lg font-semibold">Wanneer wilt u starten?</legend>
+            <legend className="text-[19px] font-bold [font-stretch:108%] leading-tight">Wanneer wilt u starten?</legend>
             <div className="mt-3 grid grid-cols-2 gap-2">
               {TIMELINES.map((option) => (
                 <button
@@ -385,7 +383,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
 
       {step === 5 && (
         <div className="mt-5">
-          <p className="text-lg font-semibold">Waar kunnen we u bereiken?</p>
+          <p className="text-[19px] font-bold [font-stretch:108%] leading-tight">Waar kunnen we u bereiken?</p>
           <div className="mt-3 grid gap-3">
             <label className="text-[13px] font-medium">
               Naam
@@ -402,7 +400,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
                 type="tel"
                 value={phone}
               />
-              <span className="mt-1 block text-xs font-normal text-brand-stone">
+              <span className="mt-1 block text-xs font-normal text-lp-muted">
                 Alleen om uw aanvraag te bespreken en een bezichtiging te plannen.
               </span>
               {errors.phone && <span className="mt-1 block text-xs text-red-700">{errors.phone}</span>}
@@ -420,7 +418,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
               {errors.email && <span className="mt-1 block text-xs text-red-700">{errors.email}</span>}
             </label>
             <label className="text-[13px] font-medium">
-              Iets wat we moeten weten? <span className="font-normal text-brand-stone">(optioneel)</span>
+              Iets wat we moeten weten? <span className="font-normal text-lp-muted">(optioneel)</span>
               <textarea className={`${inputClass} min-h-[88px]`} onChange={(e) => setMessage(e.target.value)} rows={3} value={message} />
             </label>
           </div>
@@ -436,7 +434,7 @@ export default function LandingForm({variant, phoneHref, phoneLabel}: Props) {
           <button className={`${primaryButton} mt-4`} disabled={status === "sending"} onClick={submit} type="button">
             {status === "sending" ? "Bezig met versturen..." : "Vraag vrijblijvend een bezichtiging aan"}
           </button>
-          <p className="mt-3 text-xs leading-5 text-brand-stone">
+          <p className="mt-3 text-xs leading-5 text-lp-muted">
             Wij gebruiken uw gegevens alleen voor deze aanvraag. Lees onze{" "}
             <Link className="underline underline-offset-2" href="/privacypolicy">
               privacyverklaring
