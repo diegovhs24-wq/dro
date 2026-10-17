@@ -2,9 +2,9 @@ import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import LandingForm from '@/components/landing/LandingForm'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
-import {getProjects, getReviews} from '@/lib/cms'
+import {getProjects} from '@/lib/cms'
 import {cmsImageUrl, fetchSanity, type CmsImageSource} from '@/lib/sanity'
-import type {ProjectItem, ReviewItem} from '@/lib/types'
+import type {ProjectItem} from '@/lib/types'
 
 // Advertentie-landingspagina voor de campagne "Totaalrenovatie Den Haag e.o.".
 // Eén pagina, geen menu, één actie. De kop past zich aan de advertentiegroep
@@ -55,7 +55,7 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
 }
 
 const PROOF = [
-  `${REVIEW_SCORE} sterren uit ${REVIEW_COUNT} Google reviews`,
+  `${TRUSTOO_SCORE} op Trustoo uit ${TRUSTOO_COUNT} reviews, Top Pro 2026`,
   'Vaste eigen ploegen en één vast aanspreekpunt',
   'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
   'VCA-gecertificeerd en CAR-verzekerd',
@@ -188,7 +188,7 @@ const ICON_PATHS: Record<string, string[]> = {
 // bestand ontbreekt (src leeg), toont de pagina alleen de naam.
 const LOGOS = [
   {name: 'Goudse Verzekeringen', src: '', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
-  {name: 'VCA', src: '', text: 'Gecertificeerd voor veilig werken op de bouw.'},
+  {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
   {name: 'VLOK', src: '', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
   {name: 'SBB', src: '', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
 ]
@@ -223,6 +223,46 @@ const GOOGLE_REVIEWS_URL = ''
 
 const SCENARIO_M2 = [80, 100, 120]
 
+// Echte Google-reviews, letterlijk overgenomen (naam, datum en project zoals op Google).
+type StaticReview = {name: string; date: string; project: string; quote: string}
+const GOOGLE_REVIEWS: StaticReview[] = [
+  {name: 'Allama', date: '13 mei 2026', project: 'Totaalrenovatie', quote: 'We zijn erg tevreden. Het team was professioneel, kwam alle afspraken na en startte het werk steeds op tijd.'},
+  {name: 'Youri', date: '15 apr 2026', project: 'Renovatie', quote: 'Therab laat duidelijk zien wat eerlijk verbouwen is. Ook als dingen niet gaan zoals ze moeten zijn ze responsief en lossen ze het netjes op.'},
+  {name: 'Kaylee', date: '1 apr 2026', project: 'Badkamer en toilet', quote: 'Onze badkamer en toilet laten renoveren door DRO. Super hard werkende mensen, goede communicatie en alles is netjes afgewerkt.'},
+  {name: 'Anil', date: '14 mei 2026', project: 'Badkamer en wc renovatie', quote: 'Ik ben ontzettend tevreden over het werk van DRO Renovaties. Mijn badkamer en wc zijn volledig gerenoveerd en werkelijk prachtig geworden. Alles verliep professioneel en duidelijk.'},
+]
+const TRUSTOO_SOURCES = 'Trustoo, Google, Werkspot en Facebook'
+const TRUSTOO_BADGES = [
+  {src: '/landing/logos/trustoo-toppro.png', alt: 'Trustoo Top Pro 2026'},
+  {src: '/landing/logos/trustoo-topscore.png', alt: 'Trustoo Top Score 2026'},
+]
+const STAR = 'text-[#F5B301]'
+
+function GoogleG() {
+  return (
+    <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 48 48">
+      <path d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.6 17.7 9.5 24 9.5z" fill="#EA4335" />
+      <path d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17.5z" fill="#4285F4" />
+      <path d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6z" fill="#FBBC05" />
+      <path d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.9 6C6.6 42.6 14.6 48 24 48z" fill="#34A853" />
+    </svg>
+  )
+}
+
+function PullQuote({review, wide}: {review: StaticReview; wide?: boolean}) {
+  return (
+    <figure className={`m-0 border-l-[3px] border-lp-orange pl-4 ${wide ? 'mt-10 max-w-3xl' : 'mt-6'}`}>
+      <blockquote className={wide ? 'text-[20px] font-semibold leading-[1.45] text-lp-ink' : 'text-[17px] font-medium leading-[1.5] text-lp-ink'}>
+        &ldquo;{review.quote}&rdquo;
+      </blockquote>
+      <figcaption className="mt-2 text-[13px] text-lp-muted">
+        <span aria-label="5 van 5 sterren" className={`${STAR} mr-1.5 tracking-[1px]`}>★★★★★</span>
+        {review.name}, Den Haag, {review.project.toLowerCase()}, Google-review
+      </figcaption>
+    </figure>
+  )
+}
+
 function Icon({name}: {name: string}) {
   return (
     <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-full bg-lp-plaster text-lp-ink">
@@ -254,10 +294,9 @@ export default async function TotaalrenovatieLandingPage({
 }) {
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
-  const [projects, reviews, teamPhoto] = await Promise.all([getProjects(), getReviews(), getTeamPhoto()])
+  const [projects, teamPhoto] = await Promise.all([getProjects(), getTeamPhoto()])
   const shownProjects = pickProjects(projects)
   const heroImage = heroImageOf(projects)
-  const shownReviews = (reviews as ReviewItem[]).filter((r) => r.quote).slice(0, 6)
 
   const proofItems = PROOF.map((item) => (
     <li className="flex items-start gap-3 text-[15px]" key={item}>
@@ -359,6 +398,7 @@ export default async function TotaalrenovatieLandingPage({
               <li>uw keuzes in afwerking, keuken en badkamer</li>
             </ul>
             <p className="mt-4">Na de bezichtiging krijgt u een offerte op maat, met de fases en termijnen van het betaalschema erin.</p>
+            <PullQuote review={GOOGLE_REVIEWS[1]} />
             <a className="mt-5 inline-flex min-h-[48px] items-center rounded-md bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover" href="#aanvraag">
               Bezichtiging aanvragen
             </a>
@@ -372,7 +412,8 @@ export default async function TotaalrenovatieLandingPage({
     <main className="pb-24 md:pb-0">
       <header className="border-b border-lp-line bg-white">
         <div className="section-shell flex min-h-[64px] items-center justify-between gap-4">
-          <span className="text-[19px] font-bold tracking-[-0.01em] [font-stretch:120%]">DRO Renovaties</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="DRO Renovaties, bouw- en klusbedrijf" className="h-8 w-auto sm:h-10" height={47} src="/landing/logo-dro.png" width={190} />
           <a
             className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-ink px-4 text-[15px] font-semibold transition-colors hover:bg-lp-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
             href={PHONE_HREF}
@@ -401,19 +442,18 @@ export default async function TotaalrenovatieLandingPage({
           </div>
           <div className="text-lp-ink">
             <LandingForm phoneHref={PHONE_HREF} phoneLabel={PHONE_LABEL} variant={variant} />
+            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
+              <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} Trustoo</span>
+              <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
+              <span>VCA-gecertificeerd</span>
+              <span>{RESPONSE_PROMISE}</span>
+            </p>
           </div>
         </div>
       </section>
 
       <section aria-label="Beoordelingen en beloften" className="bg-lp-plaster">
-        <dl className="section-shell grid grid-cols-2 gap-x-6 gap-y-5 py-6 md:grid-cols-4">
-          <div>
-            <dt className="text-[13px] text-lp-muted">Google</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
-              {REVIEW_SCORE}<span className="text-lp-orange"> ★</span>{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
-            </dd>
-          </div>
+        <dl className="section-shell grid grid-cols-2 items-start gap-x-6 gap-y-5 py-6 lg:grid-cols-5">
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
             <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
@@ -422,10 +462,29 @@ export default async function TotaalrenovatieLandingPage({
             </dd>
           </div>
           <div>
-            <dt className="text-[13px] text-lp-muted">Uitvoering</dt>
-            <dd className="mt-0.5 text-[17px] font-semibold">Vaste eigen ploegen</dd>
+            <dt className="text-[13px] text-lp-muted">Google</dt>
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
+              {REVIEW_SCORE}<span className="text-lp-orange"> ★</span>{' '}
+              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
+            </dd>
           </div>
           <div>
+            <dt className="text-[13px] text-lp-muted">Onderscheiden in 2026</dt>
+            <dd className="mt-1 flex min-h-[44px] items-center gap-2">
+              {TRUSTOO_BADGES.map((badge) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img alt={badge.alt} className="h-11 w-auto" key={badge.src} src={badge.src} />
+              ))}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-[13px] text-lp-muted">Veilig werken</dt>
+            <dd className="mt-1 flex min-h-[44px] items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="VCA-gecertificeerd" className="h-[34px] w-auto" src="/landing/logos/logo-vca.png" />
+            </dd>
+          </div>
+          <div className="col-span-2 lg:col-span-1">
             <dt className="text-[13px] text-lp-muted">Na uw aanvraag</dt>
             <dd className="mt-0.5 text-[17px] font-semibold">{RESPONSE_PROMISE}</dd>
           </div>
@@ -521,28 +580,54 @@ export default async function TotaalrenovatieLandingPage({
 
       <section className="border-t border-lp-line">
         <div className="section-shell py-14">
-          <h2 className={H2}>
-            {REVIEW_SCORE} uit {REVIEW_COUNT} Google reviews
-          </h2>
-          {shownReviews.length === 0 ? (
-            <p className={`mt-3 ${BODY}`}>
-              Klanten beoordelen ons gemiddeld met {REVIEW_SCORE} sterren op Google ({REVIEW_COUNT} reviews) en met een{' '}
-              {TRUSTOO_SCORE} op Trustoo ({TRUSTOO_COUNT} reviews).
-            </p>
-          ) : (
-            <div className="mt-8 grid gap-x-10 gap-y-8 md:grid-cols-3">
-              {shownReviews.map((review) => (
-                <figure className="m-0 border-t-2 border-lp-ink pt-4" key={`${review.name}-${review.quote.slice(0, 20)}`}>
-                  <p aria-label="5 sterren" className="text-lp-orange">★★★★★</p>
-                  <blockquote className="mt-2 text-[15px] leading-[1.65]">{review.quote}</blockquote>
-                  <figcaption className="mt-3 text-sm font-semibold">
-                    {review.name}
-                    {review.location ? <span className="font-normal text-lp-muted">, {review.location}</span> : null}
-                  </figcaption>
+          <h2 className={H2}>Wat klanten over ons zeggen</h2>
+          <div className="mt-8 grid items-start gap-8 lg:grid-cols-[300px_1fr]">
+            <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
+              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+                {TRUSTOO_SCORE}
+                <span className="text-[20px] font-medium text-lp-muted">/10</span>
+              </p>
+              <span className="mt-1.5 inline-block rounded-full bg-[#1F1A4A] px-2.5 py-0.5 text-[12px] font-bold uppercase tracking-[0.06em] text-white">
+                Uitstekend
+              </span>
+              <p className="mt-3 text-[14px] text-lp-muted">
+                {TRUSTOO_COUNT} reviews uit 4 bronnen: {TRUSTOO_SOURCES}.
+              </p>
+              <div className="mt-4 flex items-end gap-3.5">
+                {TRUSTOO_BADGES.map((badge) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img alt={badge.alt} className="h-16 w-auto" key={badge.src} loading="lazy" src={badge.src} />
+                ))}
+              </div>
+              <p className="mt-4 border-t border-lp-line pt-3.5 text-[14px]">
+                <strong>{REVIEW_SCORE}</strong> <span className={STAR}>★</span> op Google, {REVIEW_COUNT} reviews
+              </p>
+            </aside>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {GOOGLE_REVIEWS.map((review) => (
+                <figure className="m-0 flex flex-col rounded-lg border border-lp-line bg-white p-5" key={review.name}>
+                  <div className="flex items-center gap-3">
+                    <span aria-hidden="true" className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-[#FBE6D9] font-bold text-lp-orange">
+                      {review.name[0]}
+                    </span>
+                    <div>
+                      <div className="text-[15px] font-semibold leading-tight">{review.name}</div>
+                      <div className="text-[12px] text-lp-muted">Den Haag, {review.date}</div>
+                    </div>
+                    <span className="ml-auto inline-flex items-center gap-1.5 text-[12px] font-semibold text-lp-muted">
+                      <GoogleG />
+                      Google
+                    </span>
+                  </div>
+                  <p aria-label="5 van 5 sterren" className={`mt-3 tracking-[2px] ${STAR}`}>★★★★★</p>
+                  <blockquote className="mt-2 flex-1 text-[15px] leading-[1.6]">&ldquo;{review.quote}&rdquo;</blockquote>
+                  <figcaption className="mt-3.5 border-t border-lp-line pt-2.5 text-[13px] text-lp-muted">Project: {review.project}</figcaption>
                 </figure>
               ))}
             </div>
-          )}
+          </div>
           {GOOGLE_REVIEWS_URL && (
             <a className="mt-6 inline-block font-semibold underline underline-offset-2" href={GOOGLE_REVIEWS_URL} rel="noopener" target="_blank">
               Lees alle reviews op Google
@@ -569,6 +654,7 @@ export default async function TotaalrenovatieLandingPage({
               </li>
             ))}
           </ol>
+          <PullQuote review={GOOGLE_REVIEWS[0]} wide />
         </div>
       </section>
 
@@ -662,6 +748,13 @@ export default async function TotaalrenovatieLandingPage({
           <div>
             <h2 className={H2}>Plannen voor een totaalrenovatie?</h2>
             <p className="mt-2 text-white/75">Vraag vrijblijvend een bezichtiging aan, of bel ons direct.</p>
+            <p className="mt-2 text-[14px] text-white/85">
+              <span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} op Trustoo uit {TRUSTOO_COUNT} reviews
+              <span aria-hidden="true" className="mx-2 opacity-40">|</span>
+              {REVIEW_SCORE} op Google
+              <span aria-hidden="true" className="mx-2 opacity-40">|</span>
+              VCA-gecertificeerd
+            </p>
           </div>
           <div className="flex w-full gap-3 md:w-auto">
             <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
