@@ -1,4 +1,6 @@
 import Link from "next/link";
+import CookieSettingsLink from "@/components/analytics/CookieSettingsLink";
+import {GOOGLE_ADS_ID} from "@/lib/analytics";
 import FooterCtaGate from "@/components/FooterCtaGate";
 import type {LocationSummary, ServiceSummary, SiteSettings} from "@/lib/types";
 
@@ -155,16 +157,17 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
           </div>
         )}
 
-        {(footer.copyright || footer.legalLinks.length > 0) && (
+        {(footer.copyright || footer.legalLinks.length > 0 || GOOGLE_ADS_ID) && (
           <div className="mt-4 flex flex-col justify-between gap-3 text-xs text-white/40 md:flex-row md:items-center">
             {footer.copyright && <p>{footer.copyright}</p>}
-            {footer.legalLinks.length > 0 && (
+            {(footer.legalLinks.length > 0 || GOOGLE_ADS_ID) && (
               <div className="flex flex-wrap gap-5">
                 {footer.legalLinks.map((link) => (
                   <Link className="transition hover:text-brand-orange" href={link.href} key={link.href}>
                     {link.label}
                   </Link>
                 ))}
+                <CookieSettingsLink className="transition hover:text-brand-orange" />
               </div>
             )}
           </div>
