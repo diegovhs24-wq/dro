@@ -187,9 +187,9 @@ const ICON_PATHS: Record<string, string[]> = {
 // Keurmerken en verzekeraar. Logo's in /public/landing/logos/; zolang een
 // bestand ontbreekt (src leeg), toont de pagina alleen de naam.
 const LOGOS = [
-  {name: 'Goudse Verzekeringen', src: '', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
+  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
   {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
-  {name: 'VLOK', src: '', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
+  {name: 'VLOK', src: '/landing/logos/logo-vlok.png', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
   {name: 'SBB', src: '', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
 ]
 
@@ -486,10 +486,12 @@ export default async function TotaalrenovatieLandingPage({
             </dd>
           </div>
           <div>
-            <dt className="text-[13px] text-lp-muted">Veilig werken</dt>
-            <dd className="mt-1 flex min-h-[44px] items-center">
+            <dt className="text-[13px] text-lp-muted">Gecertificeerd en verzekerd</dt>
+            <dd className="mt-1 flex min-h-[44px] items-center gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="VCA-gecertificeerd" className="h-[34px] w-auto" src="/landing/logos/logo-vca.png" />
+              <img alt="VCA-gecertificeerd" className="h-[30px] w-auto" src="/landing/logos/logo-vca.png" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt="Verzekerd bij De Goudse" className="h-[38px] w-auto" src="/landing/logos/logo-goudse.png" />
             </dd>
           </div>
           <div className="col-span-2 lg:col-span-1">
