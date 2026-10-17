@@ -326,8 +326,15 @@ const NAV = [
 ]
 const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
 
+// Achtergrond van de kop: een opgeleverde totaalrenovatie (woonkamer Fuutlaan),
+// anders de eerste uitgelichte totaalrenovatie, anders het eerste project met foto.
+const HERO_PROJECTS = ['fuutlaan-leidschendam', 'essehout-zoetermeer']
+
 function heroImageOf(projects: ProjectItem[]): string | null {
-  const project = projects.find((p) => p.afterImage) || projects.find((p) => p.images?.[0])
+  const project =
+    HERO_PROJECTS.map((slug) => projects.find((p) => p.slug === slug && p.afterImage)).find(Boolean) ||
+    projects.find((p) => p.afterImage) ||
+    projects.find((p) => p.images?.[0])
   const url = project?.afterImage || project?.images?.[0]
   return url ? sizedImage(url, 1800) : null
 }
