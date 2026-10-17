@@ -42,6 +42,10 @@ export default function ConsentBanner() {
             <Link className="font-semibold text-brand-ink underline underline-offset-2 hover:text-brand-orange" href="/privacypolicy">
               privacyverklaring
             </Link>
+            {" "}en{" "}
+            <Link className="font-semibold text-brand-ink underline underline-offset-2 hover:text-brand-orange" href="/cookie-informatie">
+              cookie-informatie
+            </Link>
             .
           </p>
         </div>
