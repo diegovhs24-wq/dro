@@ -101,10 +101,31 @@ function sizedImage(url: string, width: number): string {
   return `${url}${url.includes('?') ? '&' : '?'}w=${width}&auto=format&q=70`
 }
 
+// Vaste keuze: totaalrenovaties uit de regio met een sterke voor-en-nafoto.
+// Ontbreekt er een, dan vult de score aan: eerst totaalrenovaties, dan grote
+// verbouwingen, regio Den Haag e.o. voorrang.
+const FEATURED_PROJECTS = ['jan-muschlaan-den-haag', 'essehout-zoetermeer', 'fuutlaan-leidschendam']
+const PROJECT_TYPE_PRIORITY = [/totaal/i, /dakopbouw|aanbouw|uitbouw/i]
+const REGION = /den haag|rijswijk|leidschendam|voorburg|wassenaar|delft|zoetermeer/i
+
+function projectScore(p: ProjectItem): number {
+  const type = p.type || ''
+  const typeIdx = PROJECT_TYPE_PRIORITY.findIndex((re) => re.test(type))
+  const typeScore = typeIdx === -1 ? 0 : (PROJECT_TYPE_PRIORITY.length - typeIdx) * 10
+  return typeScore + (REGION.test(`${p.location || ''} ${p.title}`) ? 5 : 0)
+}
+
 function pickProjects(projects: ProjectItem[]): ProjectItem[] {
-  const withBeforeAfter = projects.filter((p) => p.beforeImage && p.afterImage)
-  const withImage = projects.filter((p) => !(p.beforeImage && p.afterImage) && p.images?.[0])
-  return [...withBeforeAfter, ...withImage].slice(0, 3)
+  const usable = projects.filter((p) => (p.beforeImage && p.afterImage) || p.images?.[0])
+  return usable
+    .map((p, i) => {
+      const featured = FEATURED_PROJECTS.indexOf(p.slug)
+      const score = featured === -1 ? projectScore(p) + (p.beforeImage && p.afterImage ? 2 : 0) : 1000 - featured
+      return {p, i, score}
+    })
+    .sort((a, b) => b.score - a.score || a.i - b.i)
+    .slice(0, 3)
+    .map(({p}) => p)
 }
 
 const COMPARE = [
@@ -159,54 +180,18 @@ function pickVariant(value: string | string[] | undefined): Variant {
 }
 
 // Typografie: koppen breed (font-stretch) en stevig, tekst normaal.
-// Betaalschema: startbetaling en daarna per afgeronde fase (bevestigd door Therab).
-const START_PAYMENT = '20 tot 25%'
-const PAY_PHASES = [
-  {when: 'Na fase 1 afgerond', what: 'sloop en casco', label: 'Termijn 2'},
-  {when: 'Na fase 2 afgerond', what: 'installaties', label: 'Termijn 3'},
-  {when: 'Na fase 3 afgerond', what: 'afbouw', label: 'Termijn 4'},
-  {when: 'Na oplevering', what: 'samen nagelopen', label: 'Laatste termijn'},
-]
-
-// Rekenvoorbeeld bij het betaalschema: een gemiddelde totaalrenovatie, zodat
-// bezoekers zien wat er per fase gebeurt en wanneer ze wat betalen.
+// Betaalschema (bevestigd door Therab): niets bij het tekenen, 20 tot 25% op de
+// eerste werkdag, daarna per afgeronde fase. Rekenvoorbeeld met een gemiddelde
+// totaalrenovatie, zodat bezoekers in één oogopslag zien wat ze wanneer betalen.
 const EXAMPLE_TOTAL = 120000
+const EXAMPLE_WEEKS = 13
 const EXAMPLE_PHASES = [
-  {
-    step: 'Start van het werk',
-    weeks: 'Eerste werkdag',
-    pct: 20,
-    when: 'Op de dag dat we beginnen, niet bij het tekenen',
-    work: ['Werkplek inrichten en woning afschermen', 'Materialen besteld en ingepland'],
-  },
-  {
-    step: 'Fase 1: sloop en casco',
-    weeks: 'Week 1 tot 3',
-    pct: 20,
-    when: 'Als de sloop klaar is en u het heeft gezien',
-    work: ['Oude keuken, badkamer, vloeren en plafonds eruit', 'Muur doorbreken met stalen balk, als dat in het plan zit', 'Afval afvoeren, ondergrond vlak en schoon'],
-  },
-  {
-    step: 'Fase 2: installaties',
-    weeks: 'Week 4 tot 7',
-    pct: 25,
-    when: 'Als alle leidingen liggen en getest zijn',
-    work: ['Elektra: nieuwe groepenkast, leidingen, stopcontacten en lichtpunten', 'Water en afvoer voor keuken, badkamer en toilet', 'Verwarming of vloerverwarming en ventilatie'],
-  },
-  {
-    step: 'Fase 3: afbouw',
-    weeks: 'Week 8 tot 12',
-    pct: 25,
-    when: 'Als de afbouw klaar is',
-    work: ['Stucwerk op wanden en plafonds, klaar om te schilderen', 'Tegelwerk in badkamer en toilet, sanitair geplaatst', 'Binnendeuren, vloeren en keuken geplaatst'],
-  },
-  {
-    step: 'Oplevering',
-    weeks: 'Week 13',
-    pct: 10,
-    when: 'Na de oplevering, als alle punten af zijn',
-    work: ['We lopen samen elke ruimte na', 'Laatste puntjes afgerond, daarna de laatste termijn'],
-  },
+  {step: 'Tekenen', weeks: 'Vooraf', pct: 0, work: 'Offerte, planning en betaalschema op papier'},
+  {step: 'Start', weeks: 'Dag 1', pct: 20, work: 'Woning afgeschermd, materialen besteld'},
+  {step: 'Sloop en casco', weeks: 'Week 1 tot 3', pct: 20, work: 'Slopen, muur eruit met stalen balk, afvoer'},
+  {step: 'Installaties', weeks: 'Week 4 tot 7', pct: 25, work: 'Elektra en groepenkast, water, afvoer, verwarming'},
+  {step: 'Afbouw', weeks: 'Week 8 tot 12', pct: 25, work: 'Stucwerk, tegels, sanitair, deuren, vloeren, keuken'},
+  {step: 'Oplevering', weeks: 'Week 13', pct: 10, work: 'Samen elke ruimte nalopen, puntjes af'},
 ]
 
 const GRIP = [
@@ -214,7 +199,7 @@ const GRIP = [
   {title: 'Elke week een vast meetmoment', text: 'U ziet de voortgang en stelt uw vragen op een vast moment.', icon: 'calendar'},
   {title: 'Vragen binnen 24 uur opgepakt', text: 'Via de app, ook tussen de meetmomenten door.', icon: 'chat'},
   {title: 'Vaste eigen ploegen', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
-  {title: 'CAR- en aansprakelijkheidsverzekerd', text: 'Schade tijdens de bouw is verzekerd.', icon: 'shield'},
+  {title: 'Volledig verzekerd', text: 'CAR- en aansprakelijkheidsverzekering: schade tijdens de bouw is gedekt.', icon: 'shield'},
 ] as const
 
 const ICON_PATHS: Record<string, string[]> = {
@@ -341,8 +326,15 @@ const NAV = [
 ]
 const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
 
+// Achtergrond van de kop: een opgeleverde totaalrenovatie (woonkamer Fuutlaan),
+// anders de eerste uitgelichte totaalrenovatie, anders het eerste project met foto.
+const HERO_PROJECTS = ['fuutlaan-leidschendam', 'essehout-zoetermeer']
+
 function heroImageOf(projects: ProjectItem[]): string | null {
-  const project = projects.find((p) => p.afterImage) || projects.find((p) => p.images?.[0])
+  const project =
+    HERO_PROJECTS.map((slug) => projects.find((p) => p.slug === slug && p.afterImage)).find(Boolean) ||
+    projects.find((p) => p.afterImage) ||
+    projects.find((p) => p.images?.[0])
   const url = project?.afterImage || project?.images?.[0]
   return url ? sizedImage(url, 1800) : null
 }
@@ -365,6 +357,12 @@ export default async function TotaalrenovatieLandingPage({
     </li>
   ))
 
+  let paidSoFar = 0
+  const examplePhases = EXAMPLE_PHASES.map((phase) => {
+    paidSoFar += phase.pct
+    return {...phase, amount: (EXAMPLE_TOTAL * phase.pct) / 100, cumulative: paidSoFar}
+  })
+
   const gripSection = (
     <section className="scroll-mt-28 border-t border-lp-line" id="grip">
       <div className="section-shell py-14">
@@ -373,92 +371,76 @@ export default async function TotaalrenovatieLandingPage({
           Bij een project van deze omvang wilt u weten waar uw geld naartoe gaat en wie u kunt bellen. Dit staat vooraf vast,
           op papier.
         </p>
-        <div className="mt-8 grid gap-12 md:grid-cols-2 md:items-start">
-          <div>
-            <h3 className="text-[18px] font-bold [font-stretch:108%]">U betaalt per afgeronde fase</h3>
-            <ol aria-label="Betaalschema" className="mt-3 grid gap-1 md:grid-cols-[23fr_19fr_19fr_19fr_20fr]">
-              <li className="flex items-center justify-between gap-3 rounded-md bg-lp-orange p-3 text-white md:block">
-                <span className="block text-xs text-white/85">Bij start van het werk</span>
-                <span className="block text-[17px] font-bold [font-stretch:110%] md:mt-1.5">{START_PAYMENT}</span>
-              </li>
-              {PAY_PHASES.map((phase) => (
-                <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-md border-[1.5px] border-lp-ink p-3 md:block" key={phase.label}>
-                  <span aria-hidden="true" className="col-span-2 flex h-5 w-5 items-center justify-center rounded-full bg-lp-orange text-[11px] text-white md:mb-1.5">✓</span>
-                  <span className="block text-xs leading-snug text-lp-muted">
-                    {phase.when}
-                    <br />
-                    {phase.what}
-                  </span>
-                  <span className="block text-right text-[17px] font-bold leading-tight [font-stretch:110%] md:mt-1.5 md:text-left">{phase.label}</span>
-                </li>
-              ))}
-            </ol>
-            <div aria-hidden="true" className="mt-2.5 hidden justify-between border-t-2 border-lp-line pt-1.5 text-xs text-lp-muted md:flex">
-              <span>Start</span>
-              <span>Werk klaar, dan pas betalen</span>
-              <span>Oplevering</span>
-            </div>
-            <p className="mt-4 text-sm text-lp-muted">
-              Bij het tekenen betaalt u niets. Hieronder een rekenvoorbeeld met wat er per fase gebeurt.
-            </p>
-          </div>
-          <ul className="border-t border-lp-line">
-            {GRIP.map((item) => (
-              <li className="grid grid-cols-[28px_minmax(0,1fr)] gap-3 border-b border-lp-line py-3.5" key={item.title}>
-                <Icon name={item.icon} />
-                <div>
-                  <span className="block font-semibold">{item.title}</span>
-                  <span className="text-sm text-lp-muted">{item.text}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="mt-12 rounded-lg border border-lp-line bg-white">
-          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-lp-line p-5">
+
+        <div className="mt-8 overflow-hidden rounded-lg border border-lp-line bg-white">
+          <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-b border-lp-line px-5 py-4">
             <div>
-              <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-lp-orange">Rekenvoorbeeld</p>
-              <h3 className="mt-1 text-[19px] font-bold [font-stretch:108%]">Totaalrenovatie van een jaren 30-woning, 100 m²</h3>
-              <p className="mt-1 text-sm text-lp-muted">Opdrachtsom {euro(EXAMPLE_TOTAL)} inclusief btw, ongeveer 13 weken werk</p>
+              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-lp-orange">Rekenvoorbeeld</p>
+              <h3 className="mt-0.5 text-[18px] font-bold [font-stretch:108%]">Totaalrenovatie jaren 30-woning, 100 m²</h3>
+              <p className="text-sm text-lp-muted">
+                {euro(EXAMPLE_TOTAL)} inclusief btw &middot; {EXAMPLE_WEEKS} weken werk
+              </p>
             </div>
-            <p className="max-w-[34ch] rounded-md bg-lp-plaster px-3 py-2 text-sm">
-              <span className="font-semibold">Bij het tekenen betaalt u niets.</span> De eerste betaling is pas op de dag dat we echt beginnen.
+            <p className="max-w-[44ch] text-[15px] leading-snug">
+              <span className="font-bold">Bij het tekenen betaalt u {euro(0)}.</span> Daarna betaalt u pas als een fase klaar is en u
+              het werk heeft gezien.
             </p>
           </div>
-          <ol className="divide-y divide-lp-line">
-            {EXAMPLE_PHASES.map((phase, i) => (
-              <li className="grid gap-3 p-5 md:grid-cols-[240px_minmax(0,1fr)_250px] md:gap-6" key={phase.step}>
-                <div className="flex gap-3">
-                  <span className={`mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full text-[13px] font-bold tabular-nums ${i === 0 ? 'bg-lp-orange text-white' : 'border-2 border-lp-orange text-lp-orange'}`}>
-                    {i + 1}
-                  </span>
-                  <div>
-                    <p className="font-semibold">{phase.step}</p>
-                    <p className="text-sm text-lp-muted">{phase.weeks}</p>
+
+          <ol
+            aria-label="Betaalmomenten in het rekenvoorbeeld"
+            className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-6 md:overflow-visible"
+          >
+            {examplePhases.map((phase, i) => {
+              const first = i === 0
+              return (
+                <li
+                  className={`flex min-w-[168px] snap-start flex-col border-lp-line px-4 py-4 md:min-w-0 ${i > 0 ? 'border-l' : ''} ${first ? 'bg-lp-orange/[0.06]' : ''}`}
+                  key={phase.step}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-6 w-6 flex-none items-center justify-center rounded-full text-[12px] font-bold tabular-nums ${first ? 'bg-lp-orange text-white' : 'border-2 border-lp-orange text-lp-orange'}`}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="text-[12px] uppercase tracking-[0.06em] text-lp-muted">{phase.weeks}</span>
                   </div>
-                </div>
-                <ul className="grid gap-1 text-[15px] leading-[1.5]">
-                  {phase.work.map((w) => (
-                    <li className="flex gap-2" key={w}>
-                      <span aria-hidden="true" className="mt-[9px] h-[2px] w-3 flex-none bg-lp-orange" />
-                      {w}
-                    </li>
-                  ))}
-                </ul>
-                <div className="md:text-right">
-                  <p className="text-[20px] font-bold tabular-nums [font-stretch:110%]">{euro((EXAMPLE_TOTAL * phase.pct) / 100)}</p>
-                  <p className="text-sm text-lp-muted">
-                    {phase.pct}% &middot; {phase.when.toLowerCase()}
+                  <p className="mt-2 font-semibold leading-tight">{phase.step}</p>
+                  <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
+                    {euro(phase.amount)}
                   </p>
-                </div>
-              </li>
-            ))}
+                  <p className="mt-1 text-[12px] text-lp-muted">{first ? 'geen aanbetaling' : `${phase.pct}% van het totaal`}</p>
+                  <p className="mt-3 text-[13px] leading-[1.45] text-lp-muted">{phase.work}</p>
+                  <div className="mt-auto pt-4">
+                    <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-lp-line">
+                      <div className="h-full rounded-full bg-lp-orange" style={{width: `${phase.cumulative}%`}} />
+                    </div>
+                    <p className="mt-1.5 text-[12px] tabular-nums text-lp-muted">Totaal betaald {phase.cumulative}%</p>
+                  </div>
+                </li>
+              )
+            })}
           </ol>
-          <p className="border-t border-lp-line p-5 text-sm text-lp-muted">
-            Dit is een voorbeeld. Na elke fase lopen we het werk samen met u na, pas daarna volgt de factuur voor die fase. Uw eigen
-            fases, bedragen en planning staan in uw offerte, voordat u tekent.
+
+          <p className="border-t border-lp-line px-5 py-3 text-[13px] text-lp-muted">
+            Voorbeeld. Uw eigen fases, bedragen en planning staan in uw offerte, voordat u tekent.
+            <span className="md:hidden"> Veeg opzij voor alle fases.</span>
           </p>
         </div>
+
+        <ul className="mt-8 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-5">
+          {GRIP.map((item) => (
+            <li className="grid grid-cols-[28px_minmax(0,1fr)] gap-3" key={item.title}>
+              <Icon name={item.icon} />
+              <div>
+                <span className="block font-semibold leading-snug">{item.title}</span>
+                <span className="text-sm text-lp-muted">{item.text}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )
@@ -571,7 +553,7 @@ export default async function TotaalrenovatieLandingPage({
         )}
         <div className="section-shell grid gap-10 py-10 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
           <div>
-            <h1 className={`${H1} text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title}</h1>
+            <h1 className={`${H1} text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title.replace('Den Haag', 'Den\u00a0Haag')}</h1>
             <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-white/85">{hero.intro}</p>
             <ul className="mt-7 hidden gap-3 text-white/90 md:grid">{proofItems}</ul>
           </div>
@@ -663,11 +645,10 @@ export default async function TotaalrenovatieLandingPage({
             <div className="mt-8 grid gap-8 md:grid-cols-3">
               {shownProjects.map((project) => {
                 const hasBeforeAfter = Boolean(project.beforeImage && project.afterImage)
-                const extraPhotos = (project.images || []).slice(0, 3)
                 const facts = [
-                  ['Plaats', project.location],
-                  ['Type', project.type],
-                  ['Doorlooptijd', project.duration],
+                  ['Plaats', project.location?.trim()],
+                  ['Type', project.type?.trim()],
+                  ['Doorlooptijd', project.duration?.trim()],
                 ].filter(([, v]) => Boolean(v))
                 return (
                   <article key={project.slug}>
@@ -679,22 +660,14 @@ export default async function TotaalrenovatieLandingPage({
                         ].map((img) => (
                           <figure className="relative" key={img.label}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img alt={`${project.title}, ${img.label.toLowerCase()}`} className="aspect-[4/5] w-full object-cover" decoding="async" loading="lazy" src={sizedImage(img.src, 500)} />
+                            <img alt={`${project.title}, ${img.label.toLowerCase()}`} className="aspect-[4/5] w-full bg-lp-plaster object-cover" decoding="async" loading="lazy" src={sizedImage(img.src, 500)} />
                             <figcaption className="absolute bottom-2 left-2 rounded bg-lp-ink/80 px-2 py-0.5 text-xs font-semibold text-white">{img.label}</figcaption>
                           </figure>
                         ))}
                       </div>
                     ) : (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img alt={project.title} className="aspect-[4/3] w-full rounded-lg object-cover" decoding="async" loading="lazy" src={sizedImage(project.images[0], 900)} />
-                    )}
-                    {extraPhotos.length > 1 && (
-                      <div className="mt-1 grid grid-cols-3 gap-1">
-                        {extraPhotos.map((src, i) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img alt={`${project.title}, foto ${i + 1}`} className="aspect-square w-full rounded object-cover" decoding="async" key={src} loading="lazy" src={sizedImage(src, 300)} />
-                        ))}
-                      </div>
+                      <img alt={project.title} className="aspect-[4/3] w-full rounded-lg bg-lp-plaster object-cover" decoding="async" loading="lazy" src={sizedImage(project.images[0], 900)} />
                     )}
                     <h3 className="mt-3 text-[17px] font-semibold">{project.title}</h3>
                     {facts.length > 0 && (
@@ -835,10 +808,10 @@ export default async function TotaalrenovatieLandingPage({
               <li>Vast netwerk van constructeurs en architecten</li>
             </ul>
           </div>
-          <ul className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <ul className="mt-10 grid grid-cols-2 gap-x-4 gap-y-5 md:grid-cols-4">
             {LOGOS.map((logo) => (
               <li key={logo.name}>
-                <div className="flex aspect-[3/2] items-center justify-center rounded-lg border border-lp-line bg-white p-4">
+                <div className="flex h-[104px] items-center justify-center rounded-lg border border-lp-line bg-white px-5 py-2.5">
                   {logo.src ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img alt={logo.name} className="max-h-full max-w-full object-contain" loading="lazy" src={logo.src} />
