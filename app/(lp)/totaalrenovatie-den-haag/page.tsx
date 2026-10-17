@@ -2,6 +2,7 @@ import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import LandingForm from '@/components/landing/LandingForm'
 import {getProjects, getReviews} from '@/lib/cms'
+import {cmsImageUrl, fetchSanity, type CmsImageSource} from '@/lib/sanity'
 import type {ProjectItem, ReviewItem} from '@/lib/types'
 
 // Advertentie-landingspagina voor de campagne "Totaalrenovatie Den Haag e.o.".
@@ -28,6 +29,10 @@ const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
 const REVIEW_SCORE = '4,8'
 const REVIEW_COUNT = '273+'
+// LET OP: Trustoo-cijfers en reactietijd pas live na bevestiging door Therab.
+const TRUSTOO_SCORE = '9,8'
+const TRUSTOO_COUNT = '557'
+const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'
 
 type Variant = 'aannemer' | 'woning' | 'kosten'
 
@@ -91,7 +96,7 @@ const FAQ = [
 ]
 
 function sizedImage(url: string, width: number): string {
-  if (!url.includes('cdn.sanity.io')) return url
+  if (!url.includes('cdn.sanity.io') || /[?&]w=/.test(url)) return url
   return `${url}${url.includes('?') ? '&' : '?'}w=${width}&auto=format&q=70`
 }
 
@@ -99,6 +104,52 @@ function pickProjects(projects: ProjectItem[]): ProjectItem[] {
   const withBeforeAfter = projects.filter((p) => p.beforeImage && p.afterImage)
   const withImage = projects.filter((p) => !(p.beforeImage && p.afterImage) && p.images?.[0])
   return [...withBeforeAfter, ...withImage].slice(0, 3)
+}
+
+const COMPARE = [
+  {
+    topic: 'Aanspreekpunt',
+    self: 'Per vak een andere partij die u zelf op elkaar afstemt',
+    dro: 'Eén vast aanspreekpunt van bezichtiging tot oplevering',
+  },
+  {
+    topic: 'Planning',
+    self: 'Wachten op elkaar, gaten tussen de vakken',
+    dro: 'Eén planning, vooraf op papier, met vaste ploegen die op elkaar aansluiten',
+  },
+  {
+    topic: 'Prijs',
+    self: 'Losse offertes die moeilijk te vergelijken zijn',
+    dro: 'Eén offerte op maat met een betaalschema per fase',
+  },
+  {
+    topic: 'Tijdens het werk',
+    self: 'Zelf achter vragen en problemen aan',
+    dro: 'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
+  },
+  {
+    topic: 'Na afloop',
+    self: 'Bij een gebrek wijzen partijen naar elkaar',
+    dro: 'Eén partij die verantwoordelijk is voor het geheel',
+  },
+]
+
+type TeamPhoto = {image?: CmsImageSource | null; title?: string | null}
+
+// Teamfoto uit de CMS (blok "aboutTeamImageBlock" op een pagina). Faalt stil:
+// zonder foto verschijnt de sectie zonder beeld.
+async function getTeamPhoto(): Promise<{url: string; title: string} | null> {
+  try {
+    const data = await fetchSanity<TeamPhoto | null>(
+      `*[_type == "page" && count(blocks[_type == "aboutTeamImageBlock"]) > 0][0].blocks[_type == "aboutTeamImageBlock"][0]{"image": teamImage{image, externalImageUrl}, "title": teamImageTitle}`,
+      {},
+      {revalidate: 3600}
+    )
+    const url = cmsImageUrl(data?.image ?? null, 1200)
+    return url ? {url, title: data?.title || 'Het team van DRO Renovaties'} : null
+  } catch {
+    return null
+  }
 }
 
 function pickVariant(value: string | string[] | undefined): Variant {
@@ -113,9 +164,9 @@ export default async function TotaalrenovatieLandingPage({
 }) {
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
-  const [projects, reviews] = await Promise.all([getProjects(), getReviews()])
+  const [projects, reviews, teamPhoto] = await Promise.all([getProjects(), getReviews(), getTeamPhoto()])
   const shownProjects = pickProjects(projects)
-  const shownReviews = (reviews as ReviewItem[]).filter((r) => r.quote).slice(0, 3)
+  const shownReviews = (reviews as ReviewItem[]).filter((r) => r.quote).slice(0, 6)
 
   const proofList = (
     <ul className="mt-5 grid gap-2">
@@ -190,6 +241,33 @@ export default async function TotaalrenovatieLandingPage({
         <div className="md:hidden">{proofList}</div>
       </section>
 
+      {/* Cijferbalk: bewijs in een oogopslag. */}
+      <section aria-label="Beoordelingen en beloften" className="border-y border-brand-line bg-[#ffffff]">
+        <dl className="section-shell grid grid-cols-2 gap-4 py-5 md:grid-cols-4">
+          <div>
+            <dt className="text-xs text-brand-stone">Google</dt>
+            <dd className="text-lg font-semibold tabular-nums">
+              {REVIEW_SCORE} <span className="text-brand-orange">★</span>{' '}
+              <span className="text-sm font-normal text-brand-ink-soft">{REVIEW_COUNT} reviews</span>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-brand-stone">Trustoo</dt>
+            <dd className="text-lg font-semibold tabular-nums">
+              {TRUSTOO_SCORE}/10 <span className="text-sm font-normal text-brand-ink-soft">{TRUSTOO_COUNT} reviews</span>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-brand-stone">Uitvoering</dt>
+            <dd className="text-lg font-semibold">Vaste eigen ploegen</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-brand-stone">Na uw aanvraag</dt>
+            <dd className="text-lg font-semibold">{RESPONSE_PROMISE}</dd>
+          </div>
+        </dl>
+      </section>
+
       {variant === 'kosten' && priceSection}
 
       {shownProjects.length > 0 && (
@@ -234,6 +312,38 @@ export default async function TotaalrenovatieLandingPage({
 
       <section className="border-t border-brand-line">
         <div className="section-shell py-12">
+          <h2 className="text-2xl font-semibold">Zelf partijen regelen, of alles bij één aannemer?</h2>
+          <p className="mt-2 max-w-2xl text-[15px] leading-7 text-brand-ink-soft">
+            Bij een totaalrenovatie werken vaak vijf of meer vakgebieden in uw woning. Het verschil zit in wie dat regelt.
+          </p>
+          <div className="mt-6 overflow-x-auto rounded-lg border border-brand-line bg-[#ffffff]">
+            <table className="w-full min-w-[560px] text-left text-[15px]">
+              <thead>
+                <tr className="border-b border-brand-line bg-brand-soft text-sm">
+                  <th className="w-[22%] px-4 py-3 font-semibold" scope="col"></th>
+                  <th className="px-4 py-3 font-semibold text-brand-stone" scope="col">Zelf partijen regelen</th>
+                  <th className="px-4 py-3 font-semibold" scope="col">Met DRO Renovaties</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARE.map((row) => (
+                  <tr className="border-b border-brand-line last:border-0" key={row.topic}>
+                    <th className="px-4 py-3 align-top font-semibold" scope="row">{row.topic}</th>
+                    <td className="px-4 py-3 align-top text-brand-stone">{row.self}</td>
+                    <td className="px-4 py-3 align-top">
+                      <span aria-hidden="true" className="mr-1 font-bold text-brand-orange">✓</span>
+                      {row.dro}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-brand-line">
+        <div className="section-shell py-12">
           <h2 className="text-2xl font-semibold">Zo werken we</h2>
           <ol className="mt-6 grid gap-4 md:grid-cols-5">
             {STEPS.map((step, i) => (
@@ -256,7 +366,8 @@ export default async function TotaalrenovatieLandingPage({
           </h2>
           {shownReviews.length === 0 && (
             <p className="mt-3 text-[15px] leading-7 text-brand-ink-soft">
-              Klanten beoordelen ons gemiddeld met {REVIEW_SCORE} sterren op Google, over {REVIEW_COUNT} reviews.
+              Klanten beoordelen ons gemiddeld met {REVIEW_SCORE} sterren op Google ({REVIEW_COUNT} reviews) en met een{' '}
+              {TRUSTOO_SCORE} op Trustoo ({TRUSTOO_COUNT} reviews).
             </p>
           )}
           {shownReviews.length > 0 && (
@@ -277,6 +388,18 @@ export default async function TotaalrenovatieLandingPage({
 
       <section className="border-t border-brand-line bg-[#ffffff]">
         <div className="section-shell grid gap-6 py-12 md:grid-cols-2">
+          {teamPhoto && (
+            <figure className="md:col-span-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt={teamPhoto.title}
+                className="aspect-[16/7] w-full rounded-lg object-cover"
+                decoding="async"
+                loading="lazy"
+                src={teamPhoto.url}
+              />
+            </figure>
+          )}
           <div>
             <h2 className="text-2xl font-semibold">Een Haags familiebedrijf</h2>
             <p className="mt-4 text-[15px] leading-7 text-brand-ink-soft">
