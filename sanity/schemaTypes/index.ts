@@ -12,4 +12,19 @@ export const productionSchemaTypes = schemaTypes.filter((type) => type.name !== 
 // legacy-aanvraag naar verwijst (intakeForm en faq), zodat de weergave niet
 // op onbekende typen stukloopt. Die typen zijn niet aanmaakbaar in deze workspace.
 const leadsTypeNames = new Set(['formSubmission', 'intakeForm', 'faq'])
-export const leadsSchemaTypes = schemaTypes.filter((type) => leadsTypeNames.has(type.name))
+
+// De verwijzing van een legacy-aanvraag (intakeFormRef) wijst naar een
+// intakeForm in "production". In de dataset "leads" bestaat dat document niet,
+// dus de Studio zou hier alleen "Document unavailable" tonen. In deze workspace
+// verbergen we het veld (de waarde blijft ongewijzigd in het document staan).
+export const leadsSchemaTypes = schemaTypes
+  .filter((type) => leadsTypeNames.has(type.name))
+  .map((type) => {
+    if (type.name !== 'formSubmission' || !('fields' in type) || !Array.isArray(type.fields)) return type
+    return {
+      ...type,
+      fields: type.fields.map((field) =>
+        field.name === 'intakeFormRef' ? {...field, hidden: true} : field,
+      ),
+    } as typeof type
+  })

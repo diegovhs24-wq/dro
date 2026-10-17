@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getSiteUrl } from "@/lib/seo/site";
 
 const BRAND = {
   orange: "#ff6a00",
@@ -42,7 +43,8 @@ function renderEntryRows(entries: SubmissionEntry[]): string {
 // Studio-workspace "Aanvragen". De intent-link opent de juiste aanvraag,
 // ongeacht hoe de lijst is ingericht.
 function studioLink(documentId?: string): string {
-  const base = `${SITE_URL.replace(/\/$/, "")}/studio-aanvragen`;
+  // Canonieke host (www op productie): daar staat Studio als CORS-origin toegestaan.
+  const base = `${getSiteUrl()}/studio-aanvragen`;
   return documentId
     ? `${base}/intent/edit/id=${encodeURIComponent(documentId)};type=formSubmission`
     : base;
