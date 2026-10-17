@@ -195,7 +195,26 @@ const LOGOS = [
 
 // Klantvideo's (alleen tonen met schriftelijke toestemming van de klant).
 // Bestanden in /public/landing/video/ of op een video-CDN. Leeg = sectie verborgen.
-const TESTIMONIALS: VideoTestimonial[] = []
+// Ondertiteling zit in het beeld gebrand, dus geen apart .vtt-bestand nodig.
+// Citaten letterlijk uit de video's overgenomen.
+const TESTIMONIALS: VideoTestimonial[] = [
+  {
+    name: 'Rory de Wit',
+    project: 'Totaalrenovatie met badkamers, toiletten, stucwerk en vloeren',
+    duration: '0:59',
+    quote: '"De communicatie was supergoed. Ook al ging soms niet alles soepel, dat werd heel goed opgepakt."',
+    poster: '/landing/video/rory-poster.jpg',
+    src: '/landing/video/rory.mp4',
+  },
+  {
+    name: 'Stefano',
+    project: 'Renovatie appartement uit 1998, offerte binnen twee dagen',
+    duration: '0:59',
+    quote: '"De prijs is eerlijk en scherp. Niet de duurste, niet de goedkoopste, maar je krijgt echt waar voor je geld."',
+    poster: '/landing/video/stefano-poster.jpg',
+    src: '/landing/video/stefano.mp4',
+  },
+]
 
 // Verplichte toelichting bij reviews (Omnibus/ACM). Vul de controle-zin aan
 // zodra vaststaat hoe DRO controleert of reviews van echte klanten komen.
@@ -492,6 +511,9 @@ export default async function TotaalrenovatieLandingPage({
         <section className="border-t border-lp-line bg-lp-plaster">
           <div className="section-shell py-14">
             <h2 className={H2}>Klanten vertellen het zelf</h2>
+            <p className="mt-3 max-w-2xl text-lp-muted">
+              Geen acteurs, geen script. Klanten in hun eigen huis, na de oplevering. Met ondertiteling, dus ook zonder geluid te volgen.
+            </p>
             <VideoTestimonials items={TESTIMONIALS} />
           </div>
         </section>

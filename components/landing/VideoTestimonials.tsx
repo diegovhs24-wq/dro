@@ -7,7 +7,7 @@ import {useState} from "react";
 
 export type VideoTestimonial = {
   name: string;
-  place: string;
+  place?: string;
   project: string;
   duration: string;
   quote: string;
@@ -49,15 +49,16 @@ function VideoCard({item}: {item: VideoTestimonial}) {
             <span className="relative">
               <Play />
             </span>
+            <span className="absolute bottom-3 left-3 rounded bg-black/45 px-1.5 py-0.5 text-[13px] font-semibold text-white">{item.duration}</span>
           </button>
         )}
       </div>
       <figcaption className="mt-3">
         <span className="block font-semibold">
-          {item.name}, {item.place}
+          {item.place ? `${item.name}, ${item.place}` : item.name}
         </span>
         <span className="block text-sm text-lp-muted">
-          {item.project}, {item.duration}
+          {item.project}
         </span>
         <span className="mt-1.5 block text-[15px]">{item.quote}</span>
       </figcaption>
@@ -67,7 +68,7 @@ function VideoCard({item}: {item: VideoTestimonial}) {
 
 export default function VideoTestimonials({items}: {items: VideoTestimonial[]}) {
   return (
-    <div className="mt-8 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+    <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:gap-6">
       {items.map((item) => (
         <VideoCard item={item} key={item.src} />
       ))}
