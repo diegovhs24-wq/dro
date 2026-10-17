@@ -3,6 +3,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
+import AttachmentUploader, {type AttachmentItem} from "@/components/AttachmentUploader";
 import {
   COMMON,
   QUESTIONS,
@@ -134,6 +135,9 @@ export default function SmartIntakeWizard() {
   const [addressStatus, setAddressStatus] = useState<"idle" | "searching" | "found" | "notfound">("idle");
   const [foundAddress, setFoundAddress] = useState<PdokAddress | null>(null);
 
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
+  const attachmentsUploading = attachments.some((a) => a.status === "uploading");
+
   useEffect(() => {
     const normalizedPostcode = normalizeDutchPostcode(postcodeInput);
     if (!normalizedPostcode || !houseNumberInput.trim()) {
@@ -254,6 +258,7 @@ export default function SmartIntakeWizard() {
           hoeGevonden: answers.found,
           message: answers.more,
           serviceAnswers,
+          attachments: attachments.filter((a) => a.status === "done" && a.result).map((a) => a.result),
         }),
       });
 
@@ -482,7 +487,10 @@ export default function SmartIntakeWizard() {
       let val = "";
       if (d.id === "loc") val = (answers.address as string) || `${answers.pc || ""} ${answers.hn || ""}`.trim();
       else if (d.id === "budget") val = budgetLabel;
-      else if (d.t === "multi") val = ((answers[d.id] as string[]) || []).join(", ");
+      else if (d.id === "attachments") {
+        const done = attachments.filter((a) => a.status === "done").length;
+        val = done > 0 ? `${done} ${done === 1 ? "bestand" : "bestanden"}` : "";
+      } else if (d.t === "multi") val = ((answers[d.id] as string[]) || []).join(", ");
       else val = (answers[d.id] as string) || "";
       if (!val) continue;
       if (val.length > 60) val = `${val.slice(0, 60)}...`;
@@ -528,7 +536,10 @@ export default function SmartIntakeWizard() {
   }
 
   function renderContactScreen() {
-    const canSubmit = Boolean((answers.nm as string)?.trim() && (answers.em as string)?.trim() && (answers.ph as string)?.trim()) && !submitting;
+    const canSubmit =
+      Boolean((answers.nm as string)?.trim() && (answers.em as string)?.trim() && (answers.ph as string)?.trim()) &&
+      !submitting &&
+      !attachmentsUploading;
     return (
       <>
         <div className="intake-eyebrow">Voor {primaryLabel()}</div>
@@ -563,10 +574,15 @@ export default function SmartIntakeWizard() {
             Er ging iets mis bij het versturen. Probeer het nog eens, of bel of WhatsApp ons op 085 087 1814.
           </p>
         ) : null}
+        {attachmentsUploading ? (
+          <p className="intake-sub" style={{marginTop: 10, marginBottom: 0}}>
+            Bijlagen worden nog geüpload, dit duurt meestal maar een paar seconden.
+          </p>
+        ) : null}
         {renderTrustStrip()}
         <div className="intake-foot-inline">
           <button className="intake-btn" disabled={!canSubmit} onClick={handleSubmit} type="button">
-            {submitting ? "Bezig…" : "Mijn aanvraag versturen"} <ArrowIcon />
+            {submitting ? "Bezig…" : attachmentsUploading ? "Bijlagen uploaden…" : "Mijn aanvraag versturen"} <ArrowIcon />
           </button>
         </div>
       </>
@@ -635,6 +651,14 @@ export default function SmartIntakeWizard() {
     }
     if (current.t === "address") return renderAddressScreen(current);
     if (current.t === "budget") return renderBudgetScreen(current);
+    if (current.t === "attachments") {
+      return (
+        <>
+          {renderHeader(current, "Bijlagen")}
+          <AttachmentUploader items={attachments} onChange={setAttachments} />
+        </>
+      );
+    }
     if (current.t === "summary") return renderSummaryScreen();
     if (current.t === "contact") return renderContactScreen();
     if (current.t === "thanks") return renderThanksScreen();
@@ -648,6 +672,7 @@ export default function SmartIntakeWizard() {
     if (current.t === "text") return {label: "Verder", onClick: next, disabled: false};
     if (current.t === "address") return {label: "Verder", onClick: confirmAddress, disabled: !(postcodeInput.trim() && houseNumberInput.trim())};
     if (current.t === "budget") return {label: "Verder", onClick: next, disabled: false};
+    if (current.t === "attachments") return {label: "Verder", onClick: next, disabled: false};
     if (current.t === "summary") return {label: "Alles klopt, verder", onClick: next, disabled: false};
     return null;
   }

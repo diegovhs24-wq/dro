@@ -7,7 +7,7 @@
 
 export type QuestionOption = string | {l: string; d?: string; back?: boolean};
 
-export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "summary" | "contact" | "thanks" | "services";
+export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "attachments" | "summary" | "contact" | "thanks" | "services";
 
 export type QuestionDef = {
   id: string;
@@ -149,6 +149,13 @@ export const COMMON: QuestionDef[] = [
     q: "Vertel ons wat we nog niet weten",
     s: "Dit is het leuke deel. Uw ideeën, uw must-haves, die ene muur die u het liefst zou doorbreken. Hoe meer u deelt, hoe beter we kunnen meedenken.",
     ph: "Bijvoorbeeld: we hebben net een jaren '30 woning gekocht en willen de keuken openbreken...",
+    optional: true,
+  },
+  {
+    id: "attachments",
+    t: "attachments",
+    q: "Wilt u foto's of documenten toevoegen?",
+    s: "Heeft u foto's, plattegronden of een Funda-link bij de hand? Voeg ze gerust toe, dan kunnen we beter meedenken.",
     optional: true,
   },
   {id: "summary", t: "summary", q: "Uw projectoverzicht"},
