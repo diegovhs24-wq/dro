@@ -983,10 +983,13 @@ export const formSubmission = defineType({
         defineField({name: 'gbraid', title: 'gbraid', type: 'string'}),
         defineField({name: 'wbraid', title: 'wbraid', type: 'string'}),
         defineField({name: 'landingPage', title: 'Landingspagina', type: 'string'}),
+        defineField({name: 'referrer', title: 'Verwijzende site', type: 'string'}),
         defineField({name: 'variant', title: 'Variant', type: 'string'}),
         defineField({name: 'firstSeenAt', title: 'Eerste bezoek', type: 'string'}),
       ],
     }),
+    defineField({name: 'channel', title: 'Kanaal', type: 'string', readOnly: true, description: 'Google Ads, organisch zoeken, verwijzing of direct. Automatisch bepaald.'}),
+    defineField({name: 'leadAssessment', title: 'Eerste beoordeling', type: 'string', readOnly: true, description: 'Automatisch: Kansrijk, Twijfel of Past niet (budget, planning, regio).'}),
     defineField({name: 'submittedAt', title: 'Verzonden op', type: 'datetime', readOnly: true}),
   ],
   preview: {

@@ -6,6 +6,7 @@ import {VisualEditing} from 'next-sanity'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import FloatingActions from '@/components/FloatingActions'
+import AttributionCapture from '@/components/analytics/AttributionCapture'
 import ConsentBanner from '@/components/analytics/ConsentBanner'
 import GoogleTag from '@/components/analytics/GoogleTag'
 import JsonLd from '@/components/seo/JsonLd'
@@ -86,6 +87,7 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
       {children}
       <Footer locations={locations} services={services} siteSettings={siteSettings} />
       <FloatingActions {...siteSettings.floatingActions} />
+      <AttributionCapture />
       <GoogleTag />
       <ConsentBanner />
       {isDraftMode && (

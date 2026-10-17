@@ -68,7 +68,7 @@ function VideoCard({item}: {item: VideoTestimonial}) {
 
 export default function VideoTestimonials({items}: {items: VideoTestimonial[]}) {
   return (
-    <div className="-mx-4 mt-8 grid snap-x snap-mandatory auto-cols-[62%] grid-flow-col gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:max-w-5xl md:grid-flow-row md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0">
+    <div className="-mx-4 mt-8 grid snap-x snap-mandatory auto-cols-[62%] grid-flow-col gap-3 overflow-x-auto px-4 pb-2 md:mx-auto md:max-w-5xl md:grid-flow-row md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:text-left">
       {items.map((item) => (
         <VideoCard item={item} key={item.src} />
       ))}

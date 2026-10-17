@@ -1,6 +1,7 @@
 import {NextRequest, NextResponse} from "next/server";
 import {describeError, getLeadsClient} from "@/lib/sanityLeadsClient";
-import {sendSubmissionNotificationEmail} from "@/lib/email";
+import {sendLeadEmail} from "@/lib/leadEmail";
+import {assessLead, deriveChannel} from "@/lib/leadInsights";
 
 type ServiceAnswer = {question?: string; answer?: string};
 type ServiceAnswerGroup = {service?: string; answers?: ServiceAnswer[]};
@@ -40,6 +41,7 @@ const ATTRIBUTION_KEYS = [
   "utm_content",
   "utm_term",
   "landingPage",
+  "referrer",
   "variant",
   "firstSeenAt",
 ] as const;
@@ -133,6 +135,8 @@ export async function POST(request: NextRequest) {
   const requestedSource = cleanString(payload.source);
   const source = ALLOWED_SOURCES.has(requestedSource) ? requestedSource : "smart-intake";
   const attribution = cleanAttribution(payload.attribution);
+  const channel = deriveChannel(source, attribution);
+  const assessment = assessLead({services, budgetMin, budgetMax, budgetLabel, timeline, postcode});
 
   let documentId: string | undefined;
 
@@ -160,6 +164,8 @@ export async function POST(request: NextRequest) {
         answers: group.answers.map((entry, j) => ({_key: `answer-${i}-${j}`, ...entry})),
       })),
       source,
+      channel: channel.label,
+      leadAssessment: assessment.label,
       ...(attribution ? {attribution} : {}),
       submittedAt,
     });
@@ -172,35 +178,27 @@ export async function POST(request: NextRequest) {
   // Beheerder informeren per e-mail. De inzending staat al in Sanity, dus een
   // fout hier mag nooit een foutmelding worden voor de bezoeker.
   try {
-    const entries = [
-      {fieldKey: "name", label: "Naam", value: name},
-      {fieldKey: "email", label: "E-mail", value: email},
-      {fieldKey: "phone", label: "Telefoon", value: phone},
-      {fieldKey: "services", label: "Diensten", value: services.join(", ")},
-      {fieldKey: "address", label: "Adres", value: address || `${postcode} ${houseNumber}`.trim()},
-      {fieldKey: "location", label: "Plaats", value: location},
-      {fieldKey: "fundaUrl", label: "Funda-link", value: fundaUrl},
-      {fieldKey: "budget", label: "Budget", value: budgetLabel},
-      {fieldKey: "timeline", label: "Planning", value: timeline},
-      {fieldKey: "hoeGevonden", label: "Hoe gevonden", value: hoeGevonden},
-      {fieldKey: "message", label: "Vertel ons wat we nog niet weten", value: message},
-      {fieldKey: "source", label: "Bron", value: source},
-      {fieldKey: "campaign", label: "Campagne", value: attribution?.utm_campaign || ""},
-      {fieldKey: "keyword", label: "Zoekwoord", value: attribution?.utm_term || ""},
-      ...serviceAnswers.flatMap((group) =>
-        group.answers.map((entry) => ({
-          fieldKey: `${group.service}: ${entry.question}`,
-          label: `${group.service}: ${entry.question}`,
-          value: entry.answer,
-        }))
-      ),
-    ];
-
-    await sendSubmissionNotificationEmail({
-      formTitle: source === "lp-totaalrenovatie" ? "Landingspagina totaalrenovatie" : "Slimme intake",
-      submittedAt,
-      entries,
+    await sendLeadEmail({
       documentId,
+      submittedAt,
+      formTitle: source === "lp-totaalrenovatie" ? "Landingspagina totaalrenovatie" : "Intake op de website",
+      name,
+      email,
+      phone,
+      services,
+      address,
+      postcode,
+      houseNumber,
+      location,
+      fundaUrl,
+      budgetLabel,
+      timeline,
+      message,
+      hoeGevonden,
+      serviceAnswers,
+      channel,
+      assessment,
+      attribution,
     });
   } catch (err) {
     console.error("Admin notification email (smart-intake) failed:", describeError(err));

@@ -1,6 +1,6 @@
 import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
-import LandingForm from '@/components/landing/LandingForm'
+import SmartIntakeWizard from '@/components/SmartIntakeWizard'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
 import {getProjects} from '@/lib/cms'
 import {cmsImageUrl, fetchSanity, type CmsImageSource} from '@/lib/sanity'
@@ -62,8 +62,8 @@ const PROOF = [
 ]
 
 const STEPS = [
-  {title: 'Kennismaking', text: 'Scott Huisman belt u om uw plannen door te nemen en plant een bezichtiging.'},
-  {title: 'Bezichtiging en offerte', text: 'Therab Raja komt langs, bespreekt uw wensen en maakt een offerte op maat.'},
+  {title: 'Kennismaking', text: 'Een verbouwadviseur belt u om uw plannen door te nemen en plant een bezichtiging.'},
+  {title: 'Bezichtiging en offerte', text: 'Een verbouwadviseur komt langs, bespreekt uw wensen en maakt een offerte op maat.'},
   {title: 'Planning en betaalschema', text: 'Bij akkoord krijgt u een planning en een betaalschema per fase, vooraf op papier.'},
   {title: 'Uitvoering', text: 'Onze vaste ploegen voeren het werk uit. Elke week een vast meetmoment met u.'},
   {title: 'Oplevering', text: 'We lopen het werk samen met u na voordat we opleveren.'},
@@ -76,7 +76,7 @@ const FAQ = [
   },
   {
     q: 'Hoe werkt de betaling?',
-    a: 'U betaalt 20 tot 25% bij de start. Daarna betaalt u per fase, en pas als die fase is afgerond. Het aantal fases en de bedragen per termijn staan in uw offerte, voordat u tekent.',
+    a: 'Bij het tekenen van de opdracht betaalt u niets. Op de eerste werkdag, als we echt beginnen, betaalt u 20 tot 25%. Daarna betaalt u per fase, en pas als die fase klaar is en u het werk heeft gezien. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.',
   },
   {
     q: 'Heb ik een vergunning nodig?',
@@ -166,6 +166,47 @@ const PAY_PHASES = [
   {when: 'Na fase 2 afgerond', what: 'installaties', label: 'Termijn 3'},
   {when: 'Na fase 3 afgerond', what: 'afbouw', label: 'Termijn 4'},
   {when: 'Na oplevering', what: 'samen nagelopen', label: 'Laatste termijn'},
+]
+
+// Rekenvoorbeeld bij het betaalschema: een gemiddelde totaalrenovatie, zodat
+// bezoekers zien wat er per fase gebeurt en wanneer ze wat betalen.
+const EXAMPLE_TOTAL = 120000
+const EXAMPLE_PHASES = [
+  {
+    step: 'Start van het werk',
+    weeks: 'Eerste werkdag',
+    pct: 20,
+    when: 'Op de dag dat we beginnen, niet bij het tekenen',
+    work: ['Werkplek inrichten en woning afschermen', 'Materialen besteld en ingepland'],
+  },
+  {
+    step: 'Fase 1: sloop en casco',
+    weeks: 'Week 1 tot 3',
+    pct: 20,
+    when: 'Als de sloop klaar is en u het heeft gezien',
+    work: ['Oude keuken, badkamer, vloeren en plafonds eruit', 'Muur doorbreken met stalen balk, als dat in het plan zit', 'Afval afvoeren, ondergrond vlak en schoon'],
+  },
+  {
+    step: 'Fase 2: installaties',
+    weeks: 'Week 4 tot 7',
+    pct: 25,
+    when: 'Als alle leidingen liggen en getest zijn',
+    work: ['Elektra: nieuwe groepenkast, leidingen, stopcontacten en lichtpunten', 'Water en afvoer voor keuken, badkamer en toilet', 'Verwarming of vloerverwarming en ventilatie'],
+  },
+  {
+    step: 'Fase 3: afbouw',
+    weeks: 'Week 8 tot 12',
+    pct: 25,
+    when: 'Als de afbouw klaar is',
+    work: ['Stucwerk op wanden en plafonds, klaar om te schilderen', 'Tegelwerk in badkamer en toilet, sanitair geplaatst', 'Binnendeuren, vloeren en keuken geplaatst'],
+  },
+  {
+    step: 'Oplevering',
+    weeks: 'Week 13',
+    pct: 10,
+    when: 'Na de oplevering, als alle punten af zijn',
+    work: ['We lopen samen elke ruimte na', 'Laatste puntjes afgerond, daarna de laatste termijn'],
+  },
 ]
 
 const GRIP = [
@@ -286,7 +327,18 @@ function Icon({name}: {name: string}) {
 const euro = (n: number) => `€ ${n.toLocaleString('nl-NL')}`
 
 const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
-const H2 = 'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1]'
+const H2 =
+  'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
+
+// Snelmenu bovenin: springt naar de onderdelen van deze pagina.
+const NAV = [
+  {href: '#grip', label: 'Zo houdt u grip'},
+  {href: '#prijs', label: 'Prijs'},
+  {href: '#projecten', label: 'Projecten'},
+  {href: '#ervaringen', label: 'Ervaringen'},
+  {href: '#werkwijze', label: 'Werkwijze'},
+  {href: '#vragen', label: 'Vragen'},
+]
 const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
 
 function heroImageOf(projects: ProjectItem[]): string | null {
@@ -314,7 +366,7 @@ export default async function TotaalrenovatieLandingPage({
   ))
 
   const gripSection = (
-    <section className="border-t border-lp-line" id="grip">
+    <section className="scroll-mt-28 border-t border-lp-line" id="grip">
       <div className="section-shell py-14">
         <h2 className={`${H2} max-w-[24ch]`}>Zo houdt u grip op uw renovatie</h2>
         <p className={`mt-3 max-w-[62ch] ${BODY}`}>
@@ -326,12 +378,12 @@ export default async function TotaalrenovatieLandingPage({
             <h3 className="text-[18px] font-bold [font-stretch:108%]">U betaalt per afgeronde fase</h3>
             <ol aria-label="Betaalschema" className="mt-3 grid gap-1 md:grid-cols-[23fr_19fr_19fr_19fr_20fr]">
               <li className="flex items-center justify-between gap-3 rounded-md bg-lp-orange p-3 text-white md:block">
-                <span className="block text-xs text-white/85">Bij de start</span>
+                <span className="block text-xs text-white/85">Bij start van het werk</span>
                 <span className="block text-[17px] font-bold [font-stretch:110%] md:mt-1.5">{START_PAYMENT}</span>
               </li>
               {PAY_PHASES.map((phase) => (
                 <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-md border-[1.5px] border-lp-ink p-3 md:block" key={phase.label}>
-                  <span aria-hidden="true" className="col-span-2 flex h-5 w-5 items-center justify-center rounded-full bg-lp-ink text-[11px] text-white md:mb-1.5">✓</span>
+                  <span aria-hidden="true" className="col-span-2 flex h-5 w-5 items-center justify-center rounded-full bg-lp-orange text-[11px] text-white md:mb-1.5">✓</span>
                   <span className="block text-xs leading-snug text-lp-muted">
                     {phase.when}
                     <br />
@@ -347,7 +399,7 @@ export default async function TotaalrenovatieLandingPage({
               <span>Oplevering</span>
             </div>
             <p className="mt-4 text-sm text-lp-muted">
-              Voorbeeld van een indeling. Het aantal fases en de bedragen per termijn staan in uw offerte, voordat u tekent.
+              Bij het tekenen betaalt u niets. Hieronder een rekenvoorbeeld met wat er per fase gebeurt.
             </p>
           </div>
           <ul className="border-t border-lp-line">
@@ -362,12 +414,57 @@ export default async function TotaalrenovatieLandingPage({
             ))}
           </ul>
         </div>
+        <div className="mt-12 rounded-lg border border-lp-line bg-white">
+          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-lp-line p-5">
+            <div>
+              <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-lp-orange">Rekenvoorbeeld</p>
+              <h3 className="mt-1 text-[19px] font-bold [font-stretch:108%]">Totaalrenovatie van een jaren 30-woning, 100 m²</h3>
+              <p className="mt-1 text-sm text-lp-muted">Opdrachtsom {euro(EXAMPLE_TOTAL)} inclusief btw, ongeveer 13 weken werk</p>
+            </div>
+            <p className="max-w-[34ch] rounded-md bg-lp-plaster px-3 py-2 text-sm">
+              <span className="font-semibold">Bij het tekenen betaalt u niets.</span> De eerste betaling is pas op de dag dat we echt beginnen.
+            </p>
+          </div>
+          <ol className="divide-y divide-lp-line">
+            {EXAMPLE_PHASES.map((phase, i) => (
+              <li className="grid gap-3 p-5 md:grid-cols-[240px_minmax(0,1fr)_250px] md:gap-6" key={phase.step}>
+                <div className="flex gap-3">
+                  <span className={`mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full text-[13px] font-bold tabular-nums ${i === 0 ? 'bg-lp-orange text-white' : 'border-2 border-lp-orange text-lp-orange'}`}>
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="font-semibold">{phase.step}</p>
+                    <p className="text-sm text-lp-muted">{phase.weeks}</p>
+                  </div>
+                </div>
+                <ul className="grid gap-1 text-[15px] leading-[1.5]">
+                  {phase.work.map((w) => (
+                    <li className="flex gap-2" key={w}>
+                      <span aria-hidden="true" className="mt-[9px] h-[2px] w-3 flex-none bg-lp-orange" />
+                      {w}
+                    </li>
+                  ))}
+                </ul>
+                <div className="md:text-right">
+                  <p className="text-[20px] font-bold tabular-nums [font-stretch:110%]">{euro((EXAMPLE_TOTAL * phase.pct) / 100)}</p>
+                  <p className="text-sm text-lp-muted">
+                    {phase.pct}% &middot; {phase.when.toLowerCase()}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p className="border-t border-lp-line p-5 text-sm text-lp-muted">
+            Dit is een voorbeeld. Na elke fase lopen we het werk samen met u na, pas daarna volgt de factuur voor die fase. Uw eigen
+            fases, bedragen en planning staan in uw offerte, voordat u tekent.
+          </p>
+        </div>
       </div>
     </section>
   )
 
   const priceSection = (
-    <section className="border-t border-lp-line bg-lp-plaster" id="prijs">
+    <section className="scroll-mt-28 border-t border-lp-line bg-lp-plaster" id="prijs">
       <div className="section-shell py-14">
         <h2 className={H2}>Wat kost een totaalrenovatie?</h2>
         <div className="mt-8 grid gap-10 md:grid-cols-[1fr_1.15fr] md:items-start">
@@ -418,20 +515,50 @@ export default async function TotaalrenovatieLandingPage({
 
   return (
     <main className="pb-24 md:pb-0">
-      <header className="border-b border-lp-line bg-white">
-        <div className="section-shell flex min-h-[64px] items-center justify-between gap-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="DRO Renovaties, bouw- en klusbedrijf" className="h-8 w-auto sm:h-10" height={47} src="/landing/logo-dro.png" width={190} />
-          <a
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-ink px-4 text-[15px] font-semibold transition-colors hover:bg-lp-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
-            href={PHONE_HREF}
-          >
-            <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <header className="sticky top-0 z-40 border-b border-lp-line bg-white/95 backdrop-blur">
+        <div className="section-shell flex min-h-[60px] items-center justify-between gap-4">
+          <a aria-label="Naar boven" href="#aanvraag">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img alt="DRO Renovaties, bouw- en klusbedrijf" className="h-8 w-auto sm:h-9" height={47} src="/landing/logo-dro.png" width={190} />
+          </a>
+          <nav aria-label="Op deze pagina" className="hidden items-center gap-5 lg:flex">
+            {NAV.map((item) => (
+              <a className="text-[14px] font-semibold text-lp-ink/80 transition-colors hover:text-lp-orange" href={item.href} key={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <a
+              className="hidden min-h-[40px] items-center rounded-md px-3 text-[14px] font-semibold text-lp-orange underline-offset-2 hover:underline sm:inline-flex"
+              href="/"
+            >
+              Bezoek onze website
+            </a>
+            <a
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
+              href={PHONE_HREF}
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.7.6a2 2 0 0 1 1.7 2z" />
             </svg>
-            {PHONE_LABEL}
-          </a>
+              <span className="hidden sm:inline">{PHONE_LABEL}</span>
+              <span className="sm:hidden">Bel</span>
+            </a>
+          </div>
         </div>
+        <nav aria-label="Op deze pagina" className="border-t border-lp-line lg:hidden">
+          <div className="section-shell flex gap-2 overflow-x-auto py-2 [scrollbar-width:none]">
+            {NAV.map((item) => (
+              <a className="inline-flex min-h-[36px] flex-none items-center rounded-full border border-lp-line px-3 text-[13px] font-semibold text-lp-ink" href={item.href} key={item.href}>
+                {item.label}
+              </a>
+            ))}
+            <a className="inline-flex min-h-[36px] flex-none items-center rounded-full border border-lp-orange px-3 text-[13px] font-semibold text-lp-orange" href="/">
+              Bezoek onze website
+            </a>
+          </div>
+        </nav>
       </header>
 
       <section className="relative isolate overflow-hidden bg-lp-slate text-white" id="aanvraag">
@@ -449,7 +576,19 @@ export default async function TotaalrenovatieLandingPage({
             <ul className="mt-7 hidden gap-3 text-white/90 md:grid">{proofItems}</ul>
           </div>
           <div className="text-lp-ink">
-            <LandingForm phoneHref={PHONE_HREF} phoneLabel={PHONE_LABEL} variant={variant} />
+            <SmartIntakeWizard
+              initialBudget={[50000, 100000]}
+              presetServices={['Totaalrenovatie']}
+              responsePromise="binnen 1 werkuur"
+              skipIds={['tot0', 'found']}
+              source="lp-totaalrenovatie"
+              thanksLinks={[
+                {href: '/over-ons', label: 'Over DRO Renovaties'},
+                {href: '/projecten', label: 'Bekijk onze projecten'},
+                {href: '/werkwijze', label: 'Onze werkwijze'},
+              ]}
+              variant={variant}
+            />
             <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
               <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} Trustoo</span>
               <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
@@ -518,7 +657,7 @@ export default async function TotaalrenovatieLandingPage({
       )}
 
       {shownProjects.length > 0 && (
-        <section className="border-t border-lp-line">
+        <section className="scroll-mt-28 border-t border-lp-line" id="projecten">
           <div className="section-shell py-14">
             <h2 className={H2}>Voor en na: projecten in de regio</h2>
             <div className="mt-8 grid gap-8 md:grid-cols-3">
@@ -568,6 +707,13 @@ export default async function TotaalrenovatieLandingPage({
                         ))}
                       </dl>
                     )}
+                    <a
+                      className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white"
+                      href={`/projecten/${project.slug}`}
+                    >
+                      Bekijk project
+                      <span aria-hidden="true">&rarr;</span>
+                    </a>
                   </article>
                 )
               })}
@@ -577,10 +723,10 @@ export default async function TotaalrenovatieLandingPage({
       )}
 
       {TESTIMONIALS.length > 0 && (
-        <section className="border-t border-lp-line bg-lp-plaster">
-          <div className="section-shell py-14">
-            <h2 className={H2}>Klanten vertellen het zelf</h2>
-            <p className="mt-3 max-w-2xl text-lp-muted">
+        <section className="scroll-mt-28 border-t border-lp-line bg-lp-plaster" id="ervaringen">
+          <div className="section-shell py-14 md:text-center">
+            <h2 className={`${H2} md:after:mx-auto`}>Klanten vertellen het zelf</h2>
+            <p className="mt-3 max-w-2xl text-lp-muted md:mx-auto">
               Geen acteurs, geen script. Klanten in hun eigen huis, na de oplevering. Met ondertiteling, dus ook zonder geluid te volgen.
             </p>
             <VideoTestimonials items={TESTIMONIALS} />
@@ -588,7 +734,7 @@ export default async function TotaalrenovatieLandingPage({
         </section>
       )}
 
-      <section className="border-t border-lp-line">
+      <section className="scroll-mt-28 border-t border-lp-line" id="reviews">
         <div className="section-shell py-14">
           <h2 className={H2}>Wat klanten over ons zeggen</h2>
           <div className="mt-8 grid items-start gap-8 lg:grid-cols-[300px_1fr]">
@@ -649,14 +795,14 @@ export default async function TotaalrenovatieLandingPage({
         </div>
       </section>
 
-      <section className="border-t border-lp-line bg-lp-plaster">
+      <section className="scroll-mt-28 border-t border-lp-line bg-lp-plaster" id="werkwijze">
         <div className="section-shell py-14">
           <h2 className={H2}>Zo werken we</h2>
           <ol className="relative mt-10 grid gap-8 md:grid-cols-5 md:gap-6">
-            <span aria-hidden="true" className="absolute left-[15px] top-2 h-[calc(100%-16px)] w-[2px] bg-lp-line md:left-0 md:top-[15px] md:h-[2px] md:w-full" />
+            <span aria-hidden="true" className="absolute left-[15px] top-2 h-[calc(100%-16px)] w-[2px] bg-lp-orange/30 md:left-0 md:top-[15px] md:h-[2px] md:w-full" />
             {STEPS.map((step, i) => (
               <li className="relative pl-12 md:pl-0 md:pt-12" key={step.title}>
-                <span className="absolute left-0 top-0 flex h-8 w-8 items-center justify-center rounded-full bg-lp-ink text-sm font-bold text-white tabular-nums">
+                <span className="absolute left-0 top-0 flex h-8 w-8 items-center justify-center rounded-full bg-lp-orange text-sm font-bold text-white tabular-nums">
                   {i + 1}
                 </span>
                 <h3 className="text-[17px] font-semibold">{step.title}</h3>
@@ -736,7 +882,7 @@ export default async function TotaalrenovatieLandingPage({
         </div>
       </section>
 
-      <section className="border-t border-lp-line">
+      <section className="scroll-mt-28 border-t border-lp-line" id="vragen">
         <div className="section-shell max-w-3xl py-14">
           <h2 className={H2}>Veelgestelde vragen</h2>
           <div className="mt-6 border-t border-lp-line">
@@ -744,7 +890,7 @@ export default async function TotaalrenovatieLandingPage({
               <details className="group border-b border-lp-line" key={item.q}>
                 <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 text-[17px] font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-lp-orange">
                   {item.q}
-                  <span aria-hidden="true" className="text-xl font-normal text-lp-muted transition-transform group-open:rotate-45">+</span>
+                  <span aria-hidden="true" className="text-2xl font-normal text-lp-orange transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className={`pb-5 ${BODY}`}>{item.a}</p>
               </details>
