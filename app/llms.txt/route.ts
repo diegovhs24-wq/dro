@@ -25,7 +25,7 @@ export async function GET() {
     "",
     `> ${description}`,
     "",
-    `DRO Renovaties (${org.legalName}, KvK ${org.kvkNumber}) is een renovatie- en afbouwbedrijf, actief in ${locations.length} plaatsen in Zuid-Holland en omstreken. Vaste prijs vooraf, geen aanbetaling, 4,8 uit 273 Google-reviews. Contact: ${org.telephone}, ${org.email}. Deze site biedt machine-leesbare content: elke pagina retourneert Markdown in plaats van HTML wanneer opgevraagd met een 'Accept: text/markdown' header. Een volledige export van alle pagina's staat op /llms-full.txt.`,
+    `DRO Renovaties (${org.legalName}, KvK ${org.kvkNumber}) is een renovatie- en afbouwbedrijf, actief in ${locations.length} plaatsen in Zuid-Holland en omstreken. Vaste prijs vooraf, betaling per afgeronde fase, 4,8 uit 273 Google-reviews. Contact: ${org.telephone}, ${org.email}. Deze site biedt machine-leesbare content: elke pagina retourneert Markdown in plaats van HTML wanneer opgevraagd met een 'Accept: text/markdown' header. Een volledige export van alle pagina's staat op /llms-full.txt.`,
     "",
     section(
       "Diensten",

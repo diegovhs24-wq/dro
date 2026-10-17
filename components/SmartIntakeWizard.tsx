@@ -567,7 +567,7 @@ export default function SmartIntakeWizard() {
         </div>
 
         <div className="intake-note">
-          <ShieldCheckIcon />U zit nergens aan vast. Geen aanbetaling, volledig vrijblijvend, en uw gegevens blijven vertrouwelijk.
+          <ShieldCheckIcon />U zit nergens aan vast. Volledig vrijblijvend, en uw gegevens blijven vertrouwelijk.
         </div>
         {submitError ? (
           <p className="intake-sub" style={{color: "var(--intake-accent-deep)", marginTop: 10}}>
@@ -612,7 +612,7 @@ export default function SmartIntakeWizard() {
           <div className="intake-ns-r">
             <span className="intake-ns-n">3</span>
             <span className="intake-ns-tx">
-              <b>Een heldere, vaste prijsopgave.</b> Geen verrassingen, geen aanbetaling.
+              <b>Een heldere, vaste prijsopgave.</b> Geen verrassingen, en u betaalt per afgeronde fase.
             </span>
           </div>
         </div>

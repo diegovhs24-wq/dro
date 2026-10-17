@@ -32,8 +32,8 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
               Ja, DRO Renovaties voert renovaties uit in {location.name} en omgeving: badkamers,
-              totaalrenovaties, uitbouwen en meer &mdash; met een vaste prijs vooraf en zonder
-              aanbetaling.
+              totaalrenovaties, uitbouwen en meer, met een vaste prijs vooraf en betaling per
+              afgeronde fase.
             </p>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">{location.intro}</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">

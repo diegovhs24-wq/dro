@@ -25,7 +25,7 @@ const LOCATION_FAQ_TEMPLATE = (cityName: string) => [
   },
   {
     question: `Wat kost een renovatie in ${cityName}?`,
-    answer: "Dat hangt af van de omvang van het project. U ontvangt vooraf een vaste prijs, zonder verrassingen achteraf en zonder aanbetaling.",
+    answer: "Dat hangt af van de omvang van het project. U ontvangt vooraf een vaste prijs, zonder verrassingen achteraf. U betaalt per afgeronde fase.",
   },
   {
     question: "Hoe snel kan DRO Renovaties starten?",

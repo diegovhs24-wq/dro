@@ -38,7 +38,7 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
   // eyebrow holds the clean short service name for composing "{name} in {city}" copy.
   const serviceName = service.eyebrow || service.title;
   const title = `${serviceName} in ${location.name} | DRO Renovaties`;
-  const description = `${service.intro} Actief in ${location.name} en omgeving. Vaste prijs, geen aanbetaling, 4,8 uit 273 reviews.`;
+  const description = `${service.intro} Actief in ${location.name} en omgeving. Vaste prijs, betaling per afgeronde fase, 4,8 uit 273 reviews.`;
 
   return metadataFromSeo(
     {metaTitle: title, metaDescription: description},
