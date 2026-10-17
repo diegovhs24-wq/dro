@@ -145,6 +145,12 @@ export async function sendSubmissionNotificationEmail(params: {
     return;
   }
 
+  // Een from zonder sluitende ">" of met losse tekens wordt door Resend met 422
+  // geweigerd. Waarschuw duidelijk in de logs, zonder de waarde zelf te tonen.
+  if (!/^(?:[^<>@\r\n]+<[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+>|[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)$/.test(from.trim())) {
+    console.error("EMAIL_FROM heeft geen geldig formaat (verwacht: Naam <adres@domein> of adres@domein).");
+  }
+
   const { subject, html } = renderSubmissionNotificationEmail(params);
   const resend = new Resend(apiKey);
 
@@ -158,6 +164,11 @@ export async function sendSubmissionNotificationEmail(params: {
   });
 
   if (error) {
-    throw new Error(`Resend error: ${error.message}`);
+    // Alleen foutnaam en statuscode (geen bericht): Resend-berichten kunnen
+    // adressen bevatten. describeError() logt precies deze twee velden.
+    throw Object.assign(new Error("Resend notification failed"), {
+      name: typeof error.name === "string" ? error.name : "ResendError",
+      statusCode: typeof error.statusCode === "number" ? error.statusCode : undefined,
+    });
   }
 }
