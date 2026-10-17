@@ -1,14 +1,11 @@
-import { createClient } from "@sanity/client";
 import { NextRequest, NextResponse } from "next/server";
 import { sendSubmissionNotificationEmail } from "@/lib/email";
+import { fetchSanity } from "@/lib/sanity";
+import { describeError, getLeadsClient } from "@/lib/sanityLeadsClient";
 
-const writeClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "lxi5ttc2",
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-01-01",
-  token: process.env.SANITY_API_WRITE_TOKEN,
-  useCdn: false,
-});
+// Legacy-route voor de oude, CMS-gedreven IntakeWizard. De nieuwe intake
+// gebruikt /api/submit-request. Ook hier gaan aanvragen uitsluitend naar de
+// private dataset "leads".
 
 type SubmitPayload = {
   intakeFormId: string;
@@ -28,19 +25,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "No entries" }, { status: 400 });
   }
 
-  if (!process.env.SANITY_API_WRITE_TOKEN) {
-    return NextResponse.json({ error: "Write token not configured" }, { status: 500 });
+  let leads: ReturnType<typeof getLeadsClient>;
+  try {
+    leads = getLeadsClient();
+  } catch (err) {
+    console.error("Leads client niet beschikbaar:", describeError(err));
+    return NextResponse.json({ error: "Server not configured" }, { status: 500 });
   }
 
   const submittedAt = new Date().toISOString();
+  let documentId: string | undefined;
 
   try {
-    await writeClient.create({
+    const created = await leads.create({
       _type: "formSubmission",
       submittedAt,
+      // Het intakeForm-document staat in "production", niet in "leads":
+      // een zwakke verwijzing, anders weigert Sanity het opslaan.
       intakeFormRef: {
         _type: "reference",
         _ref: payload.intakeFormId,
+        _weak: true,
       },
       entries: payload.entries.map((entry, i) => ({
         _key: `entry-${i}`,
@@ -49,15 +54,17 @@ export async function POST(request: NextRequest) {
         value: entry.value,
       })),
     });
+    documentId = created._id;
   } catch (err) {
-    console.error("formSubmission create failed:", err);
+    console.error("formSubmission create failed:", describeError(err));
     return NextResponse.json({ error: "Failed to save submission" }, { status: 500 });
   }
 
   // Notify admin by email. The submission is already saved, so a failure here
   // must not turn into an error response for the visitor.
   try {
-    const form = await writeClient.fetch<{ formTitle?: string; title?: string } | null>(
+    // De formuliertitel komt uit de publieke dataset (production), niet uit leads.
+    const form = await fetchSanity<{ formTitle?: string; title?: string } | null>(
       `*[_type == "intakeForm" && _id == $id][0]{ formTitle, title }`,
       { id: payload.intakeFormId }
     );
@@ -66,9 +73,10 @@ export async function POST(request: NextRequest) {
       formTitle: form?.formTitle || form?.title || "Intakeformulier",
       submittedAt,
       entries: payload.entries,
+      documentId,
     });
   } catch (err) {
-    console.error("Admin notification email failed:", err);
+    console.error("Admin notification email failed:", describeError(err));
   }
 
   return NextResponse.json({ ok: true }, { status: 201 });
