@@ -101,7 +101,10 @@ function sizedImage(url: string, width: number): string {
   return `${url}${url.includes('?') ? '&' : '?'}w=${width}&auto=format&q=70`
 }
 
-// Eerst totaalrenovaties (en grote verbouwingen) uit de regio, daarna de rest.
+// Vaste keuze: totaalrenovaties uit de regio met een sterke voor-en-nafoto.
+// Ontbreekt er een, dan vult de score aan: eerst totaalrenovaties, dan grote
+// verbouwingen, regio Den Haag e.o. voorrang.
+const FEATURED_PROJECTS = ['jan-muschlaan-den-haag', 'essehout-zoetermeer', 'fuutlaan-leidschendam']
 const PROJECT_TYPE_PRIORITY = [/totaal/i, /dakopbouw|aanbouw|uitbouw/i]
 const REGION = /den haag|rijswijk|leidschendam|voorburg|wassenaar|delft|zoetermeer/i
 
@@ -115,7 +118,11 @@ function projectScore(p: ProjectItem): number {
 function pickProjects(projects: ProjectItem[]): ProjectItem[] {
   const usable = projects.filter((p) => (p.beforeImage && p.afterImage) || p.images?.[0])
   return usable
-    .map((p, i) => ({p, i, score: projectScore(p) + (p.beforeImage && p.afterImage ? 2 : 0)}))
+    .map((p, i) => {
+      const featured = FEATURED_PROJECTS.indexOf(p.slug)
+      const score = featured === -1 ? projectScore(p) + (p.beforeImage && p.afterImage ? 2 : 0) : 1000 - featured
+      return {p, i, score}
+    })
     .sort((a, b) => b.score - a.score || a.i - b.i)
     .slice(0, 3)
     .map(({p}) => p)
