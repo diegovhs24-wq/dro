@@ -8,7 +8,7 @@ type TrustSignalItem = {
 const DEFAULT_SIGNALS: TrustSignalItem[] = [
   { icon: "quality", label: "4,8 uit 273 Google-reviews" },
   { icon: "handshake", label: "Vaste prijs vooraf, geen verrassingen" },
-  { icon: "payment", label: "Geen aanbetaling" },
+  { icon: "payment", label: "Betaling per afgeronde fase" },
   { icon: "shield", label: "VCA-gecertificeerd en verzekerd" },
 ];
 

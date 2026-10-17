@@ -24,7 +24,25 @@ type SubmitPayload = {
   hoeGevonden?: string;
   message?: string;
   serviceAnswers?: ServiceAnswerGroup[];
+  source?: string;
+  attribution?: Record<string, unknown>;
 };
+
+// Alleen bekende bronnen; alles anders wordt "smart-intake".
+const ALLOWED_SOURCES = new Set(["smart-intake", "lp-totaalrenovatie"]);
+const ATTRIBUTION_KEYS = [
+  "gclid",
+  "gbraid",
+  "wbraid",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+  "landingPage",
+  "variant",
+  "firstSeenAt",
+] as const;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -34,6 +52,17 @@ function cleanString(value: unknown): string {
 
 function cleanNumber(value: unknown): number | undefined {
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function cleanAttribution(input: unknown): Record<string, string> | undefined {
+  if (!input || typeof input !== "object") return undefined;
+  const source = input as Record<string, unknown>;
+  const result: Record<string, string> = {};
+  for (const key of ATTRIBUTION_KEYS) {
+    const value = cleanString(source[key]).slice(0, 200);
+    if (value) result[key] = value;
+  }
+  return Object.keys(result).length ? result : undefined;
 }
 
 function cleanServiceAnswers(input: unknown): Array<{service: string; answers: Array<{question: string; answer: string}>}> {
@@ -101,6 +130,9 @@ export async function POST(request: NextRequest) {
   const message = cleanString(payload.message);
   const serviceAnswers = cleanServiceAnswers(payload.serviceAnswers);
   const submittedAt = new Date().toISOString();
+  const requestedSource = cleanString(payload.source);
+  const source = ALLOWED_SOURCES.has(requestedSource) ? requestedSource : "smart-intake";
+  const attribution = cleanAttribution(payload.attribution);
 
   let documentId: string | undefined;
 
@@ -127,7 +159,8 @@ export async function POST(request: NextRequest) {
         service: group.service,
         answers: group.answers.map((entry, j) => ({_key: `answer-${i}-${j}`, ...entry})),
       })),
-      source: "smart-intake",
+      source,
+      ...(attribution ? {attribution} : {}),
       submittedAt,
     });
     documentId = created._id;
@@ -151,6 +184,9 @@ export async function POST(request: NextRequest) {
       {fieldKey: "timeline", label: "Planning", value: timeline},
       {fieldKey: "hoeGevonden", label: "Hoe gevonden", value: hoeGevonden},
       {fieldKey: "message", label: "Vertel ons wat we nog niet weten", value: message},
+      {fieldKey: "source", label: "Bron", value: source},
+      {fieldKey: "campaign", label: "Campagne", value: attribution?.utm_campaign || ""},
+      {fieldKey: "keyword", label: "Zoekwoord", value: attribution?.utm_term || ""},
       ...serviceAnswers.flatMap((group) =>
         group.answers.map((entry) => ({
           fieldKey: `${group.service}: ${entry.question}`,
@@ -161,7 +197,7 @@ export async function POST(request: NextRequest) {
     ];
 
     await sendSubmissionNotificationEmail({
-      formTitle: "Slimme intake",
+      formTitle: source === "lp-totaalrenovatie" ? "Landingspagina totaalrenovatie" : "Slimme intake",
       submittedAt,
       entries,
       documentId,

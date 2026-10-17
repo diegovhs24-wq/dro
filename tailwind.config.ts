@@ -17,6 +17,16 @@ const config: Config = {
           stone: "#87816f",
           line: "#e7e3da"
         },
+        // Landingspagina's (advertenties): koel, rustig palet; oranje alleen voor acties.
+        lp: {
+          ink: "#1C1F23",
+          muted: "#5B6368",
+          plaster: "#EEF0EE",
+          line: "#D9DDDA",
+          slate: "#26313A",
+          orange: "#D95B16",
+          "orange-hover": "#BF4E12"
+        },
         "deep-slate": "var(--color-deep-slate)",
         "muted-slate": "var(--color-muted-slate)",
         "rich-ink": "var(--color-rich-ink)",

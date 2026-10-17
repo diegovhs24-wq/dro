@@ -404,7 +404,7 @@ export async function buildMarkdownForPath(pathname: string) {
       const serviceName = service.eyebrow || service.title;
       lines.push(heading(1, `${serviceName} in ${location.name}`));
       lines.push(paragraph(service.intro));
-      lines.push(paragraph(`Actief in ${location.name} en omgeving. Vaste prijs, geen aanbetaling, 4,8 uit 273 reviews.`));
+      lines.push(paragraph(`Actief in ${location.name} en omgeving. Vaste prijs, betaling per afgeronde fase, 4,8 uit 273 reviews.`));
       if (location.localContext) {
         lines.push(heading(2, "Lokale situatie"));
         lines.push(paragraph(location.localContext));

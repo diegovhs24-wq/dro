@@ -965,6 +965,28 @@ export const formSubmission = defineType({
       readOnly: true,
       description: 'Onderscheidt inzendingen van de nieuwe slimme intake van legacy-inzendingen.',
     }),
+    defineField({
+      name: 'attribution',
+      title: 'Herkomst (advertentie)',
+      type: 'object',
+      readOnly: true,
+      description:
+        'Campagne en zoekwoord van de advertentieklik. Klik-ID van Google alleen als de bezoeker cookies accepteerde.',
+      options: {collapsible: true, collapsed: true},
+      fields: [
+        defineField({name: 'utm_source', title: 'Bron', type: 'string'}),
+        defineField({name: 'utm_medium', title: 'Medium', type: 'string'}),
+        defineField({name: 'utm_campaign', title: 'Campagne-ID', type: 'string'}),
+        defineField({name: 'utm_content', title: 'Advertentiegroep-ID', type: 'string'}),
+        defineField({name: 'utm_term', title: 'Zoekwoord', type: 'string'}),
+        defineField({name: 'gclid', title: 'Google klik-ID (gclid)', type: 'string'}),
+        defineField({name: 'gbraid', title: 'gbraid', type: 'string'}),
+        defineField({name: 'wbraid', title: 'wbraid', type: 'string'}),
+        defineField({name: 'landingPage', title: 'Landingspagina', type: 'string'}),
+        defineField({name: 'variant', title: 'Variant', type: 'string'}),
+        defineField({name: 'firstSeenAt', title: 'Eerste bezoek', type: 'string'}),
+      ],
+    }),
     defineField({name: 'submittedAt', title: 'Verzonden op', type: 'datetime', readOnly: true}),
   ],
   preview: {
