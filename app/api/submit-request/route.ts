@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import {writeClient} from "@/lib/sanityWriteClient";
+import {describeError, getLeadsClient} from "@/lib/sanityLeadsClient";
 import {sendSubmissionNotificationEmail} from "@/lib/email";
 
 type ServiceAnswer = {question?: string; answer?: string};
@@ -80,8 +80,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({error: "Missing or invalid fields", fields: missing}, {status: 400});
   }
 
-  if (!process.env.SANITY_API_WRITE_TOKEN) {
-    return NextResponse.json({error: "Write token not configured"}, {status: 500});
+  let leads: ReturnType<typeof getLeadsClient>;
+  try {
+    leads = getLeadsClient();
+  } catch (err) {
+    console.error("Leads client niet beschikbaar:", describeError(err));
+    return NextResponse.json({error: "Server not configured"}, {status: 500});
   }
 
   const postcode = cleanString(payload.postcode);
@@ -98,8 +102,10 @@ export async function POST(request: NextRequest) {
   const serviceAnswers = cleanServiceAnswers(payload.serviceAnswers);
   const submittedAt = new Date().toISOString();
 
+  let documentId: string | undefined;
+
   try {
-    await writeClient.create({
+    const created = await leads.create({
       _type: "formSubmission",
       name,
       email,
@@ -124,8 +130,9 @@ export async function POST(request: NextRequest) {
       source: "smart-intake",
       submittedAt,
     });
+    documentId = created._id;
   } catch (err) {
-    console.error("formSubmission (smart-intake) create failed:", err);
+    console.error("formSubmission (smart-intake) create failed:", describeError(err));
     return NextResponse.json({error: "Failed to save submission"}, {status: 500});
   }
 
@@ -157,9 +164,10 @@ export async function POST(request: NextRequest) {
       formTitle: "Slimme intake",
       submittedAt,
       entries,
+      documentId,
     });
   } catch (err) {
-    console.error("Admin notification email (smart-intake) failed:", err);
+    console.error("Admin notification email (smart-intake) failed:", describeError(err));
   }
 
   return NextResponse.json({ok: true}, {status: 201});

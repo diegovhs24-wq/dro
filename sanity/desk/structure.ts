@@ -1,5 +1,6 @@
 import type {StructureBuilder, StructureResolver, StructureResolverContext} from 'sanity/structure'
 import type {ComponentType} from 'react'
+import {AanvragenLink} from './AanvragenLink'
 import {
   CogIcon,
   ClipboardIcon,
@@ -59,7 +60,6 @@ async function getStructureCounts(context: StructureResolverContext) {
       faqIds: string[]
       partnerIds: string[]
       intakeFormIds: string[]
-      submissionIds: string[]
       blogPostIds: string[]
       blogAuthorIds: string[]
       blogCategoryIds: string[]
@@ -72,7 +72,6 @@ async function getStructureCounts(context: StructureResolverContext) {
         "faqIds":          *[_type == "faq"]._id,
         "partnerIds":      *[_type == "partner"]._id,
         "intakeFormIds":   *[_type == "intakeForm"]._id,
-        "submissionIds":   *[_type == "formSubmission"]._id,
         "blogPostIds":     *[_type == "blogPost"]._id,
         "blogAuthorIds":   *[_type == "blogAuthor"]._id,
         "blogCategoryIds": *[_type == "blogCategory"]._id
@@ -88,7 +87,6 @@ async function getStructureCounts(context: StructureResolverContext) {
       faqs:          normalize(data?.faqIds),
       partners:      normalize(data?.partnerIds),
       intakeForms:   normalize(data?.intakeFormIds),
-      submissions:   normalize(data?.submissionIds),
       blogPosts:     normalize(data?.blogPostIds),
       blogAuthors:   normalize(data?.blogAuthorIds),
       blogCategories: normalize(data?.blogCategoryIds),
@@ -96,7 +94,7 @@ async function getStructureCounts(context: StructureResolverContext) {
   } catch {
     return {
       otherPages: 0, projects: 0, services: 0, reviews: 0,
-      faqs: 0, partners: 0, intakeForms: 0, submissions: 0,
+      faqs: 0, partners: 0, intakeForms: 0,
       blogPosts: 0, blogAuthors: 0, blogCategories: 0,
     }
   }
@@ -223,9 +221,12 @@ export const structure: StructureResolver = async (S, context) => {
       S.documentTypeListItem('intakeForm')
         .title(`Intake Forms (${c.intakeForms})`)
         .icon(InlineIcon),
-      S.documentTypeListItem('formSubmission')
-        .title(`Submissions (${c.submissions})`)
-        .icon(EnvelopeIcon),
+      // Aanvragen staan in de private dataset "leads": Studio-workspace "Aanvragen".
+      S.listItem()
+        .id('aanvragen-workspace')
+        .title('Aanvragen (aparte omgeving)')
+        .icon(EnvelopeIcon)
+        .child(S.component(AanvragenLink).id('aanvragen-link').title('Aanvragen')),
 
       S.divider(),
 

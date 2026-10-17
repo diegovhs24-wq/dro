@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getSiteUrl } from "@/lib/seo/site";
 
 const BRAND = {
   orange: "#ff6a00",
@@ -38,12 +39,24 @@ function renderEntryRows(entries: SubmissionEntry[]): string {
     .join("");
 }
 
+// Aanvragen staan in de private dataset "leads" en zijn alleen te openen in de
+// Studio-workspace "Aanvragen". De intent-link opent de juiste aanvraag,
+// ongeacht hoe de lijst is ingericht.
+function studioLink(documentId?: string): string {
+  // Canonieke host (www op productie): daar staat Studio als CORS-origin toegestaan.
+  const base = `${getSiteUrl()}/studio-aanvragen`;
+  return documentId
+    ? `${base}/intent/edit/id=${encodeURIComponent(documentId)};type=formSubmission`
+    : base;
+}
+
 export function renderSubmissionNotificationEmail(params: {
   formTitle: string;
   submittedAt: string;
   entries: SubmissionEntry[];
+  documentId?: string;
 }): { subject: string; html: string } {
-  const { formTitle, submittedAt, entries } = params;
+  const { formTitle, submittedAt, entries, documentId } = params;
 
   const formattedDate = new Date(submittedAt).toLocaleString("nl-NL", {
     dateStyle: "long",
@@ -91,7 +104,7 @@ export function renderSubmissionNotificationEmail(params: {
             </tr>
             <tr>
               <td style="padding:24px 32px 32px 32px;">
-                <a href="${SITE_URL}/studio/structure/formSubmission"
+                <a href="${studioLink(documentId)}"
                    style="display:inline-block;background:${BRAND.orange};color:#ffffff;font-family:'Poppins',Arial,sans-serif;font-size:14px;font-weight:600;text-decoration:none;padding:12px 24px;border-radius:8px;">
                   Bekijk in Sanity Studio
                 </a>
@@ -121,6 +134,7 @@ export async function sendSubmissionNotificationEmail(params: {
   formTitle: string;
   submittedAt: string;
   entries: SubmissionEntry[];
+  documentId?: string;
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
@@ -129,6 +143,12 @@ export async function sendSubmissionNotificationEmail(params: {
   if (!apiKey || !from || !to) {
     console.warn("Resend not configured (RESEND_API_KEY / EMAIL_FROM / ADMIN_NOTIFICATION_EMAIL missing) — skipping admin notification email");
     return;
+  }
+
+  // Een from zonder sluitende ">" of met losse tekens wordt door Resend met 422
+  // geweigerd. Waarschuw duidelijk in de logs, zonder de waarde zelf te tonen.
+  if (!/^(?:[^<>@\r\n]+<[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+>|[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)$/.test(from.trim())) {
+    console.error("EMAIL_FROM heeft geen geldig formaat (verwacht: Naam <adres@domein> of adres@domein).");
   }
 
   const { subject, html } = renderSubmissionNotificationEmail(params);
@@ -144,6 +164,11 @@ export async function sendSubmissionNotificationEmail(params: {
   });
 
   if (error) {
-    throw new Error(`Resend error: ${error.message}`);
+    // Alleen foutnaam en statuscode (geen bericht): Resend-berichten kunnen
+    // adressen bevatten. describeError() logt precies deze twee velden.
+    throw Object.assign(new Error("Resend notification failed"), {
+      name: typeof error.name === "string" ? error.name : "ResendError",
+      statusCode: typeof error.statusCode === "number" ? error.statusCode : undefined,
+    });
   }
 }
