@@ -214,6 +214,14 @@ const TESTIMONIALS: VideoTestimonial[] = [
     poster: '/landing/video/stefano-poster.jpg',
     src: '/landing/video/stefano.mp4',
   },
+  {
+    name: 'Kelly',
+    project: 'Badkamer verbouwd',
+    duration: '0:53',
+    quote: '"De samenwerking was echt fantastisch, want de jongens werkten super hard, super netjes."',
+    poster: '/landing/video/kelly-poster.jpg',
+    src: '/landing/video/kelly.mp4',
+  },
 ]
 
 // Verplichte toelichting bij reviews (Omnibus/ACM). Vul de controle-zin aan

@@ -31,7 +31,7 @@ function VideoCard({item}: {item: VideoTestimonial}) {
   const [playing, setPlaying] = useState(false);
 
   return (
-    <figure className="m-0">
+    <figure className="m-0 snap-start">
       <div className="relative aspect-[9/16] overflow-hidden rounded-lg bg-lp-slate">
         {playing ? (
           <video autoPlay className="h-full w-full object-cover" controls playsInline poster={item.poster} preload="metadata" src={item.src}>
@@ -68,7 +68,7 @@ function VideoCard({item}: {item: VideoTestimonial}) {
 
 export default function VideoTestimonials({items}: {items: VideoTestimonial[]}) {
   return (
-    <div className="mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:gap-6">
+    <div className="-mx-4 mt-8 grid snap-x snap-mandatory auto-cols-[62%] grid-flow-col gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:max-w-5xl md:grid-flow-row md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0">
       {items.map((item) => (
         <VideoCard item={item} key={item.src} />
       ))}
