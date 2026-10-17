@@ -3,6 +3,7 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
 import {trackLead} from "@/lib/analytics";
+import {captureAttribution, getAttribution} from "@/lib/attribution";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
   COMMON,
@@ -117,9 +118,38 @@ function ServiceIcon({service}: {service: string}) {
 
 const inputClass = "intake-inp";
 
-export default function SmartIntakeWizard() {
-  const [services, setServices] = useState<string[]>([]);
-  const [flow, setFlow] = useState<QuestionDef[]>([SERVICES_STEP, ...COMMON]);
+// Op een advertentiepagina staat de dienst al vast: dan slaan we de dienstkeuze
+// over en laten we vragen weg die daar niets toevoegen (presetServices, skipIds).
+export type SmartIntakeProps = {
+  presetServices?: string[];
+  skipIds?: string[];
+  source?: "smart-intake" | "lp-totaalrenovatie";
+  variant?: string;
+  responsePromise?: string;
+  initialBudget?: [number, number];
+  thanksLinks?: Array<{href: string; label: string}>;
+};
+
+function buildPresetFlow(presetServices: string[], skipIds: string[]): QuestionDef[] {
+  const skip = new Set(skipIds);
+  const questions = presetServices.flatMap((s) => QUESTIONS[s] || []);
+  return [...questions, ...COMMON].filter((q) => !skip.has(q.id));
+}
+
+export default function SmartIntakeWizard({
+  presetServices,
+  skipIds = [],
+  source = "smart-intake",
+  variant,
+  responsePromise = "binnen één werkdag",
+  initialBudget,
+  thanksLinks,
+}: SmartIntakeProps = {}) {
+  const hasPreset = Boolean(presetServices && presetServices.length);
+  const [services, setServices] = useState<string[]>(hasPreset ? (presetServices as string[]) : []);
+  const [flow, setFlow] = useState<QuestionDef[]>(() =>
+    hasPreset ? buildPresetFlow(presetServices as string[], skipIds) : [SERVICES_STEP, ...COMMON],
+  );
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [company, setCompany] = useState(""); // honeypot
@@ -128,9 +158,16 @@ export default function SmartIntakeWizard() {
   const leadTrackedRef = useRef(false);
   const submitInFlightRef = useRef(false);
 
-  const [budgetMin, setBudgetMin] = useState(15000);
-  const [budgetMax, setBudgetMax] = useState(45000);
-  const [budgetLabel, setBudgetLabel] = useState("€15k – €45k");
+  const [budgetMin, setBudgetMin] = useState(initialBudget ? initialBudget[0] : 15000);
+  const [budgetMax, setBudgetMax] = useState(initialBudget ? initialBudget[1] : 45000);
+  const [budgetLabel, setBudgetLabel] = useState(
+    initialBudget ? `${formatBudget(initialBudget[0])} – ${formatBudget(initialBudget[1])}` : "€15k – €45k",
+  );
+
+  // Herkomst vastleggen (campagne, zoekwoord). Op de landingspagina met variant.
+  useEffect(() => {
+    captureAttribution(variant);
+  }, [variant]);
 
   const [postcodeInput, setPostcodeInput] = useState("");
   const [houseNumberInput, setHouseNumberInput] = useState("");
@@ -190,7 +227,7 @@ export default function SmartIntakeWizard() {
 
   function selectSingle(def: QuestionDef, option: QuestionOption) {
     if (def.t === "confirm" && optionBack(option)) {
-      go(0);
+      if (!hasPreset) go(0);
       return;
     }
     updateAnswer(def.id, optionLabel(option));
@@ -238,6 +275,8 @@ export default function SmartIntakeWizard() {
       return {service: serviceLabel(service), answers: qa};
     });
 
+    const attribution = getAttribution();
+
     try {
       const res = await fetch("/api/submit-request", {
         method: "POST",
@@ -257,9 +296,11 @@ export default function SmartIntakeWizard() {
           budgetMin: budgetLabel === "Weet ik nog niet" ? undefined : budgetMin,
           budgetMax: budgetLabel === "Weet ik nog niet" ? undefined : budgetMax,
           budgetLabel,
-          hoeGevonden: answers.found,
+          hoeGevonden: answers.found || (source === "lp-totaalrenovatie" ? "Advertentie (landingspagina)" : undefined),
           message: answers.more,
           serviceAnswers,
+          source,
+          attribution,
         }),
       });
 
@@ -485,9 +526,9 @@ export default function SmartIntakeWizard() {
 
   function renderSummaryScreen() {
     type Row = {label: string; val: string; to: number};
-    const rows: Row[] = [{label: "Wat we voor u doen", val: services.map(serviceLabel).join(", "), to: 0}];
+    const rows: Row[] = [{label: "Wat we voor u doen", val: services.map(serviceLabel).join(", "), to: hasPreset ? -1 : 0}];
 
-    for (let i = 1; i < idx; i++) {
+    for (let i = hasPreset ? 0 : 1; i < idx; i++) {
       const d = flow[i];
       if (d.t === "confirm" || d.t === "services") continue;
       let val = "";
@@ -506,13 +547,20 @@ export default function SmartIntakeWizard() {
         <h1 className="intake-h1">Klopt dit zo?</h1>
         <p className="intake-sub">Dit is uw aanvraag in het kort. Tik op een regel om iets aan te passen.</p>
         <div className="intake-sum">
-          {rows.map((r) => (
-            <button className="intake-sum-row" key={r.label} onClick={() => go(r.to)} type="button">
-              <span className="intake-sr-l">{r.label}</span>
-              <span className="intake-sr-v">{r.val}</span>
-              <span className="intake-sr-e">wijzig</span>
-            </button>
-          ))}
+          {rows.map((r) =>
+            r.to < 0 ? (
+              <div className="intake-sum-row" key={r.label} style={{cursor: "default"}}>
+                <span className="intake-sr-l">{r.label}</span>
+                <span className="intake-sr-v">{r.val}</span>
+              </div>
+            ) : (
+              <button className="intake-sum-row" key={r.label} onClick={() => go(r.to)} type="button">
+                <span className="intake-sr-l">{r.label}</span>
+                <span className="intake-sr-v">{r.val}</span>
+                <span className="intake-sr-e">wijzig</span>
+              </button>
+            ),
+          )}
         </div>
         <div className="intake-assure">
           <LockIcon />
@@ -545,7 +593,7 @@ export default function SmartIntakeWizard() {
         <div className="intake-eyebrow">Voor {primaryLabel()}</div>
         <h1 className="intake-h1">Waar mogen we uw plan naartoe sturen?</h1>
         <p className="intake-sub">
-          U bent klaar. Uw aanvraag komt direct bij Therab en het team terecht, wij nemen binnen één werkdag persoonlijk contact met u op.
+          U bent klaar. Uw aanvraag komt direct bij Therab en het team terecht, wij nemen {responsePromise} persoonlijk contact met u op.
         </p>
         <div className="intake-field">
           <label>Naam</label>
@@ -593,14 +641,14 @@ export default function SmartIntakeWizard() {
         </div>
         <h1 className="intake-h1">Bedankt{firstName ? `, ${firstName}` : ""}!</h1>
         <p>
-          We hebben uw aanvraag voor {primaryLabel()} ontvangen. Wij nemen binnen één werkdag persoonlijk contact met u op.
+          We hebben uw aanvraag voor {primaryLabel()} ontvangen. Wij nemen {responsePromise} persoonlijk contact met u op.
         </p>
         <div className="intake-ns">
           <div className="intake-ns-h">Wat er nu gebeurt</div>
           <div className="intake-ns-r">
             <span className="intake-ns-n">1</span>
             <span className="intake-ns-tx">
-              <b>Therab of een collega neemt binnen één werkdag contact op</b>, per telefoon, e-mail of WhatsApp.
+              <b>Therab of een collega neemt {responsePromise} contact op</b>, per telefoon, e-mail of WhatsApp.
             </span>
           </div>
           <div className="intake-ns-r">
@@ -619,6 +667,19 @@ export default function SmartIntakeWizard() {
         <div className="intake-sel-note">
           We nemen bewust een beperkt aantal projecten tegelijk aan, zodat elk project de aandacht en het vakmanschap krijgt dat het verdient.
         </div>
+        {thanksLinks && thanksLinks.length ? (
+          <div className="intake-more">
+            <div className="intake-ns-h">Leer ons alvast beter kennen</div>
+            <p className="intake-more-tx">Terwijl u op ons belletje wacht: bekijk wie we zijn, wat we gebouwd hebben en hoe we werken.</p>
+            <div className="intake-more-links">
+              {thanksLinks.map((link, i) => (
+                <a className={`intake-more-a${i === 0 ? " intake-more-a1" : ""}`} href={link.href} key={link.href}>
+                  {link.label} <ArrowIcon />
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : null}
         <p style={{marginTop: 18, fontSize: "13.5px", color: "var(--intake-ink-3)"}}>Tot snel, Therab en het team van DRO.</p>
       </div>
     );
@@ -1399,6 +1460,50 @@ export default function SmartIntakeWizard() {
         }
         .intake-ns-tx b {
           color: var(--intake-ink);
+        }
+        .intake-more {
+          margin-top: 16px;
+          text-align: left;
+          border: 1.5px solid var(--intake-line);
+          border-radius: 16px;
+          padding: 18px;
+        }
+        .intake-more-tx {
+          font-size: 13.5px !important;
+          color: var(--intake-ink-2) !important;
+          margin: -6px 0 14px !important;
+          max-width: none !important;
+        }
+        .intake-more-links {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .intake-more-a {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          border: 1.5px solid var(--intake-line);
+          font-weight: 600;
+          font-size: 14.5px;
+          color: var(--intake-ink);
+          text-decoration: none;
+        }
+        .intake-more-a:hover {
+          border-color: var(--intake-accent);
+          color: var(--intake-accent-deep);
+        }
+        .intake-more-a1 {
+          background: var(--intake-accent);
+          border-color: var(--intake-accent);
+          color: #fff;
+        }
+        .intake-more-a1:hover {
+          background: var(--intake-accent-deep);
+          color: #fff;
         }
         .intake-sel-note {
           margin-top: 18px;

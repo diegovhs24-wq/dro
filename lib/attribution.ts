@@ -23,6 +23,7 @@ export type Attribution = {
   utm_content?: string;
   utm_term?: string;
   landingPage?: string;
+  referrer?: string;
   variant?: string;
   firstSeenAt?: string;
 };
@@ -33,6 +34,19 @@ function clean(value: string | null): string | undefined {
   if (!value) return undefined;
   const trimmed = value.trim().slice(0, MAX_LENGTH);
   return trimmed || undefined;
+}
+
+// Alleen de domeinnaam van een externe verwijzer (bijv. "www.google.com"), nooit
+// het volledige adres: daar kunnen zoektermen of persoonsgegevens in staan.
+function externalReferrerHost(): string | undefined {
+  try {
+    if (!document.referrer) return undefined;
+    const host = new URL(document.referrer).hostname;
+    if (!host || host === window.location.hostname) return undefined;
+    return host.slice(0, MAX_LENGTH);
+  } catch {
+    return undefined;
+  }
 }
 
 function load(): Attribution | null {
@@ -73,6 +87,7 @@ export function captureAttribution(variant?: string) {
   save({
     ...fresh,
     landingPage: window.location.pathname,
+    referrer: externalReferrerHost(),
     variant: clean(variant ?? null),
     firstSeenAt: new Date().toISOString(),
   });
