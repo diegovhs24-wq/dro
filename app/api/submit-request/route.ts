@@ -136,8 +136,6 @@ export async function POST(request: NextRequest) {
 
   let documentId: string | undefined;
 
-  let documentId: string | undefined;
-
   try {
     const created = await leads.create({
       _type: "formSubmission",
