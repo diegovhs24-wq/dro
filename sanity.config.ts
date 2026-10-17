@@ -88,6 +88,9 @@ const leadsWorkspace = defineConfig({
   },
   schema: {
     types: leadsSchemaTypes,
+    // Geen templates: ook via een directe URL (?template=formSubmission) kan hier
+    // dan geen nieuwe aanvraag worden gestart.
+    templates: () => [],
   },
 })
 

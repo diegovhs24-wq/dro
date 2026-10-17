@@ -1,5 +1,6 @@
 import type {Metadata, Viewport} from 'next'
-import {Newsreader, Patrick_Hand, Poppins} from 'next/font/google'
+import {Patrick_Hand, Poppins} from 'next/font/google'
+import localFont from 'next/font/local'
 import {draftMode} from 'next/headers'
 import {VisualEditing} from 'next-sanity'
 import Footer from '@/components/Footer'
@@ -26,12 +27,18 @@ const patrickHand = Patrick_Hand({
   variable: '--font-hand',
 })
 
-const newsreader = Newsreader({
-  subsets: ['latin'],
-  style: ['italic'],
-  weight: ['400', '500'],
+// Newsreader (cursief, latin) staat in de repo en wordt niet meer bij elke build
+// bij Google Fonts opgehaald. De Vercel-build faalde eenmalig doordat Google een
+// lettertype-URL zonder bestandsextensie teruggaf (next/font 14.2.x:
+// "Cannot read properties of null (reading '1')"). Variabel lettertype, gewichten 400 en 500.
+const newsreader = localFont({
+  src: './fonts/Newsreader-Italic-latin.woff2',
+  style: 'italic',
+  weight: '400 500',
   display: 'swap',
   variable: '--font-newsreader',
+  fallback: ['Georgia', 'serif'],
+  adjustFontFallback: 'Times New Roman',
 })
 
 export const viewport: Viewport = {

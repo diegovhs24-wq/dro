@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getSiteUrl } from "@/lib/seo/site";
 
 const BRAND = {
   orange: "#ff6a00",
@@ -42,7 +43,8 @@ function renderEntryRows(entries: SubmissionEntry[]): string {
 // Studio-workspace "Aanvragen". De intent-link opent de juiste aanvraag,
 // ongeacht hoe de lijst is ingericht.
 function studioLink(documentId?: string): string {
-  const base = `${SITE_URL.replace(/\/$/, "")}/studio-aanvragen`;
+  // Canonieke host (www op productie): daar staat Studio als CORS-origin toegestaan.
+  const base = `${getSiteUrl()}/studio-aanvragen`;
   return documentId
     ? `${base}/intent/edit/id=${encodeURIComponent(documentId)};type=formSubmission`
     : base;
@@ -143,6 +145,12 @@ export async function sendSubmissionNotificationEmail(params: {
     return;
   }
 
+  // Een from zonder sluitende ">" of met losse tekens wordt door Resend met 422
+  // geweigerd. Waarschuw duidelijk in de logs, zonder de waarde zelf te tonen.
+  if (!/^(?:[^<>@\r\n]+<[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+>|[^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)$/.test(from.trim())) {
+    console.error("EMAIL_FROM heeft geen geldig formaat (verwacht: Naam <adres@domein> of adres@domein).");
+  }
+
   const { subject, html } = renderSubmissionNotificationEmail(params);
   const resend = new Resend(apiKey);
 
@@ -156,6 +164,11 @@ export async function sendSubmissionNotificationEmail(params: {
   });
 
   if (error) {
-    throw new Error(`Resend error: ${error.message}`);
+    // Alleen foutnaam en statuscode (geen bericht): Resend-berichten kunnen
+    // adressen bevatten. describeError() logt precies deze twee velden.
+    throw Object.assign(new Error("Resend notification failed"), {
+      name: typeof error.name === "string" ? error.name : "ResendError",
+      statusCode: typeof error.statusCode === "number" ? error.statusCode : undefined,
+    });
   }
 }
