@@ -56,6 +56,32 @@ async function compressPhoto(file: File): Promise<string | null> {
   }
 }
 
+// Bouwvakker op de voortgangsbalk: helm in de huisstijlkleur, hamer slaat kort
+// bij elke nieuwe stap.
+function WorkerIcon() {
+  return (
+    <svg fill="none" height="26" viewBox="0 0 26 26" width="26">
+      <path d="M6.5 9.2a4.5 4.5 0 0 1 9 0v.6h-9z" fill="var(--intake-accent)" />
+      <rect fill="var(--intake-accent-deep)" height="1.4" rx=".7" width="11" x="5.5" y="9.4" />
+      <circle cx="11" cy="13.2" fill="#E9C9A8" r="2.6" />
+      <path d="M6.8 25v-5.2a4.2 4.2 0 0 1 8.4 0V25" fill="currentColor" />
+      <g className="intake-hammer">
+        <path d="M14.6 18.2l4.6-4.8" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+        <rect fill="#8a8a8a" height="3" rx=".6" transform="rotate(-46 20.6 11.6)" width="5.4" x="17.9" y="10.1" />
+      </g>
+    </svg>
+  );
+}
+
+function HouseGoalIcon({done}: {done: boolean}) {
+  return (
+    <svg className={done ? "intake-house-done" : undefined} fill="none" height="24" viewBox="0 0 24 24" width="24">
+      <path d="M3.5 11.2L12 4l8.5 7.2V20a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z" fill="currentColor" />
+      <path d="M9.5 21v-5.5h5V21" fill="#fff" />
+    </svg>
+  );
+}
+
 function formatBudget(value: number): string {
   if (value >= 150000) return "€150k+";
   if (value <= 0) return "€0";
@@ -870,7 +896,23 @@ export default function SmartIntakeWizard({
 
   const footerButton = showsFooterButton();
   const showSkip = current?.t === "text" && current.optional;
-  const percent = total > 0 ? Math.round((Math.min(idx + 1, total) / total) * 100) : 0;
+  // Voortgang zonder stapnummers: een bouwfase en een schatting van de tijd die
+  // nog rest. Op de eerste stap ligt het aantal vragen nog niet vast, dus daar
+  // een vaste startwaarde (anders springt de balk terug na de dienstkeuze).
+  const percent = current?.t === "services" ? 6 : total > 0 ? Math.max(8, Math.round((Math.min(idx + 1, total) / total) * 100)) : 0;
+  const stepsLeft = Math.max(0, total - (idx + 1));
+  const phase =
+    percent < 25 ? "Fundering" : percent < 50 ? "Ruwbouw" : percent < 75 ? "Afbouw" : stepsLeft > 1 ? "Bijna opgeleverd" : "Laatste stap";
+  const timeLeft =
+    current?.t === "services"
+      ? "duurt ongeveer 2 minuten"
+      : stepsLeft * 7 >= 90
+        ? "nog ongeveer 2 minuten"
+        : stepsLeft * 7 >= 40
+          ? "nog ongeveer 1 minuut"
+          : stepsLeft > 0
+            ? "nog even"
+            : "dan is het klaar";
 
   return (
     <div className={`intake-widget ${bricolage.variable} ${hanken.variable}`}>
@@ -953,21 +995,84 @@ export default function SmartIntakeWizard({
         .intake-prog-meta {
           display: flex;
           justify-content: space-between;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.13em;
-          text-transform: uppercase;
+          font-size: 12.5px;
+          font-weight: 500;
           color: var(--intake-ink-3);
-          margin-bottom: 8px;
+          margin-bottom: 6px;
         }
         .intake-prog-meta b {
           color: var(--intake-ink);
+          font-weight: 700;
+        }
+        .intake-build {
+          position: relative;
+          padding: 22px 30px 0 0;
         }
         .intake-track {
-          height: 4px;
+          height: 6px;
           border-radius: 99px;
-          background: #eaeaea;
+          background: repeating-linear-gradient(90deg, #ececec 0 10px, #e2e2e2 10px 12px);
           overflow: hidden;
+        }
+        .intake-worker {
+          position: absolute;
+          bottom: 2px;
+          width: 26px;
+          height: 26px;
+          margin-left: -16px;
+          transition: left 0.45s cubic-bezier(0.4, 0, 0.1, 1);
+          color: var(--intake-ink);
+        }
+        .intake-worker svg {
+          display: block;
+        }
+        .intake-worker .intake-hammer {
+          transform-origin: 15px 13px;
+          animation: intakeHammer 0.5s ease-in-out 3;
+        }
+        .intake-worker {
+          animation: intakeHop 0.5s ease-out 1;
+        }
+        @keyframes intakeHammer {
+          0%,
+          100% {
+            transform: rotate(0deg);
+          }
+          50% {
+            transform: rotate(-38deg);
+          }
+        }
+        @keyframes intakeHop {
+          0% {
+            transform: translateY(0);
+          }
+          35% {
+            transform: translateY(-4px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+        .intake-house {
+          position: absolute;
+          right: 0;
+          bottom: -3px;
+          width: 24px;
+          height: 24px;
+          color: #c9c9c9;
+        }
+        .intake-house-done {
+          color: var(--intake-accent);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .intake-worker,
+          .intake-worker .intake-hammer {
+            animation: none;
+          }
+          .intake-worker,
+          .intake-bar {
+            transition: none;
+          }
         }
         .intake-bar {
           height: 100%;
@@ -1760,12 +1865,19 @@ export default function SmartIntakeWizard({
           <div className="intake-prog">
             <div className="intake-prog-meta">
               <span>
-                Stap <b>{Math.min(idx + 1, total)}</b> van {total}
+                <b>{phase}</b> &middot; {timeLeft}
               </span>
-              <span>{percent}%</span>
             </div>
-            <div className="intake-track">
-              <div className="intake-bar" style={{width: `${percent}%`}} />
+            <div aria-label={`Voortgang: ${phase}, ${timeLeft}`} aria-valuemax={100} aria-valuemin={0} aria-valuenow={percent} className="intake-build" role="progressbar">
+              <div className="intake-track">
+                <div className="intake-bar" style={{width: `${percent}%`}} />
+              </div>
+              <span aria-hidden="true" className="intake-worker" key={idx} style={{left: `calc((100% - 30px) * ${percent / 100})`}}>
+                <WorkerIcon />
+              </span>
+              <span aria-hidden="true" className="intake-house">
+                <HouseGoalIcon done={percent >= 100} />
+              </span>
             </div>
           </div>
         ) : null}
