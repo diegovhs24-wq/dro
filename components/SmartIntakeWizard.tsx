@@ -7,10 +7,13 @@ import {captureAttribution, getAttribution} from "@/lib/attribution";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
   COMMON,
+  DIMS_UNKNOWN,
   QUESTIONS,
   SERVICES,
   SERVICE_ICON,
   findServiceForQuestionId,
+  formatDims,
+  parseDim,
   serviceLabel,
   type QuestionDef,
   type QuestionOption,
@@ -31,6 +34,26 @@ function optionDesc(o: QuestionOption): string | undefined {
 }
 function optionBack(o: QuestionOption): boolean {
   return typeof o === "object" && Boolean(o.back);
+}
+
+// Foto's verkleinen in de browser (max 1600 px, JPEG), zodat zes foto's samen
+// ruim onder de uploadlimiet blijven en ook op 4G snel verstuurd zijn.
+const MAX_PHOTOS = 6;
+async function compressPhoto(file: File): Promise<string | null> {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return canvas.toDataURL("image/jpeg", 0.72);
+  } catch {
+    return null;
+  }
 }
 
 function formatBudget(value: number): string {
@@ -170,6 +193,9 @@ export default function SmartIntakeWizard({
   );
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
+  const [dimInputs, setDimInputs] = useState<Record<string, Record<string, string>>>({});
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [photoBusy, setPhotoBusy] = useState(false);
   const [company, setCompany] = useState(""); // honeypot
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
@@ -323,6 +349,7 @@ export default function SmartIntakeWizard({
           hoeGevonden: answers.found || (source === "lp-totaalrenovatie" ? "Advertentie (landingspagina)" : undefined),
           message: answers.more,
           serviceAnswers,
+          photos: photos.map((p) => p.replace(/^data:image\/jpeg;base64,/, "")),
           source,
           attribution,
         }),
@@ -444,6 +471,91 @@ export default function SmartIntakeWizard({
     );
   }
 
+  function dimsComplete(def: QuestionDef): boolean {
+    const values = dimInputs[def.id] || {};
+    return (def.f || []).every((field) => field.opt || parseDim(values[field.k] || "") !== null) &&
+      (def.f || []).some((field) => parseDim(values[field.k] || "") !== null);
+  }
+
+  function confirmDims(def: QuestionDef) {
+    updateAnswer(def.id, formatDims(def, dimInputs[def.id] || {}));
+    next();
+  }
+
+  function skipDims(def: QuestionDef) {
+    updateAnswer(def.id, DIMS_UNKNOWN);
+    next();
+  }
+
+  function renderDimsScreen(def: QuestionDef) {
+    const values = dimInputs[def.id] || {};
+    const fields = def.f || [];
+    const preview = formatDims(def, values);
+    return (
+      <>
+        {renderHeader(def, serviceLabel(findServiceForQuestionId(def.id) || "") || "Maten")}
+        <div className={fields.length > 1 ? "intake-dims" : undefined}>
+          {fields.map((field) => (
+            <div className="intake-field" key={field.k}>
+              <label>
+                {field.l} {field.opt ? <span className="intake-optnl">(optioneel)</span> : null}
+              </label>
+              <div className="intake-unitwrap">
+                <input
+                  className={inputClass}
+                  inputMode="decimal"
+                  onChange={(e) =>
+                    setDimInputs((prev) => ({...prev, [def.id]: {...(prev[def.id] || {}), [field.k]: e.target.value.replace(/[^\d.,]/g, "")}}))
+                  }
+                  placeholder={field.ph}
+                  value={values[field.k] || ""}
+                />
+                <span className="intake-unit">{field.unit}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        {preview ? <p className="intake-dimprev">{preview}</p> : null}
+      </>
+    );
+  }
+
+  async function addPhotos(files: FileList | null) {
+    if (!files || !files.length) return;
+    setPhotoBusy(true);
+    const room = MAX_PHOTOS - photos.length;
+    const picked = Array.from(files).filter((f) => f.type.startsWith("image/")).slice(0, Math.max(0, room));
+    const compressed = (await Promise.all(picked.map(compressPhoto))).filter((x): x is string => Boolean(x));
+    setPhotos((prev) => [...prev, ...compressed].slice(0, MAX_PHOTOS));
+    setPhotoBusy(false);
+  }
+
+  function renderPhotosScreen(def: QuestionDef) {
+    return (
+      <>
+        {renderHeader(def, "Foto's")}
+        <div className="intake-photos">
+          {photos.map((src, i) => (
+            <div className="intake-photo" key={src.slice(-24) + i}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt={`Foto ${i + 1}`} src={src} />
+              <button aria-label={`Foto ${i + 1} verwijderen`} onClick={() => setPhotos((prev) => prev.filter((_, j) => j !== i))} type="button">
+                &times;
+              </button>
+            </div>
+          ))}
+          {photos.length < MAX_PHOTOS ? (
+            <label className="intake-photo-add">
+              <input accept="image/*" multiple onChange={(e) => { void addPhotos(e.target.files); e.target.value = ""; }} type="file" />
+              <span>{photoBusy ? "Bezig..." : "+ Foto toevoegen"}</span>
+            </label>
+          ) : null}
+        </div>
+        <p className="intake-dimprev">Bijvoorbeeld de ruimte vanuit twee hoeken, de meterkast of de plek van de uitbouw.</p>
+      </>
+    );
+  }
+
   function renderAddressScreen(def: QuestionDef) {
     return (
       <>
@@ -559,6 +671,7 @@ export default function SmartIntakeWizard({
       if (d.id === "loc") val = (answers.address as string) || `${answers.pc || ""} ${answers.hn || ""}`.trim();
       else if (d.id === "budget") val = budgetLabel;
       else if (d.t === "multi") val = ((answers[d.id] as string[]) || []).join(", ");
+      else if (d.t === "photos") val = photos.length ? `${photos.length} foto${photos.length === 1 ? "" : "'s"}` : "";
       else val = (answers[d.id] as string) || "";
       if (!val) continue;
       if (val.length > 60) val = `${val.slice(0, 60)}...`;
@@ -729,6 +842,8 @@ export default function SmartIntakeWizard({
         </>
       );
     }
+    if (current.t === "dims") return renderDimsScreen(current);
+    if (current.t === "photos") return renderPhotosScreen(current);
     if (current.t === "address") return renderAddressScreen(current);
     if (current.t === "budget") return renderBudgetScreen(current);
     if (current.t === "summary") return renderSummaryScreen();
@@ -742,6 +857,11 @@ export default function SmartIntakeWizard({
     if (current.t === "services") return {label: "Verder", onClick: buildFlowAndStart, disabled: services.length === 0};
     if (current.t === "multi") return {label: "Verder", onClick: next, disabled: !((answers[current.id] as string[] | undefined)?.length)};
     if (current.t === "text") return {label: "Verder", onClick: next, disabled: false};
+    if (current.t === "dims") {
+      const def = current;
+      return {label: "Verder", onClick: () => confirmDims(def), disabled: !dimsComplete(def)};
+    }
+    if (current.t === "photos") return {label: photos.length ? "Verder" : "Verder zonder foto's", onClick: next, disabled: photoBusy};
     if (current.t === "address") return {label: "Verder", onClick: confirmAddress, disabled: !(postcodeInput.trim() && houseNumberInput.trim())};
     if (current.t === "budget") return {label: "Verder", onClick: next, disabled: false};
     if (current.t === "summary") return {label: "Alles klopt, verder", onClick: next, disabled: false};
@@ -1120,6 +1240,83 @@ export default function SmartIntakeWizard({
           min-height: 150px;
           resize: vertical;
           line-height: 1.55;
+        }
+        .intake-dims {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0 11px;
+        }
+        .intake-unitwrap {
+          position: relative;
+        }
+        .intake-unitwrap .intake-inp {
+          padding-right: 52px;
+        }
+        .intake-unit {
+          position: absolute;
+          right: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 14px;
+          color: var(--intake-ink-3);
+          pointer-events: none;
+        }
+        .intake-dimprev {
+          margin: 2px 0 0;
+          font-size: 13px;
+          color: var(--intake-ink-3);
+        }
+        .intake-photos {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+        .intake-photo {
+          position: relative;
+          aspect-ratio: 1;
+          border-radius: 10px;
+          overflow: hidden;
+          background: var(--intake-sand);
+        }
+        .intake-photo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .intake-photo button {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          width: 26px;
+          height: 26px;
+          border-radius: 999px;
+          border: none;
+          background: rgba(17, 17, 17, 0.7);
+          color: #fff;
+          font-size: 16px;
+          line-height: 1;
+          cursor: pointer;
+        }
+        .intake-photo-add {
+          aspect-ratio: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          border: 1.5px dashed var(--intake-line-2);
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--intake-ink-2);
+          cursor: pointer;
+          padding: 6px;
+        }
+        .intake-photo-add:hover {
+          border-color: var(--intake-accent);
+          color: var(--intake-accent);
+        }
+        .intake-photo-add input {
+          display: none;
         }
         .intake-row2 {
           display: grid;
@@ -1577,7 +1774,7 @@ export default function SmartIntakeWizard({
           {renderScreen()}
         </div>
 
-        {footerButton || showSkip ? (
+        {footerButton || showSkip || current?.t === "dims" ? (
           <div className="intake-foot">
             {footerButton ? (
               <button className="intake-btn" disabled={footerButton.disabled} onClick={footerButton.onClick} type="button">
@@ -1587,6 +1784,11 @@ export default function SmartIntakeWizard({
             {showSkip ? (
               <button className="intake-skip" onClick={next} type="button">
                 Sla deze vraag over
+              </button>
+            ) : null}
+            {current?.t === "dims" ? (
+              <button className="intake-skip" onClick={() => skipDims(current)} type="button">
+                Ik weet de maten nog niet
               </button>
             ) : null}
           </div>

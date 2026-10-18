@@ -44,6 +44,7 @@ export type LeadEmailData = {
   message?: string;
   hoeGevonden?: string;
   serviceAnswers: Array<{service: string; answers: Array<{question: string; answer: string}>}>;
+  photoCount?: number;
   channel: LeadChannel;
   assessment: LeadAssessment;
   attribution?: LeadAttribution;
@@ -100,7 +101,17 @@ const SHORT_LABELS: Array<[RegExp, string]> = [
   [/situatie/i, "Situatie"],
   [/vergunning/i, "Vergunning"],
   [/afmeting/i, "Afmeting"],
+  [/groot wordt de uitbreiding/i, "Maten uitbreiding"],
   [/uitbreiding/i, "Soort uitbreiding"],
+  [/maten van de badkamer/i, "Maten badkamer"],
+  [/lang wordt de keuken/i, "Lengte keuken"],
+  [/woonlagen/i, "Woonlagen"],
+  [/breed wordt de dakkapel/i, "Breedte dakkapel"],
+  [/energielabel/i, "Energielabel"],
+  [/hoeveel kozijnen/i, "Aantal kozijnen"],
+  [/ruimtes samen/i, "Oppervlakte ruimtes"],
+  [/m² stucwerk/i, "Stucwerk m²"],
+  [/m² schilderwerk/i, "Schilderwerk"],
 ];
 
 function shortQuestion(question: string): string {
@@ -200,6 +211,7 @@ export function renderLeadEmail(d: LeadEmailData): {subject: string; html: strin
       ...answerRows,
       ["Adres", addressHtml, true],
       ["Funda", fundaHtml, true],
+      ["Foto's", d.photoCount ? `${d.photoCount} foto${d.photoCount === 1 ? "" : "'s"} &middot; <a href="${esc(studioLink(d.documentId))}" style="color:${C.ads};">bekijken</a>` : undefined, true],
       ["Budget", d.budgetLabel],
       ["Planning", d.timeline],
     ]),
