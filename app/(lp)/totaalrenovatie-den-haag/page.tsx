@@ -562,10 +562,12 @@ export default async function TotaalrenovatieLandingPage({
           </div>
           <div className="text-lp-ink">
             <SmartIntakeWizard
-              initialBudget={[50000, 100000]}
-              presetServices={['Totaalrenovatie']}
+              largeBudget={[50000, 100000]}
               responsePromise="binnen 1 werkuur"
-              skipIds={['tot0', 'found']}
+              serviceOrder={['Totaalrenovatie', 'Aanbouw of opbouw', 'Badkamer', 'Keuken', 'Dakkapel']}
+              servicesSub="Kies één of meer onderdelen. Daarna stellen we alleen de vragen die bij uw verbouwing horen."
+              servicesTitle="Wat wilt u verbouwen?"
+              skipIds={['found']}
               source="lp-totaalrenovatie"
               thanksLinks={[
                 {href: '/over-ons', label: 'Over DRO Renovaties'},

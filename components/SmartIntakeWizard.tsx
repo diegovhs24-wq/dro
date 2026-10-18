@@ -128,6 +128,14 @@ export type SmartIntakeProps = {
   responsePromise?: string;
   initialBudget?: [number, number];
   thanksLinks?: Array<{href: string; label: string}>;
+  // Eerste stap aanpassen zonder de dienst vast te zetten: volgorde van de
+  // diensten (de rest volgt in de standaardvolgorde), eigen kop en uitleg.
+  serviceOrder?: string[];
+  servicesTitle?: string;
+  servicesSub?: string;
+  // Startwaarde van de budgetschuif als er een groot project is gekozen.
+  largeBudget?: [number, number];
+  largeServices?: string[];
 };
 
 function buildPresetFlow(presetServices: string[], skipIds: string[]): QuestionDef[] {
@@ -144,11 +152,21 @@ export default function SmartIntakeWizard({
   responsePromise = "binnen één werkdag",
   initialBudget,
   thanksLinks,
+  serviceOrder,
+  servicesTitle = "Waar kunnen we u mee helpen?",
+  servicesSub = "Kies één of meer diensten. We stellen daarna alleen de vragen die voor u van toepassing zijn.",
+  largeBudget,
+  largeServices = ["Totaalrenovatie", "Aanbouw of opbouw"],
 }: SmartIntakeProps = {}) {
+  const skipSet = useMemo(() => new Set(skipIds), [skipIds]);
+  const orderedServices = useMemo(
+    () => (serviceOrder ? [...serviceOrder.filter((s) => SERVICES.includes(s)), ...SERVICES.filter((s) => !serviceOrder.includes(s))] : SERVICES),
+    [serviceOrder],
+  );
   const hasPreset = Boolean(presetServices && presetServices.length);
   const [services, setServices] = useState<string[]>(hasPreset ? (presetServices as string[]) : []);
   const [flow, setFlow] = useState<QuestionDef[]>(() =>
-    hasPreset ? buildPresetFlow(presetServices as string[], skipIds) : [SERVICES_STEP, ...COMMON],
+    hasPreset ? buildPresetFlow(presetServices as string[], skipIds) : [SERVICES_STEP, ...COMMON].filter((q) => !skipIds.includes(q.id)),
   );
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
@@ -217,7 +235,13 @@ export default function SmartIntakeWizard({
 
   function buildFlowAndStart() {
     const questions = services.flatMap((s) => QUESTIONS[s] || []);
-    setFlow([SERVICES_STEP, ...questions, ...COMMON]);
+    setFlow([SERVICES_STEP, ...questions, ...COMMON].filter((q) => !skipSet.has(q.id)));
+    if (largeBudget) {
+      const [min, max] = services.some((s) => largeServices.includes(s)) ? largeBudget : initialBudget || [15000, 45000];
+      setBudgetMin(min);
+      setBudgetMax(max);
+      setBudgetLabel(`${formatBudget(min)} – ${formatBudget(max)}`);
+    }
     go(1);
   }
 
@@ -384,8 +408,8 @@ export default function SmartIntakeWizard({
     return (
       <>
         <div className="intake-eyebrow">Uw project</div>
-        <h1 className="intake-h1">Waar kunnen we u mee helpen?</h1>
-        <p className="intake-sub">Kies één of meer diensten. We stellen daarna alleen de vragen die voor u van toepassing zijn.</p>
+        <h1 className="intake-h1">{servicesTitle}</h1>
+        <p className="intake-sub">{servicesSub}</p>
         <div className="intake-sp">
           <span className="intake-stars">
             <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
@@ -395,7 +419,7 @@ export default function SmartIntakeWizard({
           </span>
         </div>
         <div className="intake-grid">
-          {SERVICES.map((service) => {
+          {orderedServices.map((service) => {
             const selected = services.includes(service);
             const wide = service === "Iets anders";
             return (
