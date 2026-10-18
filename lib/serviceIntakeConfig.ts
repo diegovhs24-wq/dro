@@ -7,7 +7,11 @@
 
 export type QuestionOption = string | {l: string; d?: string; back?: boolean};
 
-export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "summary" | "contact" | "thanks" | "services";
+export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "summary" | "contact" | "thanks" | "services" | "dims" | "photos";
+
+// Maatvelden voor vragen van het type "dims". Getallen met komma of punt;
+// velden met opt zijn niet verplicht.
+export type DimField = {k: string; l: string; unit: string; ph?: string; opt?: boolean};
 
 export type QuestionDef = {
   id: string;
@@ -17,7 +21,11 @@ export type QuestionDef = {
   o?: QuestionOption[];
   ph?: string;
   optional?: boolean;
+  f?: DimField[];
 };
+
+// Tekst bij de knop om maten over te slaan, en wat er dan in de aanvraag komt.
+export const DIMS_UNKNOWN = "Nog niet bekend, inmeten bij bezichtiging";
 
 export const SERVICES: string[] = [
   "Badkamer",
@@ -60,7 +68,7 @@ export const SERVICE_ICON: Record<string, string> = {
 
 export const QUESTIONS: Record<string, QuestionDef[]> = {
   Badkamer: [
-    {id: "bad1", t: "single", q: "Hoeveel m² is de badkamer ongeveer?", o: ["Tot 4 m²", "4 tot 6 m²", "6 tot 9 m²", "Meer dan 9 m²", "Weet ik nog niet"]},
+    {id: "bad1", t: "dims", q: "Wat zijn de maten van de badkamer?", s: "Binnenmaten van muur tot muur, in meters. Een rolmaat-schatting is prima.", f: [{k: "l", l: "Lengte", unit: "m", ph: "2,4"}, {k: "b", l: "Breedte", unit: "m", ph: "1,8"}, {k: "h", l: "Plafondhoogte", unit: "m", ph: "2,5", opt: true}]},
     {id: "bad2", t: "single", q: "Inbouwkranen of opbouwkranen?", s: "Inbouwkranen zitten weggewerkt in de wand, opbouwkranen zijn zichtbaar gemonteerd.", o: ["Inbouwkranen", "Opbouwkranen", "Weet ik nog niet"]},
     {id: "bad3", t: "single", q: "Wilt u dat wij alles doen, van sloop tot oplevering?", o: ["Ja, van sloop tot oplevering", "Ik sloop zelf de oude badkamer"]},
     {id: "bad4", t: "single", q: "Wilt u een inloopdouche, een ligbad, of allebei?", o: ["Inloopdouche", "Ligbad", "Allebei"]},
@@ -70,6 +78,7 @@ export const QUESTIONS: Record<string, QuestionDef[]> = {
     {id: "bad8", t: "single", q: "Regelen wij het sanitair en de materialen?", o: ["Ja, graag via DRO", "Ik heb dit al (deels) besteld"]},
   ],
   Keuken: [
+    {id: "keu0", t: "dims", q: "Hoe lang wordt de keuken?", s: "Lengte van de keukenwand in meters. Een hoekkeuken of eiland? Vul dan ook het tweede deel in.", f: [{k: "l", l: "Keukenwand", unit: "m", ph: "3,2"}, {k: "l2", l: "Tweede wand of eiland", unit: "m", ph: "1,8", opt: true}]},
     {id: "keu1", t: "single", q: "Heeft u de keuken al uitgezocht of besteld?", o: ["Ja, die is er al", "Nee, graag via DRO leveren"]},
     {id: "keu2", t: "single", q: "Alleen plaatsen, of ook de oude keuken slopen?", o: ["Alleen plaatsen", "Ook slopen en afvoeren"]},
     {id: "keu3", t: "single", q: "Moeten er leidingen worden verplaatst?", s: "Denk aan water, afvoer, gas of elektra.", o: ["Ja", "Nee", "Weet ik nog niet"]},
@@ -77,44 +86,50 @@ export const QUESTIONS: Record<string, QuestionDef[]> = {
   ],
   Totaalrenovatie: [
     {id: "tot0", t: "confirm", q: "Een totaalrenovatie betekent de hele woning aanpakken", s: "Van vloer tot plafond en alle onderdelen. Weet u zeker dat u dit bedoelt?", o: [{l: "Ja, de hele woning"}, {l: "Nee, alleen bepaalde onderdelen", back: true}]},
-    {id: "tot1", t: "single", q: "Hoeveel woonoppervlakte heeft de woning ongeveer?", o: ["Tot 80 m²", "80 tot 120 m²", "120 tot 180 m²", "Meer dan 180 m²", "Weet ik nog niet"]},
+    {id: "tot1", t: "dims", q: "Hoeveel woonoppervlakte heeft de woning?", s: "Staat op Funda, in de koopakte of op wozwaardeloket.nl.", f: [{k: "m2", l: "Woonoppervlakte", unit: "m²", ph: "110"}]},
+    {id: "tot5", t: "single", q: "Hoeveel woonlagen heeft de woning?", o: ["1 (appartement of gelijkvloers)", "2", "3", "4 of meer"]},
     {id: "tot2", t: "single", q: "Casco (alles eruit tot op de muren) of gedeeltelijk?", o: ["Casco / strippen", "Gedeeltelijk", "Weet ik nog niet"]},
     {id: "tot3", t: "single", q: "Wordt de woning bewoond tijdens de renovatie?", o: ["Bewoond", "Leeg / niet bewoond"]},
     {id: "tot4", t: "single", q: "Wat is het bouwjaar, en is het een monument?", o: ["Voor 1945", "1945 tot 1980", "Na 1980", "Monument of beschermd stadsgezicht", "Weet ik niet"]},
   ],
   "Aanbouw of opbouw": [
     {id: "aan1", t: "single", q: "Wat voor uitbreiding wilt u?", o: ["Uitbouw achter", "Aanbouw aan de zijkant", "Dakopbouw", "Optopping / extra verdieping"]},
-    {id: "aan2", t: "single", q: "Weet u ongeveer de gewenste afmeting?", o: ["Tot 10 m²", "10 tot 20 m²", "Meer dan 20 m²", "Weet ik nog niet"]},
+    {id: "aan2", t: "dims", q: "Hoe groot wordt de uitbreiding?", s: "Diepte is hoe ver hij uitsteekt vanaf de gevel, breedte langs de gevel. In meters.", f: [{k: "d", l: "Diepte", unit: "m", ph: "3"}, {k: "b", l: "Breedte", unit: "m", ph: "5"}]},
     {id: "aan3", t: "single", q: "Is er al een vergunning aangevraagd?", s: "Wij kunnen het vergunningstraject voor u verzorgen.", o: ["Ja", "Nee", "Weet ik niet"]},
   ],
   Dakkapel: [
     {id: "dak1", t: "single", q: "Om hoeveel dakkapellen gaat het?", o: ["1", "2", "Meer dan 2"]},
     {id: "dak2", t: "single", q: "Een nieuwe dakkapel of een bestaande vervangen?", o: ["Nieuw", "Vervangen", "Weet ik niet"]},
     {id: "dak3", t: "single", q: "Voorkeur voor prefab of maatwerk?", o: [{l: "Prefab", d: "sneller, vaste maten"}, {l: "Op maat"}, {l: "Geen voorkeur"}]},
+    {id: "dak4", t: "dims", q: "Hoe breed wordt de dakkapel?", s: "Breedte per dakkapel, in meters.", f: [{k: "b", l: "Breedte", unit: "m", ph: "3,5"}]},
   ],
   Stucwerk: [
     {id: "stu1", t: "single", q: "Wat is de staat van de ondergrond?", o: ["Kaal metselwerk (vanaf steen)", "Bestaand stucwerk overstucen", "Gipsplaat of gipsblokken", "Beschadigd, moet hersteld"]},
     {id: "stu2", t: "single", q: "Gaat het om wanden, plafonds, of allebei?", o: ["Wanden", "Plafonds", "Allebei"]},
-    {id: "stu3", t: "single", q: "Om hoeveel m² gaat het ongeveer?", o: ["Tot 25 m²", "25 tot 60 m²", "Meer dan 60 m²", "Weet ik niet"]},
+    {id: "stu3", t: "dims", q: "Om hoeveel m² stucwerk gaat het?", s: "Wanden: lengte maal hoogte. Plafonds: lengte maal breedte. Een schatting is goed.", f: [{k: "m2", l: "Oppervlakte", unit: "m²", ph: "45"}]},
     {id: "stu4", t: "single", q: "Welke afwerking wilt u?", o: ["Glad (pleister- of spuitwerk)", "Sierpleister of granol", "Weet ik niet"]},
   ],
   Schilderwerk: [
     {id: "sch1", t: "single", q: "Binnen, buiten, of allebei?", o: ["Binnen", "Buiten", "Allebei"]},
     {id: "sch2", t: "multi", q: "Wat moet er geschilderd worden?", o: ["Wanden", "Plafonds", "Kozijnen", "Deuren", "Trap", "Gevel"]},
     {id: "sch3", t: "single", q: "Is er houtrot of achterstallig onderhoud?", s: "Vooral bij buitenschilderwerk belangrijk.", o: ["Ja", "Nee", "Weet ik niet"]},
+    {id: "sch4", t: "dims", q: "Om hoeveel m² schilderwerk gaat het ongeveer?", s: "Een schatting is goed. Kozijnen en deuren mag u ook tellen in stuks.", f: [{k: "m2", l: "Oppervlakte", unit: "m²", ph: "60", opt: true}, {k: "n", l: "Kozijnen en deuren", unit: "stuks", ph: "8", opt: true}]},
   ],
   Warmtepomp: [
     {id: "wp1", t: "single", q: "Wat is de afstand tussen binnen- en buitenunit?", s: "Bepalend voor de leidinglengte.", o: ["Tot 5 meter", "5 tot 10 meter", "Meer dan 10 meter", "Weet ik niet"]},
     {id: "wp2", t: "single", q: "Volledige warmtepomp of hybride naast de ketel?", o: ["Volledig", "Hybride", "Weet ik niet"]},
     {id: "wp3", t: "single", q: "Is er vloerverwarming aanwezig of gewenst?", o: ["Aanwezig", "Gewenst", "Nee"]},
+    {id: "wp4", t: "dims", q: "Hoeveel woonoppervlakte heeft de woning?", s: "Staat op Funda, in de koopakte of op wozwaardeloket.nl.", f: [{k: "m2", l: "Woonoppervlakte", unit: "m²", ph: "110"}]},
+    {id: "wp5", t: "single", q: "Wat is het energielabel van de woning?", s: "Te vinden op ep-online.nl.", o: ["A of beter", "B of C", "D of slechter", "Weet ik niet"]},
   ],
   "Airco of klimaat": [
     {id: "ac1", t: "single", q: "Wat is de afstand tussen binnen- en buitenunit?", o: ["Tot 5 meter", "5 tot 10 meter", "Meer dan 10 meter", "Weet ik niet"]},
     {id: "ac2", t: "single", q: "Hoeveel ruimtes wilt u koelen?", o: ["1 ruimte", "2 ruimtes", "3 of meer"]},
     {id: "ac3", t: "single", q: "Alleen koelen, of ook verwarmen?", o: ["Alleen koelen", "Ook verwarmen", "Weet ik niet"]},
+    {id: "ac4", t: "dims", q: "Hoe groot zijn de ruimtes samen?", s: "Bepaalt het vermogen van de airco. Een schatting is goed.", f: [{k: "m2", l: "Oppervlakte", unit: "m²", ph: "35"}]},
   ],
   Kozijnen: [
-    {id: "koz1", t: "single", q: "Om hoeveel kozijnen gaat het ongeveer?", o: ["1 tot 3", "4 tot 8", "Meer dan 8", "Weet ik niet"]},
+    {id: "koz1", t: "dims", q: "Om hoeveel kozijnen gaat het?", s: "Tel ramen en deuren apart als het losse kozijnen zijn.", f: [{k: "n", l: "Aantal kozijnen", unit: "stuks", ph: "6"}]},
     {id: "koz2", t: "single", q: "Welk materiaal heeft uw voorkeur?", o: ["Kunststof", "Hout", "Aluminium", "Geen voorkeur"]},
     {id: "koz3", t: "single", q: "Hele kozijnen vervangen of alleen het glas?", o: ["Hele kozijnen", "Alleen glas (bijv. HR++)", "Weet ik niet"]},
   ],
@@ -140,6 +155,7 @@ export const FOUND_OPTIONS = [
 // Gemeenschappelijke afsluiting, na de dienst-specifieke vragen.
 export const COMMON: QuestionDef[] = [
   {id: "loc", t: "address", q: "Waar bevindt de woning zich?", s: "Vul postcode en huisnummer in, wij vullen het adres automatisch aan."},
+  {id: "photos", t: "photos", q: "Heeft u foto's van de huidige situatie?", s: "Optioneel, maar met foto's kunnen we vaak al aan de telefoon een goede inschatting geven. Maximaal 6 foto's.", optional: true},
   {id: "plan", t: "single", q: "Wat is uw planning?", o: PLANNING_OPTIONS},
   {id: "budget", t: "budget", q: "Welk budget heeft u in gedachten?", s: "Sleep een minimum en maximum. Zo kunnen wij goed meedenken in wat mogelijk is."},
   {id: "found", t: "single", q: "Hoe heeft u ons gevonden?", o: FOUND_OPTIONS},
@@ -161,4 +177,24 @@ export function findServiceForQuestionId(id: string): string | null {
     if ((QUESTIONS[service] || []).some((question) => question.id === id)) return service;
   }
   return null;
+}
+
+// Maatantwoord als leesbare tekst, bijvoorbeeld "Lengte 2,4 m · Breedte 1,8 m (≈ 4,3 m²)".
+export function parseDim(value: string): number | null {
+  const n = Number(value.replace(/\s/g, "").replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export function formatDims(def: QuestionDef, values: Record<string, string>): string {
+  const fmt = (n: number) => n.toLocaleString("nl-NL", {maximumFractionDigits: 2});
+  const parts = (def.f || [])
+    .map((field) => {
+      const n = parseDim(values[field.k] || "");
+      return n === null ? null : `${field.l} ${fmt(n)} ${field.unit}`;
+    })
+    .filter(Boolean);
+  const l = parseDim(values.l || values.d || "");
+  const b = parseDim(values.b || "");
+  const area = l !== null && b !== null && (def.f || []).some((f) => f.unit === "m") ? ` (≈ ${fmt(Math.round(l * b * 10) / 10)} m²)` : "";
+  return parts.join(" · ") + area;
 }
