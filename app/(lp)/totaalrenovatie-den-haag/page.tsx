@@ -156,6 +156,9 @@ const COMPARE = [
   },
 ]
 
+// Teamfoto van de vaste ploegen (Dropbox, Landingspagina totaalrenovatie).
+const TEAM_PHOTO = {url: '/landing/team-dro.jpg', title: 'Het team van DRO Renovaties', caption: 'Onze vaste ploegen'}
+
 type TeamPhoto = {image?: CmsImageSource | null; title?: string | null}
 
 // Teamfoto uit de CMS (blok "aboutTeamImageBlock" op een pagina). Faalt stil:
@@ -559,10 +562,12 @@ export default async function TotaalrenovatieLandingPage({
           </div>
           <div className="text-lp-ink">
             <SmartIntakeWizard
-              initialBudget={[50000, 100000]}
-              presetServices={['Totaalrenovatie']}
+              largeBudget={[50000, 100000]}
               responsePromise="binnen 1 werkuur"
-              skipIds={['tot0', 'found']}
+              serviceOrder={['Totaalrenovatie', 'Aanbouw of opbouw', 'Badkamer', 'Keuken', 'Dakkapel']}
+              servicesSub="Kies één of meer onderdelen. Daarna stellen we alleen de vragen die bij uw verbouwing horen."
+              servicesTitle="Wat wilt u verbouwen?"
+              skipIds={['found']}
               source="lp-totaalrenovatie"
               thanksLinks={[
                 {href: '/over-ons', label: 'Over DRO Renovaties'},
@@ -789,10 +794,19 @@ export default async function TotaalrenovatieLandingPage({
 
       <section className="border-t border-lp-line">
         <div className="section-shell py-14">
-          {teamPhoto && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img alt={teamPhoto.title} className="mb-10 aspect-[16/7] w-full rounded-lg object-cover" decoding="async" loading="lazy" src={teamPhoto.url} />
-          )}
+          <figure className="relative mb-10 overflow-hidden rounded-lg">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              alt={teamPhoto?.title || TEAM_PHOTO.title}
+              className="aspect-[4/3] w-full bg-lp-plaster object-cover object-[center_65%] sm:aspect-[16/8]"
+              decoding="async"
+              loading="lazy"
+              src={TEAM_PHOTO.url}
+            />
+            <figcaption className="absolute bottom-3 left-3 rounded bg-lp-ink/80 px-2.5 py-1 text-[13px] font-semibold text-white">
+              {TEAM_PHOTO.caption}
+            </figcaption>
+          </figure>
           <div className="grid gap-8 md:grid-cols-[1.4fr_1fr]">
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
