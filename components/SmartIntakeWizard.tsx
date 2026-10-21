@@ -6,8 +6,8 @@ import {trackLead} from "@/lib/analytics";
 import {captureAttribution, getAttribution} from "@/lib/attribution";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
-  DRAAGMUUR_DEFAULT_WIDTH,
-  draagmuurRange,
+  DRAAGMUUR_DEFAULTS,
+  draagmuurBreakdown,
   formatEuro,
   type DraagmuurFloor,
   type DraagmuurInput,
@@ -236,9 +236,9 @@ export default function SmartIntakeWizard({
   // Rekenmodule draagmuur (vraagtype "calc") en stopmelding bij "fit".
   const [calc, setCalc] = useState<DraagmuurInput>({
     kind: "volledig",
-    width: DRAAGMUUR_DEFAULT_WIDTH.volledig,
+    width: DRAAGMUUR_DEFAULTS.volledig.width,
     thickness: 22,
-    height: 2.6,
+    height: DRAAGMUUR_DEFAULTS.volledig.height,
     floor: "begane grond",
     finished: true,
     fireWrap: true,
@@ -331,16 +331,16 @@ export default function SmartIntakeWizard({
     if (def.id === "dm1") {
       const label = optionLabel(option);
       const kind: DraagmuurKind = /deuropening/i.test(label) ? "deur" : /deels/i.test(label) ? "deels" : "volledig";
-      setCalc((prev) => ({...prev, kind, width: DRAAGMUUR_DEFAULT_WIDTH[kind]}));
+      setCalc((prev) => ({...prev, kind, ...DRAAGMUUR_DEFAULTS[kind]}));
     }
     if (def.t === "fit") {
-      const range = draagmuurRange(calc);
+      const price = draagmuurBreakdown(calc).totalIncl;
       const label = optionLabel(option);
       const stop = optionStop(option);
       updateAnswer(def.id, label);
-      setBudgetMin(range.low);
-      setBudgetMax(range.high);
-      setBudgetLabel(`${stop ? "Lager dan" : label.startsWith("Mijn budget is hoger") ? "Hoger dan" : "Past bij"} indicatie ${formatEuro(range.low)} – ${formatEuro(range.high)}`);
+      setBudgetMin(price);
+      setBudgetMax(price);
+      setBudgetLabel(`${stop ? "Lager dan" : label.startsWith("Mijn budget is hoger") ? "Hoger dan" : "Past bij"} indicatie ${formatEuro(price)} incl. btw`);
       if (stop) {
         setStopMessage(stop);
         return;
@@ -354,18 +354,19 @@ export default function SmartIntakeWizard({
   }
 
   function calcSummary(): string {
-    const range = draagmuurRange(calc);
+    const b = draagmuurBreakdown(calc);
     const kindLabel = calc.kind === "deur" ? "Deuropening" : calc.kind === "deels" ? "Draagmuur deels weg" : "Draagmuur helemaal weg";
     const fmt = (n: number) => n.toLocaleString("nl-NL", {maximumFractionDigits: 2});
     return [
       kindLabel,
       `opening ${fmt(calc.width)} m`,
       `muur ${calc.thickness} cm`,
-      `plafond ${fmt(calc.height)} m`,
+      `hoogte ${fmt(calc.height)} m`,
       calc.floor,
       calc.finished ? "afgewerkt" : "casco",
       `brandveilig inpakken: ${calc.fireWrap ? "ja" : "nee (klant gewaarschuwd)"}`,
-      `indicatie ${formatEuro(range.low)} – ${formatEuro(range.high)} incl. btw`,
+      `complexiteit ${String(b.factor).replace(".", ",")}${b.reasons.length ? ` (${b.reasons.join(", ")})` : ""}`,
+      `indicatie ${formatEuro(b.totalEx)} excl. / ${formatEuro(b.totalIncl)} incl. btw${b.wide ? " (breed: staal apart calculeren)" : ""}`,
     ].join(" · ");
   }
 
@@ -602,22 +603,22 @@ export default function SmartIntakeWizard({
   }
 
   function renderCalcScreen(def: QuestionDef) {
-    const range = draagmuurRange(calc);
+    const b = draagmuurBreakdown(calc);
     const set = (patch: Partial<DraagmuurInput>) => setCalc((prev) => ({...prev, ...patch}));
     return (
       <>
         {renderHeader(def, "Prijsindicatie")}
         <p className="intake-pricechip" aria-hidden="true">
-          Indicatie nu: <b>{formatEuro(range.low)} tot {formatEuro(range.high)}</b> incl. btw
+          Indicatie nu: <b>{formatEuro(b.totalIncl)}</b> incl. btw
         </p>
         {renderSeg<DraagmuurKind>("Wat gaat eruit?", calc.kind, [
           {v: "deur", l: "Deuropening"},
           {v: "deels", l: "Deels"},
           {v: "volledig", l: "Hele muur"},
-        ], (kind) => set({kind, width: DRAAGMUUR_DEFAULT_WIDTH[kind]}))}
-        {renderSlider("Hoe breed wordt de opening?", calc.width, 0.6, 8, 0.1, "m", (width) => set({width}))}
+        ], (kind) => set({kind, ...DRAAGMUUR_DEFAULTS[kind]}))}
+        {renderSlider("Hoe breed wordt de doorbraak?", calc.width, 0.6, 8, 0.1, "m", (width) => set({width}))}
+        {renderSlider("Hoe hoog wordt de doorbraak?", calc.height, 1.8, 3.6, 0.05, "m", (height) => set({height}))}
         {renderSlider("Hoe dik is de muur?", calc.thickness, 10, 40, 1, "cm", (thickness) => set({thickness}))}
-        {renderSlider("Hoe hoog is het plafond?", calc.height, 2.2, 3.6, 0.05, "m", (height) => set({height}))}
         {renderSeg<DraagmuurFloor>("Waar zit de muur?", calc.floor, [
           {v: "begane grond", l: "Begane grond"},
           {v: "verdieping", l: "Verdieping"},
@@ -628,7 +629,7 @@ export default function SmartIntakeWizard({
           {v: false, l: "Casco"},
         ], (finished) => set({finished}))}
         <p className="intake-dimprev" style={{marginTop: -8, marginBottom: 14}}>
-          {calc.finished ? "Afgewerkt: stucwerk schilderklaar, opening netjes afgewerkt." : "Casco: alleen de constructieve doorbraak, u of een ander werkt af."}
+          {calc.finished ? "Afgewerkt: inclusief basisafwerking van de opening." : "Casco: alleen de constructieve doorbraak, u of een ander werkt af."}
         </p>
         {renderSeg<boolean>("Brandveilig inpakken tijdens slijp- en laswerk?", calc.fireWrap, [
           {v: true, l: "Ja, graag"},
@@ -643,26 +644,53 @@ export default function SmartIntakeWizard({
         ) : null}
         <div className="intake-price" aria-live="polite">
           <span className="intake-price-l">Uw indicatie, inclusief btw</span>
-          <span className="intake-price-v">
-            {formatEuro(range.low)} <span>tot</span> {formatEuro(range.high)}
-          </span>
+          <span className="intake-price-v">{formatEuro(b.totalIncl)}</span>
+          <span className="intake-price-s" style={{marginTop: 6}}>Opbouw, excl. btw</span>
+          <dl className="intake-price-rows">
+            <dt>Slopen en afvoeren</dt>
+            <dd>{formatEuro(b.demolition)}</dd>
+            <dt>Stempelen</dt>
+            <dd>{formatEuro(b.shoring)}</dd>
+            <dt>Stalen ligger</dt>
+            <dd>{formatEuro(b.steel)}</dd>
+            <dt>Constructieberekening</dt>
+            <dd>{formatEuro(b.engineering)}</dd>
+            {b.finishing ? (
+              <>
+                <dt>Basisafwerking</dt>
+                <dd>{formatEuro(b.finishing)}</dd>
+              </>
+            ) : null}
+            {b.factor > 1 ? (
+              <>
+                <dt>Complexiteit ({b.reasons.join(", ")})</dt>
+                <dd>x {String(b.factor).replace(".", ",")}</dd>
+              </>
+            ) : null}
+            <dt>Totaal excl. btw</dt>
+            <dd>{formatEuro(b.totalEx)}</dd>
+          </dl>
           <span className="intake-price-s">
-            Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen balk of latei, sloop, container en afvoer
-            {calc.fireWrap ? ", brandveilig inpakken" : ""}
-            {calc.finished ? " en stucwerk" : ""}. Leges van de gemeente apart. Na de opname krijgt u een vaste prijs.
+            Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, container en afvoer
+            {calc.fireWrap ? ", brandveilig inpakken" : ""}. Leges van de gemeente apart. Na de opname krijgt u een vaste prijs.
           </span>
+          {b.wide ? (
+            <span className="intake-price-s" style={{color: "#ffd6b8"}}>
+              Bij een doorbraak van deze breedte rekent de constructeur de staalconstructie apart door. De prijs kan dan hoger uitvallen.
+            </span>
+          ) : null}
         </div>
       </>
     );
   }
 
   function renderFitScreen(def: QuestionDef) {
-    const range = draagmuurRange(calc);
+    const price = draagmuurBreakdown(calc).totalIncl;
     return (
       <>
         {renderHeader(def, "Budget")}
         <p className="intake-dimprev" style={{marginTop: -4, marginBottom: 12}}>
-          Uw indicatie: <b>{formatEuro(range.low)} tot {formatEuro(range.high)}</b> inclusief btw.
+          Uw indicatie: <b>{formatEuro(price)}</b> inclusief btw.
         </p>
         {renderOptions(def)}
         {stopMessage ? (
@@ -1662,6 +1690,22 @@ export default function SmartIntakeWizard({
           font-weight: 600;
           color: rgba(255, 255, 255, 0.7);
           padding: 0 4px;
+        }
+        .intake-price-rows {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 3px 12px;
+          margin: 2px 0 6px;
+          padding: 8px 0;
+          border-top: 1px solid rgba(255, 255, 255, 0.14);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.82);
+        }
+        .intake-price-rows dd {
+          margin: 0;
+          text-align: right;
+          font-variant-numeric: tabular-nums;
         }
         .intake-price-s {
           font-size: 12.5px;
