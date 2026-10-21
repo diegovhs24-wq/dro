@@ -1,8 +1,7 @@
 import type {Metadata} from "next";
-import {permanentRedirect} from "next/navigation";
 
 import LocationServiceDetailRoute from "@/components/LocationServiceDetailRoute";
-import {formatReviewSummary, getReviewSnapshot} from "@/lib/seo/business";
+import {formatReviewSummary, getReviewSnapshot, isIndexableLocationService} from "@/lib/seo/business";
 import {
   getLocationBySlug,
   getLocationCityServiceParams,
@@ -36,18 +35,22 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
     };
   }
 
-  if (!hasLocalContent(location, serviceSlug)) {
-    return {robots: {index: false, follow: true}};
-  }
-
   // service.title is the SEO-styled page H1 (already includes a city + brand suffix);
   // eyebrow holds the clean short service name for composing "{name} in {city}" copy.
   const serviceName = service.eyebrow || service.title;
   const title = `${serviceName} in ${location.name} | DRO Renovaties`;
-  const description = `${service.intro} Actief in ${location.name} en omgeving. Betaling per afgeronde fase, ${formatReviewSummary(getReviewSnapshot())}.`;
+  const description = `${service.intro} Actief in ${location.name} en omgeving. ${formatReviewSummary(getReviewSnapshot())}.`;
+
+  // Combinaties zonder lokale inhoud en buiten de kerndiensten: zichtbaar voor
+  // bezoekers, maar noindex,follow (omkeerbaar; geen redirect, geen verkeersverlies
+  // voor wie de pagina al via een link bereikt).
+  const indexable = isIndexableLocationService(
+    serviceSlug,
+    (location.popularServices || []).map((item) => item.slug)
+  );
 
   return metadataFromSeo(
-    {metaTitle: title, metaDescription: description},
+    {metaTitle: title, metaDescription: description, ...(indexable ? {} : {noIndex: true})},
     title,
     {
       pathname: `/${slug}/${serviceSlug}`,
@@ -56,21 +59,7 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
   );
 }
 
-// Een stad x dienst-pagina bestaat alleen als de stad in Sanity lokale inhoud
-// voor die dienst heeft (popularServices). Andere combinaties sturen we door
-// naar de stadspagina in plaats van een dunne kopie te tonen.
-function hasLocalContent(
-  location: {popularServices?: Array<{slug: string}>},
-  serviceSlug: string
-) {
-  return (location.popularServices || []).some((item) => item.slug === serviceSlug);
-}
-
 export default async function LocationServiceRoutePage({params}: LocationServicePageProps) {
   const {slug, service} = await params;
-  const location = await getLocationBySlug(slug);
-  if (location && !hasLocalContent(location, service)) {
-    permanentRedirect(`/${slug}`);
-  }
   return <LocationServiceDetailRoute citySlug={slug} serviceSlug={service} />;
 }

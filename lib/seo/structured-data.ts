@@ -53,14 +53,6 @@ export function founderId(siteUrl: string = getSiteUrl()) {
   return `${siteUrl}/#founder`;
 }
 
-function personId(name: string, siteUrl: string = getSiteUrl()) {
-  return `${siteUrl}/#person-${name
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")}`;
-}
 
 const orgRef = () => ({"@id": organizationId()});
 
@@ -100,16 +92,6 @@ export function buildOrganizationGraph(
     jobTitle: BUSINESS.founder.jobTitle,
     worksFor: orgRef(),
   };
-
-  const employees = BUSINESS.team
-    .filter((member) => member.name !== BUSINESS.founder.name)
-    .map((member) => ({
-      "@type": "Person",
-      "@id": personId(member.name, siteUrl),
-      name: member.name,
-      jobTitle: member.jobTitle,
-      worksFor: orgRef(),
-    }));
 
   const offerCatalog = options.services?.length
     ? {
@@ -166,7 +148,6 @@ export function buildOrganizationGraph(
       credentialCategory: credential.category,
     })),
     founder: {"@id": founderId(siteUrl)},
-    employee: employees.map((employee) => ({"@id": employee["@id"]})),
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -193,7 +174,9 @@ export function buildOrganizationGraph(
     publisher: orgRef(),
   };
 
-  return [organization, website, founder, ...employees];
+  // Teamleden staan bewust niet als `employee` in de graph: hun dienstverband
+  // (in loondienst of vaste partner) is niet geverifieerd.
+  return [organization, website, founder];
 }
 
 export function buildBreadcrumbList(items: BreadcrumbItem[]) {

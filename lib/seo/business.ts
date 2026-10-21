@@ -29,7 +29,7 @@ export const BUSINESS = {
 
   // Feitelijke, citeerbare omschrijving zonder superlatieven.
   description:
-    "DRO Renovaties (DRO Bouw en Aannemingsbedrijf B.V.) is een familiebedrijf uit Den Haag dat totaalrenovaties, uitbouwen en aanbouwen, constructieve verbouwingen zoals het verwijderen van dragende muren, badkamers en hoogwaardige afbouw uitvoert voor particulieren en zakelijke opdrachtgevers in Den Haag, Zuid-Holland en de rest van de Randstad. DRO werkt met vaste vakteams en vaste aanspreekpunten voor planning en techniek, is VCA-gecertificeerd, erkend leerbedrijf (SBB) en VLOK-erkend voor airco en warmtepompen, en heeft een CAR- en aansprakelijkheidsverzekering.",
+    "DRO Renovaties (DRO Bouw en Aannemingsbedrijf B.V.) is een familiebedrijf uit Den Haag dat totaalrenovaties, uitbouwen en aanbouwen, constructieve verbouwingen zoals het verwijderen van dragende muren, badkamers en hoogwaardige afbouw uitvoert voor particulieren en zakelijke opdrachtgevers in Den Haag, Zuid-Holland en de rest van de Randstad. DRO werkt met vaste vakteams en vaste aanspreekpunten voor planning en techniek, is VCA-gecertificeerd, erkend leerbedrijf (SBB) en VLOK-erkend, en heeft een CAR- en aansprakelijkheidsverzekering.",
 
   address: {
     streetAddress: "Orionstraat 235",
@@ -61,7 +61,7 @@ export const BUSINESS = {
   ],
 
   credentials: [
-    {name: "VLOK-erkend (airco en warmtepompen)", category: "Erkenning"},
+    {name: "VLOK-erkend", category: "Erkenning"},
     {name: "VCA-gecertificeerd", category: "Veiligheidscertificaat"},
     {name: "Erkend leerbedrijf (SBB)", category: "Erkenning"},
   ],
@@ -72,8 +72,10 @@ export const BUSINESS = {
   ],
 
   // Betaalvoorwaarden. Het oude "geen aanbetaling" klopt NIET meer.
+  // Bevestigd betaalschema (zie ook advertentiepagina totaalrenovatie): niets
+  // bij ondertekening, 20 tot 25 procent op de eerste werkdag, daarna per fase.
   paymentTerms:
-    "Startbetaling van 20 tot 25 procent bij aanvang, daarna betaling per afgeronde fase.",
+    "Niets bij ondertekening; startbetaling van 20 tot 25 procent op de eerste werkdag, daarna betaling per afgeronde fase.",
 
   // Momentopname van het Google-bedrijfsprofiel. Bijwerken met datum; Sanity
   // (organizationSeo.aggregateRatingValue/Count) overschrijft dit als het daar
@@ -99,18 +101,14 @@ export const BUSINESS = {
     "Bouwkundige keuring",
   ],
 
-  // Indicatieve prijzen zoals Therab ze aan klanten geeft. Altijd als
-  // indicatie tonen, nooit als vaste prijs. Bedragen excl. btw tenzij vermeld.
+  // Indicatieve prijzen die al ongewijzigd op de live site staan (FAQ,
+  // intake). Badkamer, uitbouw en draagmuur ontbreken bewust tot er één
+  // bevestigde bandbreedte is (docs/audit/16, BESLUIT-2 t/m 4).
   priceIndications: [
     {
       service: "Totaalrenovatie",
       range: "€ 1.000 tot € 1.250 per m² (excl. btw)",
       note: "Afhankelijk van staat van de woning, installaties, constructieve wijzigingen en afwerkingsniveau.",
-    },
-    {
-      service: "Badkamerrenovatie",
-      range: "€ 8.000 tot € 10.000 als u zelf materialen levert, € 12.000 tot € 15.000 als DRO levert",
-      note: "Gemiddelde badkamer; maatwerk en luxe sanitair verhogen de prijs.",
     },
     {
       service: "Bouwkundige keuring",
@@ -126,6 +124,18 @@ export const BUSINESS = {
 
   languages: ["Nederlands", "Engels"],
 } as const;
+
+// Kerndiensten met de hoogste projectwaarde. Hun stad x dienst-pagina's blijven
+// altijd indexeerbaar, ook zonder lokale tekst in Sanity: ze zijn commercieel
+// te waardevol om zonder verkeersdata (Search Console) te schrappen.
+export const CORE_SERVICE_SLUGS = ["totaalrenovatie", "uitbouw-aanbouw", "badkamer-renovatie"] as const;
+
+export function isIndexableLocationService(serviceSlug: string, popularServiceSlugs: string[] = []) {
+  return (
+    popularServiceSlugs.includes(serviceSlug) ||
+    (CORE_SERVICE_SLUGS as readonly string[]).includes(serviceSlug)
+  );
+}
 
 export type ReviewSnapshot = {
   platform: string;

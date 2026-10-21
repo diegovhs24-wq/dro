@@ -1680,7 +1680,7 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
     cta_knop_whatsapp: "App ons direct",
     whatsapp_algemeen_tekst: "Hoi DRO, ik wil graag sparren over mijn verbouwing.",
     stuur_resultaat_knop: "Stuur dit resultaat naar DRO",
-    trust_regel: "273 reviews, 4.8 sterren. Vaste prijs vooraf, betaling per afgeronde fase.",
+    trust_regel: "4,8 uit 273 Google-reviews. Duidelijke offerte vooraf, startbetaling en daarna betaling per afgeronde fase.",
     tussentijdse_cta_tekst: "Liever dat wij even meekijken? App ons gerust.",
   },
 };

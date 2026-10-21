@@ -33,7 +33,8 @@ export function buildPageMetadata({
       canonical,
     },
     robots: seo.noIndex
-      ? {index: false, follow: false, googleBot: {index: false, follow: false}}
+      ? // noindex,follow: pagina niet in de index, maar links blijven gevolgd.
+        {index: false, follow: true, googleBot: {index: false, follow: true}}
       : {
           index: true,
           follow: true,

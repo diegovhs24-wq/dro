@@ -1,5 +1,6 @@
 import {fetchSanity} from "@/lib/sanity";
 import {absoluteUrl} from "@/lib/seo/site";
+import {isIndexableLocationService} from "@/lib/seo/business";
 
 type SitemapEntry = {
   slug: string;
@@ -135,10 +136,11 @@ export async function getSitemapUrls(): Promise<SitemapUrl[]> {
       priority: 0.75,
     });
 
-    // Alleen stad x dienst-combinaties met eigen lokale inhoud (popularServices
-    // in Sanity). De overige combinaties waren dunne, bijna identieke pagina's
-    // (doorway-risico) en worden doorgestuurd naar de stadspagina.
-    (location.popularServiceSlugs || []).filter((slug) => indexableServices.has(slug)).forEach((serviceSlug) => {
+    // Stad x dienst: alleen combinaties met lokale inhoud (popularServices) of
+    // een kerndienst. De rest staat op noindex,follow en hoort niet in de sitemap.
+    Array.from(indexableServices)
+      .filter((slug) => isIndexableLocationService(slug, location.popularServiceSlugs || []))
+      .forEach((serviceSlug) => {
       const comboPath = `/${location.slug}/${serviceSlug}`;
       urls.set(comboPath, {
         url: absoluteUrl(comboPath),

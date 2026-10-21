@@ -161,8 +161,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Honeypot: NIET meer stil weggooien (BE-01). Autofill kan het veld vullen
-  // bij een echte klant. We slaan de lead op met een spamvlag en sturen geen
-  // mail; in de Studio is hij terug te vinden.
+  // bij een echte klant. De lead wordt opgeslagen met een spamvlag en de mail
+  // gaat uit met "[MOGELIJK SPAM]" in het onderwerp (de rate limit beperkt
+  // het volume van echte spam).
   const spamSuspect = Boolean(cleanString(payload.hp_x7) || cleanString(payload.company));
   const requestedId = cleanString(payload.submissionId, 64);
   const submissionKey = SUBMISSION_ID_RE.test(requestedId) ? requestedId : crypto.randomUUID();
@@ -295,42 +296,41 @@ export async function POST(request: NextRequest) {
   }
 
   let emailed = false;
-  if (!spamSuspect) {
-    try {
-      emailed = await withTimeout(
-        sendLeadEmail({
-          documentId,
-          notSavedWarning: !saved,
-          submittedAt,
-          formTitle: FORM_TITLES[source] || "Intake op de website",
-          name,
-          email,
-          phone,
-          services,
-          address,
-          postcode,
-          houseNumber,
-          location,
-          fundaUrl,
-          budgetLabel,
-          timeline,
-          message,
-          hoeGevonden,
-          serviceAnswers,
-          photoCount,
-          channel,
-          assessment,
-          attribution,
-        }),
-        8_000,
-        false
-      );
-    } catch (err) {
-      console.error("Admin notification email (smart-intake) failed:", describeError(err));
-    }
+  try {
+    emailed = await withTimeout(
+      sendLeadEmail({
+        documentId,
+        notSavedWarning: !saved,
+        spamSuspect,
+        submittedAt,
+        formTitle: FORM_TITLES[source] || "Intake op de website",
+        name,
+        email,
+        phone,
+        services,
+        address,
+        postcode,
+        houseNumber,
+        location,
+        fundaUrl,
+        budgetLabel,
+        timeline,
+        message,
+        hoeGevonden,
+        serviceAnswers,
+        photoCount,
+        channel,
+        assessment,
+        attribution,
+      }),
+      8_000,
+      false
+    );
+  } catch (err) {
+    console.error("Admin notification email (smart-intake) failed:", describeError(err));
   }
 
-  if (!spamSuspect && !emailed) {
+  if (!emailed) {
     // Zichtbaar in de Vercel-logs; stel hier een log-alert op in (docs/audit/08).
     console.error(`LEAD_EMAIL_FAILED saved=${saved}`);
   }

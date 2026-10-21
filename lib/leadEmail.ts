@@ -30,6 +30,9 @@ export type LeadEmailData = {
   documentId?: string;
   // true als opslaan in Sanity mislukte: deze mail is dan de enige kopie.
   notSavedWarning?: boolean;
+  // true als het verborgen anti-spamveld was ingevuld. Kan ook autofill bij een
+  // echte klant zijn, dus de mail gaat wel uit, met een duidelijke markering.
+  spamSuspect?: boolean;
   submittedAt: string;
   formTitle: string;
   name: string;
@@ -286,11 +289,16 @@ export async function sendLeadEmail(d: LeadEmailData): Promise<boolean> {
   const cc = split(admin).filter((x) => !to.includes(x));
   const rendered = renderLeadEmail(d);
   const warning = "LET OP: deze aanvraag is NIET opgeslagen in Sanity. Deze mail is de enige kopie.";
-  const subject = d.notSavedWarning ? `[NIET OPGESLAGEN] ${rendered.subject}` : rendered.subject;
-  const html = d.notSavedWarning
-    ? `<p style="background:#b91c1c;color:#fff;padding:12px;font-weight:700;">${warning}</p>${rendered.html}`
-    : rendered.html;
-  const text = d.notSavedWarning ? `${warning}\n\n${rendered.text}` : rendered.text;
+  const spamNote = "MOGELIJK SPAM: het verborgen anti-spamveld was ingevuld. Kan ook browser-autofill bij een echte klant zijn; controleer kort.";
+  const subject = `${d.spamSuspect ? "[MOGELIJK SPAM] " : ""}${d.notSavedWarning ? "[NIET OPGESLAGEN] " : ""}${rendered.subject}`;
+  const banners = [
+    ...(d.notSavedWarning ? [warning] : []),
+    ...(d.spamSuspect ? [spamNote] : []),
+  ];
+  const html = `${banners
+    .map((note) => `<p style="background:#b91c1c;color:#fff;padding:12px;font-weight:700;">${note}</p>`)
+    .join("")}${rendered.html}`;
+  const text = banners.length ? `${banners.join("\n")}\n\n${rendered.text}` : rendered.text;
 
   const resend = new Resend(apiKey);
   const {error} = await resend.emails.send({

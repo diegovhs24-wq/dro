@@ -386,7 +386,7 @@ export default async function TotaalrenovatieLandingPage({
               </p>
             </div>
             <p className="max-w-[44ch] text-[15px] leading-snug">
-              <span className="font-bold">Bij het tekenen betaalt u nog niets.</span> Bij de start volgt een startbetaling,
+              <span className="font-bold">Bij het tekenen betaalt u nog niets.</span> Op de eerste werkdag volgt de startbetaling,
               daarna betaalt u pas als een fase klaar is en u het werk heeft gezien.
             </p>
           </div>
@@ -415,7 +415,7 @@ export default async function TotaalrenovatieLandingPage({
                   <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
                     {euro(phase.amount)}
                   </p>
-                  <p className="mt-1 text-[12px] text-lp-muted">{first ? `startbetaling, ${phase.pct}% bij aanvang` : `${phase.pct}% van het totaal`}</p>
+                  <p className="mt-1 text-[12px] text-lp-muted">{first ? 'niets bij ondertekening' : `${phase.pct}% van het totaal`}</p>
                   <p className="mt-3 text-[13px] leading-[1.45] text-lp-muted">{phase.work}</p>
                   <div className="mt-auto pt-4">
                     <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-lp-line">
