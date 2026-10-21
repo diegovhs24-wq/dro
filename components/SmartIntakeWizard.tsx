@@ -7,6 +7,7 @@ import {captureAttribution, getAttribution} from "@/lib/attribution";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
   DRAAGMUUR_DEFAULTS,
+  PRICE,
   draagmuurBreakdown,
   formatEuro,
   type DraagmuurFloor,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/draagmuurPrice";
 import {
   COMMON,
+  commonFor,
   DIMS_UNKNOWN,
   QUESTIONS,
   SERVICES,
@@ -212,7 +214,7 @@ export type SmartIntakeProps = {
 function buildPresetFlow(presetServices: string[], skipIds: string[]): QuestionDef[] {
   const skip = new Set(skipIds);
   const questions = presetServices.flatMap((s) => QUESTIONS[s] || []);
-  return [...questions, ...COMMON].filter((q) => !skip.has(q.id));
+  return [...questions, ...commonFor(presetServices)].filter((q) => !skip.has(q.id));
 }
 
 export default function SmartIntakeWizard({
@@ -320,7 +322,7 @@ export default function SmartIntakeWizard({
 
   function buildFlowAndStart() {
     const questions = services.flatMap((s) => QUESTIONS[s] || []);
-    setFlow([SERVICES_STEP, ...questions, ...COMMON].filter((q) => !skipSet.has(q.id)));
+    setFlow([SERVICES_STEP, ...questions, ...commonFor(services)].filter((q) => !skipSet.has(q.id)));
     if (largeBudget) {
       const [min, max] = services.some((s) => largeServices.includes(s)) ? largeBudget : initialBudget || [15000, 45000];
       setBudgetMin(min);
@@ -375,7 +377,7 @@ export default function SmartIntakeWizard({
       `hoogte ${fmt(calc.height)} m`,
       calc.floor,
       calc.finished ? "afgewerkt" : "casco",
-      `ligger brandwerend bekleden: ${calc.fireWrap ? "door DRO" : "doet klant of eigen aannemer (klant gewaarschuwd)"}`,
+      `ligger brandwerend bekleden: ${calc.fireWrap ? "door DRO" : "doet klant of eigen aannemer (- € 500, klant gewaarschuwd)"}`,
       `complexiteit ${String(b.factor).replace(".", ",")}${b.reasons.length ? ` (${b.reasons.join(", ")})` : ""}`,
       `indicatie ${formatEuro(b.totalEx)} excl. / ${formatEuro(b.totalIncl)} incl. btw${b.wide ? " (breed: staal apart calculeren)" : ""}`,
     ].join(" · ");
@@ -658,13 +660,13 @@ export default function SmartIntakeWizard({
         ], (fireWrap) => set({fireWrap}))}
         {!calc.fireWrap ? (
           <div className="intake-warn" role="note">
-            <b>Let op.</b> Een stalen ligger moet na het plaatsen brandwerend worden bekleed, bijvoorbeeld met Promatect-platen. Zorg dat
+            <b>Let op.</b> U krijgt {formatEuro(PRICE.selfCladdingDiscount)} korting op de indicatie, maar een stalen ligger moet na het plaatsen brandwerend worden bekleed, bijvoorbeeld met Promatect-platen. Zorg dat
             u of uw aannemer dit goed laat uitvoeren, ook voor de vergunning, uw garantie en uw verzekering. Brengt DRO de bekleding niet
             aan, dan is DRO niet verantwoordelijk voor de brandwerendheid van de ligger.
           </div>
         ) : (
           <p className="intake-dimprev" style={{marginTop: -8, marginBottom: 14}}>
-            Wij bekleden de ligger na plaatsing brandwerend, bijvoorbeeld met Promatect-platen. Dit staat als losse post in uw indicatie.
+            Wij bekleden de ligger na plaatsing brandwerend, bijvoorbeeld met Promatect-platen. Dit zit in uw indicatie.
           </p>
         )}
         <div className="intake-price" aria-live="polite">
@@ -686,16 +688,18 @@ export default function SmartIntakeWizard({
                 <dd>{formatEuro(b.finishing)}</dd>
               </>
             ) : null}
-            {b.fireCladding ? (
-              <>
-                <dt>Brandwerende bekleding ligger</dt>
-                <dd>{formatEuro(b.fireCladding)}</dd>
-              </>
-            ) : null}
             {b.factor > 1 ? (
               <>
                 <dt>Complexiteit ({b.reasons.join(", ")})</dt>
                 <dd>x {String(b.factor).replace(".", ",")}</dd>
+              </>
+            ) : null}
+            <dt>Brandwerende bekleding ligger</dt>
+            <dd>{formatEuro(b.fireCladding)}</dd>
+            {b.selfCladdingDiscount ? (
+              <>
+                <dt>Bekleding door uzelf of eigen aannemer</dt>
+                <dd>- {formatEuro(b.selfCladdingDiscount)}</dd>
               </>
             ) : null}
             <dt>Totaal excl. btw</dt>
@@ -1103,7 +1107,7 @@ export default function SmartIntakeWizard({
     if (current.t === "text") {
       return (
         <>
-          {renderHeader(current, serviceLabel(findServiceForQuestionId(current.id) || "") || "Uw aanvraag")}
+          {renderHeader(current, current.tag || serviceLabel(findServiceForQuestionId(current.id) || "") || "Uw aanvraag")}
           <div className="intake-field">
             <textarea
               className="intake-ta"

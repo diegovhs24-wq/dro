@@ -117,7 +117,7 @@ const LOAD_BEARING_SIGNS = [
 const FAQ = [
   {
     q: 'Wat kost een draagmuur verwijderen?',
-    a: `Dat hangt vooral af van de breedte en hoogte van de doorbraak. Een doorbraak van 3 meter breed en 2,60 meter hoog kost bijvoorbeeld ${EXAMPLE_INCL} inclusief btw, met constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, afvoer en basisafwerking. Op de verdieping, in een appartement, bij een dikke muur of een brede opening is het werk zwaarder en komt de prijs hoger uit. In het formulier bovenaan berekent u direct uw eigen indicatie. Alleen de leges van de gemeente betaalt u apart.`,
+    a: `Dat hangt vooral af van de breedte en hoogte van de doorbraak. Een doorbraak van 3 meter breed en 2,60 meter hoog kost bijvoorbeeld ${EXAMPLE_INCL} inclusief btw, met constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, brandwerende bekleding, sloop, afvoer en basisafwerking. Op de verdieping, in een appartement, bij een dikke muur of een brede opening is het werk zwaarder en komt de prijs hoger uit. In het formulier bovenaan berekent u direct uw eigen indicatie. Alleen de leges van de gemeente betaalt u apart.`,
   },
   {
     q: 'Hoe weet ik of mijn muur dragend is?',
@@ -565,6 +565,7 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
                     [`Stalen ligger (3 m x ${formatEuro(PRICE.steelPerM)})`, EXAMPLE.steel],
                     ['Constructieberekening', EXAMPLE.engineering],
                     ['Basisafwerking', EXAMPLE.finishing],
+                    ['Brandwerende bekleding ligger', EXAMPLE.fireCladding],
                   ].map(([label, amount]) => (
                     <tr className="border-b border-lp-line" key={label as string}>
                       <td className="py-2 pr-3 text-lp-muted">{label}</td>
@@ -584,14 +585,14 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
               <p className="mt-3 text-[13px] leading-[1.55] text-lp-muted">
                 Op de verdieping, in een appartement, bij een muur dikker dan 24 cm of een opening breder dan 4 m telt een
                 complexiteitsfactor van 1,25 of 1,5. Bij hele brede doorbraken rekent de constructeur de staalconstructie apart door.
-                Brandwerende bekleding van de ligger door ons: {formatEuro(PRICE.fireCladding)} excl. btw extra.
+                Bekleedt u of uw eigen aannemer de ligger zelf brandwerend, dan gaat er {formatEuro(PRICE.selfCladdingDiscount)} af.
               </p>
             </div>
             <div className="rounded-lg border border-lp-line bg-white p-5">
               <p className="font-semibold">Altijd inbegrepen in uw indicatie</p>
               <p className="mt-2 text-[15px] leading-[1.6] text-lp-muted">
                 Constructieberekening, tekening en vergunningsaanvraag, stempelen, stalen balk of latei, sloop, container en afvoer, en
-                desgewenst brandwerende bekleding van de ligger. Leges van de gemeente betaalt u apart.
+                brandwerende bekleding van de ligger. Leges van de gemeente betaalt u apart.
               </p>
               <a className={`${CTA} mt-4`} href="#aanvraag">
                 Bereken uw indicatie
