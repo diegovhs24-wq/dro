@@ -1,3 +1,4 @@
+import {BUSINESS} from "@/lib/seo/business";
 import type {SeoSettings} from "@/lib/types";
 import type {ServiceSummary, SiteSettings} from "@/lib/types";
 
@@ -30,7 +31,7 @@ export const fallbackSiteSettings: SiteSettings = {
   },
   floatingActions: {
     whatsappLabel: "WhatsApp",
-    whatsappHref: "https://wa.me/31600000000",
+    whatsappHref: "https://wa.me/31850871814",
     intakeLabel: "Start intake",
     intakeHref: "/contact",
   },
@@ -160,8 +161,8 @@ export const fallbackHomePage = {
         formText: "Vertel kort wat u wilt laten doen.",
         formPrivacyText: "Uw gegevens worden vertrouwelijk behandeld.",
         stats: [
-          {value: "273+", label: "Google reviews", rating: true},
-          {value: "15+", label: "Jaar ervaring", icon: "quality"},
+          {value: `${BUSINESS.reviews.reviewCount}+`, label: "Google reviews", rating: true},
+          {value: "2e", label: "Generatie familiebedrijf", icon: "quality"},
           {value: "1", label: "Vast aanspreekpunt", icon: "team"},
         ],
         processIntro: "Zo werken wij",
@@ -190,7 +191,7 @@ export const fallbackHomePage = {
         text: "Start de intake. Wij nemen binnen 24 uur contact op.",
         buttons: [
           {label: "Start intake", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "primary" as const},
-          {label: "Bel direct", link: {linkType: "external" as const, externalUrl: "tel:+31600000000"}, variant: "outlined" as const},
+          {label: "Bel direct", link: {linkType: "external" as const, externalUrl: "tel:+31850871814"}, variant: "outlined" as const},
         ],
       },
     },

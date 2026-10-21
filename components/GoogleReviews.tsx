@@ -1,3 +1,4 @@
+import {BUSINESS} from "@/lib/seo/business";
 import GoogleRatingBadge from "@/components/GoogleRatingBadge";
 import type {ReviewItem} from "@/lib/types";
 
@@ -22,7 +23,7 @@ export default function GoogleReviews({
   reviews,
   compact = false,
   limit = 4,
-  title = "273+ recensies",
+  title = `${BUSINESS.reviews.reviewCount}+ recensies`,
   text = "Klanten waarderen vooral onze duidelijke communicatie, nette uitvoering en vaste aanspreekpunt.",
 }: GoogleReviewsProps) {
   const visibleReviews = reviews.slice(0, limit);

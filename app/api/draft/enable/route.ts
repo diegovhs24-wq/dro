@@ -1,16 +1,15 @@
-import { draftMode } from 'next/headers'
-import { redirect } from 'next/navigation'
-import type { NextRequest } from 'next/server'
+import {createClient} from '@sanity/client'
+import {defineEnableDraftMode} from 'next-sanity/draft-mode'
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl
-  const secret = searchParams.get('sanity-preview-secret')
-  const redirectTo = searchParams.get('sanity-preview-pathname') ?? '/'
+// Voorbeeldmodus (BE-07): het geheime token wordt bij Sanity gecontroleerd en
+// alleen interne paden zijn toegestaan als redirect. Voorheen was elk willekeurig
+// "secret" voldoende, waardoor ongepubliceerde concepten zichtbaar konden worden.
+const client = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'cwblo9lu',
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
+  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01',
+  useCdn: false,
+  token: process.env.SANITY_API_READ_TOKEN,
+})
 
-  if (!secret) {
-    return new Response('Missing preview secret', { status: 401 })
-  }
-
-  draftMode().enable()
-  redirect(redirectTo)
-}
+export const {GET} = defineEnableDraftMode({client})

@@ -8,9 +8,62 @@ function withAgentHeaders(response: NextResponse) {
   return response
 }
 
+// AI-zichtbaarheid meten (GEO-10). Logt alleen welke AI-crawler of welk
+// AI-platform een pagina opvraagt, plus het pad. Geen IP, geen persoonsgegevens.
+// Terug te vinden in Vercel > Logs met zoekterm "AI_CRAWL" of "AI_REFERRAL".
+const AI_BOTS: Array<[RegExp, string]> = [
+  [/OAI-SearchBot/i, 'OAI-SearchBot'],
+  [/ChatGPT-User/i, 'ChatGPT-User'],
+  [/GPTBot/i, 'GPTBot'],
+  [/Claude-SearchBot/i, 'Claude-SearchBot'],
+  [/Claude-User/i, 'Claude-User'],
+  [/ClaudeBot/i, 'ClaudeBot'],
+  [/Perplexity-User/i, 'Perplexity-User'],
+  [/PerplexityBot/i, 'PerplexityBot'],
+  [/Google-Extended/i, 'Google-Extended'],
+  [/Applebot/i, 'Applebot'],
+  [/bingbot/i, 'Bingbot'],
+  [/CCBot/i, 'CCBot'],
+  [/meta-externalagent/i, 'Meta-AI'],
+  [/MistralAI-User/i, 'MistralAI-User'],
+  [/DuckAssistBot/i, 'DuckAssistBot'],
+]
+
+const AI_REFERRERS: Array<[RegExp, string]> = [
+  [/(^|\.)chatgpt\.com$|(^|\.)openai\.com$/i, 'ChatGPT'],
+  [/(^|\.)perplexity\.ai$/i, 'Perplexity'],
+  [/^gemini\.google\.com$/i, 'Gemini'],
+  [/^copilot\.microsoft\.com$/i, 'Copilot'],
+  [/(^|\.)claude\.ai$/i, 'Claude'],
+  [/(^|\.)you\.com$/i, 'You.com'],
+  [/(^|\.)meta\.ai$/i, 'Meta AI'],
+]
+
+function logAiTraffic(request: NextRequest, pathname: string) {
+  if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/studio')) return
+  const ua = request.headers.get('user-agent') || ''
+  const bot = AI_BOTS.find(([pattern]) => pattern.test(ua))
+  if (bot) {
+    console.log(`AI_CRAWL bot=${bot[1]} path=${pathname}`)
+    return
+  }
+  const utmSource = request.nextUrl.searchParams.get('utm_source') || ''
+  let refHost = ''
+  try {
+    refHost = new URL(request.headers.get('referer') || '').hostname
+  } catch {
+    refHost = ''
+  }
+  const platform =
+    AI_REFERRERS.find(([pattern]) => pattern.test(refHost))?.[1] ||
+    (/chatgpt\.com/i.test(utmSource) ? 'ChatGPT' : /perplexity/i.test(utmSource) ? 'Perplexity' : '')
+  if (platform) console.log(`AI_REFERRAL platform=${platform} path=${pathname}`)
+}
+
 export function middleware(request: NextRequest) {
   const {pathname} = request.nextUrl
   const accept = request.headers.get('accept') || ''
+  logAiTraffic(request, pathname)
 
   if (
     accept.includes('text/markdown') &&

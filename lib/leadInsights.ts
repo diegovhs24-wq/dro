@@ -20,7 +20,41 @@ export type LeadAttribution = Partial<
   >
 >;
 
-export type LeadChannel = {key: "google-ads" | "advertentie" | "campagne" | "organisch" | "verwijzing" | "direct"; label: string};
+export type LeadChannel = {
+  key: "google-ads" | "advertentie" | "ai-assistent" | "campagne" | "organisch" | "verwijzing" | "direct";
+  label: string;
+};
+
+// AI-assistenten en AI-zoekmachines (GEO-10). ChatGPT voegt bij links in
+// antwoorden utm_source=chatgpt.com toe; andere platforms zijn alleen via de
+// verwijzer te herkennen. Volgorde: specifiek voor algemeen.
+const AI_PLATFORMS: Array<{match: string; label: string}> = [
+  {match: "chatgpt.com", label: "ChatGPT"},
+  {match: "chat.openai.com", label: "ChatGPT"},
+  {match: "openai.com", label: "ChatGPT"},
+  {match: "perplexity.ai", label: "Perplexity"},
+  {match: "gemini.google.com", label: "Gemini"},
+  {match: "bard.google.com", label: "Gemini"},
+  {match: "copilot.microsoft.com", label: "Microsoft Copilot"},
+  {match: "claude.ai", label: "Claude"},
+  {match: "you.com", label: "You.com"},
+  {match: "phind.com", label: "Phind"},
+  {match: "meta.ai", label: "Meta AI"},
+  {match: "mistral.ai", label: "Le Chat (Mistral)"},
+  {match: "deepseek.com", label: "DeepSeek"},
+  {match: "grok.com", label: "Grok"},
+];
+
+export function detectAiPlatform(attribution?: LeadAttribution): string | null {
+  const a = attribution || {};
+  const candidates = [(a.utm_source || "").toLowerCase(), (a.referrer || "").toLowerCase()];
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const hit = AI_PLATFORMS.find((platform) => candidate === platform.match || candidate.endsWith(`.${platform.match}`) || candidate.includes(platform.match));
+    if (hit) return hit.label;
+  }
+  return null;
+}
 
 const PAID_MEDIUMS = new Set(["cpc", "ppc", "paid", "paidsearch", "paid-search", "sem"]);
 const SEARCH_ENGINES = ["google.", "bing.", "duckduckgo.", "yahoo.", "ecosia.", "startpage."];
@@ -36,6 +70,8 @@ export function deriveChannel(source: string, attribution?: LeadAttribution): Le
     return {key: "google-ads", label: "Google Ads"};
   }
   if (PAID_MEDIUMS.has(medium)) return {key: "advertentie", label: `Advertentie (${a.utm_source})`};
+  const aiPlatform = detectAiPlatform(a);
+  if (aiPlatform) return {key: "ai-assistent", label: `AI-assistent (${aiPlatform})`};
   if (utmSource) return {key: "campagne", label: `Campagne (${a.utm_source})`};
 
   const ref = (a.referrer || "").toLowerCase();

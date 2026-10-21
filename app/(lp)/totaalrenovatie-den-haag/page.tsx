@@ -1,3 +1,4 @@
+import {BUSINESS} from "@/lib/seo/business";
 import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
@@ -16,8 +17,8 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'Totaalrenovatie in Den Haag en omgeving | DRO Renovaties',
   description:
-    'Totaalrenovatie van uw woning door een Haags familiebedrijf met vaste eigen ploegen. 4,8 uit 273+ Google reviews. Vraag vrijblijvend een bezichtiging aan.',
-  robots: {index: false, follow: false},
+    `Totaalrenovatie van uw woning door een Haags familiebedrijf met vaste eigen ploegen. ${BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')} uit ${BUSINESS.reviews.reviewCount}+ Google-reviews. Vraag vrijblijvend een bezichtiging aan.`,
+  robots: {index: false, follow: true},
   alternates: {canonical: '/totaalrenovatie-den-haag'},
 }
 
@@ -28,8 +29,8 @@ const PRICE_MAX_INCL = 1510
 
 const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
-const REVIEW_SCORE = '4,8'
-const REVIEW_COUNT = '273+'
+const REVIEW_SCORE = BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')
+const REVIEW_COUNT = `${BUSINESS.reviews.reviewCount}+`
 // LET OP: Trustoo-cijfers en reactietijd pas live na bevestiging door Therab.
 const TRUSTOO_SCORE = '9,8'
 const TRUSTOO_COUNT = '557'
@@ -385,8 +386,8 @@ export default async function TotaalrenovatieLandingPage({
               </p>
             </div>
             <p className="max-w-[44ch] text-[15px] leading-snug">
-              <span className="font-bold">Bij het tekenen betaalt u {euro(0)}.</span> Daarna betaalt u pas als een fase klaar is en u
-              het werk heeft gezien.
+              <span className="font-bold">Bij het tekenen betaalt u nog niets.</span> Bij de start volgt een startbetaling,
+              daarna betaalt u pas als een fase klaar is en u het werk heeft gezien.
             </p>
           </div>
 
@@ -414,7 +415,7 @@ export default async function TotaalrenovatieLandingPage({
                   <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
                     {euro(phase.amount)}
                   </p>
-                  <p className="mt-1 text-[12px] text-lp-muted">{first ? 'geen aanbetaling' : `${phase.pct}% van het totaal`}</p>
+                  <p className="mt-1 text-[12px] text-lp-muted">{first ? `startbetaling, ${phase.pct}% bij aanvang` : `${phase.pct}% van het totaal`}</p>
                   <p className="mt-3 text-[13px] leading-[1.45] text-lp-muted">{phase.work}</p>
                   <div className="mt-auto pt-4">
                     <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-lp-line">

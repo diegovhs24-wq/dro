@@ -5,6 +5,7 @@ type SitemapEntry = {
   slug: string;
   updatedAt?: string;
   noIndex?: boolean;
+  popularServiceSlugs?: string[];
 };
 
 type SitemapQueryResult = {
@@ -39,7 +40,8 @@ const SITEMAP_QUERY = `{
   "locations": *[_type == "location" && defined(slug.current)]{
     "slug": slug.current,
     "updatedAt": _updatedAt,
-    "noIndex": seo.noIndex
+    "noIndex": seo.noIndex,
+    "popularServiceSlugs": popularServices[]->slug.current
   }
 }`;
 
@@ -119,7 +121,9 @@ export async function getSitemapUrls(): Promise<SitemapUrl[]> {
     });
   });
 
-  const indexableServices = (data?.services || []).filter((service) => !service.noIndex);
+  const indexableServices = new Set(
+    (data?.services || []).filter((service) => !service.noIndex).map((service) => service.slug)
+  );
 
   (data?.locations || []).forEach((location) => {
     if (location.noIndex) return;
@@ -131,8 +135,11 @@ export async function getSitemapUrls(): Promise<SitemapUrl[]> {
       priority: 0.75,
     });
 
-    indexableServices.forEach((service) => {
-      const comboPath = `/${location.slug}/${service.slug}`;
+    // Alleen stad x dienst-combinaties met eigen lokale inhoud (popularServices
+    // in Sanity). De overige combinaties waren dunne, bijna identieke pagina's
+    // (doorway-risico) en worden doorgestuurd naar de stadspagina.
+    (location.popularServiceSlugs || []).filter((slug) => indexableServices.has(slug)).forEach((serviceSlug) => {
+      const comboPath = `/${location.slug}/${serviceSlug}`;
       urls.set(comboPath, {
         url: absoluteUrl(comboPath),
         lastModified: location.updatedAt ? new Date(location.updatedAt) : undefined,

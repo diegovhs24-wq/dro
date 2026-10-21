@@ -1,3 +1,4 @@
+import {BUSINESS} from "@/lib/seo/business";
 import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
@@ -17,14 +18,14 @@ export const metadata: Metadata = {
   title: 'Draagmuur verwijderen in Den Haag, alles geregeld | DRO Renovaties',
   description:
     'Draagmuur eruit of een deuropening in een dragende muur: constructieberekening, vergunning, stalen balk en afwerking geregeld door een Haags familiebedrijf. Bereken direct uw prijsindicatie.',
-  robots: {index: false, follow: false},
+  robots: {index: false, follow: true},
   alternates: {canonical: '/draagmuur-verwijderen-den-haag'},
 }
 
 const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
-const REVIEW_SCORE = '4,8'
-const REVIEW_COUNT = '273+'
+const REVIEW_SCORE = BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')
+const REVIEW_COUNT = `${BUSINESS.reviews.reviewCount}+`
 const TRUSTOO_SCORE = '9,8'
 const TRUSTOO_COUNT = '557'
 const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'

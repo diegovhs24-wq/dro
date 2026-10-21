@@ -1,5 +1,6 @@
 import {createClient} from '@sanity/client'
 import {draftMode} from 'next/headers'
+import {sanitizeOutdatedClaimsDeep} from '@/lib/seo/business'
 
 export type SanityImage = {
   _type?: 'image'
@@ -71,9 +72,12 @@ export async function fetchSanity<T>(
     })
   }
 
-  return client.fetch<T>(query, params, {
+  const result = await client.fetch<T>(query, params, {
     next: {revalidate: process.env.NODE_ENV === 'production' ? (options.revalidate ?? 60) : 0},
   })
+  // Vangnet tegen verouderde claims ("geen aanbetaling") in gepubliceerde
+  // content; zie lib/seo/business.ts en docs/audit/16-ai-findability-geo.md.
+  return sanitizeOutdatedClaimsDeep(result)
 }
 
 export function sanityImageUrl(image: SanityImage | null | undefined, width = 1200) {

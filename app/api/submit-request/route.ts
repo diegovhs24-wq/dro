@@ -8,7 +8,12 @@ type ServiceAnswerGroup = {service?: string; answers?: ServiceAnswer[]};
 
 type SubmitPayload = {
   // Honeypot: echte bezoekers vullen dit nooit in (onzichtbaar in de UI).
+  // `company` is de oude veldnaam (oudere gecachte scripts); `hp_x7` de nieuwe,
+  // die browser-autofill niet herkent (BE-01).
   company?: string;
+  hp_x7?: string;
+  // Eenmalige ID per inzending uit de browser, om dubbele leads te voorkomen.
+  submissionId?: string;
   name?: string;
   email?: string;
   phone?: string;
@@ -53,8 +58,35 @@ const ATTRIBUTION_KEYS = [
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function cleanString(value: unknown): string {
-  return typeof value === "string" ? value.trim() : "";
+// Maximale lengtes per veld (BE-13): voorkomt enorme documenten en mails.
+const LIMITS = {short: 200, medium: 500, long: 5000} as const;
+
+function cleanString(value: unknown, max: number = LIMITS.medium): string {
+  return typeof value === "string" ? value.trim().slice(0, max) : "";
+}
+
+const PHONE_RE = /^[+0-9 ()./-]{8,25}$/;
+const SUBMISSION_ID_RE = /^[a-zA-Z0-9-]{8,64}$/;
+
+// Eenvoudige rate limit per serverinstantie (best effort). Een WAF-regel in
+// Vercel op /api/submit-* is de echte bescherming (zie docs/audit/08).
+const RATE_WINDOW_MS = 10 * 60_000;
+const RATE_MAX = 6;
+const hits = new Map<string, number[]>();
+
+function rateLimited(key: string) {
+  const now = Date.now();
+  const recent = (hits.get(key) || []).filter((t) => now - t < RATE_WINDOW_MS);
+  recent.push(now);
+  hits.set(key, recent);
+  if (hits.size > 5000) hits.clear();
+  return recent.length > RATE_MAX;
+}
+
+const ALLOWED_ORIGIN_RE = /^https:\/\/((www|go)\.)?dro-renovaties\.nl$|^https:\/\/[a-z0-9-]+\.vercel\.app$|^http:\/\/localhost(:\d+)?$/;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 }
 
 function cleanNumber(value: unknown): number | undefined {
@@ -105,6 +137,21 @@ function cleanPhotos(input: unknown): Buffer[] {
 export const maxDuration = 30;
 
 export async function POST(request: NextRequest) {
+  // Herkomst- en type-controle (BE-08, BE-18). Zonder Origin-header (sommige
+  // privacy-browsers) laten we de aanvraag door: liever een spamlead dan een
+  // gemiste klant.
+  const origin = request.headers.get("origin");
+  if (origin && !ALLOWED_ORIGIN_RE.test(origin)) {
+    return NextResponse.json({error: "Forbidden"}, {status: 403});
+  }
+  if (!(request.headers.get("content-type") || "").includes("application/json")) {
+    return NextResponse.json({error: "Unsupported content type"}, {status: 415});
+  }
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "onbekend";
+  if (rateLimited(ip)) {
+    return NextResponse.json({error: "Too many requests"}, {status: 429});
+  }
+
   let payload: SubmitPayload;
 
   try {
@@ -113,45 +160,52 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({error: "Invalid JSON"}, {status: 400});
   }
 
-  // Honeypot getriggerd: doe alsof het gelukt is, schrijf niets weg.
-  if (cleanString(payload.company)) {
-    return NextResponse.json({ok: true}, {status: 201});
-  }
+  // Honeypot: NIET meer stil weggooien (BE-01). Autofill kan het veld vullen
+  // bij een echte klant. We slaan de lead op met een spamvlag en sturen geen
+  // mail; in de Studio is hij terug te vinden.
+  const spamSuspect = Boolean(cleanString(payload.hp_x7) || cleanString(payload.company));
+  const requestedId = cleanString(payload.submissionId, 64);
+  const submissionKey = SUBMISSION_ID_RE.test(requestedId) ? requestedId : crypto.randomUUID();
 
-  const name = cleanString(payload.name);
-  const email = cleanString(payload.email);
-  const phone = cleanString(payload.phone);
-  const services = Array.isArray(payload.services) ? payload.services.filter((s) => typeof s === "string" && s.trim()) : [];
+  const name = cleanString(payload.name, LIMITS.short);
+  const email = cleanString(payload.email, LIMITS.short);
+  const phone = cleanString(payload.phone, 40);
+  const services = Array.isArray(payload.services)
+    ? payload.services
+        .filter((item): item is string => typeof item === "string" && Boolean(item.trim()))
+        .map((item) => item.trim().slice(0, LIMITS.short))
+        .slice(0, 12)
+    : [];
 
   const missing: string[] = [];
   if (!name) missing.push("name");
   if (!email || !EMAIL_RE.test(email)) missing.push("email");
-  if (!phone) missing.push("phone");
+  if (!phone || !PHONE_RE.test(phone)) missing.push("phone");
   if (!services.length) missing.push("services");
 
   if (missing.length) {
     return NextResponse.json({error: "Missing or invalid fields", fields: missing}, {status: 400});
   }
 
-  let leads: ReturnType<typeof getLeadsClient>;
+  // Ontbreekt de Sanity-configuratie, dan gaat de lead alsnog per mail (BE-03).
+  let leads: ReturnType<typeof getLeadsClient> | null = null;
   try {
     leads = getLeadsClient();
   } catch (err) {
     console.error("Leads client niet beschikbaar:", describeError(err));
-    return NextResponse.json({error: "Server not configured"}, {status: 500});
   }
 
-  const postcode = cleanString(payload.postcode);
-  const houseNumber = cleanString(payload.houseNumber);
-  const address = cleanString(payload.address);
-  const location = cleanString(payload.location);
-  const fundaUrl = cleanString(payload.fundaUrl);
-  const timeline = cleanString(payload.timeline);
+  const postcode = cleanString(payload.postcode, 20);
+  const houseNumber = cleanString(payload.houseNumber, 20);
+  const address = cleanString(payload.address, LIMITS.medium);
+  const location = cleanString(payload.location, LIMITS.short);
+  const fundaUrl = cleanString(payload.fundaUrl, LIMITS.medium);
+  const timeline = cleanString(payload.timeline, LIMITS.short);
   const budgetMin = cleanNumber(payload.budgetMin);
   const budgetMax = cleanNumber(payload.budgetMax);
-  const budgetLabel = cleanString(payload.budgetLabel);
-  const hoeGevonden = cleanString(payload.hoeGevonden);
-  const message = cleanString(payload.message);
+  const budgetLabel = cleanString(payload.budgetLabel, LIMITS.short);
+  const hoeGevonden = cleanString(payload.hoeGevonden, LIMITS.short);
+  const message = cleanString(payload.message, LIMITS.long);
   const serviceAnswers = cleanServiceAnswers(payload.serviceAnswers);
   const submittedAt = new Date().toISOString();
   const requestedSource = cleanString(payload.source);
@@ -160,87 +214,131 @@ export async function POST(request: NextRequest) {
   const channel = deriveChannel(source, attribution);
   const assessment = assessLead({services, budgetMin, budgetMax, budgetLabel, timeline, postcode});
 
-  // Foto's eerst uploaden, zodat de aanvraag er meteen naar verwijst. Een
-  // mislukte upload mag de aanvraag zelf nooit tegenhouden.
-  const photoRefs: Array<{_type: "image"; _key: string; asset: {_type: "reference"; _ref: string}}> = [];
-  const photoBuffers = cleanPhotos(payload.photos);
-  for (let i = 0; i < photoBuffers.length; i++) {
-    const buf = photoBuffers[i];
+  // Volgorde (BE-02/04/12/14): eerst de lead zelf opslaan, dan foto's, dan
+  // mailen. Lukt opslaan niet, dan gaat de volledige lead per mail. Alleen als
+  // beide mislukken krijgt de bezoeker een foutmelding (met telefoonnummer).
+  const leadId = `submission-${submissionKey}`;
+  let documentId: string | undefined;
+  let saved = false;
+
+  if (leads) {
     try {
-      const asset = await leads.assets.upload("image", buf, {filename: `aanvraag-foto-${i + 1}.jpg`, contentType: "image/jpeg"});
-      photoRefs.push({_type: "image", _key: `photo-${i}`, asset: {_type: "reference", _ref: asset._id}});
+      const created = await leads.create({
+        _id: leadId,
+        _type: "formSubmission",
+        name,
+        email,
+        phone,
+        services,
+        postcode,
+        houseNumber,
+        address,
+        location,
+        fundaUrl,
+        timeline,
+        ...(budgetMin !== undefined ? {budgetMin} : {}),
+        ...(budgetMax !== undefined ? {budgetMax} : {}),
+        budgetLabel,
+        hoeGevonden,
+        message,
+        serviceAnswers: serviceAnswers.map((group, i) => ({
+          _key: `service-${i}`,
+          service: group.service,
+          answers: group.answers.map((entry, j) => ({_key: `answer-${i}-${j}`, ...entry})),
+        })),
+        source,
+        channel: channel.label,
+        leadAssessment: assessment.label,
+        ...(attribution ? {attribution} : {}),
+        ...(spamSuspect ? {spamSuspect: true} : {}),
+        submittedAt,
+      });
+      documentId = created._id;
+      saved = true;
     } catch (err) {
-      console.error("Foto-upload bij aanvraag mislukt:", describeError(err));
+      // 409: deze inzending bestaat al (dubbel verstuurd na een time-out).
+      if ((err as {statusCode?: number})?.statusCode === 409) {
+        return NextResponse.json({ok: true, id: leadId, duplicate: true}, {status: 201});
+      }
+      console.error("formSubmission (smart-intake) create failed:", describeError(err));
     }
   }
 
-  let documentId: string | undefined;
+  // Foto's na het opslaan, parallel en met tijdslimiet: mogen de lead nooit
+  // tegenhouden.
+  let photoCount = 0;
+  const photoBuffers = cleanPhotos(payload.photos);
+  if (saved && leads && documentId && photoBuffers.length) {
+    const client = leads;
+    const uploads = await withTimeout(
+      Promise.allSettled(
+        photoBuffers.map((buf, i) =>
+          client.assets.upload("image", buf, {filename: `aanvraag-foto-${i + 1}.jpg`, contentType: "image/jpeg"})
+        )
+      ),
+      12_000,
+      [] as PromiseSettledResult<{_id: string}>[]
+    );
+    const photoRefs = uploads.flatMap((result, i) =>
+      result.status === "fulfilled"
+        ? [{_type: "image" as const, _key: `photo-${i}`, asset: {_type: "reference" as const, _ref: result.value._id}}]
+        : []
+    );
+    if (photoRefs.length) {
+      try {
+        await client.patch(documentId).set({photos: photoRefs}).commit();
+        photoCount = photoRefs.length;
+      } catch (err) {
+        console.error("Foto-koppeling bij aanvraag mislukt:", describeError(err));
+      }
+    }
+  }
 
-  try {
-    const created = await leads.create({
-      _type: "formSubmission",
-      name,
-      email,
-      phone,
-      services,
-      postcode,
-      houseNumber,
-      address,
-      location,
-      fundaUrl,
-      timeline,
-      ...(budgetMin !== undefined ? {budgetMin} : {}),
-      ...(budgetMax !== undefined ? {budgetMax} : {}),
-      budgetLabel,
-      hoeGevonden,
-      message,
-      serviceAnswers: serviceAnswers.map((group, i) => ({
-        _key: `service-${i}`,
-        service: group.service,
-        answers: group.answers.map((entry, j) => ({_key: `answer-${i}-${j}`, ...entry})),
-      })),
-      ...(photoRefs.length ? {photos: photoRefs} : {}),
-      source,
-      channel: channel.label,
-      leadAssessment: assessment.label,
-      ...(attribution ? {attribution} : {}),
-      submittedAt,
-    });
-    documentId = created._id;
-  } catch (err) {
-    console.error("formSubmission (smart-intake) create failed:", describeError(err));
+  let emailed = false;
+  if (!spamSuspect) {
+    try {
+      emailed = await withTimeout(
+        sendLeadEmail({
+          documentId,
+          notSavedWarning: !saved,
+          submittedAt,
+          formTitle: FORM_TITLES[source] || "Intake op de website",
+          name,
+          email,
+          phone,
+          services,
+          address,
+          postcode,
+          houseNumber,
+          location,
+          fundaUrl,
+          budgetLabel,
+          timeline,
+          message,
+          hoeGevonden,
+          serviceAnswers,
+          photoCount,
+          channel,
+          assessment,
+          attribution,
+        }),
+        8_000,
+        false
+      );
+    } catch (err) {
+      console.error("Admin notification email (smart-intake) failed:", describeError(err));
+    }
+  }
+
+  if (!spamSuspect && !emailed) {
+    // Zichtbaar in de Vercel-logs; stel hier een log-alert op in (docs/audit/08).
+    console.error(`LEAD_EMAIL_FAILED saved=${saved}`);
+  }
+
+  if (!saved && !emailed) {
+    console.error("LEAD_LOST: opslaan en mailen beide mislukt");
     return NextResponse.json({error: "Failed to save submission"}, {status: 500});
   }
 
-  // Beheerder informeren per e-mail. De inzending staat al in Sanity, dus een
-  // fout hier mag nooit een foutmelding worden voor de bezoeker.
-  try {
-    await sendLeadEmail({
-      documentId,
-      submittedAt,
-      formTitle: FORM_TITLES[source] || "Intake op de website",
-      name,
-      email,
-      phone,
-      services,
-      address,
-      postcode,
-      houseNumber,
-      location,
-      fundaUrl,
-      budgetLabel,
-      timeline,
-      message,
-      hoeGevonden,
-      serviceAnswers,
-      photoCount: photoRefs.length,
-      channel,
-      assessment,
-      attribution,
-    });
-  } catch (err) {
-    console.error("Admin notification email (smart-intake) failed:", describeError(err));
-  }
-
-  return NextResponse.json({ok: true}, {status: 201});
+  return NextResponse.json({ok: true, id: documentId || leadId}, {status: 201});
 }

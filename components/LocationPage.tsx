@@ -1,3 +1,4 @@
+import {BUSINESS, formatReviewSummary} from "@/lib/seo/business";
 import Link from "next/link";
 
 import BlogCard from "@/components/BlogCard";
@@ -214,8 +215,8 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
           {label: "Start intake", link: {linkType: "external", externalUrl: "/contact"}, variant: "primary"},
           {label: "Bel direct", link: {linkType: "external", externalUrl: "tel:+31850871814"}, variant: "outlined"},
         ]}
-        ratingScore={4.8}
-        ratingLabel="4,8 uit 273 reviews"
+        ratingScore={BUSINESS.reviews.ratingValue}
+        ratingLabel={formatReviewSummary()}
       />
     </main>
   );
