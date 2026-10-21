@@ -19,7 +19,7 @@ Leeswijzer: **Waargenomen** = zelf gecontroleerd (code, Sanity, live site, zoekr
 
 ## 2. Bevindingen per onderdeel
 
-### GEO-01 AI-crawlbaarheid (robots.txt) — opgelost in code
+### GEO-01 AI-crawlbaarheid (robots.txt): opgelost in code
 
 **Waargenomen (live):** robots.txt van 323 regels, waarvan ~286 commentaarregels met alle URL's. `Content-Signal: ai-train=no` terwijl GPTBot, Google-Extended en CCBot (trainingscrawlers) expliciet waren toegestaan. Claude-SearchBot, Claude-User en Perplexity-User niet benoemd; verouderde namen `Claude-Web` en `anthropic-ai` wel.
 
@@ -31,7 +31,7 @@ Leeswijzer: **Waargenomen** = zelf gecontroleerd (code, Sanity, live site, zoekr
 
 **Beslissing voor Therab (BESLUIT-1):** training staat nu op **toegestaan** (`ai-train=yes`), omdat dat overeenkomt met wat de oude robots.txt feitelijk deed en omdat merkbekendheid in trainingsdata de herkenning van "DRO Renovaties" helpt (aanname). Wilt u geen training: zet `ALLOW_TRAINING = false`. Zoek- en AI-antwoordzichtbaarheid blijft dan gelijk, die loopt via de eerste twee groepen.
 
-### GEO-02 Server-side rendering en indexeerbaarheid — in orde, kleine fixes
+### GEO-02 Server-side rendering en indexeerbaarheid: in orde, kleine fixes
 
 **Waargenomen (live crawl, 286 URL's):** alle 200, alle self-canonical, geen noindex in de sitemap, inhoud volledig in de HTML zonder JavaScript. Dat is precies wat AI-crawlers nodig hebben (de meeste AI-crawlers voeren geen JavaScript uit).
 
@@ -40,7 +40,7 @@ Open punten:
 - **go.dro-renovaties.nl** geeft een SSL-fout. Certificaat of DNS herstellen of het subdomein verwijderen.
 - Advertentiepagina's stonden op `noindex, nofollow`; nu `noindex, follow` (linkwaarde blijft stromen).
 
-### GEO-03 Consistentie van feiten — deels opgelost, deels besluit nodig
+### GEO-03 Consistentie van feiten: deels opgelost, deels besluit nodig
 
 Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenomen in Sanity, code en live):
 
@@ -64,7 +64,7 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 
 **Advies prijzen (BESLUIT-2 t/m 4):** de kennisbank-artikelen liggen voor uitbouw onder alle gevonden bronnen van 2026 (Trustoo € 2.000 tot € 4.000/m², Homedeal € 1.800 tot € 3.800/m², Topvakmannen € 1.800 tot € 3.500/m²). Kies per dienst één bandbreedte op basis van eigen nagecalculeerde projecten, zet die in `BUSINESS.priceIndications`, en laat de FAQ's en artikelen ernaar verwijzen. Pas dan worden de prijzen citeerbaar.
 
-### GEO-04 Entity SEO en structured data — opgelost in code
+### GEO-04 Entity SEO en structured data: opgelost in code
 
 **Waargenomen (live):** drie overlappende bedrijfsentiteiten (`#organization`, `#localbusiness`, `#contractor`), telefoon niet internationaal, geen postcode, `sameAs` met een Google-zoek-URL vol trackingparameters, geen founder, geen btw-nummer, `areaServed` met Amsterdam en Utrecht zonder pagina, artikelauteur "Therab" als losse Person, zelfgepubliceerde `aggregateRating` op ~285 pagina's.
 
@@ -80,7 +80,7 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 
 **Nog te doen (handmatig):** de Google-bedrijfsprofiel-URL met `cid=` opzoeken (Google Maps > Delen) en samen met Trustoo, Facebook, Werkspot en Trustpilot in Sanity > Site settings > Organization SEO > `sameAs` zetten. Openingstijden toevoegen zodra die vastliggen.
 
-### GEO-05 Dunne en dubbele pagina's — opgelost in code
+### GEO-05 Dunne en dubbele pagina's: opgelost in code
 
 **Waargenomen:** de sitemap bevatte 22 steden × 9 diensten = 198 stad-x-dienst-URL's, terwijl Sanity maar voor ~83 combinaties lokale inhoud heeft (`popularServices`). Tekstovereenkomst Delft vs Gouda `/totaalrenovatie` na naamwissel: 0,91. Dat is het patroon dat Google "doorway pages" noemt, en AI-systemen citeren zulke pagina's zelden (aanname).
 
@@ -90,7 +90,7 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 
 **Nog te doen:** ook de overgebleven ~83 combinaties zijn grotendeels sjabloon. Advies: per stad maximaal 2 à 3 diensten met echt lokaal bewijs (een project in die stad, wijkkenmerken, gemeentelijke regels) en de rest samenvoegen. Warmtepomp en zonnepanelen in kleine kernen eerst.
 
-### GEO-06 llms.txt en Markdown voor agents — opgelost in code
+### GEO-06 llms.txt en Markdown voor agents: opgelost in code
 
 **Waargenomen:** llms.txt bestond, maar bevatte "vaste prijs vooraf", "geen aanbetaling" uit CMS-teksten, het oude review-getal en geen KvK-adres of team. De Markdown-versie (die WebFetch-achtige agents krijgen bij `Accept: text/markdown`) had als titel altijd "DRO Renovaties" en twee H1's.
 
@@ -101,7 +101,7 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 
 **Let op:** llms.txt is **geen bewezen rankingfactor** voor Google of ChatGPT. Het kost niets en helpt agents die de site bezoeken, maar de echte winst zit in GEO-03, GEO-04 en GEO-08.
 
-### GEO-07 Citeerbare content — deels, grotendeels content-werk
+### GEO-07 Citeerbare content: deels, grotendeels content-werk
 
 **Waargenomen:** 26 kennisbankartikelen van Therab (± 250 tot 600 woorden), gedateerd, met korte "In het kort"-samenvatting. Goed fundament. Zwakke punten: geen bronverwijzingen, geen tabellen, prijsranges die onderling botsen (GEO-03), geen artikel over aannemerskeuze, geen dienstpagina voor draagmuur verwijderen (alleen een noindex-advertentiepagina), dienstpagina's totaalrenovatie en uitbouw zijn dun (± 1.900 tekens) terwijl de stadsvarianten 12.000 tekens hebben.
 
@@ -124,7 +124,7 @@ Wat AI-systemen vaak citeren (waargenomen bij Verbouwstart, Trustoo, Homedeal): 
 - Gemeente Den Haag noemt "een dragende muur doorbreken" letterlijk als voorbeeld van een vergunningplichtige verbouwing, aanvraag via het Omgevingsloket, en de start van de werkzaamheden moet na verlening gemeld worden. Bron: [Gemeente Den Haag, omgevingsvergunning aanvragen](https://www.denhaag.nl/nl/vergunningen-en-ontheffingen/omgevingsvergunning-aanvragen/) (gewijzigd 24-09-2026).
 - Niet geverifieerd: de exacte meldtermijn voor de start van de bouw (vermoedelijk 2 werkdagen). Eerst controleren op IPLO "Bouwmelding en gereedmelding" voor publicatie.
 
-### GEO-08 Lokale AI-zichtbaarheid en vermeldingen elders — handmatig
+### GEO-08 Lokale AI-zichtbaarheid en vermeldingen elders: handmatig
 
 **Waargenomen vermeldingen (NAP-tabel):**
 
@@ -181,7 +181,7 @@ Terugkerende concurrenten: Blijbouw, Optimum Renovaties, David Groep, A1 Maatwer
 
 Dit protocol kan als maandelijkse geplande taak worden ingericht zodra Therab dat wil (dan wordt de proxy-meting automatisch gedaan en gelogd).
 
-### GEO-10 Meten en monitoren — basis gebouwd
+### GEO-10 Meten en monitoren: basis gebouwd
 
 **Waargenomen:** er was geen enkele verkeersanalyse (geen GA4, Vercel Web Analytics staat uit). Alleen Google Ads-conversies na toestemming. AI-verkeer was dus onzichtbaar; ChatGPT-verkeer (dat `utm_source=chatgpt.com` meestuurt) werd in de leadmail als "Campagne (chatgpt.com)" gelabeld.
 
