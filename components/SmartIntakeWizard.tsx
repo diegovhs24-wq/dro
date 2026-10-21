@@ -67,6 +67,17 @@ async function compressPhoto(file: File): Promise<string | null> {
   }
 }
 
+// Lampje bij een tip (bijvoorbeeld korting bij meer werkzaamheden).
+function LampIcon() {
+  return (
+    <svg aria-hidden="true" className="intake-lamp" fill="none" height="22" viewBox="0 0 24 24" width="22">
+      <path className="intake-lamp-glass" d="M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V17h5.2v-1.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" />
+      <path d="M9.6 19.5h4.8M10.4 21.5h3.2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+      <path className="intake-lamp-rays" d="M12 0.6v1.2M4.2 3.6l.9.9M19.8 3.6l-.9.9M1.2 10h1.2M21.6 10h1.2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
 // Bouwvakker op de voortgangsbalk: helm in de huisstijlkleur, hamer slaat kort
 // bij elke nieuwe stap.
 function WorkerIcon() {
@@ -377,7 +388,11 @@ export default function SmartIntakeWizard({
 
   function toggleMulti(def: QuestionDef, option: string) {
     const current = (answers[def.id] as string[] | undefined) || [];
-    const nextValue = current.includes(option) ? current.filter((v) => v !== option) : [...current, option];
+    let nextValue = current.includes(option) ? current.filter((v) => v !== option) : [...current, option];
+    // "Nee, alleen ..." sluit de andere keuzes uit, en andersom.
+    if (def.none && !current.includes(option)) {
+      nextValue = option === def.none ? [option] : nextValue.filter((v) => v !== def.none);
+    }
     updateAnswer(def.id, nextValue);
   }
 
@@ -504,6 +519,12 @@ export default function SmartIntakeWizard({
     const selectedValues = (answers[def.id] as string[] | undefined) || [];
     return (
       <div className="intake-opts">
+        {def.hint ? (
+          <div aria-live="polite" className={`intake-hint${selectedValues.some((v) => v !== def.none) ? " intake-hint-on" : ""}`}>
+            <LampIcon />
+            <span>{def.hint}</span>
+          </div>
+        ) : null}
         {(def.o || []).map((o) => {
           const label = optionLabel(o);
           const selected = selectedValues.includes(label);
@@ -643,7 +664,7 @@ export default function SmartIntakeWizard({
           </div>
         ) : (
           <p className="intake-dimprev" style={{marginTop: -8, marginBottom: 14}}>
-            Wij bekleden de ligger na plaatsing brandwerend, bijvoorbeeld met Promatect-platen. Dit nemen we op in uw offerte.
+            Wij bekleden de ligger na plaatsing brandwerend, bijvoorbeeld met Promatect-platen. Dit staat als losse post in uw indicatie.
           </p>
         )}
         <div className="intake-price" aria-live="polite">
@@ -665,6 +686,12 @@ export default function SmartIntakeWizard({
                 <dd>{formatEuro(b.finishing)}</dd>
               </>
             ) : null}
+            {b.fireCladding ? (
+              <>
+                <dt>Brandwerende bekleding ligger</dt>
+                <dd>{formatEuro(b.fireCladding)}</dd>
+              </>
+            ) : null}
             {b.factor > 1 ? (
               <>
                 <dt>Complexiteit ({b.reasons.join(", ")})</dt>
@@ -675,8 +702,8 @@ export default function SmartIntakeWizard({
             <dd>{formatEuro(b.totalEx)}</dd>
           </dl>
           <span className="intake-price-s">
-            Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, container en afvoer
-            . Leges van de gemeente apart. Na de opname krijgt u een vaste prijs.
+            Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, container en afvoer. Leges van de
+            gemeente apart. Na de opname krijgt u een vaste prijs.
           </span>
           {b.wide ? (
             <span className="intake-price-s" style={{color: "#ffd6b8"}}>
@@ -1644,6 +1671,62 @@ export default function SmartIntakeWizard({
         .intake-range:focus-visible {
           outline: 2px solid var(--intake-accent);
           outline-offset: 4px;
+        }
+        .intake-hint {
+          display: flex;
+          gap: 10px;
+          align-items: flex-start;
+          margin-bottom: 4px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          border: 1px dashed var(--intake-line-2);
+          font-size: 13.5px;
+          line-height: 1.5;
+          color: var(--intake-ink-3);
+          transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .intake-lamp {
+          flex: none;
+          color: #9a9a9a;
+          transition: color 0.3s ease;
+        }
+        .intake-lamp-glass {
+          fill: #ececec;
+          stroke: #9a9a9a;
+          stroke-width: 1.6;
+          transition: fill 0.3s ease, stroke 0.3s ease, filter 0.3s ease;
+        }
+        .intake-lamp-rays {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .intake-hint-on {
+          border-style: solid;
+          border-color: #f3c58f;
+          background: #fff7e8;
+          color: #5f430f;
+        }
+        .intake-hint-on .intake-lamp {
+          color: #e8a317;
+        }
+        .intake-hint-on .intake-lamp-glass {
+          fill: #ffd25c;
+          stroke: #e8a317;
+          filter: drop-shadow(0 0 6px rgba(255, 196, 64, 0.85));
+        }
+        .intake-hint-on .intake-lamp-rays {
+          opacity: 1;
+          animation: intakeGlow 1.6s ease-in-out 2;
+        }
+        @keyframes intakeGlow {
+          50% {
+            opacity: 0.35;
+          }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .intake-hint-on .intake-lamp-rays {
+            animation: none;
+          }
         }
         .intake-pricechip {
           position: sticky;

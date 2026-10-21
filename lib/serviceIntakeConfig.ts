@@ -17,6 +17,9 @@ export type DimField = {k: string; l: string; unit: string; ph?: string; opt?: b
 
 export type QuestionDef = {
   id: string;
+  // Multi-vragen: tip met lampje zodra er iets anders dan "none" is gekozen.
+  hint?: string;
+  none?: string;
   t: QuestionType;
   q: string;
   s?: string;
@@ -147,7 +150,7 @@ export const QUESTIONS: Record<string, QuestionDef[]> = {
     {id: "dm3", t: "fit", q: "Past deze indicatie bij uw budget?", s: "Zo weten we allebei of het zin heeft om een opname in te plannen.", o: [{l: "Ja, dat past"}, {l: "Mijn budget is hoger", d: "er mag meer gebeuren, bijvoorbeeld een keuken of vloer"}, {l: "Nee, mijn budget is lager", stop: "Voor een lager bedrag kunnen wij een draagmuur niet veilig en verantwoord aanpassen. Een draagmuur draagt een deel van uw huis: een constructieberekening, stempelen, de juiste balk en een vergunning zijn geen extra's maar noodzaak. Kan uw budget nog omhoog, of wilt u eerst weten waar het geld precies naartoe gaat? Dan denken we graag mee."}]},
     {id: "dm4", t: "single", q: "Heeft u archief- of bouwtekeningen van de woning?", s: "Geen tekeningen? Wij vragen ze op bij het gemeentearchief of meten zelf in.", o: ["Ja, die heb ik", "Nee", "Kan ik opvragen bij de gemeente", "Weet ik niet"]},
     {id: "dm5", t: "single", q: "Weet u zeker dat de muur dragend is?", s: "Een dragende muur is vaak 17,5 cm of dikker, klinkt massief en loopt door tot het plafond.", o: ["Ja, dat weet ik zeker", "Ik denk het", "Weet ik niet"]},
-    {id: "dm6", t: "multi", q: "Wat moet er daarna nog gebeuren?", s: "Dan plannen we het in één keer goed, met één aanspreekpunt.", o: ["Alleen de doorbraak", "Stucwerk en schilderwerk", "Nieuwe keuken", "Nieuwe vloer", "Elektra aanpassen", "Grotere verbouwing", "Weet ik nog niet"]},
+    {id: "dm6", t: "multi", q: "Zijn er nog andere dingen die u in huis wilt laten doen?", s: "Nu de vakmensen er toch zijn: veel klanten pakken de ruimte rond de doorbraak meteen mee. Dan is het in één keer klaar, met één aanspreekpunt en één keer stof.", o: ["Nieuwe keuken", "Vloer leggen", "Wanden en plafond stucen", "Schilderwerk", "Elektra en verlichting", "Badkamer of toilet", "Kozijnen of deuren", "Aanbouw of uitbouw", "Nee, alleen de doorbraak"], none: "Nee, alleen de doorbraak", hint: "Goed om te weten: als we meerdere werkzaamheden combineren, kunt u korting krijgen. We bouwen dan maar één keer op, voeren één keer af en plannen alles achter elkaar."},
   ],
   "Iets anders": [
     {id: "and1", t: "text", q: "Vertel ons waar u hulp bij zoekt", s: "Omschrijf kort wat u van plan bent.", ph: "Bijvoorbeeld: ik wil advies over de indeling van mijn woning..."},

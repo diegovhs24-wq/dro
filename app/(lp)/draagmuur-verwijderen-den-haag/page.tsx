@@ -169,6 +169,64 @@ const FAQ = [
   },
 ]
 
+// Gratis kennis: algemene uitleg, geen advies voor een specifieke situatie.
+const KNOWLEDGE = [
+  {
+    title: 'Waarom een stalen ligger?',
+    text: 'Een draagmuur draagt een deel van de vloer, muren of het dak erboven. Haalt u hem weg, dan neemt een stalen ligger die last over en brengt hem naar de muren links en rechts. Welk profiel en welke maat nodig is, bepaalt de constructeur.',
+  },
+  {
+    title: 'Kolommen of een portaal',
+    text: 'Bij een brede opening, of als de muren ernaast de last niet kunnen dragen, zijn soms stalen kolommen of een portaal nodig. Dat volgt uit de constructieberekening. Vraag het vooraf, want het bepaalt waar uw keuken of kast kan staan.',
+  },
+  {
+    title: 'Brandwerendheid',
+    text: 'Staal verliest bij brand snel zijn sterkte. Daarom wordt een stalen ligger na het plaatsen brandwerend bekleed, bijvoorbeeld met Promatect-platen. Sla deze stap nooit over, ook niet als u zelf afwerkt.',
+  },
+  {
+    title: 'Vergunning en regels',
+    text: 'Het weghalen van een draagmuur vraagt een omgevingsvergunning, omdat de constructie verandert. De Wet kwaliteitsborging geldt (nog) niet voor verbouw, dus een kwaliteitsborger is niet nodig. Bij een appartement heeft u ook toestemming van de VvE nodig.',
+  },
+  {
+    title: 'Bouwtekeningen opvragen',
+    text: 'De oorspronkelijke bouwtekeningen van uw woning kunt u vaak opvragen bij de gemeente of het gemeentearchief. Ze laten zien welke muren dragend zijn en helpen de constructeur. Geen tekeningen? Dan meten wij in.',
+  },
+  {
+    title: 'Asbest',
+    text: 'In woningen van vóór 1994 kan asbest zitten, bijvoorbeeld in kitten, platen of leidingen bij de muur. Bij een vermoeden laten we eerst een asbestinventarisatie doen. Pas daarna wordt er gesloopt.',
+  },
+]
+
+const CHECKLIST = [
+  "Foto's van beide kanten van de muur en van het plafond erboven",
+  'Bouw- of archieftekeningen van de woning, als u die heeft',
+  'Welke stopcontacten, schakelaars of leidingen in de muur zitten',
+  'Uw plannen voor keuken, vloer en verlichting na de doorbraak',
+  'Bij een appartement: de contactgegevens van de VvE',
+]
+
+const MISTAKES = [
+  {title: 'Slopen zonder berekening', text: 'Zonder constructieberekening weet niemand welke ligger nodig is. Scheuren of doorbuigende vloeren zijn het gevolg.'},
+  {title: 'Te weinig stempels', text: 'Tijdens de sloop moet het huis tijdelijk ondersteund worden. Te weinig of verkeerd geplaatste stempels zijn gevaarlijk.'},
+  {title: 'Ligger niet brandwerend bekleed', text: 'Een kale stalen ligger voldoet bij brand niet. Laat hem altijd bekleden, ook voor uw verzekering.'},
+  {title: 'Keuken te vroeg besteld', text: 'Blijkt er een kolom nodig, dan past uw keuken misschien niet meer. Bestel pas als de berekening rond is.'},
+  {title: 'Leidingen vergeten', text: 'Elektra, water of verwarming in de muur moeten eerst worden omgelegd. Anders loopt het werk vast en wordt het duurder.'},
+  {title: 'Beginnen zonder VvE-toestemming', text: 'In een appartement kan de VvE het werk laten stoppen. Regel de toestemming vóór de vergunningsaanvraag.'},
+]
+
+// Stappenplan onderaan de pagina: van idee tot oplevering.
+const GUIDE = [
+  {title: 'Bepaal wat u wilt', text: 'Een open keuken, een doorgang of een deuropening? Denk meteen na over keuken, vloer en verlichting, dan plant u alles in één keer.'},
+  {title: 'Check of de muur dragend is', text: 'Let op dikte, klank en wat erboven staat, en vraag de bouwtekeningen op. Twijfelt u, dan kijken wij het na.'},
+  {title: 'Bereken uw indicatie en vraag een opname aan', text: 'Met het formulier bovenaan weet u in twee minuten waar u aan toe bent. Daarna komt een verbouwadviseur langs om alles in te meten.'},
+  {title: 'Constructieberekening en stempelplan', text: 'De constructeur bepaalt de ligger, de opleggingen en of er kolommen nodig zijn, en hoe het huis tijdens het werk wordt ondersteund.'},
+  {title: 'Tekeningen en vergunning', text: 'Wij maken de tekeningen en dienen de omgevingsvergunning in. Bij een appartement regelt u eerst de toestemming van de VvE. De gemeente beslist meestal binnen 8 weken.'},
+  {title: 'Voorbereiden', text: 'Leidingen en elektra in de muur worden omgelegd, de ruimte wordt leeggemaakt en u bestelt pas nu uw keuken.'},
+  {title: 'Uitvoering in 1 tot 3 dagen', text: 'Afschermen tegen stof, stempelen, slopen, ligger plaatsen, ondersabelen en inmetselen. Als alles vastzit, gaan de stempels eruit.'},
+  {title: 'Brandwerend bekleden en afwerken', text: 'De ligger wordt brandwerend bekleed. Daarna volgt de afwerking: stucwerk, en als u wilt schilderwerk, vloer en keuken.'},
+  {title: 'Oplevering en papieren bewaren', text: 'We lopen alles samen na. Bewaar de constructieberekening en de vergunning: die heeft u nodig bij verkoop of voor uw verzekering.'},
+]
+
 const ICON_PATHS: Record<string, string[]> = {
   calc: ['M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z', 'M8 7h8', 'M8 12h2M12 12h2M16 12h0M8 16h2M12 16h2'],
   doc: ['M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z', 'M14 3v5h5', 'M9 13h6M9 17h6'],
@@ -240,9 +298,10 @@ const NAV = [
   {href: '#inbegrepen', label: 'Wat zit erin'},
   {href: '#prijs', label: 'Prijs'},
   {href: '#werkwijze', label: 'Werkwijze'},
-  {href: '#wonen', label: 'Thuis blijven'},
+  {href: '#kennis', label: 'Kennis'},
   {href: '#ervaringen', label: 'Ervaringen'},
   {href: '#vragen', label: 'Vragen'},
+  {href: '#gids', label: 'Stappenplan'},
 ]
 
 const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
@@ -525,6 +584,7 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
               <p className="mt-3 text-[13px] leading-[1.55] text-lp-muted">
                 Op de verdieping, in een appartement, bij een muur dikker dan 24 cm of een opening breder dan 4 m telt een
                 complexiteitsfactor van 1,25 of 1,5. Bij hele brede doorbraken rekent de constructeur de staalconstructie apart door.
+                Brandwerende bekleding van de ligger door ons: {formatEuro(PRICE.fireCladding)} excl. btw extra.
               </p>
             </div>
             <div className="rounded-lg border border-lp-line bg-white p-5">
@@ -603,6 +663,56 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
             <a className={`${CTA} mt-5`} href="#aanvraag">
               Start uw aanvraag
             </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="scroll-mt-28 border-t border-lp-line bg-lp-plaster" id="kennis">
+        <div className="section-shell py-14">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-lp-orange">Gratis kennis</p>
+          <h2 className={`${H2} mt-2 max-w-[26ch]`}>Wat u moet weten voordat er een draagmuur uit gaat</h2>
+          <p className={`mt-3 max-w-[62ch] ${BODY}`}>
+            Ook als u ons niet inschakelt: met deze kennis stelt u de juiste vragen aan elke aannemer.
+          </p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {KNOWLEDGE.map((item) => (
+              <article className="rounded-lg border border-lp-line bg-white p-5" key={item.title}>
+                <h3 className="text-[17px] font-semibold">{item.title}</h3>
+                <p className="mt-2 text-[15px] leading-[1.6] text-lp-muted">{item.text}</p>
+              </article>
+            ))}
+          </div>
+          <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
+            <div className="rounded-lg border border-lp-line bg-white p-6">
+              <h3 className="text-[18px] font-bold [font-stretch:108%]">Checklist voor de opname</h3>
+              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we in één bezoek een vaste prijs maken.</p>
+              <ul className="mt-4 space-y-2.5">
+                {CHECKLIST.map((item) => (
+                  <li className="flex gap-3 text-[15px] leading-[1.55]" key={item}>
+                    <span aria-hidden="true" className="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded border-2 border-lp-orange text-[11px] font-bold text-lp-orange">
+                      &#10003;
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-[18px] font-bold [font-stretch:108%]">Zes fouten die we vaak zien</h3>
+              <ol className="mt-4 grid gap-4 sm:grid-cols-2">
+                {MISTAKES.map((item, i) => (
+                  <li className="grid grid-cols-[28px_minmax(0,1fr)] gap-2" key={item.title}>
+                    <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-full bg-lp-ink text-[13px] font-bold tabular-nums text-white">
+                      {i + 1}
+                    </span>
+                    <div>
+                      <p className="font-semibold leading-snug">{item.title}</p>
+                      <p className="mt-1 text-[14.5px] leading-[1.55] text-lp-muted">{item.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </section>
@@ -757,6 +867,33 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
                 <p className={`pb-5 ${BODY}`}>{item.a}</p>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="scroll-mt-28 border-t border-lp-line" id="gids">
+        <div className="section-shell py-14">
+          <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-lp-orange">Stappenplan</p>
+          <h2 className={`${H2} mt-2 max-w-[26ch]`}>Draagmuur verwijderen: de complete gids in 9 stappen</h2>
+          <p className={`mt-3 max-w-[62ch] ${BODY}`}>
+            Van het eerste idee tot de oplevering. Zo weet u bij elke stap wat er gebeurt en wat u zelf moet regelen.
+          </p>
+          <ol className="mt-8 grid gap-x-10 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
+            {GUIDE.map((step, i) => (
+              <li className="relative rounded-lg border border-lp-line bg-white p-5 pt-6" key={step.title}>
+                <span className="absolute -top-3.5 left-5 flex h-7 min-w-[28px] items-center justify-center rounded-full bg-lp-orange px-2 text-[13px] font-bold tabular-nums text-white">
+                  {i + 1}
+                </span>
+                <h3 className="text-[17px] font-semibold leading-snug">{step.title}</h3>
+                <p className="mt-1.5 text-[15px] leading-[1.6] text-lp-muted">{step.text}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-10 flex flex-col items-start gap-4 rounded-lg bg-lp-plaster p-6 sm:flex-row sm:items-center sm:justify-between">
+            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u binnen 1 werkuur terug.</p>
+            <a className={CTA} href="#aanvraag">
+              Indicatie berekenen
+            </a>
           </div>
         </div>
       </section>
