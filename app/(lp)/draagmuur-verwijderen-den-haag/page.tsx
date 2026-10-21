@@ -3,7 +3,7 @@ import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
 import {getProjects} from '@/lib/cms'
-import {DRAAGMUUR_FULL_FROM_INCL, formatEuro} from '@/lib/draagmuurPrice'
+import {EXAMPLE_INPUT, PRICE, draagmuurBreakdown, formatEuro} from '@/lib/draagmuurPrice'
 import type {ProjectItem} from '@/lib/types'
 
 // Advertentie-landingspagina voor de campagne "Draagmuur Den Haag e.o.".
@@ -28,7 +28,9 @@ const REVIEW_COUNT = '273+'
 const TRUSTOO_SCORE = '9,8'
 const TRUSTOO_COUNT = '557'
 const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'
-const FULL_FROM = formatEuro(DRAAGMUUR_FULL_FROM_INCL)
+// Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, afgewerkt.
+const EXAMPLE = draagmuurBreakdown(EXAMPLE_INPUT)
+const EXAMPLE_INCL = formatEuro(EXAMPLE.totalIncl)
 
 type Variant = 'verwijderen' | 'kosten' | 'balk'
 
@@ -64,13 +66,12 @@ const INCLUDED = [
   {title: 'Stempelen', text: 'Het huis wordt veilig ondersteund voordat er ook maar één steen uit gaat.', icon: 'stamp'},
   {title: 'Sloop, container en afvoer', text: 'Wij slopen de muur, voeren het puin af en laten het bezemschoon achter.', icon: 'truck'},
   {title: 'Stalen balk of latei', text: 'Geleverd, geplaatst, ondersabeld en ingemetseld volgens de berekening.', icon: 'beam'},
-  {title: 'Brandveilig inpakken', text: 'Bij slijp- en laswerk pakken we de ruimte brandveilig in. Standaard, tenzij u dat niet wilt.', icon: 'shield'},
+  {title: 'Brandwerende bekleding', text: 'Na het plaatsen bekleden we de stalen ligger brandwerend, bijvoorbeeld met Promatect-platen. Doet u of uw aannemer dit zelf, dan kan dat ook.', icon: 'shield'},
   {title: 'Stofwanden en afdekken', text: 'Vloeren afgedekt, stofschotten geplaatst, zodat de rest van het huis schoon blijft.', icon: 'house'},
-  {title: 'Afwerking, als u wilt', text: 'Stucwerk schilderklaar, of meteen door met vloer, keuken en elektra.', icon: 'brush'},
+  {title: 'Afwerking, als u wilt', text: 'Basisafwerking van de opening, of meteen door met stucwerk, vloer, keuken en elektra.', icon: 'brush'},
 ] as const
 
-// Soorten klussen. Alleen voor de volledige vervanging staat een vanaf-prijs
-// (op aangeven van Therab); de rest via de rekenmodule.
+// Soorten klussen. Bij de hele muur staat het rekenvoorbeeld; de rest via de rekenmodule.
 const JOBS = [
   {
     title: 'Deuropening in een draagmuur',
@@ -85,7 +86,7 @@ const JOBS = [
   {
     title: 'Draagmuur helemaal verwijderen',
     text: 'De hele muur eruit voor een open keuken of één grote woonkamer, met een stalen balk en zo nodig kolommen.',
-    note: `Vanaf ${FULL_FROM} inclusief btw`,
+    note: `Rekenvoorbeeld 3 m breed: ${EXAMPLE_INCL} incl. btw`,
   },
 ] as const
 
@@ -101,7 +102,6 @@ const STEPS = [
 const LIVING = [
   {title: 'Meestal blijft u gewoon thuis wonen', text: 'Alleen de ruimte waar we werken is 1 tot 3 dagen niet te gebruiken. De rest van het huis blijft bereikbaar.'},
   {title: 'Stof blijft waar het hoort', text: 'We plaatsen stofschotten, dekken vloeren en trap af en zuigen dagelijks af. U krijgt de ruimte bezemschoon terug.'},
-  {title: 'Brandveilig gewerkt', text: 'Bij het slijpen en lassen van de stalen balk vliegen vonken. Wij pakken de ruimte brandveilig in en houden toezicht tot na het laswerk.'},
   {title: 'Buren op de hoogte', text: 'Bij een rijwoning of appartement laten we de buren vooraf weten wanneer er geluid is.'},
 ]
 
@@ -117,7 +117,7 @@ const LOAD_BEARING_SIGNS = [
 const FAQ = [
   {
     q: 'Wat kost een draagmuur verwijderen?',
-    a: `Dat hangt af van de breedte van de opening, de dikte van de muur, of het op de begane grond of verdieping is en of u het afgewerkt wilt. Een volledige draagmuur vervangen door een stalen balk doen we vanaf ${FULL_FROM} inclusief btw. Een deuropening of gedeeltelijke doorbraak kost minder. In het formulier bovenaan berekent u direct uw indicatie. Daarin zit de constructieberekening, de vergunningsaanvraag, stempelen, de balk of latei, sloop, container en afvoer. Alleen de leges van de gemeente betaalt u apart.`,
+    a: `Dat hangt vooral af van de breedte en hoogte van de doorbraak. Een doorbraak van 3 meter breed en 2,60 meter hoog kost bijvoorbeeld ${EXAMPLE_INCL} inclusief btw, met constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, afvoer en basisafwerking. Op de verdieping, in een appartement, bij een dikke muur of een brede opening is het werk zwaarder en komt de prijs hoger uit. In het formulier bovenaan berekent u direct uw eigen indicatie. Alleen de leges van de gemeente betaalt u apart.`,
   },
   {
     q: 'Hoe weet ik of mijn muur dragend is?',
@@ -136,8 +136,8 @@ const FAQ = [
     a: 'Meestal wel. Alleen de ruimte waar we werken is 1 tot 3 dagen niet bruikbaar. We plaatsen stofschotten en dekken vloeren af, zodat de rest van het huis schoon en bereikbaar blijft.',
   },
   {
-    q: 'Wat is brandveilig inpakken, en waarom is het belangrijk?',
-    a: 'Bij het slijpen en lassen van een stalen balk ontstaan vonken. Brandveilig inpakken betekent dat we vloeren, plafond en spullen in de buurt afdekken met brandwerend materiaal en toezicht houden tot na het laswerk. Wij doen dit standaard. Wilt u het bewust niet, dan neemt DRO geen verantwoordelijkheid voor brand- of rookschade die daardoor ontstaat. Laat het ook bij een andere aannemer altijd doen, ook voor uw garantie en verzekering.',
+    q: 'Moet de stalen ligger brandwerend worden bekleed?',
+    a: 'Ja. Staal verliest bij brand snel zijn sterkte, daarom wordt een stalen ligger na het plaatsen brandwerend bekleed, bijvoorbeeld met Promatect-platen. Wij kunnen dat voor u doen. Wilt u of uw eigen aannemer het zelf doen, dan kan dat ook. Zorg dan wel dat het goed gebeurt, ook voor de vergunning, uw garantie en uw verzekering. Brengt DRO de bekleding niet aan, dan is DRO niet verantwoordelijk voor de brandwerendheid van de ligger.',
   },
   {
     q: 'Doen jullie ook kleine klussen, zoals alleen een deuropening?',
@@ -495,21 +495,43 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
             ))}
           </div>
           <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.1fr] md:items-start">
-            <div className={BODY}>
-              <p className="text-lp-ink">Waar uw prijs uitkomt, hangt vooral af van:</p>
-              <ul className="mt-3 space-y-2 border-l-2 border-lp-orange pl-4">
-                <li>de breedte van de opening, en of er kolommen nodig zijn</li>
-                <li>de dikte van de muur en wat erboven staat</li>
-                <li>begane grond, verdieping of appartement</li>
-                <li>casco of afgewerkt opgeleverd</li>
-                <li>leidingen en elektra die in de muur zitten</li>
-              </ul>
+            <div>
+              <p className="font-semibold">Rekenvoorbeeld: doorbraak van 3 m breed en 2,60 m hoog</p>
+              <table className="mt-3 w-full border-collapse text-[15px] tabular-nums">
+                <caption className="sr-only">Opbouw van het rekenvoorbeeld</caption>
+                <tbody>
+                  {[
+                    [`Slopen en afvoeren (7,8 m² x ${formatEuro(PRICE.demolitionPerM2)})`, EXAMPLE.demolition],
+                    ['Stempelen', EXAMPLE.shoring],
+                    [`Stalen ligger (3 m x ${formatEuro(PRICE.steelPerM)})`, EXAMPLE.steel],
+                    ['Constructieberekening', EXAMPLE.engineering],
+                    ['Basisafwerking', EXAMPLE.finishing],
+                  ].map(([label, amount]) => (
+                    <tr className="border-b border-lp-line" key={label as string}>
+                      <td className="py-2 pr-3 text-lp-muted">{label}</td>
+                      <td className="py-2 text-right">{formatEuro(amount as number)}</td>
+                    </tr>
+                  ))}
+                  <tr className="border-b border-lp-line">
+                    <td className="py-2 pr-3 font-semibold">Totaal excl. btw</td>
+                    <td className="py-2 text-right font-semibold">{formatEuro(EXAMPLE.totalEx)}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 pr-3 font-bold">Totaal incl. 21% btw</td>
+                    <td className="py-2.5 text-right text-[18px] font-bold text-lp-orange">{EXAMPLE_INCL}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p className="mt-3 text-[13px] leading-[1.55] text-lp-muted">
+                Op de verdieping, in een appartement, bij een muur dikker dan 24 cm of een opening breder dan 4 m telt een
+                complexiteitsfactor van 1,25 of 1,5. Bij hele brede doorbraken rekent de constructeur de staalconstructie apart door.
+              </p>
             </div>
             <div className="rounded-lg border border-lp-line bg-white p-5">
               <p className="font-semibold">Altijd inbegrepen in uw indicatie</p>
               <p className="mt-2 text-[15px] leading-[1.6] text-lp-muted">
                 Constructieberekening, tekening en vergunningsaanvraag, stempelen, stalen balk of latei, sloop, container en afvoer, en
-                brandveilig inpakken. Leges van de gemeente betaalt u apart.
+                desgewenst brandwerende bekleding van de ligger. Leges van de gemeente betaalt u apart.
               </p>
               <a className={`${CTA} mt-4`} href="#aanvraag">
                 Bereken uw indicatie
@@ -545,7 +567,7 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
           <p className="mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-white/80">
             Een doorbraak is zwaar werk in een bewoond huis. Zo houden we het netjes en veilig.
           </p>
-          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {LIVING.map((item) => (
               <li className="border-t-2 border-lp-orange pt-4" key={item.title}>
                 <h3 className="text-[17px] font-semibold">{item.title}</h3>

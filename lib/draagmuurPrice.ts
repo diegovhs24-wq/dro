@@ -1,68 +1,107 @@
-// Prijsindicatie voor een doorbraak in een draagmuur (formulier en landingspagina).
-// Interne bedragen zijn EXCLUSIEF btw (zo rekent DRO); de bezoeker ziet altijd
-// een bandbreedte INCLUSIEF btw. Ijkpunten van Therab (okt. 2026):
-//   - deuropening incl. latei: ongeveer € 1.500 (intern, niet los op de site)
-//   - draagmuur vervangen (volledig): vanaf € 6.500
-// Pas deze getallen hier aan; formulier en pagina rekenen er allebei mee.
+// Prijsindicatie draagmuur verwijderen, formule van Therab (21 okt. 2026):
+//
+//   P (excl. btw) = ((B x H x 225) + 575 + (B x 675) + 750 + 450) x C
+//
+//   B = breedte doorbraak (m), H = hoogte doorbraak (m)
+//   225 per m2  slopen en afvoeren (incl. container)
+//   575         tijdelijke ondersteuning / stempelen
+//   675 per m1  stalen ligger leveren en monteren
+//   750         constructieberekening (incl. vergunningsaanvraag)
+//   450         basisafwerking (vervalt bij casco)
+//   C           complexiteitsfactor 1,00 / 1,25 / 1,50
+//
+// De bezoeker ziet het bedrag inclusief 21% btw. Bij brede doorbraken of zware
+// belasting rekent de constructeur de staalconstructie apart (zie WIDE_FROM_M).
 
 export type DraagmuurKind = "deur" | "deels" | "volledig";
 export type DraagmuurFloor = "begane grond" | "verdieping" | "appartement";
 
 export type DraagmuurInput = {
   kind: DraagmuurKind;
-  width: number; // breedte opening in meters
-  thickness: number; // muurdikte in centimeters
-  height: number; // plafondhoogte in meters
+  width: number; // B, breedte doorbraak in meters
+  height: number; // H, hoogte doorbraak in meters
+  thickness: number; // muurdikte in centimeters (telt mee in de complexiteit)
   floor: DraagmuurFloor;
-  finished: boolean; // afgewerkt (stuc, schilderklaar) of casco
-  fireWrap: boolean; // brandveilig inpakken tijdens slijp- en laswerk
+  finished: boolean; // basisafwerking ja (afgewerkt) of nee (casco)
+  fireWrap: boolean; // DRO bekleedt de ligger brandwerend (bv. Promatect); prijs volgt in offerte
 };
 
-export const DRAAGMUUR_DOOR_EX = 1500;
-export const DRAAGMUUR_FULL_FROM_EX = 6500;
-const PARTIAL_MAX_EX = 4800; // doorgang tot 2,5 m
-const FULL_PER_EXTRA_M = 900; // per meter boven 3,5 m
-const FINISH_BASE_EX = 350;
-const FINISH_PER_M_EX = 180;
-const FIRE_WRAP_EX = 195;
-const VAT = 1.21;
+export const PRICE = {
+  demolitionPerM2: 225,
+  shoring: 575,
+  steelPerM: 675,
+  engineering: 750,
+  finishing: 450,
+  vat: 1.21,
+} as const;
 
-export const DRAAGMUUR_DEFAULT_WIDTH: Record<DraagmuurKind, number> = {deur: 1, deels: 2.2, volledig: 4};
+export const WIDE_FROM_M = 5;
 
-export function draagmuurPriceEx(input: DraagmuurInput): number {
-  const w = Math.max(0.5, input.width);
-  let base: number;
-  if (input.kind === "volledig" || w > 2.5) {
-    base = DRAAGMUUR_FULL_FROM_EX + Math.max(0, w - 3.5) * FULL_PER_EXTRA_M;
-  } else if (w <= 1.2) {
-    base = DRAAGMUUR_DOOR_EX;
-  } else {
-    base = DRAAGMUUR_DOOR_EX + ((w - 1.2) / 1.3) * (PARTIAL_MAX_EX - DRAAGMUUR_DOOR_EX);
-  }
+export const DRAAGMUUR_DEFAULTS: Record<DraagmuurKind, {width: number; height: number}> = {
+  deur: {width: 1, height: 2.3},
+  deels: {width: 2, height: 2.6},
+  volledig: {width: 3, height: 2.6},
+};
 
-  const t = input.thickness;
-  base *= t <= 12 ? 0.9 : t <= 24 ? 1 : t <= 32 ? 1.12 : 1.25;
-  if (input.height > 2.8) base *= 1.08;
-  if (input.floor === "verdieping") base *= 1.15;
-  if (input.floor === "appartement") base *= 1.2;
-
-  let total = base;
-  if (input.finished) total += FINISH_BASE_EX + FINISH_PER_M_EX * w;
-  if (input.fireWrap) total += FIRE_WRAP_EX;
-  return total;
+// Complexiteit: 1,00 standaard; 1,25 bij één verzwarende factor; 1,50 bij twee
+// of meer. Factoren: niet op de begane grond (verdieping of appartement), een
+// muur dikker dan 24 cm, een doorbraak breder dan 4 m.
+export function complexityOf(input: DraagmuurInput): {factor: 1 | 1.25 | 1.5; reasons: string[]} {
+  const reasons: string[] = [];
+  if (input.floor === "verdieping") reasons.push("op de verdieping");
+  if (input.floor === "appartement") reasons.push("in een appartement");
+  if (input.thickness > 24) reasons.push("muur dikker dan 24 cm");
+  if (input.width > 4) reasons.push("breder dan 4 m");
+  const factor = reasons.length === 0 ? 1 : reasons.length === 1 ? 1.25 : 1.5;
+  return {factor, reasons};
 }
 
-const round50 = (n: number) => Math.round(n / 50) * 50;
+export type DraagmuurBreakdown = {
+  demolition: number;
+  shoring: number;
+  steel: number;
+  engineering: number;
+  finishing: number;
+  factor: 1 | 1.25 | 1.5;
+  reasons: string[];
+  totalEx: number;
+  totalIncl: number;
+  wide: boolean;
+};
 
-// Bandbreedte incl. btw: de situatie ter plekke (leidingen, kolommen, asbest)
-// kan de prijs nog beïnvloeden.
-export function draagmuurRange(input: DraagmuurInput): {low: number; high: number} {
-  const incl = draagmuurPriceEx(input) * VAT;
-  return {low: round50(incl * 0.9), high: round50(incl * 1.15)};
+export function draagmuurBreakdown(input: DraagmuurInput): DraagmuurBreakdown {
+  const B = Math.max(0.5, input.width);
+  const H = Math.max(1.5, input.height);
+  const demolition = B * H * PRICE.demolitionPerM2;
+  const steel = B * PRICE.steelPerM;
+  const finishing = input.finished ? PRICE.finishing : 0;
+  const {factor, reasons} = complexityOf(input);
+  const totalEx = (demolition + PRICE.shoring + steel + PRICE.engineering + finishing) * factor;
+  return {
+    demolition,
+    shoring: PRICE.shoring,
+    steel,
+    engineering: PRICE.engineering,
+    finishing,
+    factor,
+    reasons,
+    totalEx: Math.round(totalEx),
+    totalIncl: Math.round(totalEx * PRICE.vat),
+    wide: B >= WIDE_FROM_M,
+  };
 }
 
-export const DRAAGMUUR_FULL_FROM_INCL = Math.round(DRAAGMUUR_FULL_FROM_EX * VAT);
+// Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, met afwerking.
+export const EXAMPLE_INPUT: DraagmuurInput = {
+  kind: "volledig",
+  width: 3,
+  height: 2.6,
+  thickness: 22,
+  floor: "begane grond",
+  finished: true,
+  fireWrap: true,
+};
 
 export function formatEuro(n: number): string {
-  return `€ ${n.toLocaleString("nl-NL")}`;
+  return `€ ${Math.round(n).toLocaleString("nl-NL")}`;
 }
