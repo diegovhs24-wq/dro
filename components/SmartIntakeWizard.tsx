@@ -3,7 +3,9 @@ import {BUSINESS} from "@/lib/seo/business";
 
 import {useEffect, useMemo, useRef, useState} from "react";
 import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
-import {trackLead} from "@/lib/analytics";
+import {trackFunnel, trackLead} from "@/lib/analytics";
+import {budgetTier} from "@/lib/leadInsights";
+import type {ConversionRouteKey} from "@/lib/conversionRoutes";
 import {captureAttribution, getAttribution} from "@/lib/attribution";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
@@ -105,8 +107,8 @@ function HouseGoalIcon({done}: {done: boolean}) {
   );
 }
 
-function formatBudget(value: number): string {
-  if (value >= 150000) return "€150k+";
+function formatBudget(value: number, scaleMax = 150000): string {
+  if (value >= scaleMax) return `€${scaleMax / 1000}k+`;
   if (value <= 0) return "€0";
   return `€${value / 1000}k`;
 }
@@ -195,7 +197,15 @@ const inputClass = "intake-inp";
 export type SmartIntakeProps = {
   presetServices?: string[];
   skipIds?: string[];
-  source?: "smart-intake" | "lp-totaalrenovatie" | "lp-draagmuur";
+  source?: "smart-intake" | "lp-totaalrenovatie" | "lp-draagmuur" | "route-grote-renovatie" | "route-specialistisch";
+  // Conversieroute (pagina Grote renovaties of Constructieve werken): gaat mee
+  // naar de lead en de meting.
+  conversionRoute?: ConversionRouteKey;
+  // Bereik van de budgetschuif. Voor grote renovaties tot € 250.000+.
+  budgetScaleMax?: number;
+  budgetStep?: number;
+  // Kopniveau van de vragen: "h2" als de pagina zelf al een h1 heeft.
+  headingLevel?: "h1" | "h2";
   variant?: string;
   responsePromise?: string;
   initialBudget?: [number, number];
@@ -229,7 +239,13 @@ export default function SmartIntakeWizard({
   servicesSub = "Kies één of meer diensten. We stellen daarna alleen de vragen die voor u van toepassing zijn.",
   largeBudget,
   largeServices = ["Totaalrenovatie", "Aanbouw of opbouw"],
+  conversionRoute,
+  budgetScaleMax = 150000,
+  budgetStep = 5000,
+  headingLevel = "h1",
 }: SmartIntakeProps = {}) {
+  const Heading = headingLevel;
+  const fmtBudget = (value: number) => formatBudget(value, budgetScaleMax);
   const skipSet = useMemo(() => new Set(skipIds), [skipIds]);
   const orderedServices = useMemo(
     () => (serviceOrder ? [...serviceOrder.filter((s) => SERVICES.includes(s)), ...SERVICES.filter((s) => !serviceOrder.includes(s))] : SERVICES),
@@ -266,7 +282,7 @@ export default function SmartIntakeWizard({
   const [budgetMin, setBudgetMin] = useState(initialBudget ? initialBudget[0] : 15000);
   const [budgetMax, setBudgetMax] = useState(initialBudget ? initialBudget[1] : 45000);
   const [budgetLabel, setBudgetLabel] = useState(
-    initialBudget ? `${formatBudget(initialBudget[0])} – ${formatBudget(initialBudget[1])}` : "€15k – €45k",
+    initialBudget ? `${fmtBudget(initialBudget[0])} – ${fmtBudget(initialBudget[1])}` : "€15k – €45k",
   );
 
   // Herkomst vastleggen (campagne, zoekwoord). Op de landingspagina met variant.
@@ -310,8 +326,20 @@ export default function SmartIntakeWizard({
     setAnswers((prev) => ({...prev, [id]: value}));
   }
 
+  const startedRef = useRef(false);
+  const trackBase = {route: conversionRoute, source};
+
   function go(n: number) {
-    setIdx(Math.max(0, Math.min(flow.length - 1, n)));
+    const target = Math.max(0, Math.min(flow.length - 1, n));
+    // Vooruit: de huidige stap is afgerond. Terug telt niet.
+    if (target > idx && current && current.t !== "thanks" && current.t !== "contact") {
+      if (!startedRef.current) {
+        startedRef.current = true;
+        trackFunnel("form_start", trackBase);
+      }
+      trackFunnel("form_step_complete", {...trackBase, step: current.id, step_index: idx + 1, steps_total: total});
+    }
+    setIdx(target);
   }
   function next() {
     go(idx + 1);
@@ -327,7 +355,7 @@ export default function SmartIntakeWizard({
       const [min, max] = services.some((s) => largeServices.includes(s)) ? largeBudget : initialBudget || [15000, 45000];
       setBudgetMin(min);
       setBudgetMax(max);
-      setBudgetLabel(`${formatBudget(min)} – ${formatBudget(max)}`);
+      setBudgetLabel(`${fmtBudget(min)} – ${fmtBudget(max)}`);
     }
     go(1);
   }
@@ -433,7 +461,7 @@ export default function SmartIntakeWizard({
       return {service: serviceLabel(service), answers: qa};
     });
 
-    const attribution = getAttribution();
+    const attribution = {...getAttribution(), submitPage: typeof window !== "undefined" ? window.location.pathname.slice(0, 200) : undefined};
     // Eén ID per inzending: een herhaalde poging na een time-out wordt door de
     // server als dubbel herkend in plaats van als tweede lead.
     if (!submissionIdRef.current) {
@@ -467,6 +495,7 @@ export default function SmartIntakeWizard({
           photos: withPhotos ? photos.map((p) => p.replace(/^data:image\/jpeg;base64,/, "")) : [],
           photosDropped: withPhotos ? 0 : photos.length,
           source,
+          conversionRoute,
           attribution,
         });
       const post = (withPhotos: boolean) =>
@@ -484,11 +513,18 @@ export default function SmartIntakeWizard({
       }
 
       if (!res.ok) throw new Error("Submit failed");
-      const result = (await res.json().catch(() => ({}))) as {spamSuspect?: boolean; duplicate?: boolean};
+      const result = (await res.json().catch(() => ({}))) as {id?: string; spamSuspect?: boolean; duplicate?: boolean};
       // Geen Ads-conversie voor mogelijke spam of een herhaalde inzending (L8).
       if (!leadTrackedRef.current && !result.spamSuspect && !result.duplicate) {
         leadTrackedRef.current = true;
         trackLead();
+        const tier = budgetTier({
+          budgetMin: budgetLabel === "Weet ik nog niet" ? undefined : budgetMin,
+          budgetMax: budgetLabel === "Weet ik nog niet" ? undefined : budgetMax,
+          budgetLabel,
+        });
+        // Lead-ID (geen persoonsgegeven) om meting en CRM aan elkaar te koppelen.
+        trackFunnel("form_submit_success", {...trackBase, lead_id: result.id, budget_tier: tier.key, services: services.map(serviceLabel).join(", ")});
       }
       setSubmitting(false);
       next();
@@ -496,6 +532,7 @@ export default function SmartIntakeWizard({
       submitInFlightRef.current = false;
       setSubmitting(false);
       setSubmitError(true);
+      trackFunnel("form_submit_error", trackBase);
     }
   }
 
@@ -510,7 +547,7 @@ export default function SmartIntakeWizard({
           </div>
         ) : null}
         {eyebrow ? <div className="intake-eyebrow">{eyebrow}</div> : null}
-        <h1 className="intake-h1">{def.q}</h1>
+        <Heading className="intake-h1">{def.q}</Heading>
         {def.s ? <p className="intake-sub">{def.s}</p> : null}
       </>
     );
@@ -571,7 +608,7 @@ export default function SmartIntakeWizard({
     return (
       <>
         <div className="intake-eyebrow">Uw project</div>
-        <h1 className="intake-h1">{servicesTitle}</h1>
+        <Heading className="intake-h1">{servicesTitle}</Heading>
         <p className="intake-sub">{servicesSub}</p>
         <div className="intake-sp">
           <span className="intake-stars">
@@ -914,11 +951,11 @@ export default function SmartIntakeWizard({
       }
       setBudgetMin(mn);
       setBudgetMax(mx);
-      setBudgetLabel(`${formatBudget(mn)} – ${formatBudget(mx)}`);
+      setBudgetLabel(`${fmtBudget(mn)} – ${fmtBudget(mx)}`);
     }
 
-    const fillLeft = (budgetMin / 150000) * 100;
-    const fillWidth = ((budgetMax - budgetMin) / 150000) * 100;
+    const fillLeft = (budgetMin / budgetScaleMax) * 100;
+    const fillWidth = ((budgetMax - budgetMin) / budgetScaleMax) * 100;
 
     return (
       <>
@@ -926,22 +963,22 @@ export default function SmartIntakeWizard({
         <div className="intake-rvals">
           <div>
             <div className="intake-rvals-l">Minimum</div>
-            <div className="intake-rvals-b">{formatBudget(budgetMin)}</div>
+            <div className="intake-rvals-b">{fmtBudget(budgetMin)}</div>
           </div>
           <div style={{textAlign: "right"}}>
             <div className="intake-rvals-l">Maximum</div>
-            <div className="intake-rvals-b">{formatBudget(budgetMax)}</div>
+            <div className="intake-rvals-b">{fmtBudget(budgetMax)}</div>
           </div>
         </div>
         <div className="intake-slider">
           <div className="intake-slider-base" />
           <div className="intake-slider-fill" style={{left: `${fillLeft}%`, width: `${fillWidth}%`}} />
-          <input max={150000} min={0} onChange={(e) => handleRange("min", Number(e.target.value))} step={5000} type="range" value={budgetMin} />
-          <input max={150000} min={0} onChange={(e) => handleRange("max", Number(e.target.value))} step={5000} type="range" value={budgetMax} />
+          <input aria-label="Minimumbudget" max={budgetScaleMax} min={0} onChange={(e) => handleRange("min", Number(e.target.value))} step={budgetStep} type="range" value={budgetMin} />
+          <input aria-label="Maximumbudget" max={budgetScaleMax} min={0} onChange={(e) => handleRange("max", Number(e.target.value))} step={budgetStep} type="range" value={budgetMax} />
         </div>
         <div className="intake-rscale">
           <span>€0</span>
-          <span>€150k+</span>
+          <span>{fmtBudget(budgetScaleMax)}</span>
         </div>
         <button
           className="intake-unsure"
@@ -978,7 +1015,7 @@ export default function SmartIntakeWizard({
     return (
       <>
         <div className="intake-eyebrow">Overzicht</div>
-        <h1 className="intake-h1">Klopt dit zo?</h1>
+        <Heading className="intake-h1">Klopt dit zo?</Heading>
         <p className="intake-sub">Dit is uw aanvraag in het kort. Tik op een regel om iets aan te passen.</p>
         <div className="intake-sum">
           {rows.map((r) =>
@@ -1025,7 +1062,7 @@ export default function SmartIntakeWizard({
     return (
       <>
         <div className="intake-eyebrow">Voor {primaryLabel()}</div>
-        <h1 className="intake-h1">Waar mogen we uw plan naartoe sturen?</h1>
+        <Heading className="intake-h1">Waar mogen we uw plan naartoe sturen?</Heading>
         <p className="intake-sub">
           U bent klaar. Uw aanvraag komt direct bij Therab en het team terecht, wij nemen {responsePromise} persoonlijk contact met u op.
         </p>
@@ -1081,7 +1118,7 @@ export default function SmartIntakeWizard({
         <div className="intake-seal">
           <SealIcon />
         </div>
-        <h1 className="intake-h1">Bedankt{firstName ? `, ${firstName}` : ""}!</h1>
+        <Heading className="intake-h1">Bedankt{firstName ? `, ${firstName}` : ""}!</Heading>
         <p>
           We hebben uw aanvraag voor {primaryLabel()} ontvangen. Wij nemen {responsePromise} persoonlijk contact met u op.
         </p>

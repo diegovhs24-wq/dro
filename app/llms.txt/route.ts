@@ -1,3 +1,4 @@
+import {CONVERSION_ROUTES} from "@/lib/conversionRoutes";
 import {NextResponse} from "next/server";
 import {getBlogPosts, getLocations, getProjects, getServices, getSiteSettings} from "@/lib/cms";
 import {BUSINESS, formatReviewSummary, getReviewSnapshot, stripOutdatedClaims} from "@/lib/seo/business";
@@ -76,6 +77,10 @@ export async function GET() {
       "4. Uitvoering: vaste vakteams onder een technisch hoofd uitvoering; elke week één vast overlegmoment en vragen via de app binnen 24 uur opgepakt.",
       "5. Betaling en oplevering: startbetaling, daarna betaling per afgeronde fase; oplevering met controle op openstaande punten.",
       `Meer: ${absoluteUrl("/werkwijze")}`,
+    ]),
+    "",
+    section("Twee routes voor een aanvraag", [
+      ...CONVERSION_ROUTES.map((r) => `- [${r.title}](${absoluteUrl(r.path)}): ${r.metaDescription}`),
     ]),
     "",
     section(

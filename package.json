@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test:geo": "bash scripts/tests/run-geo-tests.sh",
     "test:leads": "bash scripts/tests/run-lead-tests.sh",
-    "test": "npm run test:geo && npm run test:leads"
+    "test:fase2": "bash scripts/tests/run-fase2-tests.sh",
+    "test": "npm run test:geo && npm run test:leads && npm run test:fase2"
   },
   "dependencies": {
     "@sanity/client": "^7.8.2",

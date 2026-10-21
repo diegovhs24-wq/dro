@@ -3,6 +3,7 @@ import Link from "next/link";
 import {notFound} from "next/navigation";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
+import {CaseStudyDetail} from "@/components/casestudy/CaseStudy";
 import {
   getProjectBySlug,
   getProjects,
@@ -114,7 +115,7 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
               ["Type", project.type],
               ["Duur", project.duration],
               ["Begeleiding", "Van A tot Z"],
-            ].map(([label, value]) => (
+            ].filter(([, value]) => value && value.trim()).map(([label, value]) => (
               <div className="rounded-lg bg-brand-soft p-6" key={label}>
                 <p className="text-sm font-bold uppercase tracking-[0.16em] text-brand-orange">
                   {label}
@@ -164,6 +165,14 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
             <p className="mt-7 text-lg leading-9 text-neutral-700">{project.story}</p>
           </div>
         </section>
+
+        {project.caseStudy && (
+          <div className="border-t border-lp-line bg-white py-14 sm:py-20">
+            <div className="section-shell">
+              <CaseStudyDetail caseStudy={project.caseStudy} location={project.location.trim()} />
+            </div>
+          </div>
+        )}
 
         {project.videoChecklist?.[0] && (
           <VideoChecklistBlockSection content={project.videoChecklist[0]} />

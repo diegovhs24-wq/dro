@@ -11,6 +11,8 @@ import {
   getSiteSettings,
 } from "@/lib/cms";
 import {absoluteUrl, getSiteUrl} from "@/lib/seo/site";
+import {CONVERSION_ROUTES, ROUTE_TRUST} from "@/lib/conversionRoutes";
+import {caseStudyFacts} from "@/lib/caseStudy";
 import {BUSINESS, formatReviewSummary, getReviewSnapshot, stripOutdatedClaims} from "@/lib/seo/business";
 import type {CmsDynamicPageBlock} from "@/lib/cms";
 import type {PtBlock, RichTextContent} from "@/lib/types";
@@ -343,6 +345,30 @@ async function buildRawMarkdownForPath(pathname: string) {
     return lines.join("\n");
   }
 
+  const route = CONVERSION_ROUTES.find((r) => r.path === normalized);
+  if (route) {
+    lines.push(heading(1, route.title));
+    lines.push(paragraph(route.intro));
+    lines.push(heading(2, route.audience.title));
+    route.audience.cards.forEach((c) => lines.push(`- **${c.title}.** ${c.text}\n`));
+    lines.push("\n");
+    lines.push(heading(2, route.scope.title));
+    route.scope.cards.forEach((c) => lines.push(`- **${c.title}.** ${c.text}${c.href ? ` ${link(c.linkLabel || c.title, c.href)}` : ""}\n`));
+    lines.push("\n");
+    lines.push(heading(2, route.pricing.title));
+    lines.push(paragraph(route.pricing.intro));
+    lines.push(paragraph(route.pricing.note));
+    lines.push(heading(2, "Betaling en zekerheden"));
+    lines.push(list([ROUTE_TRUST.payment, ROUTE_TRUST.insurance, `Erkenningen: ${ROUTE_TRUST.credentials.join(", ")}.`]));
+    lines.push(heading(2, route.steps.title));
+    route.steps.items.forEach((step, i) => lines.push(`${i + 1}. **${step.title}.** ${step.text}\n`));
+    lines.push("\n");
+    lines.push(heading(2, "Veelgestelde vragen"));
+    route.faq.forEach((f) => lines.push(`### ${f.q}\n\n${f.a}\n\n`));
+    lines.push(`Aanvragen: ${link("projectintake op deze pagina", `${route.path}#intake`)} of bel ${BUSINESS.phone.display} (ook via WhatsApp).\n`);
+    return lines.join("\n");
+  }
+
   if (normalized === "/diensten") {
     const page = await getServicesIndex();
     page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
@@ -433,6 +459,17 @@ async function buildRawMarkdownForPath(pathname: string) {
     lines.push(list(project.work_items));
     lines.push(heading(2, "Projectverhaal"));
     lines.push(paragraph(project.story));
+    if (project.caseStudy) {
+      const cs = project.caseStudy;
+      lines.push(heading(2, "Casestudy"));
+      lines.push(list(caseStudyFacts(cs, project.location.trim()).map((f) => `${f.label}: ${f.value}`)));
+      lines.push(paragraph(`Wat de opdrachtgever wilde: ${cs.clientGoal}`));
+      if (cs.challenge) lines.push(paragraph(`Grootste uitdaging: ${cs.challenge}`));
+      if (cs.solution) lines.push(paragraph(`Oplossing: ${cs.solution}`));
+      lines.push(heading(3, "Scope"));
+      lines.push(list(cs.scope));
+      if (cs.quote) lines.push(`> ${cs.quote.text}${cs.quote.author ? ` (${cs.quote.author})` : ""}\n\n`);
+    }
     lines.push(`Terug naar ${link("alle projecten", "/projecten")}.\n`);
     return lines.join("\n");
   }

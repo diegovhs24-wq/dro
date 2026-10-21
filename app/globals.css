@@ -96,3 +96,105 @@ section.bg-white::after {
   background-position: center;
   background-size: cover;
 }
+
+/* Routepagina's (grote renovaties, constructieve werken). Koel palet van de
+   landingspagina's; oranje alleen voor acties. */
+.route-h1 {
+  font-size: clamp(2.4rem, 1.6rem + 3.4vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.route-h2 {
+  font-size: clamp(1.75rem, 1.4rem + 1.3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.route-section {
+  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+}
+.route-grid {
+  display: grid;
+  gap: 2.5rem;
+}
+@media (min-width: 1024px) {
+  .route-grid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 4rem;
+    align-items: start;
+  }
+}
+.route-btn {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #d95b16;
+  padding: 0 1.5rem;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  transition: background-color 150ms ease;
+}
+.route-btn:hover {
+  background: #bf4e12;
+}
+.route-btn:focus-visible,
+.route-page a:focus-visible,
+.route-page summary:focus-visible {
+  outline: 3px solid #f2a46f;
+  outline-offset: 3px;
+}
+.route-btn-quiet {
+  background: transparent;
+  color: #1c1f23;
+  box-shadow: inset 0 0 0 2px #1c1f23;
+}
+.route-btn-quiet:hover {
+  background: #1c1f23;
+  color: #fff;
+}
+.route-steps {
+  counter-reset: step;
+  display: grid;
+}
+.route-steps > li {
+  counter-increment: step;
+  position: relative;
+  padding: 0 0 2rem 3.5rem;
+  border-left: 2px solid #d9ddda;
+  margin-left: 1rem;
+}
+.route-steps > li:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
+.route-steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: -1.05rem;
+  top: -0.15rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #26313a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.route-range {
+  accent-color: #d95b16;
+  height: 28px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-page * {
+    transition: none !important;
+  }
+}

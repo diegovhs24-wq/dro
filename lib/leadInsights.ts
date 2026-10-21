@@ -15,7 +15,8 @@ export type LeadAttribution = Partial<
     | "landingPage"
     | "referrer"
     | "variant"
-    | "firstSeenAt",
+    | "firstSeenAt"
+    | "submitPage",
     string
   >
 >;
@@ -106,6 +107,23 @@ function parseBudgetLabel(label: string): number | undefined {
   if (!numbers.length) return undefined;
   if (/^\s*tot\b/i.test(label)) return Math.max(...numbers) - 1;
   return Math.max(...numbers);
+}
+
+// Budgetklasse voor rapportage en opvolging (CRM). Gebaseerd op de bovengrens
+// die de klant aangeeft; bij de grote-renovatieroute staat de schuif tot
+// € 250.000+, dus een bovengrens van 250.000 of meer telt als "250k+".
+export type BudgetTier = {key: "onbekend" | "tot-25k" | "25k-50k" | "50k-100k" | "100k-250k" | "250k-plus"; label: string};
+
+export function budgetTier(input: {budgetMin?: number; budgetMax?: number; budgetLabel?: string}): BudgetTier {
+  const label = (input.budgetLabel || "").trim();
+  if (/weet ik (nog )?niet/i.test(label)) return {key: "onbekend", label: "Onbekend"};
+  const top = input.budgetMax ?? (label ? parseBudgetLabel(label) : undefined);
+  if (top === undefined || top <= 0) return {key: "onbekend", label: "Onbekend"};
+  if (top < 25000) return {key: "tot-25k", label: "Tot € 25.000"};
+  if (top < 50000) return {key: "25k-50k", label: "€ 25.000 tot € 50.000"};
+  if (top < 100000) return {key: "50k-100k", label: "€ 50.000 tot € 100.000"};
+  if (top < 250000) return {key: "100k-250k", label: "€ 100.000 tot € 250.000"};
+  return {key: "250k-plus", label: "€ 250.000 of meer"};
 }
 
 export function assessLead(input: {

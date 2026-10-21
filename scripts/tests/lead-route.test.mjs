@@ -134,3 +134,48 @@ test("Sanity hangt: na 8 s toch mail en succes", {timeout: 20_000}, async () => 
   assert.equal(globalThis.__EMAIL_SENT[0].notSavedWarning, true);
   assert.ok(Date.now() - t0 < 10_000);
 });
+
+test("route grote renovatie: route, budgetklasse en verzendpagina op lead en in mail", async () => {
+  const res = await POST(
+    req({
+      ...base,
+      submissionId: "route-groot-1",
+      source: "route-grote-renovatie",
+      conversionRoute: "grote-renovatie",
+      services: ["Badkamer"],
+      budgetMin: 150000,
+      budgetMax: 250000,
+      budgetLabel: "€150k – €250k+",
+      attribution: {landingPage: "/grote-renovaties", submitPage: "/grote-renovaties"},
+    })
+  );
+  assert.equal(res.status, 201);
+  const doc = globalThis.__LEADS_STORE.get("submission-route-groot-1");
+  assert.equal(doc.source, "route-grote-renovatie");
+  assert.equal(doc.conversionRoute, "grote-renovatie");
+  assert.equal(doc.budgetTier, "250k-plus");
+  assert.equal(doc.attribution.submitPage, "/grote-renovaties");
+  const mail = globalThis.__EMAIL_SENT[0];
+  assert.equal(mail.conversionRouteLabel, "Grote renovatie");
+  assert.equal(mail.budgetTierLabel, "€ 250.000 of meer");
+  assert.equal(mail.formTitle, "Intake grote renovaties");
+  // Op deze route geldt de budgetcheck vanaf € 50.000, ook als alleen een badkamer is gekozen.
+  assert.ok(mail.assessment.checks.some((c) => c.label === "Budget" && c.ok === true));
+  // Onderwerp blijft herkenbaar voor de mailassistent: geen kanaalwijziging naar Ads.
+  assert.notEqual(mail.channel.key, "google-ads");
+});
+
+test("onbekende route of bron wordt genegeerd", async () => {
+  const res = await POST(req({...base, submissionId: "route-x-1", source: "hack", conversionRoute: "<script>"}));
+  assert.equal(res.status, 201);
+  const doc = globalThis.__LEADS_STORE.get("submission-route-x-1");
+  assert.equal(doc.source, "smart-intake");
+  assert.equal(doc.conversionRoute, undefined);
+});
+
+test("route constructief afgeleid uit de bron", async () => {
+  await POST(req({...base, submissionId: "route-c-1", source: "route-specialistisch", services: ["Draagmuur verwijderen"], budgetLabel: "Weet ik nog niet"}));
+  const doc = globalThis.__LEADS_STORE.get("submission-route-c-1");
+  assert.equal(doc.conversionRoute, "specialistisch");
+  assert.equal(doc.budgetTier, "onbekend");
+});

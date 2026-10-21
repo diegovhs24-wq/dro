@@ -1,4 +1,6 @@
 import {cmsImageUrl, fetchSanity} from "@/lib/sanity";
+import {toPublicCaseStudy} from "@/lib/caseStudy";
+import {pickVerifiedClaims, type VerifiedClaims} from "@/lib/verifiedClaims";
 import {
   fallbackHomePage,
   fallbackServices,
@@ -838,6 +840,13 @@ const PROJECTS_QUERY = `*[_type == "project"]|order(sortOrder asc, title asc){
   primaryLink{${SMART_LINK_FIELDS}},
   secondaryLabel,
   secondaryLink{${SMART_LINK_FIELDS}},
+  caseStudy{
+    published, consentDate, routes, district, propertyType, buildYear, areaM2, durationWeeks,
+    budgetBand, budgetBandConsent, clientGoal, scope, challenge, solution, details,
+    quote, quoteAuthor, quoteConsent, projectLead,
+    beforeImages[]{${IMAGE_SOURCE_FIELDS}},
+    afterImages[]{${IMAGE_SOURCE_FIELDS}}
+  },
   seo{${SEO_FIELDS}}
 }`;
 
@@ -863,6 +872,13 @@ const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
     lists[]{ icon, title, items },
     videoUrl,
     videoCaption
+  },
+  caseStudy{
+    published, consentDate, routes, district, propertyType, buildYear, areaM2, durationWeeks,
+    budgetBand, budgetBandConsent, clientGoal, scope, challenge, solution, details,
+    quote, quoteAuthor, quoteConsent, projectLead,
+    beforeImages[]{${IMAGE_SOURCE_FIELDS}},
+    afterImages[]{${IMAGE_SOURCE_FIELDS}}
   },
   seo{${SEO_FIELDS}}
 }`;
@@ -1450,6 +1466,8 @@ function toProject(raw: RawRecord): ProjectItem | null {
     secondaryLabel: normalized.secondaryLabel,
     secondaryLink: normalized.secondaryLink,
     videoChecklist: Array.isArray(normalized.videoChecklist) ? normalized.videoChecklist as VideoChecklistItem[] : [],
+    // Alleen vrijgegeven casestudy's komen door (toestemming + minimale inhoud).
+    caseStudy: toPublicCaseStudy((normalized as Record<string, unknown>).caseStudy),
     seo: mapSeo(raw.seo),
   };
 }
@@ -1653,6 +1671,12 @@ export async function isCmsUnavailable() {
 export async function getServiceSlugs() {
   const services = await getServices();
   return services.map((service) => service.slug);
+}
+
+export async function getVerifiedClaims(): Promise<VerifiedClaims> {
+  const {data, failed} = await safeFetch<unknown>(`*[_type == "siteSettings"][0].verifiedClaims`);
+  if (failed) return {};
+  return pickVerifiedClaims(data);
 }
 
 export async function getProjects() {
