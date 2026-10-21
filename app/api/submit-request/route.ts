@@ -222,7 +222,8 @@ export async function POST(request: NextRequest) {
 
   // Rate limit pas na validatie, zodat een klant die een typfout herstelt niet
   // in de limiet loopt. Zonder bekend IP geen limiet (geen gedeelde emmer).
-  const ip = request.ip || request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0].trim();
+  // Vercel zet x-real-ip; `request.ip` bestaat niet meer in Next 15.
+  const ip = request.headers.get("x-real-ip") || request.headers.get("x-forwarded-for")?.split(",")[0].trim();
   if (ip && rateLimited(ip)) {
     return reject(429, "Too many requests");
   }
