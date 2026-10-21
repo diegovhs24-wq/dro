@@ -9,6 +9,8 @@
 //   750         constructieberekening (incl. vergunningsaanvraag)
 //   450         basisafwerking (vervalt bij casco)
 //   C           complexiteitsfactor 1,00 / 1,25 / 1,50
+//   + 450       brandwerend bekleden van de ligger door DRO (bv. Promatect),
+//               los opgeteld, buiten de complexiteitsfactor
 //
 // De bezoeker ziet het bedrag inclusief 21% btw. Bij brede doorbraken of zware
 // belasting rekent de constructeur de staalconstructie apart (zie WIDE_FROM_M).
@@ -23,7 +25,7 @@ export type DraagmuurInput = {
   thickness: number; // muurdikte in centimeters (telt mee in de complexiteit)
   floor: DraagmuurFloor;
   finished: boolean; // basisafwerking ja (afgewerkt) of nee (casco)
-  fireWrap: boolean; // DRO bekleedt de ligger brandwerend (bv. Promatect); prijs volgt in offerte
+  fireWrap: boolean; // DRO bekleedt de ligger brandwerend (bv. Promatect): + fireCladding
 };
 
 export const PRICE = {
@@ -32,6 +34,7 @@ export const PRICE = {
   steelPerM: 675,
   engineering: 750,
   finishing: 450,
+  fireCladding: 450,
   vat: 1.21,
 } as const;
 
@@ -62,6 +65,7 @@ export type DraagmuurBreakdown = {
   steel: number;
   engineering: number;
   finishing: number;
+  fireCladding: number;
   factor: 1 | 1.25 | 1.5;
   reasons: string[];
   totalEx: number;
@@ -76,13 +80,15 @@ export function draagmuurBreakdown(input: DraagmuurInput): DraagmuurBreakdown {
   const steel = B * PRICE.steelPerM;
   const finishing = input.finished ? PRICE.finishing : 0;
   const {factor, reasons} = complexityOf(input);
-  const totalEx = (demolition + PRICE.shoring + steel + PRICE.engineering + finishing) * factor;
+  const fireCladding = input.fireWrap ? PRICE.fireCladding : 0;
+  const totalEx = (demolition + PRICE.shoring + steel + PRICE.engineering + finishing) * factor + fireCladding;
   return {
     demolition,
     shoring: PRICE.shoring,
     steel,
     engineering: PRICE.engineering,
     finishing,
+    fireCladding,
     factor,
     reasons,
     totalEx: Math.round(totalEx),
@@ -91,7 +97,8 @@ export function draagmuurBreakdown(input: DraagmuurInput): DraagmuurBreakdown {
   };
 }
 
-// Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, met afwerking.
+// Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, met afwerking,
+// zonder brandwerende bekleding (die staat op de pagina als losse post).
 export const EXAMPLE_INPUT: DraagmuurInput = {
   kind: "volledig",
   width: 3,
@@ -99,7 +106,7 @@ export const EXAMPLE_INPUT: DraagmuurInput = {
   thickness: 22,
   floor: "begane grond",
   finished: true,
-  fireWrap: true,
+  fireWrap: false,
 };
 
 export function formatEuro(n: number): string {
