@@ -5,9 +5,11 @@
 // intakeForm-schema en verandert zelden genoeg om CMS-redigeerbaar te
 // hoeven zijn.
 
-export type QuestionOption = string | {l: string; d?: string; back?: boolean};
+// stop: tekst die verschijnt als iemand deze optie kiest (bijvoorbeeld een te
+// laag budget); de bezoeker kan daarna bewust toch verder.
+export type QuestionOption = string | {l: string; d?: string; back?: boolean; stop?: string};
 
-export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "summary" | "contact" | "thanks" | "services" | "dims" | "photos";
+export type QuestionType = "single" | "multi" | "confirm" | "text" | "address" | "budget" | "summary" | "contact" | "thanks" | "services" | "dims" | "photos" | "calc" | "fit";
 
 // Maatvelden voor vragen van het type "dims". Getallen met komma of punt;
 // velden met opt zijn niet verplicht.
@@ -39,10 +41,12 @@ export const SERVICES: string[] = [
   "Airco of klimaat",
   "Kozijnen",
   "Bouwkundige keuring",
+  "Draagmuur verwijderen",
   "Iets anders",
 ];
 
 export const SERVICE_LABEL: Record<string, string> = {
+  "Draagmuur verwijderen": "Draagmuur of doorbraak",
   "Aanbouw of opbouw": "Aanbouw, uitbouw of opbouw",
 };
 
@@ -52,6 +56,7 @@ export function serviceLabel(service: string): string {
 
 // Innerlijke SVG-paden (viewBox 0 0 24 24), 1-op-1 uit het voorbeeld.
 export const SERVICE_ICON: Record<string, string> = {
+  "Draagmuur verwijderen": '<path d="M3 21h18M5 21V5h14v16"/><path d="M9 21v-8h6v8M5 10h4M15 10h4"/>',
   Badkamer: '<path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M6 12V6a2 2 0 0 1 4 0"/><path d="M8 19l-1 2M17 19l1 2"/>',
   Keuken: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M8 3v6"/>',
   Totaalrenovatie: '<path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-5h6v5M9 11h6"/>',
@@ -135,6 +140,14 @@ export const QUESTIONS: Record<string, QuestionDef[]> = {
   ],
   "Bouwkundige keuring": [
     {id: "keu_a", t: "single", q: "Waarvoor heeft u de keuring nodig?", s: "Het rapport kost €399. Verbouwen wij daarna? Dan is de keuring kosteloos.", o: ["Voor de aankoop van een woning", "Voor een verbouwing", "Algemeen onderhoud / advies"]},
+  ],
+  "Draagmuur verwijderen": [
+    {id: "dm1", t: "single", q: "Wat wilt u laten doen?", o: [{l: "Deuropening maken in een draagmuur"}, {l: "Draagmuur deels weghalen", d: "een doorgang of een bredere opening"}, {l: "Draagmuur helemaal verwijderen", d: "bijvoorbeeld voor een open keuken"}, {l: "Weet ik nog niet"}]},
+    {id: "dm2", t: "calc", q: "Bereken uw prijsindicatie", s: "Schuif de maten naar uw situatie. Een schatting is goed, wij meten het daarna precies in."},
+    {id: "dm3", t: "fit", q: "Past deze indicatie bij uw budget?", s: "Zo weten we allebei of het zin heeft om een opname in te plannen.", o: [{l: "Ja, dat past"}, {l: "Mijn budget is hoger", d: "er mag meer gebeuren, bijvoorbeeld een keuken of vloer"}, {l: "Nee, mijn budget is lager", stop: "Voor een lager bedrag kunnen wij een draagmuur niet veilig en verantwoord aanpassen. Een draagmuur draagt een deel van uw huis: een constructieberekening, stempelen, de juiste balk en een vergunning zijn geen extra's maar noodzaak. Kan uw budget nog omhoog, of wilt u eerst weten waar het geld precies naartoe gaat? Dan denken we graag mee."}]},
+    {id: "dm4", t: "single", q: "Heeft u archief- of bouwtekeningen van de woning?", s: "Geen tekeningen? Wij vragen ze op bij het gemeentearchief of meten zelf in.", o: ["Ja, die heb ik", "Nee", "Kan ik opvragen bij de gemeente", "Weet ik niet"]},
+    {id: "dm5", t: "single", q: "Weet u zeker dat de muur dragend is?", s: "Een dragende muur is vaak 17,5 cm of dikker, klinkt massief en loopt door tot het plafond.", o: ["Ja, dat weet ik zeker", "Ik denk het", "Weet ik niet"]},
+    {id: "dm6", t: "multi", q: "Wat moet er daarna nog gebeuren?", s: "Dan plannen we het in één keer goed, met één aanspreekpunt.", o: ["Alleen de doorbraak", "Stucwerk en schilderwerk", "Nieuwe keuken", "Nieuwe vloer", "Elektra aanpassen", "Grotere verbouwing", "Weet ik nog niet"]},
   ],
   "Iets anders": [
     {id: "and1", t: "text", q: "Vertel ons waar u hulp bij zoekt", s: "Omschrijf kort wat u van plan bent.", ph: "Bijvoorbeeld: ik wil advies over de indeling van mijn woning..."},

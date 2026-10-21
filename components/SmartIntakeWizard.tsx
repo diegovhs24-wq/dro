@@ -6,6 +6,14 @@ import {trackLead} from "@/lib/analytics";
 import {captureAttribution, getAttribution} from "@/lib/attribution";
 import {lookupPdokAddress, normalizeDutchPostcode, type PdokAddress} from "@/lib/pdok";
 import {
+  DRAAGMUUR_DEFAULT_WIDTH,
+  draagmuurRange,
+  formatEuro,
+  type DraagmuurFloor,
+  type DraagmuurInput,
+  type DraagmuurKind,
+} from "@/lib/draagmuurPrice";
+import {
   COMMON,
   DIMS_UNKNOWN,
   QUESTIONS,
@@ -31,6 +39,9 @@ function optionLabel(o: QuestionOption): string {
 }
 function optionDesc(o: QuestionOption): string | undefined {
   return typeof o === "string" ? undefined : o.d;
+}
+function optionStop(o: QuestionOption): string | undefined {
+  return typeof o === "object" ? o.stop : undefined;
 }
 function optionBack(o: QuestionOption): boolean {
   return typeof o === "object" && Boolean(o.back);
@@ -172,7 +183,7 @@ const inputClass = "intake-inp";
 export type SmartIntakeProps = {
   presetServices?: string[];
   skipIds?: string[];
-  source?: "smart-intake" | "lp-totaalrenovatie";
+  source?: "smart-intake" | "lp-totaalrenovatie" | "lp-draagmuur";
   variant?: string;
   responsePromise?: string;
   initialBudget?: [number, number];
@@ -222,6 +233,17 @@ export default function SmartIntakeWizard({
   const [dimInputs, setDimInputs] = useState<Record<string, Record<string, string>>>({});
   const [photos, setPhotos] = useState<string[]>([]);
   const [photoBusy, setPhotoBusy] = useState(false);
+  // Rekenmodule draagmuur (vraagtype "calc") en stopmelding bij "fit".
+  const [calc, setCalc] = useState<DraagmuurInput>({
+    kind: "volledig",
+    width: DRAAGMUUR_DEFAULT_WIDTH.volledig,
+    thickness: 22,
+    height: 2.6,
+    floor: "begane grond",
+    finished: true,
+    fireWrap: true,
+  });
+  const [stopMessage, setStopMessage] = useState<string | null>(null);
   const [company, setCompany] = useState(""); // honeypot
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
@@ -306,8 +328,50 @@ export default function SmartIntakeWizard({
       if (!hasPreset) go(0);
       return;
     }
+    if (def.id === "dm1") {
+      const label = optionLabel(option);
+      const kind: DraagmuurKind = /deuropening/i.test(label) ? "deur" : /deels/i.test(label) ? "deels" : "volledig";
+      setCalc((prev) => ({...prev, kind, width: DRAAGMUUR_DEFAULT_WIDTH[kind]}));
+    }
+    if (def.t === "fit") {
+      const range = draagmuurRange(calc);
+      const label = optionLabel(option);
+      const stop = optionStop(option);
+      updateAnswer(def.id, label);
+      setBudgetMin(range.low);
+      setBudgetMax(range.high);
+      setBudgetLabel(`${stop ? "Lager dan" : label.startsWith("Mijn budget is hoger") ? "Hoger dan" : "Past bij"} indicatie ${formatEuro(range.low)} – ${formatEuro(range.high)}`);
+      if (stop) {
+        setStopMessage(stop);
+        return;
+      }
+      setStopMessage(null);
+      window.setTimeout(next, 300);
+      return;
+    }
     updateAnswer(def.id, optionLabel(option));
     window.setTimeout(next, 300);
+  }
+
+  function calcSummary(): string {
+    const range = draagmuurRange(calc);
+    const kindLabel = calc.kind === "deur" ? "Deuropening" : calc.kind === "deels" ? "Draagmuur deels weg" : "Draagmuur helemaal weg";
+    const fmt = (n: number) => n.toLocaleString("nl-NL", {maximumFractionDigits: 2});
+    return [
+      kindLabel,
+      `opening ${fmt(calc.width)} m`,
+      `muur ${calc.thickness} cm`,
+      `plafond ${fmt(calc.height)} m`,
+      calc.floor,
+      calc.finished ? "afgewerkt" : "casco",
+      `brandveilig inpakken: ${calc.fireWrap ? "ja" : "nee (klant gewaarschuwd)"}`,
+      `indicatie ${formatEuro(range.low)} – ${formatEuro(range.high)} incl. btw`,
+    ].join(" · ");
+  }
+
+  function confirmCalc(def: QuestionDef) {
+    updateAnswer(def.id, calcSummary());
+    next();
   }
 
   function toggleMulti(def: QuestionDef, option: string) {
@@ -372,7 +436,7 @@ export default function SmartIntakeWizard({
           budgetMin: budgetLabel === "Weet ik nog niet" ? undefined : budgetMin,
           budgetMax: budgetLabel === "Weet ik nog niet" ? undefined : budgetMax,
           budgetLabel,
-          hoeGevonden: answers.found || (source === "lp-totaalrenovatie" ? "Advertentie (landingspagina)" : undefined),
+          hoeGevonden: answers.found || (source.startsWith("lp-") ? "Advertentie (landingspagina)" : undefined),
           message: answers.more,
           serviceAnswers,
           photos: photos.map((p) => p.replace(/^data:image\/jpeg;base64,/, "")),
@@ -493,6 +557,130 @@ export default function SmartIntakeWizard({
             );
           })}
         </div>
+      </>
+    );
+  }
+
+  function renderSeg<T extends string | boolean>(label: string, value: T, options: Array<{v: T; l: string}>, onPick: (v: T) => void) {
+    return (
+      <div className="intake-field">
+        <label>{label}</label>
+        <div className="intake-seg" role="group">
+          {options.map((o) => (
+            <button aria-pressed={value === o.v} className={value === o.v ? "intake-seg-on" : undefined} key={String(o.v)} onClick={() => onPick(o.v)} type="button">
+              {o.l}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function renderSlider(label: string, value: number, min: number, max: number, step: number, unit: string, onChange: (v: number) => void) {
+    const shown = value.toLocaleString("nl-NL", {maximumFractionDigits: 2});
+    return (
+      <div className="intake-field">
+        <label className="intake-range-l">
+          <span>{label}</span>
+          <b>
+            {shown} {unit}
+          </b>
+        </label>
+        <input
+          aria-label={label}
+          className="intake-range"
+          max={max}
+          min={min}
+          onChange={(e) => onChange(Number(e.target.value))}
+          step={step}
+          style={{"--intake-fill": `${((value - min) / (max - min)) * 100}%`} as React.CSSProperties}
+          type="range"
+          value={value}
+        />
+      </div>
+    );
+  }
+
+  function renderCalcScreen(def: QuestionDef) {
+    const range = draagmuurRange(calc);
+    const set = (patch: Partial<DraagmuurInput>) => setCalc((prev) => ({...prev, ...patch}));
+    return (
+      <>
+        {renderHeader(def, "Prijsindicatie")}
+        <p className="intake-pricechip" aria-hidden="true">
+          Indicatie nu: <b>{formatEuro(range.low)} tot {formatEuro(range.high)}</b> incl. btw
+        </p>
+        {renderSeg<DraagmuurKind>("Wat gaat eruit?", calc.kind, [
+          {v: "deur", l: "Deuropening"},
+          {v: "deels", l: "Deels"},
+          {v: "volledig", l: "Hele muur"},
+        ], (kind) => set({kind, width: DRAAGMUUR_DEFAULT_WIDTH[kind]}))}
+        {renderSlider("Hoe breed wordt de opening?", calc.width, 0.6, 8, 0.1, "m", (width) => set({width}))}
+        {renderSlider("Hoe dik is de muur?", calc.thickness, 10, 40, 1, "cm", (thickness) => set({thickness}))}
+        {renderSlider("Hoe hoog is het plafond?", calc.height, 2.2, 3.6, 0.05, "m", (height) => set({height}))}
+        {renderSeg<DraagmuurFloor>("Waar zit de muur?", calc.floor, [
+          {v: "begane grond", l: "Begane grond"},
+          {v: "verdieping", l: "Verdieping"},
+          {v: "appartement", l: "Appartement"},
+        ], (floor) => set({floor}))}
+        {renderSeg<boolean>("Hoe wilt u het opgeleverd?", calc.finished, [
+          {v: true, l: "Afgewerkt"},
+          {v: false, l: "Casco"},
+        ], (finished) => set({finished}))}
+        <p className="intake-dimprev" style={{marginTop: -8, marginBottom: 14}}>
+          {calc.finished ? "Afgewerkt: stucwerk schilderklaar, opening netjes afgewerkt." : "Casco: alleen de constructieve doorbraak, u of een ander werkt af."}
+        </p>
+        {renderSeg<boolean>("Brandveilig inpakken tijdens slijp- en laswerk?", calc.fireWrap, [
+          {v: true, l: "Ja, graag"},
+          {v: false, l: "Nee"},
+        ], (fireWrap) => set({fireWrap}))}
+        {!calc.fireWrap ? (
+          <div className="intake-warn" role="note">
+            <b>Let op.</b> Bij het slijpen en lassen van de stalen balk ontstaan vonken. Laat uw aannemer de ruimte altijd brandveilig
+            inpakken, ook voor uw garantie en verzekering. Kiest u hier bewust voor nee, dan neemt DRO geen verantwoordelijkheid voor
+            brand- of rookschade die daardoor ontstaat.
+          </div>
+        ) : null}
+        <div className="intake-price" aria-live="polite">
+          <span className="intake-price-l">Uw indicatie, inclusief btw</span>
+          <span className="intake-price-v">
+            {formatEuro(range.low)} <span>tot</span> {formatEuro(range.high)}
+          </span>
+          <span className="intake-price-s">
+            Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen balk of latei, sloop, container en afvoer
+            {calc.fireWrap ? ", brandveilig inpakken" : ""}
+            {calc.finished ? " en stucwerk" : ""}. Leges van de gemeente apart. Na de opname krijgt u een vaste prijs.
+          </span>
+        </div>
+      </>
+    );
+  }
+
+  function renderFitScreen(def: QuestionDef) {
+    const range = draagmuurRange(calc);
+    return (
+      <>
+        {renderHeader(def, "Budget")}
+        <p className="intake-dimprev" style={{marginTop: -4, marginBottom: 12}}>
+          Uw indicatie: <b>{formatEuro(range.low)} tot {formatEuro(range.high)}</b> inclusief btw.
+        </p>
+        {renderOptions(def)}
+        {stopMessage ? (
+          <div className="intake-stop" role="alert">
+            <p>{stopMessage}</p>
+            <button
+              className="intake-btn"
+              onClick={() => {
+                updateAnswer(def.id, "Budget lager dan indicatie, kan mogelijk omhoog");
+                setStopMessage(null);
+                next();
+              }}
+              type="button"
+            >
+              Mijn budget kan omhoog, verder <ArrowIcon />
+            </button>
+          </div>
+        ) : null}
       </>
     );
   }
@@ -868,6 +1056,8 @@ export default function SmartIntakeWizard({
         </>
       );
     }
+    if (current.t === "calc") return renderCalcScreen(current);
+    if (current.t === "fit") return renderFitScreen(current);
     if (current.t === "dims") return renderDimsScreen(current);
     if (current.t === "photos") return renderPhotosScreen(current);
     if (current.t === "address") return renderAddressScreen(current);
@@ -888,6 +1078,10 @@ export default function SmartIntakeWizard({
       return {label: "Verder", onClick: () => confirmDims(def), disabled: !dimsComplete(def)};
     }
     if (current.t === "photos") return {label: photos.length ? "Verder" : "Verder zonder foto's", onClick: next, disabled: photoBusy};
+    if (current.t === "calc") {
+      const def = current;
+      return {label: "Verder", onClick: () => confirmCalc(def), disabled: false};
+    }
     if (current.t === "address") return {label: "Verder", onClick: confirmAddress, disabled: !(postcodeInput.trim() && houseNumberInput.trim())};
     if (current.t === "budget") return {label: "Verder", onClick: next, disabled: false};
     if (current.t === "summary") return {label: "Alles klopt, verder", onClick: next, disabled: false};
@@ -1345,6 +1539,147 @@ export default function SmartIntakeWizard({
           min-height: 150px;
           resize: vertical;
           line-height: 1.55;
+        }
+        .intake-seg {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+        .intake-seg button {
+          flex: 1 1 0;
+          min-width: 0;
+          min-height: 44px;
+          padding: 8px 10px;
+          border: 1.5px solid var(--intake-line);
+          border-radius: 12px;
+          background: var(--intake-bg);
+          font-family: var(--intake-fb);
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--intake-ink-2);
+          cursor: pointer;
+        }
+        .intake-seg button.intake-seg-on {
+          border-color: var(--intake-accent);
+          background: var(--intake-accent-tint);
+          color: var(--intake-ink);
+        }
+        .intake-range-l {
+          display: flex !important;
+          justify-content: space-between;
+          align-items: baseline;
+        }
+        .intake-range-l b {
+          font-size: 15px;
+          color: var(--intake-ink);
+          font-variant-numeric: tabular-nums;
+        }
+        .intake-range {
+          width: 100%;
+          height: 28px;
+          appearance: none;
+          -webkit-appearance: none;
+          background: transparent;
+          cursor: pointer;
+        }
+        .intake-range::-webkit-slider-runnable-track {
+          height: 6px;
+          border-radius: 99px;
+          background: linear-gradient(90deg, var(--intake-accent) var(--intake-fill), #e6e6e6 var(--intake-fill));
+        }
+        .intake-range::-moz-range-track {
+          height: 6px;
+          border-radius: 99px;
+          background: linear-gradient(90deg, var(--intake-accent) var(--intake-fill), #e6e6e6 var(--intake-fill));
+        }
+        .intake-range::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 26px;
+          height: 26px;
+          margin-top: -10px;
+          border-radius: 999px;
+          background: #fff;
+          border: 2px solid var(--intake-accent);
+          box-shadow: 0 2px 6px rgba(17, 17, 17, 0.18);
+        }
+        .intake-range::-moz-range-thumb {
+          width: 22px;
+          height: 22px;
+          border-radius: 999px;
+          background: #fff;
+          border: 2px solid var(--intake-accent);
+        }
+        .intake-range:focus-visible {
+          outline: 2px solid var(--intake-accent);
+          outline-offset: 4px;
+        }
+        .intake-pricechip {
+          position: sticky;
+          top: -6px;
+          z-index: 2;
+          margin: -4px 0 14px;
+          padding: 9px 12px;
+          border-radius: 10px;
+          background: var(--intake-accent-tint);
+          font-size: 13.5px;
+          color: var(--intake-ink-2);
+        }
+        .intake-pricechip b {
+          color: var(--intake-ink);
+          font-variant-numeric: tabular-nums;
+        }
+        .intake-warn {
+          margin: -4px 0 14px;
+          padding: 12px 14px;
+          border-radius: 12px;
+          background: #fff4e5;
+          border: 1px solid #f3d3a5;
+          font-size: 13.5px;
+          line-height: 1.5;
+          color: #6b4a12;
+        }
+        .intake-price {
+          display: grid;
+          gap: 4px;
+          margin-top: 4px;
+          padding: 16px;
+          border-radius: 14px;
+          background: #1f2830;
+          color: #fff;
+        }
+        .intake-price-l {
+          font-size: 12.5px;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        .intake-price-v {
+          font-family: var(--intake-fd);
+          font-size: 26px;
+          font-weight: 800;
+          font-variant-numeric: tabular-nums;
+        }
+        .intake-price-v span {
+          font-size: 15px;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.7);
+          padding: 0 4px;
+        }
+        .intake-price-s {
+          font-size: 12.5px;
+          line-height: 1.5;
+          color: rgba(255, 255, 255, 0.78);
+        }
+        .intake-stop {
+          margin-top: 12px;
+          padding: 14px;
+          border-radius: 12px;
+          background: var(--intake-sand);
+          border: 1px solid var(--intake-line-2);
+          font-size: 14px;
+          line-height: 1.55;
+          color: var(--intake-ink-2);
+        }
+        .intake-stop p {
+          margin: 0 0 12px;
         }
         .intake-dims {
           display: grid;
