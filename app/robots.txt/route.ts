@@ -43,9 +43,14 @@ const TRAINING_CRAWLERS = [
 
 const PRIVATE_PATHS = ["/api/", "/studio", "/studio-aanvragen"];
 
+// Een crawler met een eigen groep leest de *-groep niet (RFC 9309), dus het
+// Content-Signal staat in elke groep.
+const CONTENT_SIGNAL = `Content-Signal: search=yes, ai-input=yes, ai-train=${ALLOW_TRAINING ? "yes" : "no"}`;
+
 function group(agents: string[], allow: boolean) {
   return [
     ...agents.map((agent) => `User-agent: ${agent}`),
+    CONTENT_SIGNAL,
     ...(allow ? ["Allow: /", ...PRIVATE_PATHS.map((path) => `Disallow: ${path}`)] : ["Disallow: /"]),
     "",
   ];
@@ -58,12 +63,7 @@ export async function GET() {
     "# robots.txt voor DRO Renovaties",
     `# Machineleesbaar overzicht voor AI-systemen: ${siteUrl}/llms.txt`,
     "",
-    // Content-Signal hoort binnen een user-agent-groep (contentsignals.org).
-    "User-agent: *",
-    `Content-Signal: search=yes, ai-input=yes, ai-train=${ALLOW_TRAINING ? "yes" : "no"}`,
-    "Allow: /",
-    ...PRIVATE_PATHS.map((path) => `Disallow: ${path}`),
-    "",
+    ...group(["*"], true),
     "# Zoek- en antwoordcrawlers",
     ...group(SEARCH_AND_ANSWER_CRAWLERS, true),
     "# Door gebruikers aangestuurde AI-fetchers",

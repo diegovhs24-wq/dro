@@ -465,6 +465,7 @@ export default function SmartIntakeWizard({
           message: answers.more,
           serviceAnswers,
           photos: withPhotos ? photos.map((p) => p.replace(/^data:image\/jpeg;base64,/, "")) : [],
+          photosDropped: withPhotos ? 0 : photos.length,
           source,
           attribution,
         });
@@ -483,7 +484,9 @@ export default function SmartIntakeWizard({
       }
 
       if (!res.ok) throw new Error("Submit failed");
-      if (!leadTrackedRef.current) {
+      const result = (await res.json().catch(() => ({}))) as {spamSuspect?: boolean; duplicate?: boolean};
+      // Geen Ads-conversie voor mogelijke spam of een herhaalde inzending (L8).
+      if (!leadTrackedRef.current && !result.spamSuspect && !result.duplicate) {
         leadTrackedRef.current = true;
         trackLead();
       }
@@ -1041,9 +1044,9 @@ export default function SmartIntakeWizard({
 
         {/* Honeypot: onzichtbaar voor bezoekers, bots vullen doorgaans elk veld. */}
         <div aria-hidden="true" style={{position: "absolute", left: -9999, top: 0, height: 0, width: 0, overflow: "hidden"}}>
-          {/* Naam die autofill niet herkent (BE-01); "new-password" negeert opgeslagen gegevens. */}
+          {/* Naam die autofill niet herkent (BE-01); een ingevuld veld markeert de lead alleen als "mogelijk spam", er gaat niets verloren. */}
           <label htmlFor="hp_x7">Laat dit veld leeg</label>
-          <input autoComplete="new-password" id="hp_x7" name="hp_x7" onChange={(e) => setCompany(e.target.value)} tabIndex={-1} type="text" value={company} />
+          <input autoComplete="off" id="hp_x7" name="hp_x7" onChange={(e) => setCompany(e.target.value)} tabIndex={-1} type="text" value={company} />
         </div>
 
         <div className="intake-note">

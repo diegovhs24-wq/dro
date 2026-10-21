@@ -1018,7 +1018,8 @@ const LOCATION_QUERY = `*[_type == "location" && slug.current == $slug][0]{
     afterImage{${IMAGE_SOURCE_FIELDS}},
     seo{${SEO_FIELDS}}
   },
-  seo{${SEO_FIELDS}}
+  seo{${SEO_FIELDS}},
+  "popularServiceSlugs": popularServices[]->slug.current
 }`;
 
 const LOCATIONS_FOR_SERVICE_QUERY = `*[_type == "location" && $serviceSlug in popularServices[]->slug.current]|order(name asc){
@@ -1793,6 +1794,7 @@ function toLocationDetail(raw: RawRecord): LocationDetail | null {
     neighborhoods: asStringArray(raw.neighborhoods),
     nearbyCities,
     popularServices,
+    popularServiceSlugs: asStringArray(raw.popularServiceSlugs),
     relatedProjects,
     matchedProjects,
     seo: mapSeo(raw.seo),

@@ -20,7 +20,6 @@ const AI_BOTS: Array<[RegExp, string]> = [
   [/ClaudeBot/i, 'ClaudeBot'],
   [/Perplexity-User/i, 'Perplexity-User'],
   [/PerplexityBot/i, 'PerplexityBot'],
-  [/Google-Extended/i, 'Google-Extended'],
   [/Applebot/i, 'Applebot'],
   [/bingbot/i, 'Bingbot'],
   [/CCBot/i, 'CCBot'],
@@ -40,7 +39,18 @@ const AI_REFERRERS: Array<[RegExp, string]> = [
 ]
 
 function logAiTraffic(request: NextRequest, pathname: string) {
-  if (pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/studio')) return
+  // Alleen echte paginaverzoeken: geen assets (pad met extensie), geen API,
+  // Studio of RSC-prefetches. Houdt het logvolume en de kosten laag.
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/studio') ||
+    /\.[a-z0-9]{2,5}$/i.test(pathname) ||
+    request.headers.get('rsc') === '1' ||
+    request.nextUrl.searchParams.has('_rsc')
+  ) {
+    return
+  }
   const ua = request.headers.get('user-agent') || ''
   const bot = AI_BOTS.find(([pattern]) => pattern.test(ua))
   if (bot) {

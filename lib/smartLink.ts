@@ -1,4 +1,14 @@
 import type {SmartLink} from "@/lib/types";
+import {BUSINESS} from "@/lib/seo/business";
+
+// Placeholder-nummers uit oude seed-data (tel:+31600000000, wa.me/31600000000)
+// mogen nooit live een knop vullen: vervangen door het echte bedrijfsnummer.
+function safeExternalUrl(url: string): string {
+  if (/^tel:\+?(31)?0?6?0{6,}$/.test(url.replace(/[\s-]/g, "")) || /600000000/.test(url)) {
+    return url.startsWith("tel:") ? BUSINESS.phone.href : `https://wa.me/${BUSINESS.phone.e164.replace("+", "")}`;
+  }
+  return url;
+}
 
 export function resolveSmartLink(link: SmartLink | null | undefined): {href: string; openInNewTab: boolean} {
   if (!link) return {href: "#", openInNewTab: false};
@@ -15,5 +25,5 @@ export function resolveSmartLink(link: SmartLink | null | undefined): {href: str
     if (ref._type === "blogCategory") return {href: `/kennisbank?categorie=${ref.slug}`, openInNewTab: false};
     return {href: ref.slug === "home" ? "/" : `/${ref.slug}`, openInNewTab: false};
   }
-  return {href: link.externalUrl || "#", openInNewTab: link.openInNewTab ?? false};
+  return {href: link.externalUrl ? safeExternalUrl(link.externalUrl) : "#", openInNewTab: link.openInNewTab ?? false};
 }

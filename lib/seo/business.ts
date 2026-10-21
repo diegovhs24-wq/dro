@@ -166,13 +166,20 @@ export function formatReviewSummary(snapshot: ReviewSnapshot = getReviewSnapshot
   return `${rating} uit ${snapshot.reviewCount} ${snapshot.platform}-reviews`;
 }
 
-// Teksten uit het CMS die verouderde claims bevatten, worden hiermee
-// onschadelijk gemaakt tot de content in Sanity is aangepast. Zie
-// docs/audit/16-ai-findability-geo.md (GEO-03).
+// Teksten uit het CMS met de verouderde claim "geen aanbetaling" worden tot de
+// Sanity-correctie is gepubliceerd omgezet naar de bevestigde, ware formulering
+// "niets bij ondertekening" (betaalschema: niets bij tekenen, 20 tot 25 procent
+// op de eerste werkdag). Vervangen in plaats van weghalen, zodat koppen als
+// "Geen aanbetaling" niet leeg worden en zinnen grammaticaal blijven.
+// Zie docs/audit/16 (GEO-03) en docs/audit/17.
 const OUTDATED_CLAIMS: Array<[RegExp, string]> = [
-  [/,?\s*(en\s+)?zonder aanbetaling(?: vooraf)?/gi, ""],
-  [/,?\s*(en\s+)?geen aanbetaling(?: vooraf)?/gi, ""],
+  [/\bgeen aanbetaling(?: vooraf)?/gi, "niets bij ondertekening"],
+  [/\bzonder aanbetaling(?: vooraf)?/gi, "zonder betaling bij ondertekening"],
 ];
+
+function matchCase(original: string, replacement: string) {
+  return /^[A-Z]/.test(original) ? replacement.charAt(0).toUpperCase() + replacement.slice(1) : replacement;
+}
 
 export function hasOutdatedClaim(text?: string | null): boolean {
   if (!text) return false;
@@ -186,19 +193,12 @@ export function hasOutdatedClaim(text?: string | null): boolean {
 
 export function stripOutdatedClaims(text?: string | null): string {
   if (!text) return "";
-  // Tekst zonder verouderde claim blijft byte-voor-byte gelijk.
   if (!hasOutdatedClaim(text)) return text;
   let result = text;
   for (const [pattern, replacement] of OUTDATED_CLAIMS) {
-    result = result.replace(pattern, replacement);
+    result = result.replace(pattern, (found) => matchCase(found, replacement));
   }
-  // Opruimen van dubbele leestekens die na het weghalen overblijven.
-  return result
-    .replace(/\s+,/g, ",")
-    .replace(/,\s*,/g, ",")
-    .replace(/,\s*\./g, ".")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+  return result;
 }
 
 // Loopt recursief door CMS-data en corrigeert alleen strings met een verouderde

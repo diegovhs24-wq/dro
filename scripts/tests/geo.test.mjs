@@ -6,17 +6,19 @@ import {test} from "node:test";
 const {stripOutdatedClaims, formatReviewSummary, getReviewSnapshot, BUSINESS} = await import(process.env.GEO_BUSINESS);
 const {deriveChannel, detectAiPlatform} = await import(process.env.GEO_LEADS);
 
-test("verwijdert 'geen aanbetaling' zonder de zin te breken", () => {
+test("verouderde claim wordt vervangen door de bevestigde formulering", () => {
+  assert.equal(stripOutdatedClaims("Geen aanbetaling"), "Niets bij ondertekening");
+  assert.equal(stripOutdatedClaims("Geen aanbetaling vooraf"), "Niets bij ondertekening");
+  assert.equal(stripOutdatedClaims("Vaste prijs, geen aanbetaling en één vast team"), "Vaste prijs, niets bij ondertekening en één vast team");
+  assert.equal(stripOutdatedClaims("U betaalt geen aanbetaling."), "U betaalt niets bij ondertekening.");
   assert.equal(
-    stripOutdatedClaims("We werken met vaste vakteams, een vaste prijs en zonder aanbetaling, en hebben een beoordeling van 4,8 uit 273 reviews."),
-    "We werken met vaste vakteams, een vaste prijs, en hebben een beoordeling van 4,8 uit 273 reviews."
+    stripOutdatedClaims("We werken met vaste vakteams, een vaste prijs en zonder aanbetaling, en hebben"),
+    "We werken met vaste vakteams, een vaste prijs en zonder betaling bij ondertekening, en hebben"
   );
-  assert.equal(
-    stripOutdatedClaims("Een vaste prijs vooraf, geen aanbetaling en 4,8 uit 273 reviews."),
-    "Een vaste prijs vooraf en 4,8 uit 273 reviews."
-  );
-  assert.equal(stripOutdatedClaims("Vaste prijs, geen aanbetaling."), "Vaste prijs.");
-  assert.equal(stripOutdatedClaims("Niets aan de hand."), "Niets aan de hand.");
+  // Tekst zonder claim, inclusief alinea-witregels, blijft exact gelijk.
+  const plain = "Eerste alinea.\n\nTweede  alinea.";
+  assert.equal(stripOutdatedClaims(plain), plain);
+  assert.equal(stripOutdatedClaims("De startbetaling is 20%."), "De startbetaling is 20%.");
 });
 
 test("review-samenvatting in Nederlandse notatie", () => {
@@ -37,4 +39,21 @@ test("AI-verkeer wordt als eigen kanaal herkend", () => {
   assert.equal(deriveChannel("contact", {utm_source: "chatgpt.com"}).key, "ai-assistent");
   assert.equal(deriveChannel("contact", {referrer: "www.google.com"}).key, "organisch");
   assert.equal(deriveChannel("contact", {gclid: "x"}).key, "google-ads");
+});
+
+const {resolveSmartLink} = await import(process.env.GEO_SMARTLINK);
+
+test("placeholder-telefoonnummers worden nooit live gebruikt", () => {
+  assert.equal(resolveSmartLink({linkType: "external", externalUrl: "tel:+31600000000"}).href, "tel:+31850871814");
+  assert.equal(resolveSmartLink({linkType: "external", externalUrl: "https://wa.me/31600000000"}).href, "https://wa.me/31850871814");
+  assert.equal(resolveSmartLink({linkType: "external", externalUrl: "tel:+31850871814"}).href, "tel:+31850871814");
+  assert.equal(resolveSmartLink({linkType: "external", externalUrl: "https://example.com"}).href, "https://example.com");
+});
+
+const {isIndexableLocationService} = await import(process.env.GEO_BUSINESS);
+
+test("kerndiensten per stad blijven indexeerbaar", () => {
+  assert.equal(isIndexableLocationService("uitbouw-aanbouw", []), true);
+  assert.equal(isIndexableLocationService("warmtepomp", []), false);
+  assert.equal(isIndexableLocationService("warmtepomp", ["warmtepomp"]), true);
 });

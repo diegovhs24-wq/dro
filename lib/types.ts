@@ -405,6 +405,8 @@ export type LocationSummary = {
 };
 
 export type LocationDetail = LocationSummary & {
+  // Ruwe slugs uit Sanity, ongefilterd; dezelfde bron als de sitemap.
+  popularServiceSlugs?: string[];
   localContext?: string;
   whyDro?: string;
   neighborhoods: string[];

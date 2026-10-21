@@ -46,7 +46,7 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
   // voor wie de pagina al via een link bereikt).
   const indexable = isIndexableLocationService(
     serviceSlug,
-    (location.popularServices || []).map((item) => item.slug)
+    location.popularServiceSlugs || (location.popularServices || []).map((item) => item.slug)
   );
 
   return metadataFromSeo(

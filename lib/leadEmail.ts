@@ -33,6 +33,8 @@ export type LeadEmailData = {
   // true als het verborgen anti-spamveld was ingevuld. Kan ook autofill bij een
   // echte klant zijn, dus de mail gaat wel uit, met een duidelijke markering.
   spamSuspect?: boolean;
+  // Aantal foto's dat de klant had toegevoegd maar dat niet kon worden verstuurd.
+  photosDropped?: number;
   submittedAt: string;
   formTitle: string;
   name: string;
@@ -291,9 +293,13 @@ export async function sendLeadEmail(d: LeadEmailData): Promise<boolean> {
   const warning = "LET OP: deze aanvraag is NIET opgeslagen in Sanity. Deze mail is de enige kopie.";
   const spamNote = "MOGELIJK SPAM: het verborgen anti-spamveld was ingevuld. Kan ook browser-autofill bij een echte klant zijn; controleer kort.";
   const subject = `${d.spamSuspect ? "[MOGELIJK SPAM] " : ""}${d.notSavedWarning ? "[NIET OPGESLAGEN] " : ""}${rendered.subject}`;
+  const photosNote = d.photosDropped
+    ? `Let op: de klant had ${d.photosDropped} foto('s) toegevoegd die niet konden worden verstuurd (te groot). Vraag ze zo nodig via WhatsApp op.`
+    : "";
   const banners = [
     ...(d.notSavedWarning ? [warning] : []),
     ...(d.spamSuspect ? [spamNote] : []),
+    ...(photosNote ? [photosNote] : []),
   ];
   const html = `${banners
     .map((note) => `<p style="background:#b91c1c;color:#fff;padding:12px;font-weight:700;">${note}</p>`)

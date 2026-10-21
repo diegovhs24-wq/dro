@@ -220,7 +220,6 @@ export function buildLocationPlace(location: LocationPlaceInput) {
   return {
     "@type": "City",
     name: location.name,
-    containedInPlace: {"@type": "AdministrativeArea", name: "Zuid-Holland"},
     ...(location.geo
       ? {
           geo: {

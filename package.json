@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test:geo": "bash scripts/tests/run-geo-tests.sh"
+    "test:geo": "bash scripts/tests/run-geo-tests.sh",
+    "test:leads": "bash scripts/tests/run-lead-tests.sh",
+    "test": "npm run test:geo && npm run test:leads"
   },
   "dependencies": {
     "@sanity/client": "^7.8.2",
