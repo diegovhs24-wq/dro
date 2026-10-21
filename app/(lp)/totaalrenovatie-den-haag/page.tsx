@@ -563,6 +563,7 @@ export default async function TotaalrenovatieLandingPage({
           <div className="text-lp-ink">
             <SmartIntakeWizard
               largeBudget={[50000, 100000]}
+              budgetCap={2000000}
               responsePromise="binnen 1 werkuur"
               serviceOrder={['Totaalrenovatie', 'Aanbouw of opbouw', 'Badkamer', 'Keuken', 'Dakkapel']}
               servicesSub="Kies één of meer onderdelen. Daarna stellen we alleen de vragen die bij uw verbouwing horen."

@@ -104,9 +104,29 @@ function HouseGoalIcon({done}: {done: boolean}) {
   );
 }
 
-function formatBudget(value: number): string {
-  if (value >= 150000) return "€150k+";
+// Budgetschuif: tot 150k per 5k. Met een hoger plafond (budgetCap) worden de
+// stappen daarboven groter, zodat het gebied rond 50k tot 150k fijn blijft.
+function budgetSteps(cap: number): number[] {
+  const steps: number[] = [];
+  for (let v = 0; v <= Math.min(cap, 150000); v += 5000) steps.push(v);
+  for (let v = 175000; v <= Math.min(cap, 500000); v += 25000) steps.push(v);
+  for (let v = 550000; v <= Math.min(cap, 1000000); v += 50000) steps.push(v);
+  for (let v = 1100000; v <= cap; v += 100000) steps.push(v);
+  return steps;
+}
+
+function nearestStep(steps: number[], value: number): number {
+  let best = 0;
+  steps.forEach((v, i) => {
+    if (Math.abs(v - value) < Math.abs(steps[best] - value)) best = i;
+  });
+  return best;
+}
+
+function formatBudget(value: number, cap = 150000): string {
+  if (value >= cap) return cap >= 1000000 ? `€${String(cap / 1000000).replace(".", ",")} mln+` : `€${cap / 1000}k+`;
   if (value <= 0) return "€0";
+  if (value >= 1000000) return `€${String(value / 1000000).replace(".", ",")} mln`;
   return `€${value / 1000}k`;
 }
 
@@ -206,6 +226,8 @@ export type SmartIntakeProps = {
   servicesSub?: string;
   // Startwaarde van de budgetschuif als er een groot project is gekozen.
   largeBudget?: [number, number];
+  // Hoogste waarde op de budgetschuif (standaard 150.000).
+  budgetCap?: number;
   largeServices?: string[];
 };
 
@@ -227,6 +249,7 @@ export default function SmartIntakeWizard({
   servicesTitle = "Waar kunnen we u mee helpen?",
   servicesSub = "Kies één of meer diensten. We stellen daarna alleen de vragen die voor u van toepassing zijn.",
   largeBudget,
+  budgetCap = 150000,
   largeServices = ["Totaalrenovatie", "Aanbouw of opbouw"],
 }: SmartIntakeProps = {}) {
   const skipSet = useMemo(() => new Set(skipIds), [skipIds]);
@@ -325,7 +348,7 @@ export default function SmartIntakeWizard({
       const [min, max] = services.some((s) => largeServices.includes(s)) ? largeBudget : initialBudget || [15000, 45000];
       setBudgetMin(min);
       setBudgetMax(max);
-      setBudgetLabel(`${formatBudget(min)} – ${formatBudget(max)}`);
+      setBudgetLabel(`${formatBudget(min, budgetCap)} – ${formatBudget(max, budgetCap)}`);
     }
     go(1);
   }
@@ -881,7 +904,12 @@ export default function SmartIntakeWizard({
   }
 
   function renderBudgetScreen(def: QuestionDef) {
-    function handleRange(which: "min" | "max", value: number) {
+    const steps = budgetSteps(budgetCap);
+    const top = steps.length - 1;
+    const minIdx = nearestStep(steps, budgetMin);
+    const maxIdx = nearestStep(steps, budgetMax);
+    function handleRange(which: "min" | "max", idx: number) {
+      const value = steps[idx];
       let mn = which === "min" ? value : budgetMin;
       let mx = which === "max" ? value : budgetMax;
       if (mn > mx) {
@@ -890,11 +918,11 @@ export default function SmartIntakeWizard({
       }
       setBudgetMin(mn);
       setBudgetMax(mx);
-      setBudgetLabel(`${formatBudget(mn)} – ${formatBudget(mx)}`);
+      setBudgetLabel(`${formatBudget(mn, budgetCap)} – ${formatBudget(mx, budgetCap)}`);
     }
 
-    const fillLeft = (budgetMin / 150000) * 100;
-    const fillWidth = ((budgetMax - budgetMin) / 150000) * 100;
+    const fillLeft = (minIdx / top) * 100;
+    const fillWidth = ((maxIdx - minIdx) / top) * 100;
 
     return (
       <>
@@ -902,22 +930,22 @@ export default function SmartIntakeWizard({
         <div className="intake-rvals">
           <div>
             <div className="intake-rvals-l">Minimum</div>
-            <div className="intake-rvals-b">{formatBudget(budgetMin)}</div>
+            <div className="intake-rvals-b">{formatBudget(budgetMin, budgetCap)}</div>
           </div>
           <div style={{textAlign: "right"}}>
             <div className="intake-rvals-l">Maximum</div>
-            <div className="intake-rvals-b">{formatBudget(budgetMax)}</div>
+            <div className="intake-rvals-b">{formatBudget(budgetMax, budgetCap)}</div>
           </div>
         </div>
         <div className="intake-slider">
           <div className="intake-slider-base" />
           <div className="intake-slider-fill" style={{left: `${fillLeft}%`, width: `${fillWidth}%`}} />
-          <input max={150000} min={0} onChange={(e) => handleRange("min", Number(e.target.value))} step={5000} type="range" value={budgetMin} />
-          <input max={150000} min={0} onChange={(e) => handleRange("max", Number(e.target.value))} step={5000} type="range" value={budgetMax} />
+          <input max={top} min={0} onChange={(e) => handleRange("min", Number(e.target.value))} step={1} type="range" value={minIdx} />
+          <input max={top} min={0} onChange={(e) => handleRange("max", Number(e.target.value))} step={1} type="range" value={maxIdx} />
         </div>
         <div className="intake-rscale">
           <span>€0</span>
-          <span>€150k+</span>
+          <span>{formatBudget(budgetCap, budgetCap)}</span>
         </div>
         <button
           className="intake-unsure"
