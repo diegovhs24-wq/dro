@@ -364,7 +364,7 @@ export default function SmartIntakeWizard({
       `hoogte ${fmt(calc.height)} m`,
       calc.floor,
       calc.finished ? "afgewerkt" : "casco",
-      `brandveilig inpakken: ${calc.fireWrap ? "ja" : "nee (klant gewaarschuwd)"}`,
+      `ligger brandwerend bekleden: ${calc.fireWrap ? "door DRO" : "doet klant of eigen aannemer (klant gewaarschuwd)"}`,
       `complexiteit ${String(b.factor).replace(".", ",")}${b.reasons.length ? ` (${b.reasons.join(", ")})` : ""}`,
       `indicatie ${formatEuro(b.totalEx)} excl. / ${formatEuro(b.totalIncl)} incl. btw${b.wide ? " (breed: staal apart calculeren)" : ""}`,
     ].join(" · ");
@@ -631,17 +631,21 @@ export default function SmartIntakeWizard({
         <p className="intake-dimprev" style={{marginTop: -8, marginBottom: 14}}>
           {calc.finished ? "Afgewerkt: inclusief basisafwerking van de opening." : "Casco: alleen de constructieve doorbraak, u of een ander werkt af."}
         </p>
-        {renderSeg<boolean>("Brandveilig inpakken tijdens slijp- en laswerk?", calc.fireWrap, [
-          {v: true, l: "Ja, graag"},
-          {v: false, l: "Nee"},
+        {renderSeg<boolean>("Wie bekleedt de stalen ligger brandwerend?", calc.fireWrap, [
+          {v: true, l: "DRO"},
+          {v: false, l: "Wij of onze aannemer"},
         ], (fireWrap) => set({fireWrap}))}
         {!calc.fireWrap ? (
           <div className="intake-warn" role="note">
-            <b>Let op.</b> Bij het slijpen en lassen van de stalen balk ontstaan vonken. Laat uw aannemer de ruimte altijd brandveilig
-            inpakken, ook voor uw garantie en verzekering. Kiest u hier bewust voor nee, dan neemt DRO geen verantwoordelijkheid voor
-            brand- of rookschade die daardoor ontstaat.
+            <b>Let op.</b> Een stalen ligger moet na het plaatsen brandwerend worden bekleed, bijvoorbeeld met Promatect-platen. Zorg dat
+            u of uw aannemer dit goed laat uitvoeren, ook voor de vergunning, uw garantie en uw verzekering. Brengt DRO de bekleding niet
+            aan, dan is DRO niet verantwoordelijk voor de brandwerendheid van de ligger.
           </div>
-        ) : null}
+        ) : (
+          <p className="intake-dimprev" style={{marginTop: -8, marginBottom: 14}}>
+            Wij bekleden de ligger na plaatsing brandwerend, bijvoorbeeld met Promatect-platen. Dit nemen we op in uw offerte.
+          </p>
+        )}
         <div className="intake-price" aria-live="polite">
           <span className="intake-price-l">Uw indicatie, inclusief btw</span>
           <span className="intake-price-v">{formatEuro(b.totalIncl)}</span>
@@ -672,7 +676,7 @@ export default function SmartIntakeWizard({
           </dl>
           <span className="intake-price-s">
             Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, container en afvoer
-            {calc.fireWrap ? ", brandveilig inpakken" : ""}. Leges van de gemeente apart. Na de opname krijgt u een vaste prijs.
+            . Leges van de gemeente apart. Na de opname krijgt u een vaste prijs.
           </span>
           {b.wide ? (
             <span className="intake-price-s" style={{color: "#ffd6b8"}}>

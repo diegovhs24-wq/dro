@@ -66,7 +66,7 @@ const INCLUDED = [
   {title: 'Stempelen', text: 'Het huis wordt veilig ondersteund voordat er ook maar één steen uit gaat.', icon: 'stamp'},
   {title: 'Sloop, container en afvoer', text: 'Wij slopen de muur, voeren het puin af en laten het bezemschoon achter.', icon: 'truck'},
   {title: 'Stalen balk of latei', text: 'Geleverd, geplaatst, ondersabeld en ingemetseld volgens de berekening.', icon: 'beam'},
-  {title: 'Brandveilig inpakken', text: 'Bij slijp- en laswerk pakken we de ruimte brandveilig in. Standaard, tenzij u dat niet wilt.', icon: 'shield'},
+  {title: 'Brandwerende bekleding', text: 'Na het plaatsen bekleden we de stalen ligger brandwerend, bijvoorbeeld met Promatect-platen. Doet u of uw aannemer dit zelf, dan kan dat ook.', icon: 'shield'},
   {title: 'Stofwanden en afdekken', text: 'Vloeren afgedekt, stofschotten geplaatst, zodat de rest van het huis schoon blijft.', icon: 'house'},
   {title: 'Afwerking, als u wilt', text: 'Basisafwerking van de opening, of meteen door met stucwerk, vloer, keuken en elektra.', icon: 'brush'},
 ] as const
@@ -102,7 +102,6 @@ const STEPS = [
 const LIVING = [
   {title: 'Meestal blijft u gewoon thuis wonen', text: 'Alleen de ruimte waar we werken is 1 tot 3 dagen niet te gebruiken. De rest van het huis blijft bereikbaar.'},
   {title: 'Stof blijft waar het hoort', text: 'We plaatsen stofschotten, dekken vloeren en trap af en zuigen dagelijks af. U krijgt de ruimte bezemschoon terug.'},
-  {title: 'Brandveilig gewerkt', text: 'Bij het slijpen en lassen van de stalen balk vliegen vonken. Wij pakken de ruimte brandveilig in en houden toezicht tot na het laswerk.'},
   {title: 'Buren op de hoogte', text: 'Bij een rijwoning of appartement laten we de buren vooraf weten wanneer er geluid is.'},
 ]
 
@@ -137,8 +136,8 @@ const FAQ = [
     a: 'Meestal wel. Alleen de ruimte waar we werken is 1 tot 3 dagen niet bruikbaar. We plaatsen stofschotten en dekken vloeren af, zodat de rest van het huis schoon en bereikbaar blijft.',
   },
   {
-    q: 'Wat is brandveilig inpakken, en waarom is het belangrijk?',
-    a: 'Bij het slijpen en lassen van een stalen balk ontstaan vonken. Brandveilig inpakken betekent dat we vloeren, plafond en spullen in de buurt afdekken met brandwerend materiaal en toezicht houden tot na het laswerk. Wij doen dit standaard. Wilt u het bewust niet, dan neemt DRO geen verantwoordelijkheid voor brand- of rookschade die daardoor ontstaat. Laat het ook bij een andere aannemer altijd doen, ook voor uw garantie en verzekering.',
+    q: 'Moet de stalen ligger brandwerend worden bekleed?',
+    a: 'Ja. Staal verliest bij brand snel zijn sterkte, daarom wordt een stalen ligger na het plaatsen brandwerend bekleed, bijvoorbeeld met Promatect-platen. Wij kunnen dat voor u doen. Wilt u of uw eigen aannemer het zelf doen, dan kan dat ook. Zorg dan wel dat het goed gebeurt, ook voor de vergunning, uw garantie en uw verzekering. Brengt DRO de bekleding niet aan, dan is DRO niet verantwoordelijk voor de brandwerendheid van de ligger.',
   },
   {
     q: 'Doen jullie ook kleine klussen, zoals alleen een deuropening?',
@@ -532,7 +531,7 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
               <p className="font-semibold">Altijd inbegrepen in uw indicatie</p>
               <p className="mt-2 text-[15px] leading-[1.6] text-lp-muted">
                 Constructieberekening, tekening en vergunningsaanvraag, stempelen, stalen balk of latei, sloop, container en afvoer, en
-                brandveilig inpakken. Leges van de gemeente betaalt u apart.
+                desgewenst brandwerende bekleding van de ligger. Leges van de gemeente betaalt u apart.
               </p>
               <a className={`${CTA} mt-4`} href="#aanvraag">
                 Bereken uw indicatie
@@ -568,7 +567,7 @@ export default async function DraagmuurLandingPage({searchParams}: {searchParams
           <p className="mt-3 max-w-[62ch] text-[16px] leading-[1.65] text-white/80">
             Een doorbraak is zwaar werk in een bewoond huis. Zo houden we het netjes en veilig.
           </p>
-          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {LIVING.map((item) => (
               <li className="border-t-2 border-lp-orange pt-4" key={item.title}>
                 <h3 className="text-[17px] font-semibold">{item.title}</h3>

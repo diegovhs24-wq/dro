@@ -23,7 +23,7 @@ export type DraagmuurInput = {
   thickness: number; // muurdikte in centimeters (telt mee in de complexiteit)
   floor: DraagmuurFloor;
   finished: boolean; // basisafwerking ja (afgewerkt) of nee (casco)
-  fireWrap: boolean; // brandveilig inpakken (geen meerprijs)
+  fireWrap: boolean; // DRO bekleedt de ligger brandwerend (bv. Promatect); prijs volgt in offerte
 };
 
 export const PRICE = {
