@@ -9,8 +9,10 @@
 //   750         constructieberekening (incl. vergunningsaanvraag)
 //   450         basisafwerking (vervalt bij casco)
 //   C           complexiteitsfactor 1,00 / 1,25 / 1,50
-//   + 450       brandwerend bekleden van de ligger door DRO (bv. Promatect),
-//               los opgeteld, buiten de complexiteitsfactor
+//   + 450       brandwerend bekleden van de ligger (bv. Promatect), los
+//               opgeteld, buiten de complexiteitsfactor. Standaard doet DRO dit.
+//   - 500       bekleedt de klant of zijn eigen aannemer de ligger zelf, dan
+//               gaat er 500 af van de DRO-prijs (Therab, 21 okt. 2026)
 //
 // De bezoeker ziet het bedrag inclusief 21% btw. Bij brede doorbraken of zware
 // belasting rekent de constructeur de staalconstructie apart (zie WIDE_FROM_M).
@@ -25,7 +27,7 @@ export type DraagmuurInput = {
   thickness: number; // muurdikte in centimeters (telt mee in de complexiteit)
   floor: DraagmuurFloor;
   finished: boolean; // basisafwerking ja (afgewerkt) of nee (casco)
-  fireWrap: boolean; // DRO bekleedt de ligger brandwerend (bv. Promatect): + fireCladding
+  fireWrap: boolean; // true: DRO bekleedt de ligger brandwerend; false: klant of eigen aannemer (- selfCladdingDiscount)
 };
 
 export const PRICE = {
@@ -35,6 +37,7 @@ export const PRICE = {
   engineering: 750,
   finishing: 450,
   fireCladding: 450,
+  selfCladdingDiscount: 500,
   vat: 1.21,
 } as const;
 
@@ -66,6 +69,7 @@ export type DraagmuurBreakdown = {
   engineering: number;
   finishing: number;
   fireCladding: number;
+  selfCladdingDiscount: number; // 0 of 500 (bekleding door klant of eigen aannemer)
   factor: 1 | 1.25 | 1.5;
   reasons: string[];
   totalEx: number;
@@ -80,8 +84,10 @@ export function draagmuurBreakdown(input: DraagmuurInput): DraagmuurBreakdown {
   const steel = B * PRICE.steelPerM;
   const finishing = input.finished ? PRICE.finishing : 0;
   const {factor, reasons} = complexityOf(input);
-  const fireCladding = input.fireWrap ? PRICE.fireCladding : 0;
-  const totalEx = (demolition + PRICE.shoring + steel + PRICE.engineering + finishing) * factor + fireCladding;
+  const fireCladding = PRICE.fireCladding;
+  const selfCladdingDiscount = input.fireWrap ? 0 : PRICE.selfCladdingDiscount;
+  const totalEx =
+    (demolition + PRICE.shoring + steel + PRICE.engineering + finishing) * factor + fireCladding - selfCladdingDiscount;
   return {
     demolition,
     shoring: PRICE.shoring,
@@ -89,6 +95,7 @@ export function draagmuurBreakdown(input: DraagmuurInput): DraagmuurBreakdown {
     engineering: PRICE.engineering,
     finishing,
     fireCladding,
+    selfCladdingDiscount,
     factor,
     reasons,
     totalEx: Math.round(totalEx),
@@ -97,8 +104,8 @@ export function draagmuurBreakdown(input: DraagmuurInput): DraagmuurBreakdown {
   };
 }
 
-// Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, met afwerking,
-// zonder brandwerende bekleding (die staat op de pagina als losse post).
+// Rekenvoorbeeld: 3 m breed x 2,60 m hoog, standaard, met afwerking en met
+// brandwerende bekleding door DRO (6.005 excl. / 7.266 incl. btw).
 export const EXAMPLE_INPUT: DraagmuurInput = {
   kind: "volledig",
   width: 3,
@@ -106,7 +113,7 @@ export const EXAMPLE_INPUT: DraagmuurInput = {
   thickness: 22,
   floor: "begane grond",
   finished: true,
-  fireWrap: false,
+  fireWrap: true,
 };
 
 export function formatEuro(n: number): string {

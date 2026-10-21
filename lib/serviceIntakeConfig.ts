@@ -27,6 +27,8 @@ export type QuestionDef = {
   ph?: string;
   optional?: boolean;
   f?: DimField[];
+  // Kopje boven de vraag (anders de dienst of "Uw aanvraag").
+  tag?: string;
 };
 
 // Tekst bij de knop om maten over te slaan, en wat er dan in de aanvraag komt.
@@ -187,6 +189,25 @@ export const COMMON: QuestionDef[] = [
   {id: "contact", t: "contact", q: "Waar kunnen we u bereiken?", s: "We reageren binnen één werkdag."},
   {id: "thanks", t: "thanks", q: ""},
 ];
+
+// Algemene vragen met een eigen tekst als de aanvraag over precies één dienst
+// gaat. Het id blijft gelijk, zodat mail en Sanity niets merken.
+export const COMMON_OVERRIDES: Record<string, Record<string, Partial<QuestionDef>>> = {
+  "Draagmuur verwijderen": {
+    more: {
+      tag: "Over uw muur",
+      q: "Wat moeten we nog weten over de muur?",
+      s: "Zit er een leiding, stopcontact of radiator in de muur? Wat staat er boven? Is het een VvE, of wilt u later een keuken op die plek? Hoe meer we weten, hoe scherper we vooraf rekenen en hoe sneller het werk daarna gaat.",
+      ph: "Bijvoorbeeld: muur tussen keuken en woonkamer, er zit een stopcontact en een radiator in, boven is de badkamer. We willen er een kookeiland neerzetten.",
+    },
+  },
+};
+
+export function commonFor(services: string[]): QuestionDef[] {
+  const overrides = services.length === 1 ? COMMON_OVERRIDES[services[0]] : undefined;
+  if (!overrides) return COMMON;
+  return COMMON.map((q) => (overrides[q.id] ? {...q, ...overrides[q.id]} : q));
+}
 
 export function findServiceForQuestionId(id: string): string | null {
   for (const service of SERVICES) {
