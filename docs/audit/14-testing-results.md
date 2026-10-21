@@ -1,5 +1,7 @@
 # 14. Testresultaten
 
+> Bijgewerkt na de pre-productiereview: zie 17, §6, voor de actuele stand (20 tests, crawl van 288 URL's op preview `c18132d`). De tabel hieronder is de eerste ronde.
+
 ## Automatisch geslaagd
 
 | Test | Resultaat |

@@ -60,7 +60,7 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 
 **Gedaan in code:**
 - `lib/seo/business.ts`: één bron van geverifieerde feiten met `verifiedAt`. Gebruikt door JSON-LD, llms.txt, Markdown, meta descriptions, feitenbalk, reviewlabels en advertentiepagina's. Review-cijfer stond op 15 plekken hardcoded; nu één plek.
-- `stripOutdatedClaims` + `sanitizeOutdatedClaimsDeep` in `fetchSanity`: verwijdert "geen/zonder aanbetaling" uit gepubliceerde CMS-tekst tot de release is gepubliceerd. Tekst zonder die claim blijft byte-voor-byte gelijk (getest). Na publicatie van de release is dit een no-op en kan het blijven staan als vangnet.
+- `stripOutdatedClaims` + `sanitizeOutdatedClaimsDeep` in `fetchSanity`: vervangt "geen/zonder aanbetaling" in gepubliceerde CMS-tekst door de bevestigde formulering "niets bij ondertekening" tot de release is gepubliceerd. Tekst zonder die claim blijft byte-voor-byte gelijk (getest). Na publicatie van de release is dit een no-op en kan het blijven staan als vangnet.
 
 **Advies prijzen (BESLUIT-2 t/m 4):** de kennisbank-artikelen liggen voor uitbouw onder alle gevonden bronnen van 2026 (Trustoo € 2.000 tot € 4.000/m², Homedeal € 1.800 tot € 3.800/m², Topvakmannen € 1.800 tot € 3.500/m²). Kies per dienst één bandbreedte op basis van eigen nagecalculeerde projecten, zet die in `BUSINESS.priceIndications`, en laat de FAQ's en artikelen ernaar verwijzen. Pas dan worden de prijzen citeerbaar.
 
@@ -70,7 +70,7 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 
 **Gedaan (`lib/seo/structured-data.ts`, `lib/seo/site.ts`):**
 - Eén bedrijfsentiteit `@type: GeneralContractor`, `@id: https://www.dro-renovaties.nl/#organization`. Alle Service-, WebPage- en BlogPosting-nodes verwijzen ernaar via `@id`.
-- Toegevoegd: `legalName` (KvK-schrijfwijze), `alternateName`, `identifier` (KvK en btw), `vatID`, `founder` (Person, Therab Raja), `employee` (Scott Huisman, Esra Ozdemir, Jarek), `hasCredential` (VCA, SBB-leerbedrijf, VLOK voor airco en warmtepompen), `knowsAbout`, `knowsLanguage`, `hasOfferCatalog` (alle diensten met URL), telefoon `+31850871814`, `postalCode` 2516 AS (bron: SBB Stagemarkt-profiel, bevestigen met KvK-uittreksel).
+- Toegevoegd: `legalName` (KvK-schrijfwijze), `alternateName`, `identifier` (KvK en btw), `vatID`, `founder` (Person, Therab Raja), `hasCredential` (VCA, SBB-leerbedrijf, VLOK), `knowsAbout`, `knowsLanguage`, `hasOfferCatalog` (alle diensten met URL), telefoon `+31850871814`, `postalCode` 2516 AS (bevestigd via SBB Stagemarkt en de BAG-gegevens op allecijfers.nl: enige postcode van de Orionstraat).
 - `WebSite`-node met `@id` en `publisher`; elke `WebPage` heeft `isPartOf`, `about` en `publisher`.
 - Artikelen: auteur gekoppeld aan dezelfde founder-Person (E-E-A-T komt bij één herkenbare persoon samen), `dateModified`, `isPartOf`, `mainEntityOfPage`.
 - `areaServed` alleen nog: Den Haag, Haaglanden, Zuid-Holland, Randstad plus de 22 steden met een eigen pagina.
@@ -85,8 +85,8 @@ Dit is het belangrijkste onderdeel. Overzicht van tegenstrijdigheden (waargenome
 **Waargenomen:** de sitemap bevatte 22 steden × 9 diensten = 198 stad-x-dienst-URL's, terwijl Sanity maar voor ~83 combinaties lokale inhoud heeft (`popularServices`). Tekstovereenkomst Delft vs Gouda `/totaalrenovatie` na naamwissel: 0,91. Dat is het patroon dat Google "doorway pages" noemt, en AI-systemen citeren zulke pagina's zelden (aanname).
 
 **Gedaan:**
-- Sitemap neemt alleen combinaties op uit `popularServices` (`lib/seo/sitemap-data.ts`).
-- Een combinatie zonder lokale inhoud krijgt een permanente redirect naar de stadspagina, en in metadata `noindex, follow` (`app/(site)/[slug]/[service]/page.tsx`).
+- Sitemap neemt alleen combinaties op uit `popularServices` plus de kerndiensten totaalrenovatie, uitbouw en badkamer (`lib/seo/sitemap-data.ts`): 174 URL's.
+- Overige combinaties blijven bereikbaar maar krijgen `noindex, follow` (omkeerbaar; geen redirects). Zie 17, E3, voor waarom de eerdere permanente redirects zijn teruggedraaid.
 
 **Nog te doen:** ook de overgebleven ~83 combinaties zijn grotendeels sjabloon. Advies: per stad maximaal 2 à 3 diensten met echt lokaal bewijs (een project in die stad, wijkkenmerken, gemeentelijke regels) en de rest samenvoegen. Warmtepomp en zonnepanelen in kleine kernen eerst.
 
@@ -228,10 +228,11 @@ Noordster blijft brutowinst uit websiteprojecten; AI-zichtbaarheid is een leiden
 
 ## 4. Sanity: klaargezette correcties (nog niet gepubliceerd)
 
-In Sanity Studio staat de release **"Correctie betaalvoorwaarden en bedrijfsnaam (GEO-audit)"** (`geo-betaalvoorwaarden`) met 21 documenten:
+In Sanity Studio staat de release **"Correctie betaalvoorwaarden en bedrijfsnaam (GEO-audit)"** (`geo-betaalvoorwaarden`) met 37 documenten:
 - 18 stadspagina's: "geen aanbetaling" / "zonder aanbetaling" vervangen door "betaling per afgeronde fase" in `whyDro` en meta description.
 - Site settings: juridische naam zonder koppelteken; organisatieomschrijving zonder "geen aanbetaling".
-- FAQ "Moet ik vooraf iets betalen om te starten?": nu "Ja. Bij de start betaalt u een startbetaling van 20 tot 25 procent..." (factuur ± een week voor de start, conform de werkwijze).
+- FAQ "Moet ik vooraf iets betalen om te starten?": nu "Bij het tekenen betaalt u niets. Op de eerste werkdag betaalt u een startbetaling van 20 tot 25 procent..." (conform het bevestigde betaalschema op de advertentiepagina).
+- 16 projecten: knop "Bespreek uw project" van nepnummer 06-00000000 naar 085 087 1814.
 - FAQ "En als jullie halverwege stoppen?": "nooit vooruit / het financiële risico ligt bij ons" vervangen.
 
 **Actie Therab:** Studio > Releases > controleren > publiceren. Daarna zijn de code-vangnetten een no-op.
