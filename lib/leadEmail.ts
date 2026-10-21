@@ -112,6 +112,12 @@ const SHORT_LABELS: Array<[RegExp, string]> = [
   [/ruimtes samen/i, "Oppervlakte ruimtes"],
   [/m² stucwerk/i, "Stucwerk m²"],
   [/m² schilderwerk/i, "Schilderwerk"],
+  [/wilt u laten doen/i, "Klus"],
+  [/prijsindicatie/i, "Indicatie"],
+  [/past deze indicatie/i, "Budget"],
+  [/archief- of bouwtekeningen/i, "Tekeningen"],
+  [/muur dragend/i, "Dragend"],
+  [/daarna nog gebeuren/i, "Daarna"],
 ];
 
 function shortQuestion(question: string): string {

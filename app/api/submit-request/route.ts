@@ -31,7 +31,11 @@ type SubmitPayload = {
 };
 
 // Alleen bekende bronnen; alles anders wordt "smart-intake".
-const ALLOWED_SOURCES = new Set(["smart-intake", "lp-totaalrenovatie"]);
+const ALLOWED_SOURCES = new Set(["smart-intake", "lp-totaalrenovatie", "lp-draagmuur"]);
+const FORM_TITLES: Record<string, string> = {
+  "lp-totaalrenovatie": "Landingspagina totaalrenovatie",
+  "lp-draagmuur": "Landingspagina draagmuur",
+};
 const ATTRIBUTION_KEYS = [
   "gclid",
   "gbraid",
@@ -214,7 +218,7 @@ export async function POST(request: NextRequest) {
     await sendLeadEmail({
       documentId,
       submittedAt,
-      formTitle: source === "lp-totaalrenovatie" ? "Landingspagina totaalrenovatie" : "Intake op de website",
+      formTitle: FORM_TITLES[source] || "Intake op de website",
       name,
       email,
       phone,
