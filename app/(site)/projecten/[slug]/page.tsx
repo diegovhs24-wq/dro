@@ -13,9 +13,9 @@ import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
 import {resolveSmartLink} from "@/lib/smartLink";
 
 type ProjectPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateStaticParams() {
@@ -23,7 +23,8 @@ export async function generateStaticParams() {
   return projects.map((project) => ({slug: project.slug}));
 }
 
-export async function generateMetadata({params}: ProjectPageProps): Promise<Metadata> {
+export async function generateMetadata(props: ProjectPageProps): Promise<Metadata> {
+  const params = await props.params;
   const project = await getProjectBySlug(params.slug);
 
   if (!project) {
@@ -44,7 +45,8 @@ export async function generateMetadata({params}: ProjectPageProps): Promise<Meta
   });
 }
 
-export default async function ProjectDetailPage({params}: ProjectPageProps) {
+export default async function ProjectDetailPage(props: ProjectPageProps) {
+  const params = await props.params;
   const [siteSettings, project] = await Promise.all([
     getSiteSettings(),
     getProjectBySlug(params.slug),

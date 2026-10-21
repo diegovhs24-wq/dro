@@ -371,7 +371,10 @@ function PullQuote({review}: {review: StaticReview}) {
   )
 }
 
-export default async function DraagmuurLandingPage({searchParams}: {searchParams: {[key: string]: string | string[] | undefined}}) {
+export default async function DraagmuurLandingPage(
+  props: {searchParams: Promise<{[key: string]: string | string[] | undefined}>}
+) {
+  const searchParams = await props.searchParams;
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
   const projects = await getProjects()

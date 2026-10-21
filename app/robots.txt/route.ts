@@ -56,6 +56,9 @@ function group(agents: string[], allow: boolean) {
   ];
 }
 
+// Next 15: GET-routes zijn standaard dynamisch; robots.txt mag een uur gecachet worden.
+export const revalidate = 3600;
+
 export async function GET() {
   const siteUrl = getSiteUrl();
 

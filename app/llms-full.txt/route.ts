@@ -4,6 +4,9 @@ import {buildMarkdownForPath} from "@/lib/seo/markdown";
 
 const STATIC_PATHS = ["/", "/diensten", "/projecten", "/kennisbank", "/werkwijze", "/over-ons", "/zakelijk", "/contact"];
 
+// Next 15: GET-routes zijn standaard dynamisch; deze inhoud mag een uur gecachet worden.
+export const revalidate = 3600;
+
 export async function GET() {
   const [services, projects, posts, locations] = await Promise.all([
     getServices(),

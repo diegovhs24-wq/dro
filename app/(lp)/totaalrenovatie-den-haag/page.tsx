@@ -343,11 +343,12 @@ function heroImageOf(projects: ProjectItem[]): string | null {
   return url ? sizedImage(url, 1800) : null
 }
 
-export default async function TotaalrenovatieLandingPage({
-  searchParams,
-}: {
-  searchParams: {[key: string]: string | string[] | undefined}
-}) {
+export default async function TotaalrenovatieLandingPage(
+  props: {
+    searchParams: Promise<{[key: string]: string | string[] | undefined}>
+  }
+) {
+  const searchParams = await props.searchParams;
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
   const [projects, teamPhoto] = await Promise.all([getProjects(), getTeamPhoto()])

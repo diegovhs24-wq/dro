@@ -17,9 +17,9 @@ import {
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
 
 type BlogPostPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 function formatDate(date?: string) {
@@ -37,7 +37,8 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({slug}));
 }
 
-export async function generateMetadata({params}: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata(props: BlogPostPageProps): Promise<Metadata> {
+  const params = await props.params;
   const post = await getBlogPostBySlug(params.slug);
 
   if (!post) {
@@ -55,7 +56,8 @@ export async function generateMetadata({params}: BlogPostPageProps): Promise<Met
   });
 }
 
-export default async function BlogPostPage({params}: BlogPostPageProps) {
+export default async function BlogPostPage(props: BlogPostPageProps) {
+  const params = await props.params;
   const [siteSettings, post, allPosts] = await Promise.all([
     getSiteSettings(),
     getBlogPostBySlug(params.slug),
