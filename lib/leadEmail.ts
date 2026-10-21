@@ -292,7 +292,9 @@ export async function sendLeadEmail(d: LeadEmailData): Promise<boolean> {
   const rendered = renderLeadEmail(d);
   const warning = "LET OP: deze aanvraag is NIET opgeslagen in Sanity. Deze mail is de enige kopie.";
   const spamNote = "MOGELIJK SPAM: het verborgen anti-spamveld was ingevuld. Kan ook browser-autofill bij een echte klant zijn; controleer kort.";
-  const subject = `${d.spamSuspect ? "[MOGELIJK SPAM] " : ""}${d.notSavedWarning ? "[NIET OPGESLAGEN] " : ""}${rendered.subject}`;
+  // Markeringen ACHTER het onderwerp: de mailassistent en filters herkennen
+  // leadmails aan het begin ("[Google Ads]" / "[Website]"); dat moet intact blijven.
+  const subject = `${rendered.subject}${d.notSavedWarning ? " [NIET OPGESLAGEN]" : ""}${d.spamSuspect ? " [MOGELIJK SPAM]" : ""}`;
   const photosNote = d.photosDropped
     ? `Let op: de klant had ${d.photosDropped} foto('s) toegevoegd die niet konden worden verstuurd (te groot). Vraag ze zo nodig via WhatsApp op.`
     : "";

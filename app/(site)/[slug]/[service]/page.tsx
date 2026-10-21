@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 
 import LocationServiceDetailRoute from "@/components/LocationServiceDetailRoute";
-import {formatReviewSummary, getReviewSnapshot, isIndexableLocationService} from "@/lib/seo/business";
+import {formatReviewSummary, getReviewSnapshot} from "@/lib/seo/business";
 import {
   getLocationBySlug,
   getLocationCityServiceParams,
@@ -41,16 +41,11 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
   const title = `${serviceName} in ${location.name} | DRO Renovaties`;
   const description = `${service.intro} Actief in ${location.name} en omgeving. ${formatReviewSummary(getReviewSnapshot())}.`;
 
-  // Combinaties zonder lokale inhoud en buiten de kerndiensten: zichtbaar voor
-  // bezoekers, maar noindex,follow (omkeerbaar; geen redirect, geen verkeersverlies
-  // voor wie de pagina al via een link bereikt).
-  const indexable = isIndexableLocationService(
-    serviceSlug,
-    location.popularServiceSlugs || (location.popularServices || []).map((item) => item.slug)
-  );
-
+  // Alle stad x dienst-combinaties blijven indexeerbaar met een canonical naar
+  // zichzelf, zoals op main. Een besluit om combinaties uit de index te halen
+  // vereist eerst Search Console-data (docs/audit/18, punt 2).
   return metadataFromSeo(
-    {metaTitle: title, metaDescription: description, ...(indexable ? {} : {noIndex: true})},
+    {metaTitle: title, metaDescription: description},
     title,
     {
       pathname: `/${slug}/${serviceSlug}`,
