@@ -53,9 +53,11 @@ const previewClient = process.env.SANITY_API_READ_TOKEN
     })
   : null
 
-function isPreviewMode(): boolean {
+// Next 15: draftMode() is asynchroon. Buiten een request-context (bv. bij
+// generateStaticParams of sitemap tijdens de build) gooit het; dan geen preview.
+async function isPreviewMode(): Promise<boolean> {
   try {
-    return draftMode().isEnabled
+    return (await draftMode()).isEnabled
   } catch {
     return false
   }
@@ -66,7 +68,7 @@ export async function fetchSanity<T>(
   params: Record<string, unknown> = {},
   options: SanityFetchOptions = {},
 ) {
-  if (isPreviewMode() && previewClient) {
+  if (previewClient && (await isPreviewMode())) {
     return previewClient.fetch<T>(query, params, {
       next: {revalidate: 0},
     })
