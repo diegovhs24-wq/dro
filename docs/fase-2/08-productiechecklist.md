@@ -1,5 +1,7 @@
 # Productiechecklist: PR #24, #25, #26 en drie Sanity-releases (22-10-2026)
 
+> **Vervangen door `10-go-no-go.md`** (22-10, avond). Keuze B voor de betaalvoorwaarden is doorgevoerd. De releases worden nu direct na #24 gepubliceerd. De stand hieronder is historisch.
+
 Er is niets gedeployd of gepubliceerd. Elke stap vraagt akkoord van Therab. Deze checklist vervangt de volgorde in `docs/audit/19-uitrolplan.md` en neemt daaruit de stappen 0 tot en met 3 over.
 
 ## A. Blokkerend vóór livegang
