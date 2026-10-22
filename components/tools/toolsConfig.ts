@@ -278,7 +278,7 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         actief: true,
         gerelateerd: ["bouwtijd", "terugplanner", "sloopchecklist"],
         whatsapp_tekst: "Hoi DRO, ik heb de vergunningcheck ingevuld. Uitkomst: {uitkomst_titel}. Klopt dit voor mijn situatie?",
-        dro_blok_tekst: "Wij regelen de vergunningaanvraag mee, inclusief tekeningen en constructieberekening. Zo heb je van vergunning tot oplevering 1 aanspreekpunt.",
+        dro_blok_tekst: "Zo nodig verzorgen wij de vergunningaanvraag, inclusief tekeningen en constructieberekening. Zo heb je van vergunning tot oplevering 1 aanspreekpunt.",
         tussentijdse_cta: true,
       },
       vragen: [

@@ -231,7 +231,7 @@ export default function SmartIntakeWizard({
   skipIds = [],
   source = "smart-intake",
   variant,
-  responsePromise = "binnen één werkdag",
+  responsePromise = "zo snel mogelijk",
   initialBudget,
   thanksLinks,
   serviceOrder,

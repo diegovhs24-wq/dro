@@ -185,7 +185,7 @@ export const COMMON: QuestionDef[] = [
     optional: true,
   },
   {id: "summary", t: "summary", q: "Uw projectoverzicht"},
-  {id: "contact", t: "contact", q: "Waar kunnen we u bereiken?", s: "We reageren binnen één werkdag."},
+  {id: "contact", t: "contact", q: "Waar kunnen we u bereiken?", s: "We nemen zo snel mogelijk contact met u op."},
   {id: "thanks", t: "thanks", q: ""},
 ];
 

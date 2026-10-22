@@ -24,7 +24,7 @@ const questions = [
   {
     question: "Wat gebeurt er nadat ik mijn aanvraag heb gedaan?",
     answer:
-      "U ontvangt binnen 24 uur een reactie. We kijken eerst of het project bij ons past en nemen daarna contact met u op om alles rustig door te nemen."
+      "U hoort zo snel mogelijk van ons. We kijken eerst of het project bij ons past en nemen daarna contact met u op om alles rustig door te nemen."
   },
   {
     question: "Hoe snel weet ik waar ik aan toe ben?",
@@ -85,7 +85,7 @@ export default function TeamFaqSection() {
                   />
                   <div className="-mt-10 mx-4 rounded-lg bg-white p-5 shadow-sm">
                     <h3 className="text-xl font-bold text-brand-ink">
-                      {member.name} — {member.role}
+                      {member.name}, {member.role}
                     </h3>
                     <p className="mt-3 text-sm font-semibold leading-6 text-neutral-600">
                       {member.text}
