@@ -155,7 +155,7 @@ export const fallbackHomePage = {
           {title: "Vaste teams", icon: "tools"},
           {title: "Duidelijke planning", icon: "planning"},
         ],
-        note: "Start met een korte intake — wij nemen binnen 24 uur contact op.",
+        note: "Start met een korte intake. Wij nemen zo snel mogelijk contact op.",
         formTitle: "Gratis intake",
         formTimeLabel: "± 2 min",
         formText: "Vertel kort wat u wilt laten doen.",
@@ -188,7 +188,7 @@ export const fallbackHomePage = {
       cta: {
         eyebrow: "Start vandaag",
         title: "Klaar om uw project goed te starten?",
-        text: "Start de intake. Wij nemen binnen 24 uur contact op.",
+        text: "Start de intake. Wij nemen zo snel mogelijk contact op.",
         buttons: [
           {label: "Start intake", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "primary" as const},
           {label: "Bel direct", link: {linkType: "external" as const, externalUrl: "tel:+31850871814"}, variant: "outlined" as const},

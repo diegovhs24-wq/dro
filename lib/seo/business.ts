@@ -71,11 +71,11 @@ export const BUSINESS = {
     "Bedrijfsaansprakelijkheidsverzekering",
   ],
 
-  // Betaalvoorwaarden. Het oude "geen aanbetaling" klopt NIET meer.
-  // Bevestigd betaalschema (zie ook advertentiepagina totaalrenovatie): niets
-  // bij ondertekening, 20 tot 25 procent op de eerste werkdag, daarna per fase.
+  // Betaalvoorwaarden (besluit Therab 22-10-2026, keuze B): geen absolute
+  // belofte over wat er bij ondertekening of vooraf betaald wordt. Het schema
+  // staat per project in de offerte (AV art. 8.1).
   paymentTerms:
-    "Niets bij ondertekening; startbetaling van 20 tot 25 procent op de eerste werkdag, daarna betaling per afgeronde fase.",
+    "Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd.",
 
   // Momentopname van het Google-bedrijfsprofiel. Bijwerken met datum; Sanity
   // (organizationSeo.aggregateRatingValue/Count) overschrijft dit als het daar
@@ -166,15 +166,19 @@ export function formatReviewSummary(snapshot: ReviewSnapshot = getReviewSnapshot
   return `${rating} uit ${snapshot.reviewCount} ${snapshot.platform}-reviews`;
 }
 
-// Teksten uit het CMS met de verouderde claim "geen aanbetaling" worden tot de
-// Sanity-correctie is gepubliceerd omgezet naar de bevestigde, ware formulering
-// "niets bij ondertekening" (betaalschema: niets bij tekenen, 20 tot 25 procent
-// op de eerste werkdag). Vervangen in plaats van weghalen, zodat koppen als
-// "Geen aanbetaling" niet leeg worden en zinnen grammaticaal blijven.
-// Zie docs/audit/16 (GEO-03) en docs/audit/17.
+// Vangnet voor gepubliceerde CMS-teksten met absolute betaalbeloftes ("geen
+// aanbetaling", "nooit vooruit", "niets bij ondertekening"). Die kloppen niet:
+// het betaalschema verschilt per project en staat in de offerte (besluit
+// 22-10-2026, keuze B). Vervangen in plaats van weghalen, zodat koppen niet leeg
+// worden en zinnen grammaticaal blijven. De Sanity-releases corrigeren de bron.
+// Bewust smal gehouden: de algemene voorwaarden ("vooruitbetaling of
+// zekerheid", art. 8.8) blijven ongemoeid.
 const OUTDATED_CLAIMS: Array<[RegExp, string]> = [
-  [/\bgeen aanbetaling(?: vooraf)?/gi, "niets bij ondertekening"],
-  [/\bzonder aanbetaling(?: vooraf)?/gi, "zonder betaling bij ondertekening"],
+  [/\bgeen aanbetaling(?: vooraf)?/gi, "een vooraf vastgelegd betaalschema"],
+  [/\bzonder aanbetaling(?: vooraf)?/gi, "met een vooraf vastgelegd betaalschema"],
+  [/\b(?:bij (?:ondertekening|het tekenen)(?: van de opdracht)? betaalt u (?:nog )?niets|niets (?:betalen )?bij ondertekening)/gi, "het betaalschema staat vooraf in de offerte"],
+  [/,? en (?:u betaalt )?nooit vooruit(?:betalen)?/gi, ", volgens het betaalschema in de offerte"],
+  [/\bu betaalt nooit (?:vooruit )?voor werk dat (?:nog )?niet (?:gedaan|af|klaar|uitgevoerd) is/gi, "u betaalt volgens het betaalschema in de offerte, gekoppeld aan de projectfasen"],
 ];
 
 function matchCase(original: string, replacement: string) {

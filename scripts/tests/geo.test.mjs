@@ -6,19 +6,19 @@ import {test} from "node:test";
 const {stripOutdatedClaims, formatReviewSummary, getReviewSnapshot, BUSINESS} = await import(process.env.GEO_BUSINESS);
 const {deriveChannel, detectAiPlatform} = await import(process.env.GEO_LEADS);
 
-test("verouderde claim wordt vervangen door de bevestigde formulering", () => {
-  assert.equal(stripOutdatedClaims("Geen aanbetaling"), "Niets bij ondertekening");
-  assert.equal(stripOutdatedClaims("Geen aanbetaling vooraf"), "Niets bij ondertekening");
-  assert.equal(stripOutdatedClaims("Vaste prijs, geen aanbetaling en één vast team"), "Vaste prijs, niets bij ondertekening en één vast team");
-  assert.equal(stripOutdatedClaims("U betaalt geen aanbetaling."), "U betaalt niets bij ondertekening.");
-  assert.equal(
-    stripOutdatedClaims("We werken met vaste vakteams, een vaste prijs en zonder aanbetaling, en hebben"),
-    "We werken met vaste vakteams, een vaste prijs en zonder betaling bij ondertekening, en hebben"
-  );
-  // Tekst zonder claim, inclusief alinea-witregels, blijft exact gelijk.
+test("absolute betaalbeloftes uit het CMS worden geneutraliseerd (keuze B)", () => {
+  assert.equal(stripOutdatedClaims("Geen aanbetaling"), "Een vooraf vastgelegd betaalschema");
+  assert.equal(stripOutdatedClaims("Vaste vakteams, geen aanbetaling en één vast team"), "Vaste vakteams, een vooraf vastgelegd betaalschema en één vast team");
+  assert.equal(stripOutdatedClaims("Bij ondertekening betaalt u niets."), "Het betaalschema staat vooraf in de offerte.");
+  assert.equal(stripOutdatedClaims("U betaalt per afgeronde fase en nooit vooruit."), "U betaalt per afgeronde fase, volgens het betaalschema in de offerte.");
   const plain = "Eerste alinea.\n\nTweede  alinea.";
   assert.equal(stripOutdatedClaims(plain), plain);
-  assert.equal(stripOutdatedClaims("De startbetaling is 20%."), "De startbetaling is 20%.");
+  const av = "DRO mag op ieder moment gehele of gedeeltelijke vooruitbetaling of zekerheid verlangen.";
+  assert.equal(stripOutdatedClaims(av), av);
+});
+
+test("betaalvoorwaarden in bedrijfsprofiel volgen keuze B", () => {
+  assert.ok(!/niets bij ondertekening|eerste werkdag|geen aanbetaling|nooit vooruit/i.test(BUSINESS.paymentTerms));
 });
 
 test("review-samenvatting in Nederlandse notatie", () => {
