@@ -14,7 +14,7 @@ const MIN_M2 = 40;
 const MAX_M2 = 300;
 
 function euro(value: number): string {
-  return `€ ${(Math.round(value / 500) * 500).toLocaleString("nl-NL")}`;
+  return `€\u00a0${(Math.round(value / 500) * 500).toLocaleString("nl-NL")}`;
 }
 
 export default function RenovationEstimator({intakeHref = "#intake"}: {intakeHref?: string}) {
@@ -65,8 +65,8 @@ export default function RenovationEstimator({intakeHref = "#intake"}: {intakeHre
 
       <div className="p-6 md:p-8">
         <p className="text-[15px] text-lp-muted">Indicatie totaalrenovatie, exclusief btw</p>
-        <p aria-live="polite" className="mt-1 text-[32px] font-bold leading-tight tabular-nums tracking-[-0.02em] sm:text-[38px]">
-          {euro(min)} tot {euro(max)}
+        <p aria-live="polite" className="mt-1 text-[28px] font-bold leading-tight tabular-nums tracking-[-0.02em] sm:text-[34px]">
+          <span className="whitespace-nowrap">{euro(min)}</span> tot <span className="whitespace-nowrap">{euro(max)}</span>
         </p>
         <p className="mt-1 text-[15px] tabular-nums text-lp-muted">
           {euro(min * (1 + VAT))} tot {euro(max * (1 + VAT))} inclusief 21% btw

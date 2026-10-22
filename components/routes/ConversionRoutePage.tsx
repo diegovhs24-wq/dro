@@ -59,7 +59,7 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
   // Zekerheden: alleen bevestigde feiten; garantie en reactietijd alleen als ze in Sanity zijn bevestigd.
   const assurances: Array<{term: string; detail: string}> = [
     {term: "Bij ondertekening", detail: "U betaalt niets. De startbetaling volgt op de eerste werkdag."},
-    {term: "Verzekerd", detail: ROUTE_TRUST.insurance},
+    {term: "Verzekerd", detail: ROUTE_TRUST.insuranceShort},
     {term: "Erkenningen", detail: ROUTE_TRUST.credentials.join(", ")},
     ...(claims.guarantee ? [{term: "Garantie", detail: claims.guarantee.scope ? `${claims.guarantee.text}. ${claims.guarantee.scope}` : claims.guarantee.text}] : []),
     ...(claims.responseTime ? [{term: "Reactie", detail: claims.responseTime.text}] : []),

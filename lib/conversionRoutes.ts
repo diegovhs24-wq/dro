@@ -80,6 +80,7 @@ const INSURANCE_TEXT = `${BUSINESS.insurance.join(" en ")}. Schade tijdens de bo
 
 export const ROUTE_TRUST = {
   insurance: INSURANCE_TEXT,
+  insuranceShort: "CAR- en aansprakelijkheidsverzekering. Schade tijdens de bouw is verzekerd.",
   credentials: BUSINESS.credentials.map((c) => c.name),
   payment: BUSINESS.paymentTerms,
 };
@@ -128,7 +129,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   pricing: {
     title: "Wat een grote renovatie kost",
     intro:
-      "Voor een totaalrenovatie rekenen we als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Hieronder ziet u wat dat betekent voor een paar woninggroottes.",
+      "Voor een totaalrenovatie rekenen we als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u wat dat betekent voor uw woning, inclusief het betaalschema.",
     note: "Indicatie exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Een uitbouw of dakopbouw prijzen we altijd na een opname, omdat fundering en constructie per woning verschillen.",
   },
   steps: {
