@@ -278,7 +278,7 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         actief: true,
         gerelateerd: ["bouwtijd", "terugplanner", "sloopchecklist"],
         whatsapp_tekst: "Hoi DRO, ik heb de vergunningcheck ingevuld. Uitkomst: {uitkomst_titel}. Klopt dit voor mijn situatie?",
-        dro_blok_tekst: "Wij regelen de vergunningaanvraag mee, inclusief tekeningen en constructieberekening. Zo heb je van vergunning tot oplevering 1 aanspreekpunt.",
+        dro_blok_tekst: "Zo nodig verzorgen wij de vergunningaanvraag, inclusief tekeningen en constructieberekening. Zo heb je van vergunning tot oplevering 1 aanspreekpunt.",
         tussentijdse_cta: true,
       },
       vragen: [
@@ -1680,7 +1680,7 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
     cta_knop_whatsapp: "App ons direct",
     whatsapp_algemeen_tekst: "Hoi DRO, ik wil graag sparren over mijn verbouwing.",
     stuur_resultaat_knop: "Stuur dit resultaat naar DRO",
-    trust_regel: "4,8 uit 273 Google-reviews. Duidelijke offerte vooraf, startbetaling en daarna betaling per afgeronde fase.",
+    trust_regel: "4,8 uit 273 Google-reviews. Duidelijke offerte vooraf, met een betalingsschema per fase.",
     tussentijdse_cta_tekst: "Liever dat wij even meekijken? App ons gerust.",
   },
 };

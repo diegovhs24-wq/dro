@@ -39,17 +39,17 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   verwijderen: {
     title: 'Draagmuur eruit, alles geregeld',
     intro:
-      'Van deuropening tot een hele muur weg voor uw open keuken. Wij regelen constructeur, vergunning, stalen balk en, als u wilt, de afwerking. Eén aanspreekpunt, één vaste prijs.',
+      'Van deuropening tot een hele muur weg voor uw open keuken. Wij regelen constructeur, berekening en stalen balk, verzorgen zo nodig de vergunningsaanvraag en, als u wilt, de afwerking. Eén aanspreekpunt, een prijs per onderdeel.',
   },
   kosten: {
     title: 'Wat kost een draagmuur verwijderen?',
     intro:
-      'Bereken hiernaast direct uw prijsindicatie. Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen balk, container en afvoer. Na de opname krijgt u een vaste prijs.',
+      'Bereken hiernaast direct uw prijsindicatie. Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen balk, container en afvoer. Na de opname krijgt u een offerte met een prijs per onderdeel.',
   },
   balk: {
     title: 'Draagmuur weg, stalen balk erin',
     intro:
-      'Constructeur, berekening, vergunning, stempelen en het plaatsen van de balk: wij doen het hele traject. Uitvoering in 1 tot 3 dagen door onze eigen ploeg.',
+      'Constructeur, berekening, stempelen en het plaatsen van de balk, en zo nodig de vergunningsaanvraag: wij begeleiden het hele traject. Uitvoering in 1 tot 3 dagen door een vaste ploeg.',
   },
 }
 
@@ -92,7 +92,7 @@ const JOBS = [
 ] as const
 
 const STEPS = [
-  {title: 'Aanvraag en indicatie', text: 'U vult het formulier in en ziet direct een prijsindicatie. Wij bellen u binnen 1 werkuur terug.'},
+  {title: 'Aanvraag en indicatie', text: 'U vult het formulier in en ziet direct een prijsindicatie. Wij bellen u zo snel mogelijk terug.'},
   {title: 'Opname op locatie', text: 'Een verbouwadviseur komt langs, meet alles in en bekijkt leidingen, vloer en plafond.'},
   {title: 'Berekening en tekening', text: 'De constructeur rekent de balk door. Geen tekeningen? Wij vragen ze op bij het gemeentearchief.'},
   {title: 'Vergunning', text: 'Wij dienen de aanvraag in. De gemeente beslist meestal binnen 8 weken. Intussen plannen we de uitvoering.'},
@@ -126,7 +126,7 @@ const FAQ = [
   },
   {
     q: 'Heb ik een vergunning nodig?',
-    a: 'Ja. Omdat de draagconstructie van uw huis verandert, is een omgevingsvergunning verplicht. Wij regelen dat voor u: tekeningen, constructieberekening en de aanvraag bij de gemeente. In Den Haag beslist de gemeente meestal binnen 8 weken. De leges betaalt u aan de gemeente.',
+    a: 'Meestal wel. Omdat de draagconstructie van uw huis verandert, is in de regel een omgevingsvergunning nodig. Wij verzorgen de aanvraag voor u: tekeningen, constructieberekening en de indiening bij de gemeente. Het besluit en de doorlooptijd liggen bij de gemeente; in Den Haag is dat meestal binnen 8 weken. De leges betaalt u aan de gemeente.',
   },
   {
     q: 'Hoe lang duurt het?',
@@ -240,7 +240,7 @@ const ICON_PATHS: Record<string, string[]> = {
 }
 
 const LOGOS = [
-  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
+  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar voor de CAR- en aansprakelijkheidsverzekering.'},
   {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
   {name: 'VLOK', src: '/landing/logos/logo-vlok.png', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
   {name: 'SBB', src: '/landing/logos/logo-sbb.png', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
@@ -451,7 +451,7 @@ export default async function DraagmuurLandingPage(
           <div className="text-lp-ink">
             <SmartIntakeWizard
               presetServices={['Draagmuur verwijderen']}
-              responsePromise="binnen 1 werkuur"
+              responsePromise="zo snel mogelijk"
               skipIds={['found', 'budget']}
               source="lp-draagmuur"
               thanksLinks={[
@@ -546,7 +546,7 @@ export default async function DraagmuurLandingPage(
         <div className="section-shell py-14">
           <h2 className={H2}>Groot of klein, wij doen het allebei</h2>
           <p className={`mt-3 max-w-[62ch] ${BODY}`}>
-            Van een nieuwe deuropening tot een hele muur eruit. Elke doorbraak krijgt dezelfde zorg: berekend, vergund en verzekerd.
+            Van een nieuwe deuropening tot een hele muur eruit. Elke doorbraak krijgt dezelfde zorg: berekend, verzekerd en met vergunning als die nodig is.
           </p>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {JOBS.map((job, i) => (
@@ -689,7 +689,7 @@ export default async function DraagmuurLandingPage(
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
             <div className="rounded-lg border border-lp-line bg-white p-6">
               <h3 className="text-[18px] font-bold [font-stretch:108%]">Checklist voor de opname</h3>
-              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we in één bezoek een vaste prijs maken.</p>
+              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we in één bezoek een offerte op maat maken.</p>
               <ul className="mt-4 space-y-2.5">
                 {CHECKLIST.map((item) => (
                   <li className="flex gap-3 text-[15px] leading-[1.55]" key={item}>
@@ -894,7 +894,7 @@ export default async function DraagmuurLandingPage(
             ))}
           </ol>
           <div className="mt-10 flex flex-col items-start gap-4 rounded-lg bg-lp-plaster p-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u binnen 1 werkuur terug.</p>
+            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u zo snel mogelijk terug.</p>
             <a className={CTA} href="#aanvraag">
               Indicatie berekenen
             </a>

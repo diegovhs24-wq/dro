@@ -17,7 +17,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'Totaalrenovatie in Den Haag en omgeving | DRO Renovaties',
   description:
-    `Totaalrenovatie van uw woning door een Haags familiebedrijf met vaste eigen ploegen. ${BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')} uit ${BUSINESS.reviews.reviewCount}+ Google-reviews. Vraag vrijblijvend een bezichtiging aan.`,
+    `Totaalrenovatie van uw woning door een Haags familiebedrijf met vaste vakteams. ${BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')} uit ${BUSINESS.reviews.reviewCount}+ Google-reviews. Vraag vrijblijvend een bezichtiging aan.`,
   robots: {index: false, follow: true},
   alternates: {canonical: '/totaalrenovatie-den-haag'},
 }
@@ -42,7 +42,7 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   aannemer: {
     title: 'Uw renovatie-aannemer in Den Haag',
     intro:
-      'Totaalrenovaties van € 50.000 tot € 150.000, uitgevoerd door een Haags familiebedrijf met vaste eigen ploegen. Van sloop tot oplevering, met één vast aanspreekpunt.',
+      'Totaalrenovaties van € 50.000 tot € 150.000, uitgevoerd door een Haags familiebedrijf met vaste vakteams. Van sloop tot oplevering, met één vast aanspreekpunt.',
   },
   woning: {
     title: 'Totaalrenovatie van uw woning in Den Haag',
@@ -57,7 +57,7 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
 
 const PROOF = [
   `${TRUSTOO_SCORE} op Trustoo uit ${TRUSTOO_COUNT} reviews, Top Pro 2026`,
-  'Vaste eigen ploegen en één vast aanspreekpunt',
+  'Vaste vakteams en één vast aanspreekpunt',
   'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
   'VCA-gecertificeerd en CAR-verzekerd',
 ]
@@ -77,7 +77,7 @@ const FAQ = [
   },
   {
     q: 'Hoe werkt de betaling?',
-    a: 'Bij het tekenen van de opdracht betaalt u niets. Op de eerste werkdag, als we echt beginnen, betaalt u 20 tot 25%. Daarna betaalt u per fase, en pas als die fase klaar is en u het werk heeft gezien. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.',
+    a: 'Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd. U kent de fases en bedragen dus voordat u tekent.',
   },
   {
     q: 'Heb ik een vergunning nodig?',
@@ -184,13 +184,12 @@ function pickVariant(value: string | string[] | undefined): Variant {
 }
 
 // Typografie: koppen breed (font-stretch) en stevig, tekst normaal.
-// Betaalschema (bevestigd door Therab): niets bij het tekenen, 20 tot 25% op de
-// eerste werkdag, daarna per afgeronde fase. Rekenvoorbeeld met een gemiddelde
-// totaalrenovatie, zodat bezoekers in één oogopslag zien wat ze wanneer betalen.
+// Rekenvoorbeeld van een betalingsschema per fase bij een gemiddelde
+// totaalrenovatie. Alleen een voorbeeld: het echte schema verschilt per project
+// en staat vooraf in de offerte (besluit 22-10-2026, keuze B; AV art. 8.1).
 const EXAMPLE_TOTAL = 120000
 const EXAMPLE_WEEKS = 13
 const EXAMPLE_PHASES = [
-  {step: 'Tekenen', weeks: 'Vooraf', pct: 0, work: 'Offerte, planning en betaalschema op papier'},
   {step: 'Start', weeks: 'Dag 1', pct: 20, work: 'Woning afgeschermd, materialen besteld'},
   {step: 'Sloop en casco', weeks: 'Week 1 tot 3', pct: 20, work: 'Slopen, muur eruit met stalen balk, afvoer'},
   {step: 'Installaties', weeks: 'Week 4 tot 7', pct: 25, work: 'Elektra en groepenkast, water, afvoer, verwarming'},
@@ -202,8 +201,8 @@ const GRIP = [
   {title: 'Eén vast aanspreekpunt', text: 'Van de eerste bezichtiging tot de oplevering dezelfde persoon.', icon: 'person'},
   {title: 'Elke week een vast meetmoment', text: 'U ziet de voortgang en stelt uw vragen op een vast moment.', icon: 'calendar'},
   {title: 'Vragen binnen 24 uur opgepakt', text: 'Via de app, ook tussen de meetmomenten door.', icon: 'chat'},
-  {title: 'Vaste eigen ploegen', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
-  {title: 'Volledig verzekerd', text: 'CAR- en aansprakelijkheidsverzekering: schade tijdens de bouw is gedekt.', icon: 'shield'},
+  {title: 'Vaste vakteams', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
+  {title: 'Verzekerd', text: 'DRO heeft een CAR- en een bedrijfsaansprakelijkheidsverzekering.', icon: 'shield'},
 ] as const
 
 const ICON_PATHS: Record<string, string[]> = {
@@ -217,7 +216,7 @@ const ICON_PATHS: Record<string, string[]> = {
 // Keurmerken en verzekeraar. Logo's in /public/landing/logos/; zolang een
 // bestand ontbreekt (src leeg), toont de pagina alleen de naam.
 const LOGOS = [
-  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
+  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar voor de CAR- en aansprakelijkheidsverzekering.'},
   {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
   {name: 'VLOK', src: '/landing/logos/logo-vlok.png', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
   {name: 'SBB', src: '/landing/logos/logo-sbb.png', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
@@ -387,14 +386,14 @@ export default async function TotaalrenovatieLandingPage(
               </p>
             </div>
             <p className="max-w-[44ch] text-[15px] leading-snug">
-              <span className="font-bold">Bij het tekenen betaalt u nog niets.</span> Op de eerste werkdag volgt de startbetaling,
-              daarna betaalt u pas als een fase klaar is en u het werk heeft gezien.
+              <span className="font-bold">Het betalingsschema staat vooraf in uw offerte.</span> Betalingen zijn gekoppeld aan de
+              projectfasen. Een eventuele startbetaling staat er ook in, schriftelijk en voordat u tekent.
             </p>
           </div>
 
           <ol
             aria-label="Betaalmomenten in het rekenvoorbeeld"
-            className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-6 md:overflow-visible"
+            className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-5 md:overflow-visible"
           >
             {examplePhases.map((phase, i) => {
               const first = i === 0
@@ -416,7 +415,7 @@ export default async function TotaalrenovatieLandingPage(
                   <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
                     {euro(phase.amount)}
                   </p>
-                  <p className="mt-1 text-[12px] text-lp-muted">{first ? 'niets bij ondertekening' : `${phase.pct}% van het totaal`}</p>
+                  <p className="mt-1 text-[12px] text-lp-muted">{`${phase.pct}% van het totaal`}</p>
                   <p className="mt-3 text-[13px] leading-[1.45] text-lp-muted">{phase.work}</p>
                   <div className="mt-auto pt-4">
                     <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-lp-line">
@@ -565,7 +564,7 @@ export default async function TotaalrenovatieLandingPage(
           <div className="text-lp-ink">
             <SmartIntakeWizard
               largeBudget={[50000, 100000]}
-              responsePromise="binnen 1 werkuur"
+              responsePromise="zo snel mogelijk"
               serviceOrder={['Totaalrenovatie', 'Aanbouw of opbouw', 'Badkamer', 'Keuken', 'Dakkapel']}
               servicesSub="Kies één of meer onderdelen. Daarna stellen we alleen de vragen die bij uw verbouwing horen."
               servicesTitle="Wat wilt u verbouwen?"
@@ -820,7 +819,7 @@ export default async function TotaalrenovatieLandingPage(
             </div>
             <ul className="grid content-start gap-3 text-[15px] md:border-l md:border-lp-line md:pl-8">
               <li>Kantoor aan de Orionstraat 235 in Den Haag</li>
-              <li>Vaste eigen ploegen en eigen opslag</li>
+              <li>Vaste vakteams en eigen opslag</li>
               <li>Vast netwerk van constructeurs en architecten</li>
             </ul>
           </div>
