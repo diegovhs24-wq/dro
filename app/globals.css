@@ -6,6 +6,8 @@
   color-scheme: light;
   scroll-behavior: smooth;
   /* DRO-huisstijl (referentie: Over ons). Gebruik deze tokens, geen losse waarden. */
+  /* Fallback; next/font zet Poppins op de layout via dezelfde variabele. */
+  --font-poppins: Arial, sans-serif;
   --dro-ink: #181613;
   --dro-ink-soft: #3a3733;
   --dro-dark: #1f1c18;
