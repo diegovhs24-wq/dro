@@ -118,6 +118,7 @@ export default function Header({siteSettings}: HeaderProps) {
         pathname={pathname}
         onClose={() => setMobileOpen(false)}
         logo={siteSettings.headerLogo}
+        whatsappHref={siteSettings.floatingActions?.whatsappHref}
       />
     </>
   );
@@ -279,9 +280,10 @@ type MobileMenuProps = {
   pathname: string;
   onClose: () => void;
   logo?: string;
+  whatsappHref?: string;
 };
 
-function MobileMenu({id, open, items, buttons, pathname, onClose, logo}: MobileMenuProps) {
+function MobileMenu({id, open, items, buttons, pathname, onClose, logo, whatsappHref}: MobileMenuProps) {
   return (
     <>
       {/* Backdrop */}
@@ -333,14 +335,22 @@ function MobileMenu({id, open, items, buttons, pathname, onClose, logo}: MobileM
           </ul>
         </nav>
 
-        {/* CTA buttons pinned to bottom */}
-        {buttons && buttons.length > 0 && (
-          <div className="shrink-0 border-t border-black/10 px-4 py-4">
-            <div className="flex flex-col gap-2">
-              <SmartButton buttons={buttons} className="justify-center" />
+        {/* CTA's onderaan: intake, bellen en WhatsApp (op mobiel staat geen zwevende knop). */}
+        <div className="shrink-0 border-t border-black/10 px-4 py-4">
+          <div className="flex flex-col gap-2">
+            {buttons && buttons.length > 0 && <SmartButton buttons={buttons} className="justify-center" />}
+            <div className="grid grid-cols-2 gap-2">
+              <a className="btn-outline" data-track="mobile_menu" href="tel:+31850871814">
+                Bel 085 087 1814
+              </a>
+              {whatsappHref && whatsappHref !== "#" ? (
+                <a className="btn-outline" data-track="mobile_menu" href={whatsappHref}>
+                  WhatsApp
+                </a>
+              ) : null}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </>
   );
