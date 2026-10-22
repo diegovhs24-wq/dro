@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import {AssuranceTable, FaqList, IntakeBlock, ProjectFigure, ProjectTile, ReviewQuotes, TeamList} from "@/components/premium/blocks";
+import {AssuranceTable, FaqList, IntakeBlock, ProjectTile, ReviewQuotes, TeamList} from "@/components/premium/blocks";
 import {premiumFontClass} from "@/components/premium/fonts";
 import PremiumHero from "@/components/premium/PremiumHero";
 import PageStructuredData from "@/components/seo/PageStructuredData";
@@ -39,7 +39,7 @@ export default async function HomePage() {
             {term: "Verzekerd", detail: "CAR en aansprakelijkheid"},
             {term: "Erkend", detail: "VCA, SBB en VLOK"},
           ]}
-          lead={`${BUSINESS.name} is een familiebedrijf uit Den Haag. Wij voeren totaalrenovaties, uitbouwen en constructieve verbouwingen uit, van € 50.000 tot € 250.000 en meer: één aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten.`}
+          lead={`${BUSINESS.name} is een familiebedrijf uit Den Haag. Wij voeren totaalrenovaties, uitbouwen en constructieve verbouwingen uit, van € 50.000 tot € 250.000 en meer: één aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten.`}
           primary={{label: "Start uw projectintake", href: "#intake", cta: "home_hero_intake"}}
           project={hero}
           title="Renovatie en verbouwing, onder één regie"
@@ -55,7 +55,7 @@ export default async function HomePage() {
               <RoutePanel
                 facts={[
                   {term: "Voor", detail: "Totaalrenovatie, uitbouw, dakopbouw, of een combinatie"},
-                  {term: "Indicatie", detail: "€ 1.000 tot € 1.250 per m², excl. btw, voor een totaalrenovatie"},
+                  {term: "Indicatie", detail: "€ 1.000 tot € 1.250 per m², excl. btw, voor een totaalrenovatie"},
                   ...(bigWeeks ? [{term: "Uitvoering", detail: `${bigWeeks} bij onze projecten`}] : []),
                 ]}
                 href={GROTE_RENOVATIE.path}
@@ -73,7 +73,7 @@ export default async function HomePage() {
                 ]}
                 href={SPECIALISTISCH.path}
                 label="Naar constructieve werken"
-                second={{href: "/projecten?type=constructief", label: "Bekijk constructieve projecten"}}
+                second={{href: "/constructieve-werken#werkwijze", label: "Zo gaat een draagmuur eruit"}}
                 text="Werk aan de constructie van uw woning, berekend door een constructeur en uitgevoerd door vaste vakteams."
                 title="Constructief werk"
               />
@@ -108,13 +108,10 @@ export default async function HomePage() {
                   Alle projecten
                 </Link>
               </div>
-              <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
-                <ProjectFigure aspect="aspect-[4/3]" project={showcase[0]} width={1400} />
-                <div className="grid gap-10">
-                  {showcase.slice(1).map((p) => (
-                    <ProjectTile key={p.slug} project={p} />
-                  ))}
-                </div>
+              <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+                {showcase.map((p) => (
+                  <ProjectTile key={p.slug} project={p} />
+                ))}
               </div>
             </div>
           </section>

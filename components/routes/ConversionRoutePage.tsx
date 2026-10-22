@@ -34,7 +34,7 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
 
   const facts: HeroFact[] = route.estimator
     ? [
-        {term: "Indicatie", detail: "€ 1.000 tot € 1.250 per m², excl. btw"},
+        {term: "Indicatie", detail: "€ 1.000 tot € 1.250 per m², excl. btw"},
         ...(weeks ? [{term: "Uitvoering", detail: `${weeks} bij onze projecten`}] : []),
         {term: "Bij ondertekening", detail: "U betaalt niets"},
         {term: "Google-reviews", detail: data.reviewSummary.replace(" Google-reviews", "")},

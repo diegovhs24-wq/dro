@@ -2,12 +2,12 @@
 
 export const HOME_TITLE = "Aannemer voor renovatie en verbouwing in Den Haag";
 export const HOME_DESCRIPTION =
-  "Familiebedrijf uit Den Haag voor totaalrenovaties, uitbouwen en constructieve verbouwingen van € 50.000 tot € 250.000 en meer. Niets betalen bij ondertekening, vaste vakteams, 4,8 uit 273 Google-reviews.";
+  "Familiebedrijf uit Den Haag voor totaalrenovaties, uitbouwen en constructieve verbouwingen van € 50.000 tot € 250.000 en meer. Niets betalen bij ondertekening, vaste vakteams, 4,8 uit 273 Google-reviews.";
 
 export const HOME_FAQ = [
   {
     q: "Wat kost een totaalrenovatie?",
-    a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Uw prijs volgt na een bezichtiging.",
+    a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Uw prijs volgt na een bezichtiging.",
   },
   {
     q: "Moet ik vooruitbetalen?",

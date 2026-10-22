@@ -52,7 +52,7 @@ export function ProjectFigure({
       <Measure className="mb-3">{label}</Measure>
       <Link className="group block overflow-hidden rounded-[4px] bg-[var(--pr-kalk)]" data-cta="project_figure" href={`/projecten/${project.slug}`}>
         <img
-          alt={`${label}: resultaat na de verbouwing`}
+          alt={label}
           className={`${aspect} w-full object-cover transition duration-500 group-hover:scale-[1.015]`}
           decoding="async"
           fetchPriority={priority ? "high" : undefined}
@@ -163,10 +163,10 @@ export function ReviewQuotes({reviews, summary, asOf}: {reviews: ReviewItem[]; s
               <span className="block text-[15px] pr-muted">Stand {asOf}</span>
             </p>
           </div>
-          <div className="grid gap-8 md:grid-cols-3 md:gap-8">
+          <div className="grid border-b border-[var(--pr-line)]">
             {reviews.map((review) => (
-              <figure className="border-t-2 border-[var(--pr-ink)] pt-5" key={review.name}>
-                <blockquote className="text-[16px] leading-[1.65]">&ldquo;{excerpt(review.quote)}&rdquo;</blockquote>
+              <figure className="border-t border-[var(--pr-line)] py-6" key={review.name}>
+                <blockquote className="max-w-[66ch] text-[18px] leading-[1.6]">&ldquo;{excerpt(review.quote, 300)}&rdquo;</blockquote>
                 <figcaption className="mt-4 text-[15px] pr-muted">{review.name}, Google-review</figcaption>
               </figure>
             ))}

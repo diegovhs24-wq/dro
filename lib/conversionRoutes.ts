@@ -1,7 +1,7 @@
 // Twee conversieroutes, elk met een eigen pagina, intake-instelling en meting:
 //
 // 1. Grote renovaties (totaalrenovatie, uitbouw, dakopbouw) voor budgetten
-//    vanaf € 50.000 tot € 250.000 en meer.
+//    vanaf € 50.000 tot € 250.000 en meer.
 // 2. Constructieve en specialistische werken (draagmuur, doorbraak, stalen
 //    ligger, bouwkundige keuring): kortere trajecten met hoge marge.
 //
@@ -94,13 +94,13 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   path: "/grote-renovaties",
   crumbLabel: "Grote renovaties",
   estimator: true,
-  metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
+  metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
   metaDescription:
     "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, vaste vakteams, niets betalen bij ondertekening. Start uw projectintake.",
   eyebrow: "Totaalrenovatie, uitbouw en dakopbouw",
   title: "Grote renovaties onder één regie",
   intro:
-    "Voor woningen waar alles tegelijk moet gebeuren: indeling, installaties, isolatie en afwerking. Van € 50.000 tot € 250.000 en meer. Eén aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten voor planning en techniek.",
+    "Voor woningen waar alles tegelijk moet gebeuren: indeling, installaties, isolatie en afwerking. Van € 50.000 tot € 250.000 en meer. Eén aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten voor planning en techniek.",
   primaryCta: "Start uw projectintake",
   serviceName: "Grote renovaties: totaalrenovatie, uitbouw en dakopbouw",
   serviceType: "Totaalrenovatie",
@@ -110,7 +110,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
     cards: [
       {
         title: "U heeft net een woning gekocht",
-        text: "U wilt de renovatie klaar hebben voordat u erin trekt. Een bouwkundige keuring vooraf geeft budgetzekerheid; het rapport kost € 399 en is kosteloos als wij de renovatie uitvoeren.",
+        text: "U wilt de renovatie klaar hebben voordat u erin trekt. Een bouwkundige keuring vooraf geeft budgetzekerheid; het rapport kost € 399 en is kosteloos als wij de renovatie uitvoeren.",
       },
       {
         title: "U wilt meer ruimte zonder te verhuizen",
@@ -135,7 +135,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   pricing: {
     title: "Wat een grote renovatie kost",
     intro:
-      "Voor een totaalrenovatie rekenen we als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u wat dat betekent voor uw woning, inclusief het betaalschema.",
+      "Voor een totaalrenovatie rekenen we als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u wat dat betekent voor uw woning, inclusief het betaalschema.",
     note: "Indicatie exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Een uitbouw of dakopbouw prijzen we altijd na een opname, omdat fundering en constructie per woning verschillen.",
   },
   steps: {
@@ -153,7 +153,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   faq: [
     {
       q: "Wat kost een totaalrenovatie per m²?",
-      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 120 m² is dat ongeveer € 120.000 tot € 150.000 exclusief btw. De staat van de woning, de installaties en uw afwerkingswensen bepalen waar u uitkomt. Na een bezichtiging krijgt u een offerte op maat.",
+      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 120 m² is dat ongeveer € 120.000 tot € 150.000 exclusief btw. De staat van de woning, de installaties en uw afwerkingswensen bepalen waar u uitkomt. Na een bezichtiging krijgt u een offerte op maat.",
     },
     PAYMENT_FAQ,
     {
@@ -166,7 +166,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
     },
     {
       q: "Net een woning gekocht: waar begin ik?",
-      a: "Met een bouwkundige keuring. Dan weet u wat er aan de woning moet gebeuren voordat u een budget vastlegt. Het rapport kost € 399 en is kosteloos als wij daarna de renovatie uitvoeren.",
+      a: "Met een bouwkundige keuring. Dan weet u wat er aan de woning moet gebeuren voordat u een budget vastlegt. Het rapport kost € 399 en is kosteloos als wij daarna de renovatie uitvoeren.",
     },
     {
       q: "In welke regio werken jullie?",
@@ -214,7 +214,7 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
     cards: [
       {title: "Een open keuken of woonkamer", text: "De muur tussen keuken en kamer moet eruit, en die blijkt dragend."},
       {title: "Een bredere opening", text: "Een doorgang vergroten of een deuropening maken in een dragende muur."},
-      {title: "Zekerheid vóór de aankoop", text: "U wilt weten of een verbouwing constructief kan, voordat u een bod doet. Een bouwkundige keuring kost € 399."},
+      {title: "Zekerheid vóór de aankoop", text: "U wilt weten of een verbouwing constructief kan, voordat u een bod doet. Een bouwkundige keuring kost € 399."},
     ],
   },
   scope: {
@@ -224,7 +224,7 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
       {title: "Draagmuur verwijderen", text: "Helemaal of deels, met een stalen of houten ligger op basis van de constructieberekening."},
       {title: "Deuropening in een draagmuur", text: "Een nieuwe doorgang met de juiste overspanning en oplegging."},
       {title: "Doorbraak en stalen liggers", text: "Bredere openingen, ook naar een aanbouw of serre."},
-      {title: "Bouwkundige keuring", text: "Rapport van de staat van de woning, € 399, kosteloos als wij de renovatie uitvoeren."},
+      {title: "Bouwkundige keuring", text: "Rapport van de staat van de woning, € 399, kosteloos als wij de renovatie uitvoeren."},
     ],
   },
   pricing: {
@@ -297,7 +297,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   estimator: true,
   metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO Renovaties",
   metaDescription:
-    "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.000 tot € 1.250 per m² excl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
+    "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.000 tot € 1.250 per m² excl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
   eyebrow: "Totaalrenovatie",
   title: "Totaalrenovatie van uw woning",
   intro:
@@ -309,7 +309,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
     title: "Wanneer een totaalrenovatie past",
     intro: "Een totaalrenovatie is meer dan losse klussen bij elkaar: alles wordt in de juiste volgorde gedaan, zodat niets twee keer hoeft.",
     cards: [
-      {title: "Net gekocht", text: "U wilt de woning klaar hebben voordat u erin trekt. Begin met een bouwkundige keuring: € 399 voor het rapport, kosteloos als wij de renovatie uitvoeren."},
+      {title: "Net gekocht", text: "U wilt de woning klaar hebben voordat u erin trekt. Begin met een bouwkundige keuring: € 399 voor het rapport, kosteloos als wij de renovatie uitvoeren."},
       {title: "Verouderd van binnen", text: "Leidingen, elektra, keuken en badkamer zijn aan vervanging toe. Dan is het logisch om de indeling in hetzelfde traject aan te pakken."},
       {title: "Zakelijk bezit", text: "Voor beleggers en vastgoedpartijen: projectmatig uitvoeren, met dezelfde vaste aanspreekpunten."},
     ],
@@ -326,7 +326,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   },
   pricing: {
     title: "Wat kost een totaalrenovatie?",
-    intro: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u de bandbreedte voor uw woning, en ernaast wat de prijs hoger of lager maakt.",
+    intro: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u de bandbreedte voor uw woning, en ernaast wat de prijs hoger of lager maakt.",
     note: "De rekenhulp is een indicatie. Uw prijs volgt na een bezichtiging, uitgesplitst per onderdeel.",
   },
   steps: {
@@ -343,7 +343,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   faq: [
     {
       q: "Wat kost een totaalrenovatie per m²?",
-      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 100 m² is dat ongeveer € 100.000 tot € 125.000 exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt.",
+      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 100 m² is dat ongeveer € 100.000 tot € 125.000 exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt.",
     },
     {
       q: "Hoe lang duurt een totaalrenovatie?",
@@ -360,7 +360,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
     },
     {
       q: "Net een woning gekocht: waar begin ik?",
-      a: "Met een bouwkundige keuring. Het rapport kost € 399 en is kosteloos als wij daarna de renovatie uitvoeren.",
+      a: "Met een bouwkundige keuring. Het rapport kost € 399 en is kosteloos als wij daarna de renovatie uitvoeren.",
     },
   ],
   projectTypeMatch: /totaal/i,

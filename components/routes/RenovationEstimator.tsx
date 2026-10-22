@@ -6,8 +6,8 @@ import {trackFunnel} from "@/lib/analytics";
 import {RENOVATION_PRICE_PER_M2, renovationEstimate} from "@/lib/conversionRoutes";
 
 // Rekenhulp totaalrenovatie, bewust terughoudend:
-// - alleen de bevestigde € 1.000 tot € 1.250 per m² excl. btw;
-// - afgerond op € 5.000, zodat er geen schijnprecisie ontstaat;
+// - alleen de bevestigde € 1.000 tot € 1.250 per m² excl. btw;
+// - afgerond op € 5.000, zodat er geen schijnprecisie ontstaat;
 // - de factoren die de echte prijs bepalen staan ernaast, zonder verzonnen percentages;
 // - het betaalschema in percentages, niet in bedragen;
 // - nergens "offerte": die volgt pas na een bezichtiging.
@@ -84,7 +84,7 @@ export default function RenovationEstimator({intakeHref = "#intake", route = "gr
           </p>
           <p className="mt-5 rounded-[4px] bg-[var(--pr-kalk)] px-4 py-3 text-[15px] leading-[1.55]">
             <strong className="font-semibold">Dit is een indicatie, geen offerte.</strong> Gerekend met € {RENOVATION_PRICE_PER_M2.min.toLocaleString("nl-NL")} tot €{" "}
-            {RENOVATION_PRICE_PER_M2.max.toLocaleString("nl-NL")} per m², afgerond op € 5.000. Uw prijs volgt pas na een bezichtiging, als we de woning hebben gezien.
+            {RENOVATION_PRICE_PER_M2.max.toLocaleString("nl-NL")} per m², afgerond op € 5.000. Uw prijs volgt pas na een bezichtiging, als we de woning hebben gezien.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
             <a className="pr-btn" data-cta="estimator_to_intake" data-track="estimator" href={intakeHref}>
