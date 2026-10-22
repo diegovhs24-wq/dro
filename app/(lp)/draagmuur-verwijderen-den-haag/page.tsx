@@ -920,7 +920,7 @@ export default async function DraagmuurLandingPage(
       </section>
 
       <section className="bg-lp-slate text-white">
-        <div className="section-shell flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between">
+        <div className="section-shell flex flex-col items-start gap-6 py-12 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className={H2}>Muur eruit? Bereken uw indicatie</h2>
             <p className="mt-2 text-white/75">In twee minuten weet u waar u aan toe bent. Of bel ons direct.</p>
@@ -943,11 +943,11 @@ export default async function DraagmuurLandingPage(
               VCA-gecertificeerd
             </p>
           </div>
-          <div className="flex w-full gap-3 md:w-auto">
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
+          <div className="flex w-full flex-wrap gap-3 lg:w-auto lg:flex-nowrap">
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover lg:flex-none" href="#aanvraag">
               Indicatie berekenen
             </a>
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink md:flex-none" href={PHONE_HREF}>
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink lg:flex-none" href={PHONE_HREF}>
               Bel {PHONE_LABEL}
             </a>
           </div>
