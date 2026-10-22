@@ -125,7 +125,7 @@ const {buildAssurances} = await import(process.env.F2_ASSURANCES);
 const cats = await import(process.env.F2_CATS);
 const home = await import(process.env.F2_HOME);
 
-const BANNED = /garantie|vaste prijs|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—/i;
+const BANNED = /\d+\s*(tot\s*\d+\s*)?jaar garantie|vaste prijs|geen meerwerk|geen verrassingen|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—/i;
 
 test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
   const items = buildAssurances({});
@@ -133,6 +133,9 @@ test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
   const text = JSON.stringify(items);
   assert.ok(!BANNED.test(text), `onbevestigd: ${text.match(BANNED)?.[0]}`);
   assert.match(text, /binnen 24 uur opgepakt/);
+  // Garantie en meerwerk zoals in de gepubliceerde algemene voorwaarden.
+  assert.match(text, /12 maanden garantie/);
+  assert.match(text, /nacalculatie/);
   assert.match(text, /niets/i);
 });
 

@@ -4,6 +4,10 @@
 // - Rolverdeling en klantbeloftes zoals door Therab bevestigd (oktober 2026):
 //   planning en betaalschema bij akkoord, wekelijks vast meetmoment, appvragen
 //   binnen 24 uur opgepakt, Jarek technisch verantwoordelijk.
+// - De gepubliceerde algemene voorwaarden (versie augustus 2026, /algemene-voorwaarden),
+//   die bij elke offerte worden meegestuurd: art. 3.4 (offerte limitatief),
+//   art. 5 (meerwerk op nacalculatie, tijdig gemeld), art. 10 (gezamenlijke
+//   opname en opleverlijst), art. 12 (12 maanden garantie op eigen werk).
 // - Sanity "Geverifieerde claims": meerwerk, garantie, oplevering. Alleen als
 //   die daar zijn bevestigd; anders staat er alleen wat al vaststaat.
 
@@ -40,8 +44,10 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       key: "meerwerk",
       topic: "Meerwerk",
       question: "Komen er kosten bij die ik niet zag aankomen?",
-      answer: claims.extraWork?.text || "Uw offerte is per onderdeel uitgesplitst, zodat u vooraf ziet wat erin zit en wat niet.",
-      proof: claims.extraWork ? "Staat zo in elke opdracht." : "Twijfelt u over een post, vraag het bij de bezichtiging; dan staat het antwoord in de offerte.",
+      answer:
+        claims.extraWork?.text ||
+        "In de offerte staat precies wat in de prijs zit. Blijkt er tijdens het werk meer nodig, zoals een verborgen gebrek of een extra wens, dan hoort u dat vooraf, waar mogelijk met de prijs erbij.",
+      proof: "Algemene voorwaarden, artikel 3.4 en 5: meerwerk wordt verrekend op nacalculatie, na melding aan u.",
     },
     {
       key: "kwaliteit",
@@ -49,7 +55,7 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       question: "Wie voert het werk uit, en hoe is het gecontroleerd?",
       answer: claims.guarantee
         ? `Vaste vakteams onder één hoofd uitvoering. ${claims.guarantee.text.replace(/\.$/, "")}.`
-        : "Vaste vakteams onder één hoofd uitvoering, die ook het technische aanspreekpunt voor u is.",
+        : "Vaste vakteams onder één hoofd uitvoering. Op ons eigen werk geldt 12 maanden garantie na oplevering, op installaties en producten de fabrieksgarantie.",
       proof: `${credentialList}. ${BUSINESS.insurance.map((i) => i.replace(/ \(.*\)$/, "")).join(" en ")}.`,
     },
     {
@@ -63,8 +69,10 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       key: "oplevering",
       topic: "Oplevering",
       question: "Hoe weet ik dat alles echt af is?",
-      answer: claims.delivery?.text || "Voor de oplevering lopen we het werk samen met u na.",
-      proof: "U betaalt per afgeronde fase, dus ook de laatste termijn hoort bij werk dat af is.",
+      answer:
+        claims.delivery?.text ||
+        "We lopen het werk samen met u na. Restpunten komen op een opleverlijst en worden daarna door ons hersteld.",
+      proof: "Algemene voorwaarden, artikel 10. U betaalt per afgeronde fase, dus ook de laatste termijn hoort bij werk dat af is.",
     },
   ];
 }

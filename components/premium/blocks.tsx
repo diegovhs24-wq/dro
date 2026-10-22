@@ -89,6 +89,13 @@ export function AssuranceTable({items, id = "zekerheden", title, intro}: {items:
             </div>
           ))}
         </dl>
+        <p className="mt-6 text-[15px] pr-muted">
+          Deze afspraken staan ook in onze{" "}
+          <Link className="pr-link" href="/algemene-voorwaarden">
+            algemene voorwaarden
+          </Link>
+          , die we bij elke offerte meesturen.
+        </p>
       </div>
     </section>
   );
