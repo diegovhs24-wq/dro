@@ -14,7 +14,8 @@ type Props = {
 };
 
 // Zwevende knoppen mogen geen inhoud bedekken: ze verdwijnen zodra de footer in
-// beeld is. De intakeknop staat alleen op tablet (op desktop staat "Start intake"
+// beeld is, en staan niet op mobiel (daar staan bellen en WhatsApp al in de
+// hero, het menu en het formulier). De intakeknop staat alleen op tablet (op desktop staat "Start intake"
 // al in de header, op mobiel in het menu) en niet op pagina's met een eigen
 // intakeformulier.
 function useHidden(pathname: string) {
@@ -55,7 +56,7 @@ export default function FloatingActions({whatsappLabel, whatsappHref, intakeLabe
       <a
         aria-hidden={footerVisible || undefined}
         aria-label={whatsappLabel}
-        className={`fixed bottom-5 right-5 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-base font-bold text-white shadow-lg transition duration-300 hover:-translate-y-1 ${footerVisible ? hide : show}`}
+        className={`fixed bottom-5 right-5 z-50 hidden h-12 w-12 sm:flex items-center justify-center rounded-full bg-[#25D366] text-base font-bold text-white shadow-lg transition duration-300 hover:-translate-y-1 ${footerVisible ? hide : show}`}
         href={whatsappHref}
         tabIndex={footerVisible ? -1 : undefined}
       >
