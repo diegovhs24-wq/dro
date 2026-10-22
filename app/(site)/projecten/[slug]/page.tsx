@@ -14,10 +14,12 @@ import {cleanTitle, projectCategory, projectCover, projectImages, uniqueProjects
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
 import {BUSINESS} from "@/lib/seo/business";
 
+// params als Promise: werkt op Next 14 (await op een gewoon object) en is
+// verplicht vanaf Next 15 (PR #25), zodat beide PR's zonder conflict samengaan.
 type ProjectPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export async function generateStaticParams() {
@@ -25,7 +27,8 @@ export async function generateStaticParams() {
   return projects.map((project) => ({slug: project.slug}));
 }
 
-export async function generateMetadata({params}: ProjectPageProps): Promise<Metadata> {
+export async function generateMetadata(props: ProjectPageProps): Promise<Metadata> {
+  const params = await props.params;
   const project = await getProjectBySlug(params.slug);
 
   if (!project) {
@@ -55,7 +58,8 @@ const NEXT_STEP = {
   overig: {href: "/#intake", label: "Start uw intake", route: "/projecten", routeLabel: "Alle projecten"},
 } as const;
 
-export default async function ProjectDetailPage({params}: ProjectPageProps) {
+export default async function ProjectDetailPage(props: ProjectPageProps) {
+  const params = await props.params;
   const [siteSettings, project, all] = await Promise.all([getSiteSettings(), getProjectBySlug(params.slug), getProjects()]);
   if (!project) notFound();
 
