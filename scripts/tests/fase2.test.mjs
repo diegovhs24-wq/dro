@@ -304,3 +304,27 @@ test("projecttegel: casestudy-label alleen bij vrijgegeven casestudy, geen kapot
   assert.match(withCase, /Uitgewerkte casestudy/);
   assert.match(withCase, /w=900/);
 });
+
+test("funnelmeting: niets zonder toestemming, met toestemming zonder persoonsgegevens", async () => {
+  const analytics = await import(process.env.F2_ANALYTICS);
+  const store = {};
+  globalThis.window = {
+    location: {pathname: "/grote-renovaties"},
+    localStorage: {getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; }},
+    dispatchEvent: () => true,
+  };
+  try {
+    analytics.trackFunnel("form_submit_success", {route: "grote-renovatie"});
+    assert.equal(globalThis.window.dataLayer, undefined, "zonder toestemming geen dataLayer");
+    store["dro-cookie-consent"] = "granted";
+    analytics.trackFunnel("form_submit_success", {route: "grote-renovatie", email: "a@b.nl", naam: "Jan", note: "06 12345678", budget_tier: "100k-250k"});
+    const ev = globalThis.window.dataLayer?.[0];
+    assert.equal(ev.event, "form_submit_success");
+    assert.equal(ev.route, "grote-renovatie");
+    assert.equal(ev.budget_tier, "100k-250k");
+    assert.equal(ev.page_path, "/grote-renovaties");
+    for (const k of ["email", "naam", "note"]) assert.ok(!(k in ev), `persoonsgegeven doorgestuurd: ${k}`);
+  } finally {
+    delete globalThis.window;
+  }
+});
