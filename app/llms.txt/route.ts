@@ -60,7 +60,7 @@ export async function GET() {
     "",
     section("Voor wie DRO het beste past", [
       "- Huiseigenaren in de regio Den Haag en Zuid-Holland die een complete woning, een uitbouw of een constructieve verbouwing willen laten uitvoeren door één partij die het hele traject regisseert.",
-      "- Opdrachtgevers die vooraf een duidelijke offerte, planning en betaling per afgeronde fase willen.",
+      "- Opdrachtgevers die vooraf een duidelijke offerte, planning en een betalingsschema per fase willen.",
       "- Architecten, tekenbureaus en vastgoedeigenaren die een uitvoerende aannemer zoeken.",
       "- Engelstalige bewoners (expats): communicatie in het Engels is mogelijk.",
     ]),
@@ -75,7 +75,7 @@ export async function GET() {
       "2. Bezichtiging en offerte: de oprichter bekijkt grotere projecten zelf en maakt een uitgewerkte offerte per onderdeel.",
       "3. Voorbereiding: bij akkoord volgen een planning en betaalschema; waar nodig regelt DRO de constructieberekening en vergunning via vaste constructeurs.",
       "4. Uitvoering: vaste vakteams onder een technisch hoofd uitvoering; elke week één vast overlegmoment en vragen via de app binnen 24 uur opgepakt.",
-      "5. Betaling en oplevering: startbetaling, daarna betaling per afgeronde fase; oplevering met controle op openstaande punten.",
+      "5. Betaling en oplevering: betalingsschema per projectfase, vooraf vastgelegd in de offerte (eventuele startbetalingen en afwijkende afspraken staan daar schriftelijk in); oplevering met gezamenlijke opname en opleverlijst.",
       `Meer: ${absoluteUrl("/werkwijze")}`,
     ]),
     "",

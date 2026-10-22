@@ -7,7 +7,7 @@ import PageStructuredData from "@/components/seo/PageStructuredData";
 import {GROTE_RENOVATIE, SPECIALISTISCH} from "@/lib/conversionRoutes";
 import {getPremiumData, weeksRange} from "@/lib/premiumData";
 import {projectCategory, projectCover} from "@/lib/projectCategories";
-import {BUSINESS} from "@/lib/seo/business";
+import {BUSINESS, PAYMENT_TERMS} from "@/lib/seo/business";
 import {HOME_DESCRIPTION, HOME_FAQ, HOME_TITLE} from "@/components/premium/homeContent";
 
 export {HOME_DESCRIPTION, HOME_FAQ, HOME_TITLE} from "@/components/premium/homeContent";
@@ -35,7 +35,7 @@ export default async function HomePage() {
         <PremiumHero
           facts={[
             {term: "Google-reviews", detail: data.reviewSummary.replace(" Google-reviews", "")},
-            {term: "Bij ondertekening", detail: "U betaalt niets"},
+            {term: "Betalingen", detail: PAYMENT_TERMS.short},
             {term: "Verzekerd", detail: "CAR en aansprakelijkheid"},
             {term: "Erkend", detail: "VCA, SBB en VLOK"},
           ]}

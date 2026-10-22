@@ -79,7 +79,7 @@ export type ConversionRouteConfig = {
 
 const PAYMENT_FAQ: RouteFaq = {
   q: "Hoe werkt de betaling?",
-  a: "Bij het ondertekenen van de opdracht betaalt u niets. Op de eerste werkdag volgt een startbetaling van 20 tot 25 procent. Daarna betaalt u per afgeronde fase. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.",
+  a: "Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd. Het aantal fases en de bedragen kent u dus voordat u tekent.",
 };
 
 const INSURANCE_TEXT = "DRO heeft een CAR-verzekering en een bedrijfsaansprakelijkheidsverzekering. Wat in een concreet geval gedekt is, hangt af van de polis en artikel 13 van de algemene voorwaarden.";
@@ -99,7 +99,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   heroSlug: "jan-muschlaan-den-haag",
   metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
   metaDescription:
-    "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, vaste vakteams, niets betalen bij ondertekening. Start uw projectintake.",
+    "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, vaste vakteams, betalingen per fase vooraf vastgelegd. Start uw projectintake.",
   eyebrow: "Totaalrenovatie, uitbouw en dakopbouw",
   title: "Grote renovaties onder één regie",
   intro:
@@ -147,7 +147,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
     items: [
       {title: "Kennismaking", text: "We bespreken uw plannen, budget en planning telefonisch of via WhatsApp en plannen een bezichtiging."},
       {title: "Bezichtiging en offerte op maat", text: "We komen langs, nemen de woning op en maken een offerte per onderdeel, zodat u ziet waar uw budget naartoe gaat."},
-      {title: "Planning en betaalschema", text: "Bij akkoord krijgt u een planning en een betaalschema per fase. Bij ondertekening betaalt u niets."},
+      {title: "Planning en betaalschema", text: "Bij akkoord krijgt u een planning en een betalingsschema per fase. Een eventuele startbetaling staat daar vooraf in."},
       // Klantbeloftes bevestigd door Therab (rolverdeling DRO, oktober 2026).
       {title: "Uitvoering", text: "Onze vaste vakteams voeren het werk uit. Elke week is er één vast meetmoment voor uw vragen, en vragen via de app worden binnen 24 uur opgepakt."},
       {title: "Samen nalopen en opleveren", text: "We lopen het werk met u na voordat we opleveren."},

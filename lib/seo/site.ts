@@ -93,9 +93,10 @@ export function resolveOrganizationSeo(
   const dedupedAreaServed = Array.from(
     new Set([
       ...BUSINESS.coreAreaServed,
-      // Alleen plaatsen waar een eigen pagina voor bestaat (GEO-05); losse
-      // CMS-waarden als Amsterdam/Utrecht zonder pagina vallen weg.
-      ...(extraAreaServed.length ? extraAreaServed : organizationSeo?.areaServed || []),
+      // Alleen plaatsen waar een eigen pagina voor bestaat (GEO-05). Het vrije
+      // CMS-veld areaServed (bevat o.a. Amsterdam en Utrecht, niet bevestigd)
+      // wordt niet meer gebruikt: het werkgebied komt uit BUSINESS.
+      ...extraAreaServed,
     ].map((area) => area.trim()).filter(Boolean))
   );
 

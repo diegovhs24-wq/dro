@@ -1142,7 +1142,7 @@ export default function SmartIntakeWizard({
           <div className="intake-ns-r">
             <span className="intake-ns-n">3</span>
             <span className="intake-ns-tx">
-              <b>Een heldere prijsopgave per onderdeel.</b> U betaalt per afgeronde fase, volgens het betaalschema.
+              <b>Een heldere prijsopgave per onderdeel.</b> Het betalingsschema per fase staat vooraf in de offerte.
             </span>
           </div>
         </div>

@@ -125,7 +125,7 @@ const {buildAssurances} = await import(process.env.F2_ASSURANCES);
 const cats = await import(process.env.F2_CATS);
 const home = await import(process.env.F2_HOME);
 
-const BANNED = /\d+\s*(tot\s*\d+\s*)?jaar garantie|vaste prijs|geen meerwerk|geen verrassingen|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—/i;
+const BANNED = /\d+\s*(tot\s*\d+\s*)?jaar garantie|vaste prijs|geen meerwerk|geen verrassingen|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—|betaalt u (nog )?niets|niets (betalen )?bij ondertekening|0% bij ondertekening|eerste werkdag|nooit vooruit|schade (is )?(gedekt|verzekerd)|wij regelen de vergunning/i;
 
 test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
   const items = buildAssurances({});
@@ -136,7 +136,51 @@ test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
   // Garantie en meerwerk zoals in de gepubliceerde algemene voorwaarden.
   assert.match(text, /12 maanden garantie/);
   assert.match(text, /nacalculatie/);
-  assert.match(text, /niets/i);
+  // Betalen volgens keuze B: schema vooraf in de offerte, geen absolute belofte.
+  assert.match(text, /betalingsschema vast in de offerte/);
+  // Garantie: contractueel, fabrieksgarantie en wettelijke rechten apart benoemd;
+  // verzekering nooit als volledige dekking.
+  assert.match(text, /fabrikant of leverancier/);
+  assert.match(text, /wettelijke rechten/);
+  assert.match(text, /hangt af van de polis/);
+});
+
+test("publieke broncode bevat geen absolute of onbevestigde beloftes", async () => {
+  const {readFileSync, readdirSync} = await import("node:fs");
+  const {join} = await import("node:path");
+  const root = process.env.F2_ROOT || process.cwd();
+  const dirFiles = (d, ext) => readdirSync(join(root, d)).filter((n) => ext.some((e) => n.endsWith(e))).map((n) => join(d, n));
+  const files = [
+    "app/(lp)/totaalrenovatie-den-haag/page.tsx",
+    "app/(lp)/draagmuur-verwijderen-den-haag/page.tsx",
+    "app/llms.txt/route.ts",
+    "app/(site)/totaalrenovatie/page.tsx",
+    "lib/conversionRoutes.ts",
+    "lib/assurances.ts",
+    "lib/serviceIntakeConfig.ts",
+    "lib/cms-fallback.ts",
+    "components/TrustSignals.tsx",
+    "components/SmartIntakeWizard.tsx",
+    "components/LocationPage.tsx",
+    "components/LocationServicePage.tsx",
+    "components/LocationDetailRoute.tsx",
+    "components/TeamFaqSection.tsx",
+    "components/tools/toolsConfig.ts",
+    ...dirFiles("components/premium", [".ts", ".tsx"]),
+    ...dirFiles("components/routes", [".ts", ".tsx"]),
+  ];
+  // Commentaarregels tellen niet mee; die beschrijven juist wat er niet mag staan.
+  // Trustoo staat bewust in de code, maar alleen zichtbaar na bevestiging in
+  // Sanity (verifiedClaims.trustoo); "beste" komt voor in aanhef-teksten.
+  const PUBLIC_BANNED = new RegExp(BANNED.source.replace("|\\bbeste\\b", "").replace("|trustoo", ""), "i");
+  for (const f of files) {
+    const code = readFileSync(join(root, f), "utf8")
+      .split("\n")
+      .filter((l) => !/^\s*(\/\/|\*|\/\*)/.test(l))
+      .join("\n");
+    const hit = code.match(PUBLIC_BANNED);
+    assert.ok(!hit, `${f}: ${hit?.[0]}`);
+  }
 });
 
 test("zekerheden gebruiken bevestigde claims uit Sanity als ze er zijn", () => {

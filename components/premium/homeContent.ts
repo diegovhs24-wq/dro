@@ -2,7 +2,7 @@
 
 export const HOME_TITLE = "Aannemer voor renovatie en verbouwing in Den Haag";
 export const HOME_DESCRIPTION =
-  "Familiebedrijf uit Den Haag voor totaalrenovaties, uitbouwen en constructieve verbouwingen van € 50.000 tot € 250.000 en meer. Niets betalen bij ondertekening, vaste vakteams, 4,8 uit 273 Google-reviews.";
+  "Familiebedrijf uit Den Haag voor totaalrenovaties, uitbouwen en constructieve verbouwingen van € 50.000 tot € 250.000 en meer. betalingen per fase vooraf vastgelegd, vaste vakteams, 4,8 uit 273 Google-reviews.";
 
 export const HOME_FAQ = [
   {
@@ -10,8 +10,8 @@ export const HOME_FAQ = [
     a: "Als indicatie € 1.210 tot € 1.510 per m² inclusief btw (€ 1.000 tot € 1.250 exclusief btw). De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Uw prijs volgt na een bezichtiging.",
   },
   {
-    q: "Moet ik vooruitbetalen?",
-    a: "Nee. Bij ondertekening betaalt u niets. Op de eerste werkdag volgt een startbetaling van 20 tot 25 procent, daarna betaalt u per afgeronde fase.",
+    q: "Hoe werkt de betaling?",
+    a: "Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd. Zo weet u voordat u tekent wat u wanneer betaalt.",
   },
   {
     q: "Hoe lang duurt een draagmuur verwijderen?",

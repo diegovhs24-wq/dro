@@ -12,6 +12,7 @@ import {ROUTE_SOURCES, type ConversionRouteConfig} from "@/lib/conversionRoutes"
 import {getPremiumData, weeksRange} from "@/lib/premiumData";
 import {projectCover} from "@/lib/projectCategories";
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
+import {PAYMENT_TERMS} from "@/lib/seo/business";
 
 const CONSTRUCTIVE_FACTORS = [
   "Breedte van de opening",
@@ -37,7 +38,7 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
     ? [
         {term: "Indicatie", detail: "€ 1.210 tot € 1.510 per m², incl. btw"},
         ...(weeks ? [{term: "Uitvoering", detail: `${weeks} bij onze projecten`}] : []),
-        {term: "Bij ondertekening", detail: "U betaalt niets"},
+        {term: "Betalingen", detail: PAYMENT_TERMS.short},
         {term: "Google-reviews", detail: data.reviewSummary.replace(" Google-reviews", "")},
       ]
     : [

@@ -47,7 +47,7 @@ export default function LocationServicePage({
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
               Ja, DRO Renovaties verzorgt {serviceName.toLowerCase()} in {location.name} en
-              omgeving, met een heldere offerte per onderdeel, betaling per afgeronde fase en één vast
+              omgeving, met een heldere offerte per onderdeel, een betalingsschema per fase en één vast
               aanspreekpunt.
             </p>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">{service.intro}</p>

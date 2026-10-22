@@ -58,15 +58,15 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       question: "Wie voert het werk uit, en hoe is het gecontroleerd?",
       answer: claims.guarantee
         ? `Vaste vakteams onder één hoofd uitvoering. ${claims.guarantee.text.replace(/\.$/, "")}.`
-        : "Vaste vakteams onder één hoofd uitvoering. Op ons eigen werk geldt 12 maanden garantie na oplevering, op installaties en producten de fabrieksgarantie.",
-      proof: `${credentialList}. ${BUSINESS.insurance.map((i) => i.replace(/ \(.*\)$/, "")).join(" en ")}.`,
+        : "Vaste vakteams onder één hoofd uitvoering. Op ons eigen werk geldt 12 maanden garantie na oplevering (algemene voorwaarden, artikel 12). Op installaties en producten van derden geldt de garantie van de fabrikant of leverancier. Uw wettelijke rechten als consument blijven daarnaast altijd gelden.",
+      proof: `${credentialList}. DRO heeft een CAR-verzekering en een bedrijfsaansprakelijkheidsverzekering; wat in een concreet geval gedekt is, hangt af van de polis en artikel 13 van de algemene voorwaarden.`,
     },
     {
       key: "betaling",
       topic: "Betalingen",
-      question: "Betaal ik vooruit voor werk dat er nog niet is?",
-      answer: "Bij ondertekening betaalt u niets. Op de eerste werkdag 20 tot 25 procent, daarna per afgeronde fase.",
-      proof: "Het betaalschema staat in uw offerte, voordat u tekent.",
+      question: "Wanneer betaal ik wat?",
+      answer: "Voor de start leggen we het betalingsschema vast in de offerte. Betalingen zijn gekoppeld aan de afgesproken projectfasen; een eventuele startbetaling of afwijkende afspraak staat daar vooraf schriftelijk in.",
+      proof: "Algemene voorwaarden, artikel 8: betaling in termijnen volgens het schema in de offerte.",
     },
     {
       key: "oplevering",

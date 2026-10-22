@@ -25,7 +25,7 @@ const LOCATION_FAQ_TEMPLATE = (cityName: string) => [
   },
   {
     question: `Wat kost een renovatie in ${cityName}?`,
-    answer: "Dat hangt af van de omvang van het project. U ontvangt vooraf een offerte met een prijs per onderdeel. Blijkt er tijdens het werk meer nodig, dan hoort u dat vooraf. U betaalt per afgeronde fase.",
+    answer: "Dat hangt af van de omvang van het project. U ontvangt vooraf een offerte met een prijs per onderdeel. Blijkt er tijdens het werk meer nodig, dan hoort u dat vooraf. Het betalingsschema per fase staat vooraf in de offerte.",
   },
   {
     question: "Hoe snel kan DRO Renovaties starten?",

@@ -75,7 +75,7 @@ const FAQ = [
   },
   {
     q: 'Hoe werkt de betaling?',
-    a: 'Bij het tekenen van de opdracht betaalt u niets. Op de eerste werkdag, als we echt beginnen, betaalt u 20 tot 25%. Daarna betaalt u per afgeronde fase. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.',
+    a: 'Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd. U kent de fases en bedragen dus voordat u tekent.',
   },
   {
     q: 'Heb ik een vergunning nodig?',
@@ -182,13 +182,12 @@ function pickVariant(value: string | string[] | undefined): Variant {
 }
 
 // Typografie: koppen breed (font-stretch) en stevig, tekst normaal.
-// Betaalschema (bevestigd door Therab): niets bij het tekenen, 20 tot 25% op de
-// eerste werkdag, daarna per afgeronde fase. Rekenvoorbeeld met een gemiddelde
-// totaalrenovatie, zodat bezoekers in één oogopslag zien wat ze wanneer betalen.
+// Rekenvoorbeeld van een betalingsschema per fase bij een gemiddelde
+// totaalrenovatie. Alleen een voorbeeld: het echte schema verschilt per project
+// en staat vooraf in de offerte (besluit 22-10-2026, keuze B; AV art. 8.1).
 const EXAMPLE_TOTAL = 120000
 const EXAMPLE_WEEKS = 13
 const EXAMPLE_PHASES = [
-  {step: 'Tekenen', weeks: 'Vooraf', pct: 0, work: 'Offerte, planning en betaalschema op papier'},
   {step: 'Start', weeks: 'Dag 1', pct: 20, work: 'Woning afgeschermd, materialen besteld'},
   {step: 'Sloop en casco', weeks: 'Week 1 tot 3', pct: 20, work: 'Slopen, muur eruit met stalen balk, afvoer'},
   {step: 'Installaties', weeks: 'Week 4 tot 7', pct: 25, work: 'Elektra en groepenkast, water, afvoer, verwarming'},
@@ -392,14 +391,14 @@ export default async function TotaalrenovatieLandingPage(
               </p>
             </div>
             <p className="max-w-[44ch] text-[15px] leading-snug">
-              <span className="font-bold">Bij het tekenen betaalt u nog niets.</span> Op de eerste werkdag volgt de startbetaling,
-              daarna betaalt u per afgeronde fase, volgens het betaalschema in uw offerte.
+              <span className="font-bold">Het betalingsschema staat vooraf in uw offerte.</span> Betalingen zijn gekoppeld aan de
+              projectfasen. Een eventuele startbetaling staat er ook in, schriftelijk en voordat u tekent.
             </p>
           </div>
 
           <ol
             aria-label="Betaalmomenten in het rekenvoorbeeld"
-            className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-6 md:overflow-visible"
+            className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] md:grid md:grid-cols-5 md:overflow-visible"
           >
             {examplePhases.map((phase, i) => {
               const first = i === 0
@@ -421,7 +420,7 @@ export default async function TotaalrenovatieLandingPage(
                   <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
                     {euro(phase.amount)}
                   </p>
-                  <p className="mt-1 text-[12px] text-lp-muted">{first ? 'niets bij ondertekening' : `${phase.pct}% van het totaal`}</p>
+                  <p className="mt-1 text-[12px] text-lp-muted">{`${phase.pct}% van het totaal`}</p>
                   <p className="mt-3 text-[13px] leading-[1.45] text-lp-muted">{phase.work}</p>
                   <div className="mt-auto pt-4">
                     <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-lp-line">

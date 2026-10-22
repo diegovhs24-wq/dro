@@ -90,7 +90,7 @@ export default function RenovationEstimator({intakeHref = "#intake", route = "gr
             <a className="pr-btn" data-cta="estimator_to_intake" data-track="estimator" href={intakeHref}>
               Bespreek uw woning
             </a>
-            <span className="text-[15px] pr-muted">Betaling: 0% bij ondertekening, 20 tot 25% op de eerste werkdag, daarna per fase.</span>
+            <span className="text-[15px] pr-muted">Betaling: per fase, volgens het schema dat vooraf in uw offerte staat.</span>
           </div>
         </div>
       </div>
