@@ -182,7 +182,7 @@ export const siteSettings = defineType({
           description: 'De belofte die het team echt elke werkdag waarmaakt.',
           options: {collapsible: true, collapsed: false},
           fields: [
-            defineField({name: 'text', title: 'Tekst op de site', type: 'string', description: 'Bijvoorbeeld: "Binnen [tijd] teruggebeld op werkdagen".'}),
+            defineField({name: 'text', title: 'Tekst op de site', type: 'string', description: 'Zo dat het past in de zin "wij nemen ___ persoonlijk contact met u op", bijvoorbeeld: "binnen één werkdag". Zonder bevestiging staat er "zo snel mogelijk".'}),
             defineField({name: 'verified', title: 'Bevestigd en mag op de site', type: 'boolean', initialValue: false}),
             defineField({name: 'verifiedBy', title: 'Bevestigd door', type: 'string', description: 'Naam van wie dit heeft gecontroleerd.'}),
             defineField({name: 'verifiedAt', title: 'Bevestigd op', type: 'date'}),

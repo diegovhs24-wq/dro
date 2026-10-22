@@ -206,6 +206,8 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
             servicesSub: route.intake.servicesSub,
             servicesTitle: route.intake.servicesTitle,
             source: ROUTE_SOURCES[route.key],
+            // Reactietijd alleen als die in Sanity is bevestigd.
+            responsePromise: data.claims.responseTime?.text || "zo snel mogelijk",
           }}
         />
 

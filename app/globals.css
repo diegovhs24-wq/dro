@@ -126,6 +126,15 @@ section.bg-white::after {
   letter-spacing: -0.028em;
   overflow-wrap: break-word;
 }
+.pr-title {
+  font-family: var(--font-display), Arial, sans-serif;
+  font-size: clamp(1.9rem, 1.25rem + 1.6vw, 2.6rem);
+  font-weight: 650;
+  font-stretch: 112%;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
 .pr-h2 {
   font-size: clamp(1.85rem, 1.3rem + 1.8vw, 2.85rem);
   font-weight: 650;

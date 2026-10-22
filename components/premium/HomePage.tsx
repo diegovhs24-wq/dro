@@ -128,6 +128,8 @@ export default async function HomePage() {
             largeBudget: [75000, 150000],
             budgetScaleMax: 250000,
             budgetStep: 5000,
+            // Reactietijd alleen als die in Sanity is bevestigd.
+            responsePromise: data.claims.responseTime?.text || "zo snel mogelijk",
           }}
         />
       </main>

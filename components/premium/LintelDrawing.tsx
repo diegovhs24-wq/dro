@@ -35,8 +35,8 @@ export default function LintelDrawing() {
         </text>
         {/* labels */}
         <g fill="#1c1f23" fontFamily="var(--font-text), Arial" fontSize="13">
-          <text x="252" y="48">stalen ligger, profiel volgens berekening</text>
-          <line stroke="#1c1f23" strokeWidth="1" x1="250" x2="238" y1="44" y2="58" />
+          <text x="262" y="40">stalen ligger</text>
+          <line stroke="#1c1f23" strokeWidth="1" x1="258" x2="244" y1="36" y2="56" />
           <text x="24" y="110">oplegging</text>
           <line stroke="#1c1f23" strokeWidth="1" x1="60" x2="80" y1="100" y2="84" />
         </g>

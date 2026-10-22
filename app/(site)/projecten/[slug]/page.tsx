@@ -104,7 +104,7 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
                 <span aria-hidden="true"> / </span>
                 <span aria-current="page">{cleanTitle(project.title)}</span>
               </nav>
-              <h1 className="pr-display mt-6 text-[clamp(1.9rem,1.25rem+1.6vw,2.6rem)] lg:mt-10">{title}</h1>
+              <h1 className="pr-title mt-6 lg:mt-10">{title}</h1>
               {project.description && <p className="pr-lead mt-6">{project.description}</p>}
               <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[var(--pr-line)] pt-6">
                 {facts.map((f) => (
