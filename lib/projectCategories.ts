@@ -38,12 +38,15 @@ export function projectCover(project: Pick<ProjectItem, "afterImage" | "images" 
 
 // Projecten met een opgeleverd eindbeeld als eerste foto. Bouwfoto's (casco,
 // steigers) blijven in het portfolio, maar openen het niet.
-export const FEATURED_ORDER = ["fuutlaan-leidschendam", "essehout-zoetermeer", "amersfoort", "jan-muschlaan-den-haag", "borneostraat-den-haag", "paulinastraat"];
+// Grootste projecten in het eigen werkgebied eerst; Amersfoort (buiten het
+// kernwerkgebied) achteraan binnen de grote renovaties.
+export const FEATURED_ORDER = ["jan-muschlaan-den-haag", "borneostraat-den-haag", "paulinastraat", "fuutlaan-leidschendam", "essehout-zoetermeer", "amersfoort"];
 
 // Volgorde: vrijgegeven casestudy's, dan grote renovaties (eindbeelden eerst),
-// dan constructief, dan de rest; binnen een groep de volgorde uit Sanity.
+// dan constructief, dan overig werk en als laatste badkamers en toiletten;
+// binnen een groep de volgorde uit Sanity.
 export function sortForPortfolio<T extends ProjectItem>(projects: T[]): T[] {
-  const rank = (p: T) => (p.caseStudy ? 0 : projectCategory(p) === "groot" ? 1 : projectCategory(p) === "constructief" ? 2 : 3);
+  const rank = (p: T) => (p.caseStudy ? 0 : projectCategory(p) === "groot" ? 1 : projectCategory(p) === "constructief" ? 2 : projectCategory(p) === "badkamer" ? 4 : 3);
   const featured = (p: T) => {
     const i = FEATURED_ORDER.indexOf(p.slug);
     return i === -1 ? FEATURED_ORDER.length : i;

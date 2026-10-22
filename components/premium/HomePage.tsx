@@ -16,7 +16,9 @@ export default async function HomePage() {
   const {projects} = data;
   const withImage = projects.filter((p) => projectCover(p));
   const big = withImage.filter((p) => p.caseStudy || projectCategory(p) === "groot");
-  const hero = big[0] || withImage[0];
+  // Vaste openingsfoto voor de homepage (de grote route heeft Jan Muschlaan als
+  // eigen openingsfoto); een vrijgegeven casestudy gaat altijd voor.
+  const hero = big.find((p) => p.caseStudy) || big.find((p) => p.slug === "fuutlaan-leidschendam") || big[0] || withImage[0];
   const showcase = big.filter((p) => p.slug !== hero?.slug).slice(0, 3);
   const bigWeeks = weeksRange(projects.filter((p) => projectCategory(p) === "groot"));
 
