@@ -138,7 +138,8 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
       {title: "Kennismaking", text: "We bespreken uw plannen, budget en planning telefonisch of via WhatsApp en plannen een bezichtiging."},
       {title: "Bezichtiging en offerte op maat", text: "We komen langs, nemen de woning op en maken een offerte per onderdeel, zodat u ziet waar uw budget naartoe gaat."},
       {title: "Planning en betaalschema", text: "Bij akkoord krijgt u een planning en een betaalschema per fase. Bij ondertekening betaalt u niets."},
-      {title: "Uitvoering", text: "Onze vaste vakteams voeren het werk uit, met vaste aanspreekpunten voor planning en techniek."},
+      // Klantbeloftes bevestigd door Therab (rolverdeling DRO, oktober 2026).
+      {title: "Uitvoering", text: "Onze vaste vakteams voeren het werk uit. Elke week is er één vast meetmoment voor uw vragen, en vragen via de app worden binnen 24 uur opgepakt."},
       {title: "Samen nalopen en opleveren", text: "We lopen het werk met u na voordat we opleveren."},
     ],
   },
@@ -229,8 +230,9 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
     items: [
       {title: "Opname", text: "We meten de muur en de situatie eromheen in en bekijken waar de krachten naartoe gaan."},
       {title: "Constructieberekening", text: "Een constructeur bepaalt het profiel van de ligger en de opleggingen."},
-      {title: "Vergunning of melding", text: "We zoeken uit wat in uw gemeente en voor uw woning nodig is, en regelen het."},
-      {title: "Uitvoering", text: "Tijdelijk ondersteunen, de muur verwijderen, de ligger plaatsen en de opening afwerken."},
+      {title: "Vergunning of melding", text: "We zoeken uit wat in uw gemeente en voor uw woning nodig is, en regelen de aanvraag voor u."},
+      // Doorlooptijd bevestigd door Therab: uitvoering 1 tot 3 dagen.
+      {title: "Uitvoering", text: "Tijdelijk ondersteunen, de muur verwijderen, de ligger plaatsen en de opening afwerken. Dit duurt meestal 1 tot 3 dagen."},
       {title: "Oplevering", text: "We lopen het werk met u na voordat we opleveren."},
     ],
   },
@@ -246,6 +248,10 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
     {
       q: "Wat kost het verwijderen van een draagmuur?",
       a: "Dat hangt af van de breedte, de dikte van de muur, de verdieping en de afwerking. In de intake op deze pagina ziet u direct een prijsindicatie op basis van uw maten. Na de opname krijgt u een offerte.",
+    },
+    {
+      q: "Hoe lang duurt het verwijderen van een draagmuur?",
+      a: "De uitvoering zelf duurt meestal 1 tot 3 dagen. Daarvoor komen de opname, de constructieberekening en zo nodig de vergunning. Die volgorde slaan we niet over.",
     },
     {
       q: "Wat als er tijdens het werk schade ontstaat?",

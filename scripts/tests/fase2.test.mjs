@@ -101,7 +101,7 @@ test("meetdata bevat nooit persoonsgegevens", () => {
 });
 
 test("routeteksten bevatten geen verouderde of onbevestigde claims", () => {
-  const banned = /garantie|binnen \d+ (uur|werkuur)|trustoo|top pro|nummer 1|beste|goedkoopst|vaste prijs vooraf|geen aanbetaling/i;
+  const banned = /garantie|binnen \d+ werkuur|binnen 1 uur|trustoo|top pro|nummer 1|beste|goedkoopst|vaste prijs vooraf|geen aanbetaling/i;
   for (const route of routes.CONVERSION_ROUTES) {
     const text = JSON.stringify(route, (k, v) => (v instanceof RegExp ? undefined : v));
     assert.ok(!hasOutdatedClaim(text), `${route.key}: verouderde betaalclaim`);
