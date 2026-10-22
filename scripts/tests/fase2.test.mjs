@@ -125,7 +125,7 @@ const {buildAssurances} = await import(process.env.F2_ASSURANCES);
 const cats = await import(process.env.F2_CATS);
 const home = await import(process.env.F2_HOME);
 
-const BANNED = /\d+\s*(tot\s*\d+\s*)?jaar garantie|vaste prijs|geen meerwerk|geen verrassingen|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—|betaalt u (nog )?niets|niets (betalen )?bij ondertekening|0% bij ondertekening|eerste werkdag|nooit vooruit|schade (is )?(gedekt|verzekerd)|wij regelen de vergunning/i;
+const BANNED = /\d+\s*(tot\s*\d+\s*)?jaar garantie|vaste prijs|geen meerwerk|geen verrassingen|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—|betaalt u (nog )?niets|niets (betalen )?bij ondertekening|0% bij ondertekening|eerste werkdag|nooit vooruit|schade (is )?(gedekt|verzekerd)|wij regelen de vergunning|volledig verzekerd|regelen dat voor u/i;
 
 test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
   const items = buildAssurances({});

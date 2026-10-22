@@ -17,7 +17,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'Draagmuur verwijderen in Den Haag, alles geregeld | DRO Renovaties',
   description:
-    'Draagmuur eruit of een deuropening in een dragende muur: constructieberekening, vergunning, stalen balk en afwerking geregeld door een Haags familiebedrijf. Bereken direct uw prijsindicatie.',
+    'Draagmuur eruit of een deuropening in een dragende muur: constructieberekening, vergunningsaanvraag, stalen balk en afwerking door één Haags familiebedrijf. Bereken direct uw prijsindicatie.',
   robots: {index: false, follow: true},
   alternates: {canonical: '/draagmuur-verwijderen-den-haag'},
 }
@@ -125,7 +125,7 @@ const FAQ = [
   },
   {
     q: 'Heb ik een vergunning nodig?',
-    a: 'Ja. Omdat de draagconstructie van uw huis verandert, is een omgevingsvergunning verplicht. Wij regelen dat voor u: tekeningen, constructieberekening en de aanvraag bij de gemeente. In Den Haag beslist de gemeente meestal binnen 8 weken. De leges betaalt u aan de gemeente.',
+    a: 'Meestal wel. Omdat de draagconstructie van uw huis verandert, is in de regel een omgevingsvergunning nodig. Wij verzorgen de aanvraag voor u: tekeningen, constructieberekening en de indiening bij de gemeente. Het besluit en de doorlooptijd liggen bij de gemeente; in Den Haag is dat meestal binnen 8 weken. De leges betaalt u aan de gemeente.',
   },
   {
     q: 'Hoe lang duurt het?',
@@ -535,8 +535,8 @@ export default async function DraagmuurLandingPage(
         <div className="section-shell py-14">
           <h2 className={`${H2} max-w-[24ch]`}>Alles geregeld, van berekening tot afwerking</h2>
           <p className={`mt-3 max-w-[62ch] ${BODY}`}>
-            Bij de meeste partijen regelt u zelf de constructeur of de vergunning. Bij ons niet: u heeft één aanspreekpunt en één prijs
-            voor het hele traject.
+            Bij de meeste partijen regelt u zelf de constructeur of de vergunningsaanvraag. Bij ons niet: u heeft één aanspreekpunt en één
+            offerte met een prijs per onderdeel voor het hele traject.
           </p>
           <ul className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
             {INCLUDED.map((item) => (
@@ -556,7 +556,7 @@ export default async function DraagmuurLandingPage(
         <div className="section-shell py-14">
           <h2 className={H2}>Groot of klein, wij doen het allebei</h2>
           <p className={`mt-3 max-w-[62ch] ${BODY}`}>
-            Van een nieuwe deuropening tot een hele muur eruit. Elke doorbraak krijgt dezelfde zorg: berekend, vergund en verzekerd.
+            Van een nieuwe deuropening tot een hele muur eruit. Elke doorbraak krijgt dezelfde zorg: berekend, verzekerd en met vergunning als die nodig is.
           </p>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {JOBS.map((job, i) => (

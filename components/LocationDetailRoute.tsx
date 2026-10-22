@@ -33,7 +33,7 @@ const LOCATION_FAQ_TEMPLATE = (cityName: string) => [
   },
   {
     question: "Zijn jullie verzekerd en gecertificeerd?",
-    answer: "Ja. DRO Renovaties is VCA-gecertificeerd en volledig verzekerd voor de uitvoering van renovatie- en verbouwprojecten.",
+    answer: "DRO Renovaties is VCA-gecertificeerd en heeft een CAR-verzekering en een bedrijfsaansprakelijkheidsverzekering. Wat in een concreet geval gedekt is, hangt af van de polis en de algemene voorwaarden. Op ons eigen werk geldt 12 maanden garantie na oplevering; uw wettelijke rechten als consument blijven altijd gelden.",
   },
 ];
 
