@@ -110,6 +110,17 @@ export function TeamList({intro}: {intro?: string}) {
           intro={intro || `${BUSINESS.legalName} is een familiebedrijf uit Den Haag. Dit zijn de mensen die u spreekt, en waarover.`}
           title="Met wie u te maken heeft"
         />
+        <div>
+        <figure className="mb-8">
+          <img
+            alt="Het team van DRO Renovaties in bedrijfskleding"
+            className="aspect-[16/8] w-full rounded-[4px] object-cover object-[center_40%]"
+            decoding="async"
+            loading="lazy"
+            src="/landing/team-dro.jpg"
+          />
+          <figcaption className="mt-2 text-[14px] pr-muted">Het team van DRO Renovaties</figcaption>
+        </figure>
         <ul className="grid gap-x-10 sm:grid-cols-2">
           {BUSINESS.team.map((member) => (
             <li className="border-t-2 border-[var(--pr-ink)] py-5" key={member.name}>
@@ -118,6 +129,7 @@ export function TeamList({intro}: {intro?: string}) {
             </li>
           ))}
         </ul>
+        </div>
       </div>
     </section>
   );
@@ -174,7 +186,9 @@ export function ReviewQuotes({reviews, summary, asOf}: {reviews: ReviewItem[]; s
             {reviews.map((review) => (
               <figure className="border-t border-[var(--pr-line)] py-6" key={review.name}>
                 <blockquote className="max-w-[66ch] text-[18px] leading-[1.6]">&ldquo;{excerpt(review.quote, 300)}&rdquo;</blockquote>
-                <figcaption className="mt-4 text-[15px] pr-muted">{review.name}, Google-review</figcaption>
+                <figcaption className="mt-4 text-[15px] pr-muted">
+                  {review.name}, Google-review{review.location ? ` (${review.location})` : ""}
+                </figcaption>
               </figure>
             ))}
           </div>

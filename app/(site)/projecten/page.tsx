@@ -73,7 +73,7 @@ export default async function ProjectenPage() {
             </div>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[var(--pr-line)] pt-6">
               <div>
-                <dt className="text-[14px] pr-muted">Projecten op deze pagina</dt>
+                <dt className="text-[14px] pr-muted">Projecten in het portfolio</dt>
                 <dd className="mt-1 text-[15px] font-semibold pr-num">{projects.length}</dd>
               </div>
               {bigWeeks && (
