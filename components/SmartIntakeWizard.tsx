@@ -517,7 +517,7 @@ export default function SmartIntakeWizard({
       // Geen Ads-conversie voor mogelijke spam of een herhaalde inzending (L8).
       if (!leadTrackedRef.current && !result.spamSuspect && !result.duplicate) {
         leadTrackedRef.current = true;
-        trackLead();
+        trackLead(result.id);
         const tier = budgetTier({
           budgetMin: budgetLabel === "Weet ik nog niet" ? undefined : budgetMin,
           budgetMax: budgetLabel === "Weet ik nog niet" ? undefined : budgetMax,

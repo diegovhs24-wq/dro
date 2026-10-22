@@ -103,13 +103,15 @@ export function revokeGoogleConsent() {
 }
 
 // Conversie voor een geslaagde aanvraag. Doet niets zonder toestemming, zonder
-// Ads-ID of zonder conversielabel. De aanroeper bewaakt "één keer per aanvraag".
-export function trackLead() {
+// Ads-ID of zonder conversielabel. De aanroeper bewaakt "één keer per aanvraag";
+// het aanvraagnummer als transaction_id laat Google dubbele tellingen negeren.
+export function trackLead(leadId?: string) {
   if (!canTrack() || !GOOGLE_ADS_LEAD_LABEL) return;
   ensureGtag()("event", "conversion", {
     send_to: `${GOOGLE_ADS_ID}/${GOOGLE_ADS_LEAD_LABEL}`,
     value: 1,
     currency: "EUR",
+    ...(leadId && /^[\w-]{6,80}$/.test(leadId) ? {transaction_id: leadId} : {}),
   });
 }
 
