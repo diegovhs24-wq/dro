@@ -312,7 +312,7 @@ function Icon({name}: {name: string}) {
 
 const euro = (n: number) => `€ ${n.toLocaleString('nl-NL')}`
 
-const H1 = 'font-bold tracking-[-0.015em] leading-[1.04]'
+const H1 = 'font-bold tracking-[-0.035em] leading-[1.06] text-lp-ink'
 const H2 =
   'text-[26px] sm:text-[32px] font-bold tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
 
@@ -552,19 +552,16 @@ export default async function TotaalrenovatieLandingPage(
         </nav>
       </header>
 
-      <section className="relative isolate overflow-hidden bg-lp-slate text-white" id="aanvraag">
-        {heroImage && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" aria-hidden="true" className="absolute inset-0 -z-20 h-full w-full object-cover" fetchPriority="high" src={heroImage} />
-            <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-lp-slate via-lp-slate/90 to-lp-slate/40" />
-          </>
-        )}
+      <section className="bg-lp-plaster text-lp-ink" id="aanvraag">
         <div className="section-shell grid gap-10 py-10 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
           <div>
             <h1 className={`${H1} text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title.replace('Den Haag', 'Den\u00a0Haag')}</h1>
-            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-white/85">{hero.intro}</p>
-            <ul className="mt-7 hidden gap-3 text-white/90 md:grid">{proofItems}</ul>
+            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-lp-muted">{hero.intro}</p>
+            <ul className="mt-7 hidden gap-3 text-lp-ink md:grid">{proofItems}</ul>
+            {heroImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt="Opgeleverd project van DRO Renovaties" className="mt-8 hidden aspect-[16/9] w-full rounded-img object-cover shadow-img md:block" fetchPriority="high" src={heroImage} />
+            )}
           </div>
           <div className="text-lp-ink">
             <SmartIntakeWizard
@@ -582,9 +579,9 @@ export default async function TotaalrenovatieLandingPage(
               ]}
               variant={variant}
             />
-            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
-              {trustoo && <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {trustoo.score} Trustoo</span>}
-              <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
+            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-lp-muted">
+              {trustoo && <span className="font-semibold text-lp-ink"><span aria-hidden="true" className={STAR}>★</span> {trustoo.score} Trustoo</span>}
+              <span className="font-semibold text-lp-ink"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
               <span>VCA-gecertificeerd</span>
               <span>{responseLine}</span>
             </p>
@@ -924,7 +921,7 @@ export default async function TotaalrenovatieLandingPage(
             </p>
           </div>
           <div className="flex w-full gap-3 md:w-auto">
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
               Aanvraag starten
             </a>
             <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink md:flex-none" href={PHONE_HREF}>
@@ -946,7 +943,7 @@ export default async function TotaalrenovatieLandingPage(
         <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-lp-ink font-semibold" href={PHONE_HREF}>
           Bellen
         </a>
-        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-lp-orange font-semibold text-white" href="#aanvraag">
+        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-btn bg-lp-orange font-semibold text-white" href="#aanvraag">
           Aanvraag starten
         </a>
       </div>

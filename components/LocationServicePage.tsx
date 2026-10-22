@@ -32,35 +32,34 @@ export default function LocationServicePage({
 
   return (
     <main>
-      <section className="relative isolate overflow-hidden bg-brand-ink py-14 text-white sm:py-16">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/85 via-black/60 to-black/20" />
+      <section className="hero-ref">
         <div className="section-shell">
           <div className="max-w-3xl animate-float-in">
-            <p className="eyebrow">
+            <p className="eyebrow-slate">
               <Link className="hover:text-brand-orange" href={`/${location.slug}`}>
                 {location.name}
               </Link>{" "}
               / {serviceName}
             </p>
-            <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-5xl">
+            <h1 className="hero-ref-title mt-5">
               {serviceName} in {location.name}
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
+            <p className="hero-ref-text mt-6 max-w-2xl">
               Ja, DRO Renovaties verzorgt {serviceName.toLowerCase()} in {location.name} en
               omgeving, met een heldere offerte per onderdeel, een betalingsschema per fase en één vast
               aanspreekpunt.
             </p>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">{service.intro}</p>
+            <p className="hero-ref-text mt-4 max-w-2xl">{service.intro}</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link className="btn-primary" href="/contact">
                 Start intake
               </Link>
-              <Link className="btn-secondary" href="tel:+31850871814">
+              <Link className="btn-outline" href="tel:+31850871814">
                 Bespreek uw project met ons
               </Link>
             </div>
             <div className="mt-6">
-              <GoogleRatingBadge compact variant="dark" />
+              <GoogleRatingBadge compact />
             </div>
           </div>
         </div>

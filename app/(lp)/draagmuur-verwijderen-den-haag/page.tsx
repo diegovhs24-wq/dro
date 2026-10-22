@@ -304,12 +304,12 @@ const NAV = [
   {href: '#gids', label: 'Stappenplan'},
 ]
 
-const H1 = 'font-bold tracking-[-0.015em] leading-[1.04]'
+const H1 = 'font-bold tracking-[-0.035em] leading-[1.06] text-lp-ink'
 const H2 =
   'text-[26px] sm:text-[32px] font-bold tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
 const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
 const CTA =
-  'inline-flex min-h-[48px] items-center rounded-md bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover'
+  'inline-flex min-h-[48px] items-center rounded-btn bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover'
 
 function sizedImage(url: string, width: number): string {
   if (!url.includes('cdn.sanity.io') || /[?&]w=/.test(url)) return url
@@ -439,20 +439,17 @@ export default async function DraagmuurLandingPage(
         </nav>
       </header>
 
-      <section className="relative isolate overflow-hidden bg-lp-slate text-white" id="aanvraag">
-        {heroImage && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" aria-hidden="true" className="absolute inset-0 -z-20 h-full w-full object-cover" fetchPriority="high" src={heroImage} />
-            <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-lp-slate via-lp-slate/90 to-lp-slate/40" />
-          </>
-        )}
+      <section className="bg-lp-plaster text-lp-ink" id="aanvraag">
         <div className="section-shell grid gap-10 py-10 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
           <div>
             <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-lp-orange">Draagmuur verwijderen in Den Haag e.o.</p>
             <h1 className={`${H1} mt-3 text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title}</h1>
-            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-white/85">{hero.intro}</p>
-            <ul className="mt-7 hidden gap-3 text-white/90 md:grid">{proofItems}</ul>
+            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-lp-muted">{hero.intro}</p>
+            <ul className="mt-7 hidden gap-3 text-lp-ink md:grid">{proofItems}</ul>
+            {heroImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt="Opgeleverd project van DRO Renovaties" className="mt-8 hidden aspect-[16/9] w-full rounded-img object-cover shadow-img md:block" fetchPriority="high" src={heroImage} />
+            )}
           </div>
           <div className="text-lp-ink">
             <SmartIntakeWizard
@@ -467,16 +464,16 @@ export default async function DraagmuurLandingPage(
               ]}
               variant={variant}
             />
-            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
+            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-lp-muted">
               {trustoo && (
-                <span className="font-semibold text-white">
+                <span className="font-semibold text-lp-ink">
                   <span aria-hidden="true" className={STAR}>
                     ★
                   </span>{' '}
                   {trustoo.score} Trustoo
                 </span>
               )}
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-lp-ink">
                 <span aria-hidden="true" className={STAR}>
                   ★
                 </span>{' '}
@@ -947,7 +944,7 @@ export default async function DraagmuurLandingPage(
             </p>
           </div>
           <div className="flex w-full gap-3 md:w-auto">
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
               Indicatie berekenen
             </a>
             <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink md:flex-none" href={PHONE_HREF}>
@@ -969,7 +966,7 @@ export default async function DraagmuurLandingPage(
         <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-lp-ink font-semibold" href={PHONE_HREF}>
           Bellen
         </a>
-        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-lp-orange font-semibold text-white" href="#aanvraag">
+        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-btn bg-lp-orange font-semibold text-white" href="#aanvraag">
           Indicatie berekenen
         </a>
       </div>

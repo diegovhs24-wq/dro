@@ -101,13 +101,12 @@ export default function ToolsLibrary() {
 
   return (
     <main>
-      <section className="relative isolate overflow-hidden bg-brand-ink py-16 text-white sm:py-20">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/20 via-black/50 to-black/70" />
+      <section className="hero-ref">
         <div className="section-shell">
-          <div className="max-w-3xl animate-float-in">
-            <p className="eyebrow">Gratis rekentools en checks</p>
-            <h1 className="mt-4 text-4xl font-extrabold leading-tight sm:text-5xl">Handige tools voor je verbouwing</h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
+          <div className="max-w-3xl">
+            <p className="eyebrow-slate">Gratis rekentools en checks</p>
+            <h1 className="hero-ref-title mt-5">Handige tools voor je verbouwing</h1>
+            <p className="hero-ref-text mt-6 max-w-2xl">
               Van bouwtijd en vergunningen tot materialen en techniek: {ALLE_TOOLS.filter(([, t]) => t.meta.actief).length}{" "}
               gratis tools om je renovatie voor te bereiden. Direct een uitkomst, geen e-mailadres nodig.
             </p>

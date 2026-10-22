@@ -69,6 +69,21 @@ em.font-serif { color: var(--dro-orange); font-weight: inherit; }
   @apply inline-flex items-center justify-center rounded-btn bg-brand-orange px-6 py-3 text-sm lg:text-base font-semibold text-white shadow-cta transition duration-300 hover:-translate-y-0.5 hover:bg-brand-orange-hover focus:outline-none focus:ring-4 focus:ring-orange-200;
 }
 
+.btn-outline {
+  @apply inline-flex items-center justify-center rounded-btn border border-brand-ink/70 bg-transparent px-6 py-3 text-sm lg:text-base font-semibold text-brand-ink transition duration-300 hover:-translate-y-0.5 hover:bg-brand-ink hover:text-white focus:outline-none focus:ring-4 focus:ring-black/10;
+}
+
+/* Hero zoals Over ons: warm crème, donkere zware kop, gedempt bovenkopje. */
+.hero-ref {
+  @apply bg-brand-cream py-14 text-brand-ink sm:py-20;
+}
+.hero-ref-title {
+  @apply text-[2.15rem] font-bold leading-[1.08] tracking-[-0.035em] text-brand-ink sm:text-5xl lg:text-[3.5rem];
+}
+.hero-ref-text {
+  @apply text-base leading-7 text-brand-ink-soft sm:text-lg sm:leading-8;
+}
+
 .btn-secondary {
   @apply inline-flex items-center justify-center rounded-btn border border-white/60 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-brand-ink focus:outline-none focus:ring-4 focus:ring-white/30;
 }
