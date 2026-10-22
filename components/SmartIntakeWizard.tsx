@@ -110,7 +110,7 @@ function HouseGoalIcon({done}: {done: boolean}) {
 function formatBudget(value: number, scaleMax = 150000): string {
   if (value >= scaleMax) return `€${scaleMax / 1000}k+`;
   if (value <= 0) return "€0";
-  return `€${value / 1000}k`;
+  return `€${Math.round(value / 1000)}k`;
 }
 
 function coachMessage(flow: QuestionDef[], idx: number): string {
@@ -350,7 +350,10 @@ export default function SmartIntakeWizard({
 
   function buildFlowAndStart() {
     const questions = services.flatMap((s) => QUESTIONS[s] || []);
-    setFlow([SERVICES_STEP, ...questions, ...COMMON].filter((q) => !skipSet.has(q.id)));
+    // Diensten met een eigen budgetvraag (draagmuur: "past deze indicatie?")
+    // krijgen niet daarna nog een tweede budgetschuif.
+    const ownBudgetQuestion = services.length > 0 && services.every((s) => (QUESTIONS[s] || []).some((q) => q.t === "fit"));
+    setFlow([SERVICES_STEP, ...questions, ...COMMON].filter((q) => !skipSet.has(q.id) && !(ownBudgetQuestion && q.id === "budget")));
     if (largeBudget) {
       const [min, max] = services.some((s) => largeServices.includes(s)) ? largeBudget : initialBudget || [15000, 45000];
       setBudgetMin(min);
