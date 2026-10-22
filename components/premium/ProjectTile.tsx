@@ -5,8 +5,9 @@ import {caseStudyFacts} from "@/lib/caseStudy";
 import {cleanTitle, projectCover} from "@/lib/projectCategories";
 import type {ProjectItem} from "@/lib/types";
 
-export function sizedImage(url: string | undefined, width: number): string | undefined {
-  if (!url) return undefined;
+export function sizedImage(url: unknown, width: number): string | undefined {
+  // CMS-afbeeldingen zonder bestand komen soms als object door; die slaan we over.
+  if (typeof url !== "string" || !url) return undefined;
   if (!url.includes("cdn.sanity.io")) return url;
   try {
     const u = new URL(url);

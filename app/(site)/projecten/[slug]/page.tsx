@@ -10,7 +10,7 @@ import {premiumFontClass} from "@/components/premium/fonts";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {caseStudyFacts} from "@/lib/caseStudy";
 import {getProjectBySlug, getProjects, getSiteSettings, metadataFromSeo} from "@/lib/cms";
-import {cleanTitle, projectCategory, projectCover, uniqueProjects} from "@/lib/projectCategories";
+import {cleanTitle, projectCategory, projectCover, projectImages, uniqueProjects} from "@/lib/projectCategories";
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
 import {BUSINESS} from "@/lib/seo/business";
 
@@ -67,8 +67,8 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
   const category = projectCategory(project);
   const next = NEXT_STEP[category];
   const cover = projectCover(project);
-  const gallery = Array.from(new Set(project.images.filter((src) => src && src !== cover)));
-  const hasPair = Boolean(project.beforeImage && project.afterImage);
+  const gallery = Array.from(new Set(projectImages(project).filter((src) => src !== cover)));
+  const hasPair = typeof project.beforeImage === "string" && typeof project.afterImage === "string" && Boolean(project.beforeImage && project.afterImage);
   const facts = [
     {term: "Plaats", detail: place},
     {term: "Type", detail: type},

@@ -26,8 +26,14 @@ export function uniqueProjects<T extends {slug: string}>(projects: T[]): T[] {
   return projects.filter((p) => (seen.has(p.slug) ? false : (seen.add(p.slug), true)));
 }
 
+const isUrl = (value: unknown): value is string => typeof value === "string" && value.length > 0;
+
+export function projectImages(project: Pick<ProjectItem, "images">): string[] {
+  return (Array.isArray(project.images) ? project.images : []).filter(isUrl);
+}
+
 export function projectCover(project: Pick<ProjectItem, "afterImage" | "images" | "caseStudy">): string | undefined {
-  return project.caseStudy?.afterImages[0] || project.afterImage || project.images?.[0];
+  return [project.caseStudy?.afterImages[0], project.afterImage, ...projectImages(project)].find(isUrl);
 }
 
 // Volgorde: vrijgegeven casestudy's, dan grote renovaties, dan de rest; binnen
