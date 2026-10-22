@@ -312,9 +312,9 @@ function Icon({name}: {name: string}) {
 
 const euro = (n: number) => `€ ${n.toLocaleString('nl-NL')}`
 
-const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
+const H1 = 'font-bold tracking-[-0.015em] leading-[1.04]'
 const H2 =
-  'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
+  'text-[26px] sm:text-[32px] font-bold tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
 
 // Snelmenu bovenin: springt naar de onderdelen van deze pagina.
 const NAV = [
@@ -385,7 +385,7 @@ export default async function TotaalrenovatieLandingPage(
           <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-b border-lp-line px-5 py-4">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-lp-orange">Rekenvoorbeeld</p>
-              <h3 className="mt-0.5 text-[18px] font-bold [font-stretch:108%]">Totaalrenovatie jaren 30-woning, 100 m²</h3>
+              <h3 className="mt-0.5 text-[18px] font-bold">Totaalrenovatie jaren 30-woning, 100 m²</h3>
               <p className="text-sm text-lp-muted">
                 {euro(EXAMPLE_TOTAL)} inclusief btw &middot; {EXAMPLE_WEEKS} weken werk
               </p>
@@ -417,7 +417,7 @@ export default async function TotaalrenovatieLandingPage(
                     <span className="text-[12px] uppercase tracking-[0.06em] text-lp-muted">{phase.weeks}</span>
                   </div>
                   <p className="mt-2 font-semibold leading-tight">{phase.step}</p>
-                  <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
+                  <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums ${first ? 'text-lp-orange' : ''}`}>
                     {euro(phase.amount)}
                   </p>
                   <p className="mt-1 text-[12px] text-lp-muted">{`${phase.pct}% van het totaal`}</p>
@@ -461,7 +461,7 @@ export default async function TotaalrenovatieLandingPage(
         <div className="mt-8 grid gap-10 md:grid-cols-[1fr_1.15fr] md:items-start">
           <div>
             <p className="text-sm text-lp-muted">Indicatie per m², inclusief btw</p>
-            <p className="mt-2 text-[40px] font-bold leading-none tabular-nums [font-stretch:112%] sm:text-[52px]">
+            <p className="mt-2 text-[40px] font-bold leading-none tabular-nums sm:text-[52px]">
               {euro(PRICE_MIN_INCL)}
               <span className="px-2 text-[0.5em] font-semibold text-lp-muted">tot</span>
               {PRICE_MAX_INCL.toLocaleString('nl-NL')}
@@ -597,17 +597,17 @@ export default async function TotaalrenovatieLandingPage(
           {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
               {trustoo.score}/10{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{trustoo.count} reviews</span>
+              <span className="text-[14px] font-normal text-lp-muted">{trustoo.count} reviews</span>
             </dd>
           </div>
           )}
           <div>
             <dt className="text-[13px] text-lp-muted">Google</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
               {REVIEW_SCORE}<span className="text-lp-orange"> ★</span>{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
+              <span className="text-[14px] font-normal text-lp-muted">{REVIEW_COUNT} reviews</span>
             </dd>
           </div>
           {trustoo && (
@@ -730,7 +730,7 @@ export default async function TotaalrenovatieLandingPage(
             <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
-              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums">
                 {trustoo.score}
                 <span className="text-[20px] font-medium text-lp-muted">/10</span>
               </p>
@@ -752,7 +752,7 @@ export default async function TotaalrenovatieLandingPage(
             </aside>
             ) : (
             <aside aria-label="Google-score" className="rounded-lg border border-lp-line bg-white p-6">
-              <p className="text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+              <p className="text-[56px] font-extrabold leading-none tabular-nums">
                 {REVIEW_SCORE}
                 <span className="text-[20px] font-medium text-lp-muted"> ★</span>
               </p>
@@ -850,7 +850,7 @@ export default async function TotaalrenovatieLandingPage(
                     // eslint-disable-next-line @next/next/no-img-element
                     <img alt={logo.name} className="max-h-full max-w-full object-contain" loading="lazy" src={logo.src} />
                   ) : (
-                    <span className="text-center text-[17px] font-bold [font-stretch:110%]">{logo.name}</span>
+                    <span className="text-center text-[17px] font-bold">{logo.name}</span>
                   )}
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.45] text-lp-muted">{logo.text}</p>

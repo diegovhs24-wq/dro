@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import {AssuranceTable, FaqList, IntakeBlock, ProjectTile, ReviewQuotes, SectionHead} from "@/components/premium/blocks";
-import {premiumFontClass} from "@/components/premium/fonts";
 import LintelDrawing from "@/components/premium/LintelDrawing";
 import PremiumHero, {type HeroFact} from "@/components/premium/PremiumHero";
 import RenovationEstimator from "@/components/routes/RenovationEstimator";
@@ -49,7 +48,7 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
       ];
 
   return (
-    <div className={`pr ${premiumFontClass}`}>
+    <div className="pr">
       <PageStructuredData
         breadcrumbs={crumbs}
         description={route.metaDescription}
@@ -121,12 +120,12 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
                 <RenovationEstimator route={route.key} />
               ) : (
                 <div className="grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
-                  <div className="rounded-[6px] border border-[var(--pr-line)] p-6 md:p-8">
+                  <div className="rounded-card border border-[var(--pr-line)] bg-white p-6 md:p-8">
                     <p className="pr-measure">prijsindicatie op basis van uw maten</p>
                     <p className="mt-5 max-w-[52ch] text-[17px]">
                       In de intake vult u de breedte en hoogte van de opening in, de dikte van de muur en de verdieping. Daarna ziet u direct een indicatie, inclusief constructieberekening en basisafwerking.
                     </p>
-                    <p className="mt-5 rounded-[4px] bg-[var(--pr-kalk)] px-4 py-3 text-[15px] leading-[1.55]">
+                    <p className="mt-5 rounded-card bg-[var(--pr-kalk)] px-4 py-3 text-[15px] leading-[1.55]">
                       <strong className="font-semibold">Een indicatie, geen offerte.</strong> {route.pricing.note}
                     </p>
                     <a className="pr-btn mt-6" data-cta="pricing_to_intake" data-track="pricing" href="#intake">

@@ -2,7 +2,6 @@
 import {BUSINESS} from "@/lib/seo/business";
 
 import {useEffect, useMemo, useRef, useState} from "react";
-import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
 import {trackFunnel, trackLead} from "@/lib/analytics";
 import {budgetTier} from "@/lib/leadInsights";
 import type {ConversionRouteKey} from "@/lib/conversionRoutes";
@@ -30,8 +29,6 @@ import {
   type QuestionOption,
 } from "@/lib/serviceIntakeConfig";
 
-const bricolage = Bricolage_Grotesque({subsets: ["latin"], weight: ["600", "700", "800"], variable: "--intake-font-display", display: "swap"});
-const hanken = Hanken_Grotesk({subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--intake-font-body", display: "swap"});
 
 const SERVICES_STEP: QuestionDef = {id: "services", t: "services", q: ""};
 
@@ -242,7 +239,7 @@ export default function SmartIntakeWizard({
   conversionRoute,
   budgetScaleMax = 150000,
   budgetStep = 5000,
-  headingLevel = "h1",
+  headingLevel = "h2",
 }: SmartIntakeProps = {}) {
   const Heading = headingLevel;
   const fmtBudget = (value: number) => formatBudget(value, budgetScaleMax);
@@ -1240,22 +1237,23 @@ export default function SmartIntakeWizard({
             : "dan is het klaar";
 
   return (
-    <div className={`intake-widget ${bricolage.variable} ${hanken.variable}`}>
+    <div className="intake-widget">
       <style jsx global>{`
         .intake-widget {
+          /* Huisstijl-tokens uit app/globals.css (--dro-*). */
           --intake-bg: #ffffff;
-          --intake-ink: #111111;
-          --intake-ink-2: #454545;
-          --intake-ink-3: #6e6e6e;
-          --intake-line: #e7e7e7;
-          --intake-line-2: #dbdbdb;
-          --intake-sand: #f4f3f1;
-          --intake-accent: #e85a26;
-          --intake-accent-deep: #c6471a;
-          --intake-accent-tint: #fceee6;
+          --intake-ink: var(--dro-ink, #181613);
+          --intake-ink-2: var(--dro-ink-soft, #3a3733);
+          --intake-ink-3: var(--dro-muted, #5c574d);
+          --intake-line: var(--dro-line, #e7e3da);
+          --intake-line-2: #dcd6ca;
+          --intake-sand: var(--dro-cream, #f7f3ec);
+          --intake-accent: var(--dro-orange, #c4520f);
+          --intake-accent-deep: var(--dro-orange-hover, #a9450c);
+          --intake-accent-tint: var(--dro-orange-tint, #fbeee5);
           --intake-good: #2e7d50;
-          --intake-fd: var(--intake-font-display), system-ui, sans-serif;
-          --intake-fb: var(--intake-font-body), system-ui, -apple-system, sans-serif;
+          --intake-fd: var(--font-poppins), Arial, sans-serif;
+          --intake-fb: var(--font-poppins), Arial, sans-serif;
           font-family: var(--intake-fb);
           color: var(--intake-ink);
         }

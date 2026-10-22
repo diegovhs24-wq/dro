@@ -6,7 +6,6 @@ import {notFound} from "next/navigation";
 import {CaseStudyDetail} from "@/components/casestudy/CaseStudy";
 import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
 import {Measure, ProjectTile, sizedImage, WHATSAPP_HREF} from "@/components/premium/blocks";
-import {premiumFontClass} from "@/components/premium/fonts";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {caseStudyFacts} from "@/lib/caseStudy";
 import {getProjectBySlug, getProjects, getSiteSettings, metadataFromSeo} from "@/lib/cms";
@@ -84,7 +83,7 @@ export default async function ProjectDetailPage(props: ProjectPageProps) {
     .slice(0, 3);
 
   return (
-    <div className={`pr ${premiumFontClass}`}>
+    <div className="pr">
       <PageStructuredData
         breadcrumbs={breadcrumbs}
         description={project.description}
@@ -130,7 +129,7 @@ export default async function ProjectDetailPage(props: ProjectPageProps) {
             {cover && (
               <figure>
                 <Measure className="mb-3">{cleanTitle(project.title)}</Measure>
-                <img alt={`${title}: resultaat`} className="aspect-[4/3] w-full rounded-[4px] object-cover" fetchPriority="high" src={sizedImage(cover, 1600)} />
+                <img alt={`${title}: resultaat`} className="aspect-[4/3] w-full rounded-img object-cover" fetchPriority="high" src={sizedImage(cover, 1600)} />
               </figure>
             )}
           </div>
@@ -187,11 +186,11 @@ export default async function ProjectDetailPage(props: ProjectPageProps) {
               {hasPair && (
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <figure>
-                    <img alt={`${title}: voor`} className="aspect-[4/3] w-full rounded-[4px] object-cover" loading="lazy" src={sizedImage(project.beforeImage, 1000)} />
+                    <img alt={`${title}: voor`} className="aspect-[4/3] w-full rounded-img object-cover" loading="lazy" src={sizedImage(project.beforeImage, 1000)} />
                     <figcaption className="mt-2 text-[14px] pr-muted">Voor</figcaption>
                   </figure>
                   <figure>
-                    <img alt={`${title}: na`} className="aspect-[4/3] w-full rounded-[4px] object-cover" loading="lazy" src={sizedImage(project.afterImage, 1000)} />
+                    <img alt={`${title}: na`} className="aspect-[4/3] w-full rounded-img object-cover" loading="lazy" src={sizedImage(project.afterImage, 1000)} />
                     <figcaption className="mt-2 text-[14px] pr-muted">Na</figcaption>
                   </figure>
                 </div>
@@ -199,7 +198,7 @@ export default async function ProjectDetailPage(props: ProjectPageProps) {
               {gallery.length > 0 && (
                 <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {gallery.map((src, i) => (
-                    <img alt={`${title}, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-[4px] object-cover" key={src} loading="lazy" src={sizedImage(src, 900)} />
+                    <img alt={`${title}, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-img object-cover" key={src} loading="lazy" src={sizedImage(src, 900)} />
                   ))}
                 </div>
               )}

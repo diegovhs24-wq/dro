@@ -50,7 +50,7 @@ export function ProjectFigure({
   return (
     <figure className={className}>
       <Measure className="mb-3">{label}</Measure>
-      <Link className="group block overflow-hidden rounded-[4px] bg-[var(--pr-kalk)]" data-cta="project_figure" href={`/projecten/${project.slug}`}>
+      <Link className="group block overflow-hidden rounded-img bg-[var(--pr-kalk)] shadow-img" data-cta="project_figure" href={`/projecten/${project.slug}`}>
         <img
           alt={label}
           className={`${aspect} w-full object-cover transition duration-500 group-hover:scale-[1.015]`}
@@ -114,7 +114,7 @@ export function TeamList({intro}: {intro?: string}) {
         <figure className="mb-8">
           <img
             alt="Het team van DRO Renovaties in bedrijfskleding"
-            className="aspect-[16/8] w-full rounded-[4px] object-cover object-[center_40%]"
+            className="aspect-[16/8] w-full rounded-img object-cover object-[center_40%] shadow-img"
             decoding="async"
             loading="lazy"
             src="/landing/team-dro.jpg"

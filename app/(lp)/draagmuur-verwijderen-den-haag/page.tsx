@@ -304,9 +304,9 @@ const NAV = [
   {href: '#gids', label: 'Stappenplan'},
 ]
 
-const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
+const H1 = 'font-bold tracking-[-0.015em] leading-[1.04]'
 const H2 =
-  'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
+  'text-[26px] sm:text-[32px] font-bold tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
 const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
 const CTA =
   'inline-flex min-h-[48px] items-center rounded-md bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover'
@@ -494,22 +494,22 @@ export default async function DraagmuurLandingPage(
           {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
-              {trustoo.score}/10 <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{trustoo.count} reviews</span>
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
+              {trustoo.score}/10 <span className="text-[14px] font-normal text-lp-muted">{trustoo.count} reviews</span>
             </dd>
           </div>
           )}
           <div>
             <dt className="text-[13px] text-lp-muted">Google</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
               {REVIEW_SCORE}
               <span className="text-lp-orange"> ★</span>{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
+              <span className="text-[14px] font-normal text-lp-muted">{REVIEW_COUNT} reviews</span>
             </dd>
           </div>
           <div>
             <dt className="text-[13px] text-lp-muted">Uitvoering</dt>
-            <dd className="mt-0.5 text-[20px] font-bold [font-stretch:110%]">1 tot 3 dagen</dd>
+            <dd className="mt-0.5 text-[20px] font-bold">1 tot 3 dagen</dd>
           </div>
           <div>
             <dt className="text-[13px] text-lp-muted">Gecertificeerd en verzekerd</dt>
@@ -561,7 +561,7 @@ export default async function DraagmuurLandingPage(
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {JOBS.map((job, i) => (
               <article className={`flex flex-col rounded-lg border bg-white p-5 ${i === 2 ? 'border-lp-orange' : 'border-lp-line'}`} key={job.title}>
-                <h3 className="text-[18px] font-bold [font-stretch:108%]">{job.title}</h3>
+                <h3 className="text-[18px] font-bold">{job.title}</h3>
                 <p className="mt-2 flex-1 text-[15px] leading-[1.6] text-lp-muted">{job.text}</p>
                 <p className={`mt-4 border-t border-lp-line pt-3 text-[15px] font-semibold ${i === 2 ? 'text-lp-orange' : ''}`}>{job.note}</p>
               </article>
@@ -698,7 +698,7 @@ export default async function DraagmuurLandingPage(
           </div>
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
             <div className="rounded-lg border border-lp-line bg-white p-6">
-              <h3 className="text-[18px] font-bold [font-stretch:108%]">Checklist voor de opname</h3>
+              <h3 className="text-[18px] font-bold">Checklist voor de opname</h3>
               <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we na één bezoek een prijs per onderdeel maken.</p>
               <ul className="mt-4 space-y-2.5">
                 {CHECKLIST.map((item) => (
@@ -712,7 +712,7 @@ export default async function DraagmuurLandingPage(
               </ul>
             </div>
             <div>
-              <h3 className="text-[18px] font-bold [font-stretch:108%]">Zes fouten die we vaak zien</h3>
+              <h3 className="text-[18px] font-bold">Zes fouten die we vaak zien</h3>
               <ol className="mt-4 grid gap-4 sm:grid-cols-2">
                 {MISTAKES.map((item, i) => (
                   <li className="grid grid-cols-[28px_minmax(0,1fr)] gap-2" key={item.title}>
@@ -783,7 +783,7 @@ export default async function DraagmuurLandingPage(
             <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
-              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums">
                 {trustoo.score}
                 <span className="text-[20px] font-medium text-lp-muted">/10</span>
               </p>
@@ -802,7 +802,7 @@ export default async function DraagmuurLandingPage(
             </aside>
             ) : (
             <aside aria-label="Google-score" className="rounded-lg border border-lp-line bg-white p-6">
-              <p className="text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+              <p className="text-[56px] font-extrabold leading-none tabular-nums">
                 {REVIEW_SCORE}
                 <span className="text-[20px] font-medium text-lp-muted"> ★</span>
               </p>

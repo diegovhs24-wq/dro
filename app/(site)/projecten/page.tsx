@@ -5,7 +5,6 @@ import {Suspense} from "react";
 
 import {CaseStudyFacts} from "@/components/casestudy/CaseStudy";
 import {sizedImage} from "@/components/premium/ProjectTile";
-import {premiumFontClass} from "@/components/premium/fonts";
 import PortfolioGrid, {PortfolioGridView} from "@/components/premium/PortfolioGrid";
 import JsonLd from "@/components/seo/JsonLd";
 import PageStructuredData from "@/components/seo/PageStructuredData";
@@ -33,7 +32,7 @@ export default async function ProjectenPage() {
   const crumbs = breadcrumbsForPath("/projecten", "Projecten");
 
   return (
-    <div className={`pr ${premiumFontClass}`}>
+    <div className="pr">
       <PageStructuredData
         breadcrumbs={crumbs}
         description={DESCRIPTION}
@@ -95,7 +94,7 @@ export default async function ProjectenPage() {
               <div className="mt-10 grid gap-16">
                 {caseStudies.map((p) => (
                   <article className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12" key={p.slug}>
-                    <Link className="block overflow-hidden rounded-[4px]" data-cta="casestudy_open" href={`/projecten/${p.slug}`}>
+                    <Link className="block overflow-hidden rounded-img" data-cta="casestudy_open" href={`/projecten/${p.slug}`}>
                       <img alt={`${cleanTitle(p.type)}, ${cleanTitle(p.location)}`} className="aspect-[4/3] w-full object-cover" loading="lazy" src={sizedImage(projectCover(p), 1400)} />
                     </Link>
                     <div>

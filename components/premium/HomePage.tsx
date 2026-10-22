@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import {AssuranceTable, FaqList, IntakeBlock, ProjectTile, ReviewQuotes, TeamList} from "@/components/premium/blocks";
-import {premiumFontClass} from "@/components/premium/fonts";
 import PremiumHero from "@/components/premium/PremiumHero";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {GROTE_RENOVATIE, SPECIALISTISCH} from "@/lib/conversionRoutes";
@@ -22,7 +21,7 @@ export default async function HomePage() {
   const bigWeeks = weeksRange(projects.filter((p) => projectCategory(p) === "groot"));
 
   return (
-    <div className={`pr ${premiumFontClass}`}>
+    <div className="pr">
       <PageStructuredData
         description={HOME_DESCRIPTION}
         faqs={HOME_FAQ.map((f) => ({question: f.q, answer: f.a}))}

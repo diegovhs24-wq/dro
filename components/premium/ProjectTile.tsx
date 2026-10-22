@@ -26,7 +26,7 @@ export default function ProjectTile({project, width = 900}: {project: ProjectIte
   const facts = project.caseStudy ? caseStudyFacts(project.caseStudy).filter((f) => f.label !== "Locatie").slice(0, 2) : [];
   return (
     <article className="group relative">
-      <div className="overflow-hidden rounded-[4px] bg-[var(--pr-kalk)]">
+      <div className="overflow-hidden rounded-img bg-[var(--pr-kalk)]">
         {src && (
           <img
             alt={`${cleanTitle(project.type)}, ${cleanTitle(project.location)}`}

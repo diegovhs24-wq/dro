@@ -1,6 +1,5 @@
 import type {Metadata, Viewport} from 'next'
-import {Patrick_Hand, Poppins} from 'next/font/google'
-import localFont from 'next/font/local'
+import {Poppins} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {VisualEditing} from 'next-sanity'
 import Footer from '@/components/Footer'
@@ -15,32 +14,15 @@ import {buildPageMetadata} from '@/lib/seo/metadata'
 import {buildJsonLdGraph, buildOrganizationGraph} from '@/lib/seo/structured-data'
 import '../globals.css'
 
+// Huisstijl: Poppins is het enige lettertype van de site (zie tailwind.config.ts).
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
+  variable: '--font-poppins',
 })
 
-const patrickHand = Patrick_Hand({
-  subsets: ['latin'],
-  weight: '400',
-  display: 'swap',
-  variable: '--font-hand',
-})
 
-// Newsreader (cursief, latin) staat in de repo en wordt niet meer bij elke build
-// bij Google Fonts opgehaald. De Vercel-build faalde eenmalig doordat Google een
-// lettertype-URL zonder bestandsextensie teruggaf (next/font 14.2.x:
-// "Cannot read properties of null (reading '1')"). Variabel lettertype, gewichten 400 en 500.
-const newsreader = localFont({
-  src: './fonts/Newsreader-Italic-latin.woff2',
-  style: 'italic',
-  weight: '400 500',
-  display: 'swap',
-  variable: '--font-newsreader',
-  fallback: ['Georgia', 'serif'],
-  adjustFontFallback: 'Times New Roman',
-})
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -82,7 +64,7 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
   const {isEnabled: isDraftMode} = await draftMode()
 
   return (
-    <div className={`${poppins.className} ${patrickHand.variable} ${newsreader.variable}`}>
+    <div className={`${poppins.className} ${poppins.variable} bg-white`}>
       <JsonLd data={buildJsonLdGraph(organizationGraph)} />
       <Header siteSettings={siteSettings} />
       {children}

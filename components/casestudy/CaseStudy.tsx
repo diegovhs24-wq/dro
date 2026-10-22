@@ -35,7 +35,7 @@ export function CaseStudyCard({
 }) {
   const facts = caseStudyFacts(caseStudy, location).filter((f) => f.label !== "Locatie").slice(0, 3);
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-[10px] border border-lp-line bg-white">
+    <article className="group relative flex flex-col overflow-hidden rounded-card border border-lp-line bg-white">
       <div className="relative aspect-[4/3] overflow-hidden bg-lp-plaster">
         <img
           alt={`Na de verbouwing: ${title}`}
@@ -148,11 +148,11 @@ export function CaseStudyDetail({caseStudy, location}: {caseStudy: PublicCaseStu
           {pairs.map((pair, i) => (
             <div className="grid gap-3 sm:grid-cols-2" key={pair.after}>
               <figure>
-                <img alt={`Voor de verbouwing, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-[8px] object-cover" decoding="async" loading="lazy" src={pair.before} />
+                <img alt={`Voor de verbouwing, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-img object-cover" decoding="async" loading="lazy" src={pair.before} />
                 <figcaption className="mt-1.5 text-[13px] text-lp-muted">Voor</figcaption>
               </figure>
               <figure>
-                <img alt={`Na de verbouwing, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-[8px] object-cover" decoding="async" loading="lazy" src={pair.after} />
+                <img alt={`Na de verbouwing, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-img object-cover" decoding="async" loading="lazy" src={pair.after} />
                 <figcaption className="mt-1.5 text-[13px] text-lp-muted">Na</figcaption>
               </figure>
             </div>
@@ -160,7 +160,7 @@ export function CaseStudyDetail({caseStudy, location}: {caseStudy: PublicCaseStu
           {extraAfter.length > 0 && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {extraAfter.map((src, i) => (
-                <img alt={`Resultaat, foto ${pairs.length + i + 1}`} className="aspect-[4/3] w-full rounded-[8px] object-cover" decoding="async" key={src} loading="lazy" src={src} />
+                <img alt={`Resultaat, foto ${pairs.length + i + 1}`} className="aspect-[4/3] w-full rounded-img object-cover" decoding="async" key={src} loading="lazy" src={src} />
               ))}
             </div>
           )}

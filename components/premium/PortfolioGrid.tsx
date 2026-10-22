@@ -29,7 +29,7 @@ export function PortfolioGridView({projects, active}: {projects: ProjectItem[]; 
         {filters.map((f) => (
           <Link
             aria-current={f.key === active ? "page" : undefined}
-            className={`inline-flex min-h-[44px] items-center gap-2 rounded-[4px] px-4 text-[15px] font-medium transition ${
+            className={`inline-flex min-h-[44px] items-center gap-2 rounded-btn px-4 text-[15px] font-medium transition ${
               f.key === active ? "bg-[var(--pr-ink)] text-white" : "bg-white text-[var(--pr-ink)] shadow-[inset_0_0_0_1px_var(--pr-line)] hover:shadow-[inset_0_0_0_1px_var(--pr-ink)]"
             }`}
             data-cta={`portfolio_filter_${f.key}`}
