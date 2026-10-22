@@ -328,3 +328,20 @@ test("funnelmeting: niets zonder toestemming, met toestemming zonder persoonsgeg
     delete globalThis.window;
   }
 });
+
+test("metadata: beschrijvingen maximaal 160 tekens, standaard deelafbeelding", async () => {
+  const meta = await import(process.env.F2_META);
+  for (const d of [home.HOME_DESCRIPTION, routes.GROTE_RENOVATIE.metaDescription, routes.SPECIALISTISCH.metaDescription, routes.TOTAALRENOVATIE.metaDescription]) {
+    assert.ok(d.length <= 160, `te lang (${d.length}): ${d}`);
+    assert.doesNotMatch(d, /(?<!incl|excl|ca|bijv|o\.a)\. [a-z]/, `kleine letter na punt: ${d}`);
+  }
+  const long = "Dit is een lange beschrijving uit het CMS. ".repeat(8);
+  const c = meta.clampDescription(long);
+  assert.ok(c.length <= 160);
+  assert.ok(!/\s$/.test(c));
+  assert.equal(meta.clampDescription("Kort."), "Kort.");
+  const m = meta.buildPageMetadata({fallbackTitle: "T", fallbackDescription: long, pathname: "/x"});
+  assert.ok(m.description.length <= 160);
+  assert.equal(m.openGraph.images[0].url, "/og/dro-renovaties.jpg");
+  assert.equal(m.openGraph.images[0].width, 1200);
+});

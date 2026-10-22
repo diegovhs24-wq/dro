@@ -2,6 +2,23 @@ import type {Metadata} from "next";
 import type {SeoSettings} from "@/lib/types";
 import {absoluteUrl, getSiteUrl} from "@/lib/seo/site";
 
+// Standaard deelafbeelding (WhatsApp, LinkedIn, Google): echte teamfoto, 1200 x 630.
+export const DEFAULT_OG_IMAGE = "/og/dro-renovaties.jpg";
+
+// Google toont ongeveer 155 tot 160 tekens. Langere teksten (ook uit het CMS)
+// worden netjes op een woordgrens ingekort in plaats van midden in een woord.
+export const META_DESCRIPTION_MAX = 160;
+
+export function clampDescription(text?: string, max = META_DESCRIPTION_MAX): string | undefined {
+  if (!text) return text;
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max - 1);
+  const sentence = cut.lastIndexOf(". ");
+  if (sentence >= max * 0.6) return cut.slice(0, sentence + 1);
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:]$/, "")}…`;
+}
+
 export type BuildMetadataOptions = {
   seo?: SeoSettings;
   fallbackTitle: string;
@@ -20,9 +37,9 @@ export function buildPageMetadata({
   image,
 }: BuildMetadataOptions): Metadata {
   const title = seo.metaTitle || fallbackTitle;
-  const description = seo.metaDescription || fallbackDescription;
+  const description = clampDescription(seo.metaDescription || fallbackDescription);
   const canonical = absoluteUrl(pathname);
-  const ogImage = seo.openGraphImage || image;
+  const ogImage = seo.openGraphImage || image || DEFAULT_OG_IMAGE;
   const siteUrl = getSiteUrl();
 
   return {

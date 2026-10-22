@@ -17,7 +17,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'Draagmuur verwijderen in Den Haag, alles geregeld | DRO Renovaties',
   description:
-    'Draagmuur eruit of een deuropening in een dragende muur: constructieberekening, vergunningsaanvraag, stalen balk en afwerking door één Haags familiebedrijf. Bereken direct uw prijsindicatie.',
+    'Draagmuur eruit of een deuropening in een dragende muur: berekening, vergunningsaanvraag, stalen balk en afwerking door één Haags familiebedrijf.',
   robots: {index: false, follow: true},
   alternates: {canonical: '/draagmuur-verwijderen-den-haag'},
 }

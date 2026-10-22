@@ -99,7 +99,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   heroSlug: "jan-muschlaan-den-haag",
   metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
   metaDescription:
-    "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, vaste vakteams, betalingen per fase vooraf vastgelegd. Start uw projectintake.",
+    "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, met vaste vakteams. Start uw projectintake.",
   eyebrow: "Totaalrenovatie, uitbouw en dakopbouw",
   title: "Grote renovaties onder één regie",
   intro:
@@ -203,7 +203,7 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
   estimator: false,
   metaTitle: "Draagmuur verwijderen en constructieve verbouwingen | DRO Renovaties",
   metaDescription:
-    "Dragende muur verwijderen, doorbraak of stalen ligger in Den Haag en omgeving. Met constructieberekening, CAR-verzekerd en direct een prijsindicatie in de intake.",
+    "Dragende muur verwijderen, doorbraak of stalen ligger in Den Haag e.o. Met constructieberekening, CAR-verzekerd en direct een prijsindicatie.",
   eyebrow: "Draagmuur, doorbraak en staalconstructie",
   title: "Draagmuur eruit, berekend en verzekerd",
   intro:
@@ -301,7 +301,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   heroSlug: "essehout-zoetermeer",
   metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO Renovaties",
   metaDescription:
-    "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.210 tot € 1.510 per m² incl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
+    "Wat kost een totaalrenovatie en hoe lang duurt het? Indicatie € 1.210 tot € 1.510 per m² incl. btw, met fases en betaalschema. Familiebedrijf uit Den Haag.",
   eyebrow: "Totaalrenovatie",
   title: "Totaalrenovatie van uw woning",
   intro:

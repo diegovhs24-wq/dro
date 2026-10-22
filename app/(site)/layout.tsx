@@ -43,7 +43,6 @@ export async function generateMetadata(): Promise<Metadata> {
       fallbackTitle,
       fallbackDescription,
       pathname: '/',
-      image: siteSettings.footer.logo,
     }),
     ...(siteSettings.favicon ? {icons: {icon: siteSettings.favicon}} : {}),
   }

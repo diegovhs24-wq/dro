@@ -2,7 +2,7 @@
 
 export const HOME_TITLE = "Aannemer voor renovatie en verbouwing in Den Haag";
 export const HOME_DESCRIPTION =
-  "Familiebedrijf uit Den Haag voor totaalrenovaties, uitbouwen en constructieve verbouwingen van € 50.000 tot € 250.000 en meer. betalingen per fase vooraf vastgelegd, vaste vakteams, 4,8 uit 273 Google-reviews.";
+  "Familiebedrijf uit Den Haag voor totaalrenovaties, uitbouwen en constructieve verbouwingen vanaf € 50.000. Vaste vakteams, 4,8 uit 273 Google-reviews.";
 
 export const HOME_FAQ = [
   {
