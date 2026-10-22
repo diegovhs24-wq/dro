@@ -23,7 +23,7 @@ export default function CenteredActionBannerBlockSection({
 
           <div className="mt-8 flex w-full flex-col justify-center gap-4 sm:w-auto sm:flex-row sm:flex-wrap">
             <a
-              className="inline-flex min-h-[64px] items-center justify-center rounded-[0.7rem] bg-brand-orange px-8 text-[16px] font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#d95f0f] sm:min-w-[272px]"
+              className="inline-flex min-h-[64px] items-center justify-center rounded-btn bg-brand-orange px-8 text-[16px] font-semibold text-white transition hover:-translate-y-0.5 hover:bg-brand-orange-hover sm:min-w-[272px] shadow-cta"
               href={primary.href}
               target={primary.openInNewTab ? "_blank" : undefined}
               rel={primary.openInNewTab ? "noopener noreferrer" : undefined}
@@ -32,7 +32,7 @@ export default function CenteredActionBannerBlockSection({
             </a>
 
             <a
-              className="inline-flex min-h-[64px] items-center justify-center rounded-[0.7rem] border border-brand-ink/70 bg-transparent px-8 text-[16px] font-semibold text-brand-ink transition hover:-translate-y-0.5 hover:bg-white/40 sm:min-w-[344px]"
+              className="inline-flex min-h-[64px] items-center justify-center rounded-btn border border-brand-ink/70 bg-transparent px-8 text-[16px] font-semibold text-brand-ink transition hover:-translate-y-0.5 hover:bg-white/40 sm:min-w-[344px]"
               href={secondary.href}
               target={secondary.openInNewTab ? "_blank" : undefined}
               rel={secondary.openInNewTab ? "noopener noreferrer" : undefined}

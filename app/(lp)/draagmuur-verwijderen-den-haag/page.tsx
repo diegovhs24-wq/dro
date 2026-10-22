@@ -414,7 +414,7 @@ export default async function DraagmuurLandingPage(
               Bezoek onze website
             </a>
             <a
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-btn bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange shadow-cta"
               href={PHONE_HREF}
             >
               <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -753,7 +753,7 @@ export default async function DraagmuurLandingPage(
                   <h3 className="mt-3 text-[17px] font-semibold">{project.title}</h3>
                   <p className="mt-1 text-sm text-lp-muted">{[project.location?.trim(), project.type?.trim()].filter(Boolean).join(' · ')}</p>
                   <a
-                    className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white"
+                    className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-btn border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white shadow-cta"
                     href={`/projecten/${project.slug}`}
                   >
                     Bekijk project <span aria-hidden="true">&rarr;</span>

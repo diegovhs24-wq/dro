@@ -39,7 +39,7 @@ export default function ProjectCard({
           className="flex items-end bg-cover bg-center p-4"
           style={{ backgroundImage: `url(${afterImage})` }}
         >
-          <span className="rounded bg-brand-orange px-3 py-1 text-xs font-semibold text-white">{after}</span>
+          <span className="rounded-btn bg-brand-orange px-3 py-1 text-xs font-semibold text-white shadow-cta">{after}</span>
         </div>
       </div>
       <div className="p-6">

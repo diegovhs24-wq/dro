@@ -495,7 +495,7 @@ export default async function TotaalrenovatieLandingPage(
             </ul>
             <p className="mt-4">Na de bezichtiging krijgt u een offerte op maat, met de fases en termijnen van het betaalschema erin.</p>
             <PullQuote review={GOOGLE_REVIEWS[1]} />
-            <a className="mt-5 inline-flex min-h-[48px] items-center rounded-md bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover" href="#aanvraag">
+            <a className="mt-5 inline-flex min-h-[48px] items-center rounded-btn bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover shadow-cta" href="#aanvraag">
               Bezichtiging aanvragen
             </a>
           </div>
@@ -527,7 +527,7 @@ export default async function TotaalrenovatieLandingPage(
               Bezoek onze website
             </a>
             <a
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-btn bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange shadow-cta"
               href={PHONE_HREF}
             >
               <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -696,7 +696,7 @@ export default async function TotaalrenovatieLandingPage(
                       </dl>
                     )}
                     <a
-                      className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white"
+                      className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-btn border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white shadow-cta"
                       href={`/projecten/${project.slug}`}
                     >
                       Bekijk project
