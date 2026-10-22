@@ -22,7 +22,10 @@ export type AssuranceTopic = {
   proof: string;
 };
 
-const credentialList = BUSINESS.credentials.map((c) => c.name.replace("-gecertificeerd", "").replace("-erkend", "")).join(", ");
+const credentialList = BUSINESS.credentials.map((c, i) => {
+  const name = c.name.replace("-gecertificeerd", "").replace("-erkend", "");
+  return i === 0 ? name : name.charAt(0).toLowerCase() === "e" ? name.charAt(0).toLowerCase() + name.slice(1) : name;
+}).join(", ");
 
 export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
   return [
