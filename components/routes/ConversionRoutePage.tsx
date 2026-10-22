@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import {AssuranceTable, FaqList, IntakeBlock, ProjectTile, ReviewQuotes, SectionHead} from "@/components/premium/blocks";
 import {premiumFontClass} from "@/components/premium/fonts";
+import LintelDrawing from "@/components/premium/LintelDrawing";
 import PremiumHero, {type HeroFact} from "@/components/premium/PremiumHero";
 import RenovationEstimator from "@/components/routes/RenovationEstimator";
 import RouteViewTracker from "@/components/routes/RouteViewTracker";
@@ -66,6 +67,7 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
           facts={facts}
           lead={route.intro}
           primary={{label: route.primaryCta, href: "#intake", cta: "hero_intake"}}
+          aside={!heroProject && route.key === "specialistisch" ? <LintelDrawing /> : undefined}
           project={heroProject}
           title={route.title}
         />
