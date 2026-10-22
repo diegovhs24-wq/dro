@@ -26,10 +26,12 @@ export type PublicCaseStudy = {
   areaM2?: number;
   durationWeeks?: number;
   budgetBand?: string;
+  startingSituation?: string;
   clientGoal?: string;
   scope: string[];
   challenge?: string;
   solution?: string;
+  result?: string;
   details: string[];
   quote?: {text: string; author?: string};
   projectLead?: string;
@@ -92,10 +94,12 @@ export function toPublicCaseStudy(raw: unknown): PublicCaseStudy | null {
     areaM2: num(r.areaM2, 1, 5000),
     durationWeeks: num(r.durationWeeks, 0.5, 156),
     budgetBand: r.budgetBandConsent === true ? budgetBandLabel(str(r.budgetBand, 40)) : undefined,
+    startingSituation: str(r.startingSituation),
     clientGoal,
     scope,
     challenge: str(r.challenge),
     solution: str(r.solution),
+    result: str(r.result),
     details: strings(r.details),
     quote: quoteText ? {text: quoteText, author: str(r.quoteAuthor, 120)} : undefined,
     projectLead: str(r.projectLead, 80),

@@ -277,6 +277,24 @@ test("weergave: budgetband en citaat alleen met eigen toestemming", () => {
   assert.match(full, /Na de verbouwing, foto 1/);
 });
 
+test("weergave: volledige casestudy toont uitgangssituatie, aanpak, materialen en resultaat", () => {
+  const html = render.renderDetail({
+    ...okCase,
+    startingSituation: "Jaren-30 woning met enkel glas en oude leidingen.",
+    challenge: "Draagmuur met afwijkende oplegging.",
+    solution: "Nieuwe stalen ligger op poeren.",
+    details: ["Eikenhouten vloer"],
+    result: "Open benedenverdieping met vloerverwarming.",
+    durationWeeks: 12,
+  });
+  for (const text of ["De uitgangssituatie", "Jaren-30 woning", "De grootste uitdaging", "Hoe we het hebben opgelost", "Materialen en details", "Eikenhouten vloer", "Het resultaat", "Open benedenverdieping", "12 weken"]) {
+    assert.ok(html.includes(text), `ontbreekt: ${text}`);
+  }
+  // Lege optionele velden geven geen lege koppen.
+  const minimal = render.renderDetail(okCase);
+  assert.doesNotMatch(minimal, /De uitgangssituatie|Het resultaat|De grootste uitdaging/);
+});
+
 test("projecttegel: casestudy-label alleen bij vrijgegeven casestudy, geen kapotte afbeelding", () => {
   const plain = render.renderTile({slug: "a", title: "Straat , Den Haag ", type: "Totaalrenovatie ", location: "Den Haag", duration: "8 weken", images: [{_type: "cmsImage"}]});
   assert.doesNotMatch(plain, /Uitgewerkte casestudy/);

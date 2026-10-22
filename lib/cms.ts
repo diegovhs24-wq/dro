@@ -35,6 +35,8 @@ import type {
   ServiceSummary,
   SiteSettings,
   SmartLink,
+  HeaderMenuItem,
+  HeaderMenuLink,
   AboutPageContent,
   BusinessPageContent,
   ContactPageContent,
@@ -842,7 +844,7 @@ const PROJECTS_QUERY = `*[_type == "project"]|order(sortOrder asc, title asc){
   secondaryLink{${SMART_LINK_FIELDS}},
   caseStudy{
     published, consentDate, routes, district, propertyType, buildYear, areaM2, durationWeeks,
-    budgetBand, budgetBandConsent, clientGoal, scope, challenge, solution, details,
+    budgetBand, budgetBandConsent, startingSituation, clientGoal, scope, challenge, solution, result, details,
     quote, quoteAuthor, quoteConsent, projectLead,
     beforeImages[]{${IMAGE_SOURCE_FIELDS}},
     afterImages[]{${IMAGE_SOURCE_FIELDS}}
@@ -875,7 +877,7 @@ const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
   },
   caseStudy{
     published, consentDate, routes, district, propertyType, buildYear, areaM2, durationWeeks,
-    budgetBand, budgetBandConsent, clientGoal, scope, challenge, solution, details,
+    budgetBand, budgetBandConsent, startingSituation, clientGoal, scope, challenge, solution, result, details,
     quote, quoteAuthor, quoteConsent, projectLead,
     beforeImages[]{${IMAGE_SOURCE_FIELDS}},
     afterImages[]{${IMAGE_SOURCE_FIELDS}}
@@ -1590,7 +1592,7 @@ function mapSiteSettings(raw: unknown): SiteSettings {
     description: asString(normalized.description) || undefined,
     favicon: asString(normalized.favicon) || undefined,
     headerLogo: asString(normalized.headerLogo) || undefined,
-    headerMenu: asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu),
+    headerMenu: withRouteLinks(asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu)),
     headerButtons: asArray<SiteSettings["headerButtons"][number]>(normalized.headerButtons),
     footer: {
       logo: asString(footer.logo) || undefined,
@@ -1998,3 +2000,24 @@ export type {
   ServiceSummary,
   SiteSettings,
 } from "@/lib/types";
+
+// De twee conversieroutes (fase 2) staan vast in de code en horen in het
+// dienstenmenu, ook als het CMS-menu ze (nog) niet bevat. Ze komen bovenaan de
+// eerste kolom ("Wonen"); bestaan ze al in het CMS-menu, dan gebeurt er niets.
+const ROUTE_MENU_LINKS: HeaderMenuLink[] = [
+  {label: "Grote renovatie", link: {linkType: "external", externalUrl: "/grote-renovaties"}},
+  {label: "Draagmuur en constructief", link: {linkType: "external", externalUrl: "/constructieve-werken"}},
+];
+
+export function withRouteLinks(menu: HeaderMenuItem[]): HeaderMenuItem[] {
+  const existing = JSON.stringify(menu);
+  const missing = ROUTE_MENU_LINKS.filter((l) => l.link.linkType === "external" && !existing.includes(`"${l.link.externalUrl}"`));
+  if (!missing.length) return menu;
+  let added = false;
+  return menu.map((item) => {
+    if (added || item?.type !== "megaMenu" || !Array.isArray(item.columns) || !item.columns.length) return item;
+    added = true;
+    const [first, ...rest] = item.columns;
+    return {...item, columns: [{...first, links: [...missing, ...(first.links || [])]}, ...rest]};
+  });
+}

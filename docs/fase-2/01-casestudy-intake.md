@@ -1,21 +1,74 @@
 # Casestudy-intake (per project invullen)
 
-Alleen invullen wat klopt. Lege velden worden niet getoond. Niets wordt gepubliceerd zonder het vinkje "toestemming klant".
+Vul alleen in wat klopt. Lege velden worden niet getoond.
 
-| Veld | Voorbeeld van het soort antwoord | Verplicht |
+Een casestudy verschijnt pas als drie dingen kloppen:
+1. In Sanity (project > tab Casestudy) staat "Publiceren als casestudy" aan.
+2. Er is een toestemmingsdatum ingevuld.
+3. "Wat de klant wilde", de scope en minimaal één nafoto zijn ingevuld.
+
+Budgetband en klantcitaat hebben elk een eigen toestemmingsvinkje. Daarmee is de structuur klaar: de projectpagina, het portfolio en de routepagina's tonen een casestudy automatisch zodra deze velden in Sanity staan. Niets hiervan is verzonnen of vooraf ingevuld.
+
+## Velden
+
+| Veld in Sanity | Wat erin hoort | Verplicht |
 |---|---|---|
-| Project (bestaand Sanity-project) | Benoordenhoutseweg, Den Haag | Ja |
-| Plaats en wijk (privacyniveau) | Den Haag, Benoordenhout (geen huisnummer) | Ja |
-| Woningtype en bouwjaar | Jaren-30 twee-onder-een-kap | Ja |
-| Oppervlakte waarop gewerkt is | ± 140 m² | Ja |
-| Wat de klant wilde (2 tot 3 zinnen) | Open leefkeuken, nieuwe badkamer, alles verduurzaamd, karakter behouden | Ja |
-| Scope (lijst) | Sloop tot casco, draagmuur eruit met staal, nieuwe installaties, ... | Ja |
-| Grootste uitdaging en hoe opgelost | Verzakte vloer achter, constructeur ingeschakeld, ... | Ja |
-| Doorlooptijd uitvoering | 14 weken | Ja |
-| Budgetband (geen exact bedrag) | € 100.000 tot € 150.000 | Sterk gewenst |
-| Bijzondere materialen of details | Verstek gezaagd tegelwerk, ... | Nee |
-| Foto's voor | minimaal 3 | Ja |
-| Foto's na | minimaal 5 | Ja |
-| Klantcitaat (letterlijk, 1 tot 3 zinnen) | | Nee |
-| Toestemming klant voor publicatie (naam/citaat/foto's/budgetband) | ja/nee per onderdeel, met datum | Ja |
-| Uitvoerder/projectleider | Jarek | Nee |
+| Wijk | Wijk of buurt, geen straat of huisnummer | Nee |
+| Woningtype, bouwjaar | Bijvoorbeeld een jaren-30 twee-onder-een-kap, of een appartement uit 1972 | Sterk gewenst |
+| Oppervlakte (m²) | Het oppervlak waarop gewerkt is | Sterk gewenst |
+| Doorlooptijd uitvoering (weken) | De werkelijk geregistreerde uitvoeringstijd | Sterk gewenst |
+| Budgetband plus toestemming | Een vaste band, nooit een exact bedrag. Alleen met vinkje | Nee |
+| **Uitgangssituatie** | Hoe de woning erbij stond voor de start (2 tot 3 zinnen) | Sterk gewenst |
+| Wat de klant wilde | 2 tot 3 zinnen | **Ja** |
+| Scope | Lijst van uitgevoerde werkzaamheden | **Ja** |
+| Grootste uitdaging | De technische uitdaging | Sterk gewenst |
+| Hoe opgelost | De aanpak | Sterk gewenst |
+| Bijzondere materialen of details | De toegepaste materialen | Nee |
+| **Eindresultaat** | Wat er bij oplevering stond, zonder beloftes | Sterk gewenst |
+| Klantcitaat plus naam plus toestemming | Letterlijk, alleen met vinkje | Nee |
+| Projectleider | Bijvoorbeeld Jarek | Nee |
+| Voor- en nafoto's | Minimaal 3 voor en 5 na. Voor en na in dezelfde volgorde, dan ziet u ze als paar | **Ja**, minimaal 1 nafoto |
+| Routes | "Grote renovatie" of "Specialistisch". Bepaalt op welke routepagina de casestudy verschijnt | Ja |
+| Toestemmingsdatum | De datum waarop de klant schriftelijk akkoord gaf | **Ja** |
+
+## Voorgestelde eerste twee casestudy's
+
+Deze twee passen het best bij opdrachtgevers met € 150.000 tot € 250.000. De gegevens die in Sanity al bekend zijn, staan erbij. De rest moet van u komen.
+
+### 1. Jan Muschlaan, Den Haag: totaalrenovatie met dakopbouw (penthouse)
+
+- **Al in Sanity:**
+  - penthouse van casco af opnieuw opgebouwd;
+  - dakopbouw op het balkon;
+  - in samenwerking met CNCPT A;
+  - 10 werkzaamheden;
+  - 11 foto's.
+- **Ontbreekt nog:**
+  - doorlooptijd (ook in het gewone projectveld "Duration" staat niets);
+  - uitgangssituatie;
+  - de constructieve uitdaging en de oplossing daarvan;
+  - materialen;
+  - resultaat;
+  - voorfoto's;
+  - toestemming en datum;
+  - optioneel: budgetband en citaat.
+- **Vraag aan de klant:** toestemming voor foto's en tekst; apart voor budgetband en citaat.
+- **Vraag aan CNCPT A:** mag hun naam blijven staan?
+
+### 2. Fuutlaan, Leidschendam: totaalrenovatie appartement
+
+- **Al in Sanity:**
+  - 12 weken;
+  - 10 werkzaamheden, waaronder sleuven frezen in een betonnen plafond voor inbouwspots en verstek gezaagd tegelwerk;
+  - klimaatoplossing zonder buitenunit;
+  - 14 foto's.
+- **Ontbreekt nog:**
+  - woningtype en bouwjaar;
+  - oppervlakte;
+  - uitgangssituatie;
+  - de uitdaging, bijvoorbeeld het betonnen plafond, en de oplossing;
+  - resultaat;
+  - voorfoto's;
+  - toestemming en datum.
+
+Reserve: Essehout, Zoetermeer (totaalverbouwing, 8 weken, 5 foto's).

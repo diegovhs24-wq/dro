@@ -85,6 +85,12 @@ export function CaseStudyDetail({caseStudy, location}: {caseStudy: PublicCaseStu
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <div>
+          {caseStudy.startingSituation && (
+            <>
+              <h3 className="text-[19px] font-bold">De uitgangssituatie</h3>
+              <p className="mb-8 mt-3 max-w-[62ch] text-[17px] leading-[1.7]">{caseStudy.startingSituation}</p>
+            </>
+          )}
           <h3 className="text-[19px] font-bold">Wat de opdrachtgever wilde</h3>
           <p className="mt-3 max-w-[62ch] text-[17px] leading-[1.7]">{caseStudy.clientGoal}</p>
           {caseStudy.challenge && (
@@ -97,6 +103,12 @@ export function CaseStudyDetail({caseStudy, location}: {caseStudy: PublicCaseStu
             <>
               <h3 className="mt-8 text-[19px] font-bold">Hoe we het hebben opgelost</h3>
               <p className="mt-3 max-w-[62ch] text-[17px] leading-[1.7]">{caseStudy.solution}</p>
+            </>
+          )}
+          {caseStudy.result && (
+            <>
+              <h3 className="mt-8 text-[19px] font-bold">Het resultaat</h3>
+              <p className="mt-3 max-w-[62ch] text-[17px] leading-[1.7]">{caseStudy.result}</p>
             </>
           )}
         </div>
