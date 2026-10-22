@@ -152,6 +152,10 @@ section.bg-white::after {
   background: #fff;
   font-size: 17px;
   line-height: 1.7;
+  /* Lange Nederlandse samenstellingen (bijv. bedrijfsaansprakelijkheidsverzekering)
+     mogen afbreken, zodat smalle kolommen nooit breder worden dan het scherm. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 .pr h1, .pr h2, .pr h3, .pr .pr-display, .pr .pr-h2, .pr .pr-h3 {
   font-weight: 700;
