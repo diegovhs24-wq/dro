@@ -14,16 +14,19 @@ type Props = {
 };
 
 // Zwevende knoppen mogen geen inhoud bedekken: ze verdwijnen zodra de footer in
-// beeld is, en de intakeknop ook zolang er een intakeformulier zichtbaar is
-// (dan staat de actie al op het scherm).
+// beeld is. De intakeknop staat alleen op tablet (op desktop staat "Start intake"
+// al in de header, op mobiel in het menu) en niet op pagina's met een eigen
+// intakeformulier.
 function useHidden(pathname: string) {
   const [footerVisible, setFooterVisible] = useState(false);
   const [intakeVisible, setIntakeVisible] = useState(false);
+  const [hasIntake, setHasIntake] = useState(false);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
     const footer = document.querySelector("footer");
     const intakes = Array.from(document.querySelectorAll(".intake-widget"));
+    setHasIntake(intakes.length > 0);
     const visible = new Map<Element, boolean>();
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) visible.set(entry.target, entry.isIntersecting);
@@ -35,12 +38,12 @@ function useHidden(pathname: string) {
     return () => observer.disconnect();
   }, [pathname]);
 
-  return { footerVisible, intakeVisible };
+  return { footerVisible, intakeVisible, hasIntake };
 }
 
 export default function FloatingActions({whatsappLabel, whatsappHref, intakeLabel, intakeHref}: Props) {
   const pathname = usePathname();
-  const { footerVisible, intakeVisible } = useHidden(pathname);
+  const { footerVisible, intakeVisible, hasIntake } = useHidden(pathname);
 
   if (SUPPRESS_PATHS.has(pathname)) return null;
 
@@ -58,14 +61,16 @@ export default function FloatingActions({whatsappLabel, whatsappHref, intakeLabe
       >
         WA
       </a>
+      {!hasIntake && (
       <Link
         aria-hidden={footerVisible || intakeVisible || undefined}
-        className={`fixed bottom-5 left-5 z-50 hidden rounded-btn bg-brand-orange px-4 py-2.5 text-xs font-semibold text-white shadow-cta transition duration-300 hover:-translate-y-1 sm:inline-flex ${footerVisible || intakeVisible ? hide : show}`}
+        className={`fixed bottom-5 left-5 z-50 hidden rounded-btn bg-brand-orange px-4 py-2.5 text-xs font-semibold text-white shadow-cta transition duration-300 hover:-translate-y-1 sm:inline-flex lg:hidden ${footerVisible || intakeVisible ? hide : show}`}
         href={intakeHref}
         tabIndex={footerVisible || intakeVisible ? -1 : undefined}
       >
         {intakeLabel}
       </Link>
+      )}
     </>
   );
 }
