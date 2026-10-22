@@ -91,7 +91,7 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
       />
       <main>
         <section className="pr-kalk">
-          <div className="section-shell grid gap-10 pb-14 pt-10 md:pt-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+          <div className="section-shell grid gap-10 pb-14 pt-10 md:pt-14 lg:grid-cols-[minmax(0,6fr)_minmax(0,6fr)] lg:gap-14">
             <div className="flex flex-col">
               <nav aria-label="Kruimelpad" className="text-[14px] pr-muted">
                 <Link className="hover:underline" href="/">
@@ -104,7 +104,7 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
                 <span aria-hidden="true"> / </span>
                 <span aria-current="page">{cleanTitle(project.title)}</span>
               </nav>
-              <h1 className="pr-display mt-6 text-[clamp(2.2rem,1.4rem+3vw,3.6rem)] lg:mt-10">{title}</h1>
+              <h1 className="pr-display mt-6 text-[clamp(2rem,1.3rem+2.2vw,3.1rem)] [hyphens:auto] lg:mt-10" lang="nl">{title}</h1>
               {project.description && <p className="pr-lead mt-6">{project.description}</p>}
               <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[var(--pr-line)] pt-6">
                 {facts.map((f) => (
@@ -140,17 +140,27 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
                   Wat we hebben gedaan
                 </h2>
               </div>
-              <div className="grid gap-10 lg:grid-cols-2">
+              <div className="grid gap-10 xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+                {project.story && (
+                  <div className="grid max-w-[64ch] gap-5 text-[17px] leading-[1.75]">
+                    {project.story
+                      .split(/\n\s*\n/)
+                      .map((para) => para.trim())
+                      .filter(Boolean)
+                      .map((para) => (
+                        <p key={para.slice(0, 40)}>{para}</p>
+                      ))}
+                  </div>
+                )}
                 {project.work_items.length > 0 && (
-                  <ul className="border-b border-[var(--pr-line)]">
+                  <ul className="self-start border-b border-[var(--pr-line)]">
                     {project.work_items.map((item) => (
                       <li className="border-t border-[var(--pr-line)] py-3 text-[16px]" key={item}>
-                        {item}
+                        {item.trim()}
                       </li>
                     ))}
                   </ul>
                 )}
-                {project.story && <p className="max-w-[62ch] text-[17px] leading-[1.75]">{project.story}</p>}
               </div>
             </div>
           </section>

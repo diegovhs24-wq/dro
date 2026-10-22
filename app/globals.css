@@ -124,6 +124,7 @@ section.bg-white::after {
   font-stretch: 118%;
   line-height: 0.98;
   letter-spacing: -0.028em;
+  overflow-wrap: break-word;
 }
 .pr-h2 {
   font-size: clamp(1.85rem, 1.3rem + 1.8vw, 2.85rem);
