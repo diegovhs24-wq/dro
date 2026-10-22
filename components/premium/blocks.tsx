@@ -188,13 +188,27 @@ export function IntakeBlock({
 }) {
   return (
     <section aria-labelledby="intake-titel" className="pr-section pr-dark scroll-mt-20" id="intake">
-      <div className="section-shell grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      {/* Mobiel: kop, dan direct het formulier, dan de uitleg. Desktop: uitleg links, formulier rechts. */}
+      <div className="section-shell grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[auto_1fr] lg:gap-x-16 lg:gap-y-8">
         <div>
           <h2 className="pr-h2" id="intake-titel">
             {title}
           </h2>
           <p className="mt-4 max-w-[46ch] text-white/80">{intro}</p>
-          <ol className="mt-8 grid gap-4 text-[16px] text-white/85">
+        </div>
+        <div className="text-[var(--pr-ink)] lg:col-start-2 lg:row-span-2 lg:row-start-1">
+          <SmartIntakeWizard
+            headingLevel="h2"
+            thanksLinks={[
+              {href: "/projecten", label: "Bekijk onze projecten"},
+              {href: "/werkwijze", label: "Onze werkwijze"},
+              {href: "/over-ons", label: "Over DRO Renovaties"},
+            ]}
+            {...wizard}
+          />
+        </div>
+        <div>
+          <ol className="grid gap-4 text-[16px] text-white/85">
             <li className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2">
               <span className="pr-num font-semibold text-white">1.</span>
               U beantwoordt een paar vragen over uw woning, planning en budget.
@@ -223,17 +237,6 @@ export function IntakeBlock({
             </Link>
             .
           </p>
-        </div>
-        <div className="text-[var(--pr-ink)]">
-          <SmartIntakeWizard
-            headingLevel="h2"
-            thanksLinks={[
-              {href: "/projecten", label: "Bekijk onze projecten"},
-              {href: "/werkwijze", label: "Onze werkwijze"},
-              {href: "/over-ons", label: "Over DRO Renovaties"},
-            ]}
-            {...wizard}
-          />
         </div>
       </div>
     </section>

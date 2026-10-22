@@ -28,7 +28,7 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
   const matching = projects.filter((p) => route.projectTypeMatch.test(p.type) && projectCover(p));
   const caseStudies = projects.filter((p) => p.caseStudy && caseStudyMatchesRoute(p.caseStudy, route.key));
   const shown = (caseStudies.length ? caseStudies : matching).slice(0, 3);
-  const heroProject = caseStudies[0] || matching[0];
+  const heroProject = caseStudies[0] || projects.find((p) => p.slug === route.heroSlug && projectCover(p)) || matching[0];
   const weeks = weeksRange(projects.filter((p) => route.projectTypeMatch.test(p.type)));
   const crumbs = breadcrumbsForPath(route.path, route.crumbLabel);
 

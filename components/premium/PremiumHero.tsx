@@ -47,7 +47,7 @@ export default function PremiumHero({
           )}
           <h1 className="pr-display mt-6 max-w-[15ch] lg:mt-10">{title}</h1>
           <p className="pr-lead mt-6">{lead}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4" data-track="hero">
+          <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4 lg:mb-14" data-track="hero">
             <a className="pr-btn" data-cta={primary.cta} href={primary.href}>
               {primary.label}
             </a>
@@ -65,7 +65,7 @@ export default function PremiumHero({
             </span>
           </div>
 
-          <dl className="mt-auto grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[var(--pr-line)] pt-6 lg:mt-14 xl:grid-cols-4">
+          <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[var(--pr-line)] pt-6 lg:mt-auto xl:grid-cols-4">
             {facts.map((f) => (
               <div key={f.term}>
                 <dt className="text-[14px] pr-muted">{f.term}</dt>

@@ -47,6 +47,8 @@ export type ConversionRouteConfig = {
   crumbLabel: string;
   // Rekenhulp m²-prijs tonen (alleen waar de bevestigde m²-prijs van toepassing is).
   estimator: boolean;
+  // Voorkeursproject voor de hero (eindbeeld), zodat pagina's niet dezelfde foto openen.
+  heroSlug?: string;
   metaTitle: string;
   metaDescription: string;
   eyebrow: string;
@@ -94,6 +96,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   path: "/grote-renovaties",
   crumbLabel: "Grote renovaties",
   estimator: true,
+  heroSlug: "amersfoort",
   metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
   metaDescription:
     "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, vaste vakteams, niets betalen bij ondertekening. Start uw projectintake.",
@@ -295,6 +298,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   path: "/totaalrenovatie",
   crumbLabel: "Totaalrenovatie",
   estimator: true,
+  heroSlug: "essehout-zoetermeer",
   metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO Renovaties",
   metaDescription:
     "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.000 tot € 1.250 per m² excl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
