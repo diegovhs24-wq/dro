@@ -3,7 +3,7 @@ import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
-import {getProjects} from '@/lib/cms'
+import {getProjects, getVerifiedClaims} from '@/lib/cms'
 import {EXAMPLE_INPUT, PRICE, draagmuurBreakdown, formatEuro} from '@/lib/draagmuurPrice'
 import type {ProjectItem} from '@/lib/types'
 
@@ -26,9 +26,9 @@ const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
 const REVIEW_SCORE = BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')
 const REVIEW_COUNT = `${BUSINESS.reviews.reviewCount}+`
-const TRUSTOO_SCORE = '9,8'
-const TRUSTOO_COUNT = '557'
-const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'
+// Trustoo-cijfer en reactietijd komen uit Sanity (Site Settings > Geverifieerde
+// claims) en verschijnen alleen als ze daar zijn bevestigd. Zonder bevestiging
+// tonen we de Google-score en 'zo snel mogelijk'.
 // Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, afgewerkt.
 const EXAMPLE = draagmuurBreakdown(EXAMPLE_INPUT)
 const EXAMPLE_INCL = formatEuro(EXAMPLE.totalIncl)
@@ -39,31 +39,30 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   verwijderen: {
     title: 'Draagmuur eruit, alles geregeld',
     intro:
-      'Van deuropening tot een hele muur weg voor uw open keuken. Wij regelen constructeur, vergunning, stalen balk en, als u wilt, de afwerking. Eén aanspreekpunt, één vaste prijs.',
+      'Van deuropening tot een hele muur weg voor uw open keuken. Wij regelen constructeur, berekening en stalen balk, verzorgen zo nodig de vergunningsaanvraag en, als u wilt, de afwerking. Eén aanspreekpunt, een prijs per onderdeel.',
   },
   kosten: {
     title: 'Wat kost een draagmuur verwijderen?',
     intro:
-      'Bereken hiernaast direct uw prijsindicatie. Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen balk, container en afvoer. Na de opname krijgt u een vaste prijs.',
+      'Bereken hiernaast direct uw prijsindicatie. Inclusief constructieberekening, stempelen, stalen balk, sloop en afvoer en basisafwerking. Na de opname krijgt u een offerte met een prijs per onderdeel.',
   },
   balk: {
     title: 'Draagmuur weg, stalen balk erin',
     intro:
-      'Constructeur, berekening, vergunning, stempelen en het plaatsen van de balk: wij doen het hele traject. Uitvoering in 1 tot 3 dagen door onze eigen ploeg.',
+      'Constructeur, berekening, stempelen en het plaatsen van de balk, en zo nodig de vergunningsaanvraag: wij begeleiden het hele traject. Uitvoering in 1 tot 3 dagen door een vaste ploeg.',
   },
 }
 
-const PROOF = [
-  `${TRUSTOO_SCORE} op Trustoo uit ${TRUSTOO_COUNT} reviews, Top Pro 2026`,
-  'Vergunning en constructeur door ons geregeld',
-  'Uitvoering in 1 tot 3 dagen, met eigen vaste ploeg',
+const PROOF_REST = [
+  'Constructeur door ons geregeld, vergunningsaanvraag op verzoek verzorgd',
+  'Uitvoering in 1 tot 3 dagen, met een vaste ploeg',
   'VCA-gecertificeerd en CAR-verzekerd',
 ]
 
 // Wat er in de prijs zit. Volgorde = volgorde van het werk.
 const INCLUDED = [
   {title: 'Constructieberekening', text: 'Een constructeur berekent welke balk of latei er nodig is en hoe die wordt opgelegd.', icon: 'calc'},
-  {title: 'Tekening en vergunning', text: 'Wij maken de tekeningen en dienen de omgevingsvergunning voor u in.', icon: 'doc'},
+  {title: 'Tekening en vergunning', text: 'Wij laten de tekeningen maken en verzorgen zo nodig de aanvraag van de omgevingsvergunning voor u.', icon: 'doc'},
   {title: 'Stempelen', text: 'Het huis wordt veilig ondersteund voordat er ook maar één steen uit gaat.', icon: 'stamp'},
   {title: 'Sloop, container en afvoer', text: 'Wij slopen de muur, voeren het puin af en laten het bezemschoon achter.', icon: 'truck'},
   {title: 'Stalen balk of latei', text: 'Geleverd, geplaatst, ondersabeld en ingemetseld volgens de berekening.', icon: 'beam'},
@@ -92,10 +91,10 @@ const JOBS = [
 ] as const
 
 const STEPS = [
-  {title: 'Aanvraag en indicatie', text: 'U vult het formulier in en ziet direct een prijsindicatie. Wij bellen u binnen 1 werkuur terug.'},
+  {title: 'Aanvraag en indicatie', text: 'U vult het formulier in en ziet direct een prijsindicatie. Daarna bellen wij u terug.'},
   {title: 'Opname op locatie', text: 'Een verbouwadviseur komt langs, meet alles in en bekijkt leidingen, vloer en plafond.'},
   {title: 'Berekening en tekening', text: 'De constructeur rekent de balk door. Geen tekeningen? Wij vragen ze op bij het gemeentearchief.'},
-  {title: 'Vergunning', text: 'Wij dienen de aanvraag in. De gemeente beslist meestal binnen 8 weken. Intussen plannen we de uitvoering.'},
+  {title: 'Vergunning', text: 'Is een vergunning nodig, dan verzorgen wij de aanvraag. De gemeente beslist meestal binnen 8 weken. Intussen plannen we de uitvoering.'},
   {title: 'Uitvoering in 1 tot 3 dagen', text: 'Inpakken, stempelen, slopen, balk plaatsen en inmetselen. Daarna gaan de stempels eruit.'},
   {title: 'Afwerking en oplevering', text: 'Stucwerk schilderklaar of casco, net wat u kiest. We lopen het samen na.'},
 ]
@@ -221,7 +220,7 @@ const GUIDE = [
   {title: 'Check of de muur dragend is', text: 'Let op dikte, klank en wat erboven staat, en vraag de bouwtekeningen op. Twijfelt u, dan kijken wij het na.'},
   {title: 'Bereken uw indicatie en vraag een opname aan', text: 'Met het formulier bovenaan weet u in twee minuten waar u aan toe bent. Daarna komt een verbouwadviseur langs om alles in te meten.'},
   {title: 'Constructieberekening en stempelplan', text: 'De constructeur bepaalt de ligger, de opleggingen en of er kolommen nodig zijn, en hoe het huis tijdens het werk wordt ondersteund.'},
-  {title: 'Tekeningen en vergunning', text: 'Wij maken de tekeningen en dienen de omgevingsvergunning in. Bij een appartement regelt u eerst de toestemming van de VvE. De gemeente beslist meestal binnen 8 weken.'},
+  {title: 'Tekeningen en vergunning', text: 'Wij laten de tekeningen maken en verzorgen zo nodig de aanvraag van de omgevingsvergunning. Bij een appartement regelt u eerst de toestemming van de VvE. De gemeente beslist meestal binnen 8 weken.'},
   {title: 'Voorbereiden', text: 'Leidingen en elektra in de muur worden omgelegd, de ruimte wordt leeggemaakt en u bestelt pas nu uw keuken.'},
   {title: 'Uitvoering in 1 tot 3 dagen', text: 'Afschermen tegen stof, stempelen, slopen, ligger plaatsen, ondersabelen en inmetselen. Als alles vastzit, gaan de stempels eruit.'},
   {title: 'Brandwerend bekleden en afwerken', text: 'De ligger wordt brandwerend bekleed. Daarna volgt de afwerking: stucwerk, en als u wilt schilderwerk, vloer en keuken.'},
@@ -240,7 +239,7 @@ const ICON_PATHS: Record<string, string[]> = {
 }
 
 const LOGOS = [
-  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
+  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar voor de CAR- en aansprakelijkheidsverzekering.'},
   {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
   {name: 'VLOK', src: '/landing/logos/logo-vlok.png', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
   {name: 'SBB', src: '/landing/logos/logo-sbb.png', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
@@ -377,7 +376,14 @@ export default async function DraagmuurLandingPage(
   const searchParams = await props.searchParams;
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
-  const projects = await getProjects()
+  const [projects, claims] = await Promise.all([getProjects(), getVerifiedClaims()])
+  const trustoo = claims.trustoo
+  const responseSlot = claims.responseTime?.text || 'zo snel mogelijk'
+  const responseLine = claims.responseTime ? `We nemen ${claims.responseTime.text} contact op` : 'We nemen zo snel mogelijk contact op'
+  const PROOF = [
+    trustoo ? `${trustoo.score} op Trustoo uit ${trustoo.count} reviews` : `${REVIEW_SCORE} uit ${BUSINESS.reviews.reviewCount} Google-reviews`,
+    ...PROOF_REST,
+  ]
   const shownProjects = pickProjects(projects)
   const heroImage = heroImageOf(projects)
 
@@ -451,7 +457,7 @@ export default async function DraagmuurLandingPage(
           <div className="text-lp-ink">
             <SmartIntakeWizard
               presetServices={['Draagmuur verwijderen']}
-              responsePromise="binnen 1 werkuur"
+              responsePromise={responseSlot}
               skipIds={['found', 'budget']}
               source="lp-draagmuur"
               thanksLinks={[
@@ -462,20 +468,22 @@ export default async function DraagmuurLandingPage(
               variant={variant}
             />
             <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
-              <span className="font-semibold text-white">
-                <span aria-hidden="true" className={STAR}>
-                  ★
-                </span>{' '}
-                {TRUSTOO_SCORE} Trustoo
-              </span>
+              {trustoo && (
+                <span className="font-semibold text-white">
+                  <span aria-hidden="true" className={STAR}>
+                    ★
+                  </span>{' '}
+                  {trustoo.score} Trustoo
+                </span>
+              )}
               <span className="font-semibold text-white">
                 <span aria-hidden="true" className={STAR}>
                   ★
                 </span>{' '}
                 {REVIEW_SCORE} Google
               </span>
-              <span>Vergunning geregeld</span>
-              <span>{RESPONSE_PROMISE}</span>
+              <span>Constructeur geregeld</span>
+              <span>{responseLine}</span>
             </p>
           </div>
         </div>
@@ -483,12 +491,14 @@ export default async function DraagmuurLandingPage(
 
       <section aria-label="Beoordelingen en beloften" className="bg-lp-plaster">
         <dl className="section-shell grid grid-cols-2 items-start gap-x-6 gap-y-5 py-6 lg:grid-cols-5">
+          {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
             <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
-              {TRUSTOO_SCORE}/10 <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{TRUSTOO_COUNT} reviews</span>
+              {trustoo.score}/10 <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{trustoo.count} reviews</span>
             </dd>
           </div>
+          )}
           <div>
             <dt className="text-[13px] text-lp-muted">Google</dt>
             <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
@@ -512,7 +522,7 @@ export default async function DraagmuurLandingPage(
           </div>
           <div className="col-span-2 lg:col-span-1">
             <dt className="text-[13px] text-lp-muted">Na uw aanvraag</dt>
-            <dd className="mt-0.5 text-[17px] font-semibold">{RESPONSE_PROMISE}</dd>
+            <dd className="mt-0.5 text-[17px] font-semibold">{responseLine}</dd>
           </div>
         </dl>
       </section>
@@ -689,7 +699,7 @@ export default async function DraagmuurLandingPage(
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
             <div className="rounded-lg border border-lp-line bg-white p-6">
               <h3 className="text-[18px] font-bold [font-stretch:108%]">Checklist voor de opname</h3>
-              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we in één bezoek een vaste prijs maken.</p>
+              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we na één bezoek een prijs per onderdeel maken.</p>
               <ul className="mt-4 space-y-2.5">
                 {CHECKLIST.map((item) => (
                   <li className="flex gap-3 text-[15px] leading-[1.55]" key={item}>
@@ -769,15 +779,16 @@ export default async function DraagmuurLandingPage(
         <div className="section-shell py-14">
           <h2 className={H2}>Wat klanten over ons zeggen</h2>
           <div className="mt-8 grid items-start gap-8 lg:grid-cols-[300px_1fr]">
+            {trustoo ? (
             <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
               <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
-                {TRUSTOO_SCORE}
+                {trustoo.score}
                 <span className="text-[20px] font-medium text-lp-muted">/10</span>
               </p>
               <p className="mt-3 text-[14px] text-lp-muted">
-                {TRUSTOO_COUNT} reviews uit 4 bronnen: {TRUSTOO_SOURCES}.
+                {trustoo.count} reviews (stand {trustoo.asOf}).
               </p>
               <div className="mt-4 flex items-end gap-3.5">
                 {TRUSTOO_BADGES.map((badge) => (
@@ -789,6 +800,15 @@ export default async function DraagmuurLandingPage(
                 <strong>{REVIEW_SCORE}</strong> <span className={STAR}>★</span> op Google, {REVIEW_COUNT} reviews
               </p>
             </aside>
+            ) : (
+            <aside aria-label="Google-score" className="rounded-lg border border-lp-line bg-white p-6">
+              <p className="text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+                {REVIEW_SCORE}
+                <span className="text-[20px] font-medium text-lp-muted"> ★</span>
+              </p>
+              <p className="mt-3 text-[14px] text-lp-muted">Op Google, {REVIEW_COUNT} reviews.</p>
+            </aside>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               {GOOGLE_REVIEWS.map((review) => (
                 <figure className="m-0 flex flex-col rounded-lg border border-lp-line bg-white p-5" key={review.name}>
@@ -838,7 +858,7 @@ export default async function DraagmuurLandingPage(
             </div>
             <ul className="grid content-start gap-3 text-[15px] md:border-l md:border-lp-line md:pl-8">
               <li>Kantoor aan de Orionstraat 235 in Den Haag</li>
-              <li>Eigen vaste ploegen en eigen opslag</li>
+              <li>Vaste vakteams en eigen opslag</li>
               <li>Vaste constructeurs en tekenaar</li>
             </ul>
           </div>
@@ -894,7 +914,7 @@ export default async function DraagmuurLandingPage(
             ))}
           </ol>
           <div className="mt-10 flex flex-col items-start gap-4 rounded-lg bg-lp-plaster p-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u binnen 1 werkuur terug.</p>
+            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u terug.</p>
             <a className={CTA} href="#aanvraag">
               Indicatie berekenen
             </a>
@@ -911,11 +931,15 @@ export default async function DraagmuurLandingPage(
               <span aria-hidden="true" className={STAR}>
                 ★
               </span>{' '}
-              {TRUSTOO_SCORE} op Trustoo uit {TRUSTOO_COUNT} reviews
-              <span aria-hidden="true" className="mx-2 opacity-40">
-                |
-              </span>
               {REVIEW_SCORE} op Google
+              {trustoo && (
+                <>
+                  <span aria-hidden="true" className="mx-2 opacity-40">
+                    |
+                  </span>
+                  {trustoo.score} op Trustoo uit {trustoo.count} reviews
+                </>
+              )}
               <span aria-hidden="true" className="mx-2 opacity-40">
                 |
               </span>

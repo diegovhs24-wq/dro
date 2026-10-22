@@ -169,3 +169,76 @@ test("projectindeling op type, ook met rommelige invoer", () => {
   assert.deepEqual(sorted.map((p) => p.slug), ["cs", "tot", "bad"]);
   assert.equal(cats.cleanTitle("Van der Sluijsplantsoen , Den Haag "), "Van der Sluijsplantsoen, Den Haag");
 });
+
+// ---------- Rekenhulp: bedragen, btw, afronding en grenzen ----------
+test("rekenhulp: btw, afronding naar ruimere band en grenzen", () => {
+  const b = routes.renovationBand(120);
+  assert.deepEqual(b.excl, {min: 120000, max: 150000});
+  // 120 x 1.000 x 1,21 = 145.200 → omlaag naar 145.000; 120 x 1.250 x 1,21 = 181.500 → omhoog naar 185.000
+  assert.deepEqual(b.incl, {min: 145000, max: 185000});
+  // Grenzen van de schuif
+  assert.equal(routes.renovationBand(40).m2, 40);
+  assert.deepEqual(routes.renovationBand(40).incl, {min: 45000, max: 65000}); // 48.400 en 60.500
+  assert.deepEqual(routes.renovationBand(300).incl, {min: 360000, max: 455000}); // 363.000 en 453.750
+  // Buiten bereik of ongeldig: terug naar het bereik
+  assert.equal(routes.renovationBand(10).m2, 40);
+  assert.equal(routes.renovationBand(999).m2, 300);
+  assert.equal(routes.renovationBand(Number.NaN).m2, 120);
+  assert.equal(routes.renovationBand(87.6).m2, 88);
+  // Nooit smaller dan de exacte band, altijd veelvouden van 5.000
+  for (let m2 = 40; m2 <= 300; m2 += 5) {
+    const {excl, incl} = routes.renovationBand(m2);
+    assert.ok(excl.min <= m2 * 1000 && excl.max >= m2 * 1250, `excl ${m2}`);
+    assert.ok(incl.min <= m2 * 1000 * 1.21 + 1e-6 && incl.max >= m2 * 1250 * 1.21 - 1e-6, `incl ${m2}`);
+    for (const v of [excl.min, excl.max, incl.min, incl.max]) assert.equal(v % 5000, 0);
+    assert.ok(incl.min > 0 && incl.min < incl.max);
+  }
+  assert.equal(routes.VAT_RATE, 0.21);
+});
+
+// ---------- Casestudy's: automatische publicatievoorwaarden, ook in de weergave ----------
+const render = await import(process.env.F2_RENDER);
+const okCase = {
+  published: true,
+  consentDate: "2026-10-01",
+  routes: ["grote-renovatie"],
+  clientGoal: "Open leefkeuken en alles verduurzaamd.",
+  scope: ["Sloop tot casco"],
+  afterImages: ["https://cdn.sanity.io/images/x/after.jpg"],
+  beforeImages: ["https://cdn.sanity.io/images/x/before.jpg"],
+  areaM2: 140,
+  budgetBand: "100-150k",
+  budgetBandConsent: false,
+  quote: "Geheim citaat",
+  quoteConsent: false,
+};
+
+test("weergave: zonder vrijgave verschijnt er niets", () => {
+  assert.equal(render.renderDetail({...okCase, published: false}), "");
+  assert.equal(render.renderCard({...okCase, consentDate: ""}), "");
+});
+
+test("weergave: budgetband en citaat alleen met eigen toestemming", () => {
+  const html = render.renderDetail(okCase);
+  assert.match(html, /Open leefkeuken/);
+  assert.match(html, /140 m²/);
+  assert.doesNotMatch(html, /Geheim citaat/);
+  assert.doesNotMatch(html, /100\.000/);
+  const full = render.renderDetail({...okCase, quoteConsent: true, budgetBandConsent: true, quoteAuthor: "Familie V."});
+  assert.match(full, /Geheim citaat/);
+  assert.match(full, /Familie V\./);
+  assert.match(full, /€ 100\.000 tot € 150\.000/);
+  // Voor- en nafoto als paar
+  assert.match(full, /Voor de verbouwing, foto 1/);
+  assert.match(full, /Na de verbouwing, foto 1/);
+});
+
+test("projecttegel: casestudy-label alleen bij vrijgegeven casestudy, geen kapotte afbeelding", () => {
+  const plain = render.renderTile({slug: "a", title: "Straat , Den Haag ", type: "Totaalrenovatie ", location: "Den Haag", duration: "8 weken", images: [{_type: "cmsImage"}]});
+  assert.doesNotMatch(plain, /Uitgewerkte casestudy/);
+  assert.doesNotMatch(plain, /<img/); // afbeelding zonder URL wordt overgeslagen
+  assert.match(plain, /Straat, Den Haag/);
+  const withCase = render.renderTile({slug: "b", title: "B", type: "Totaalrenovatie", location: "Delft", duration: "", images: [], caseStudy: {afterImages: ["https://cdn.sanity.io/images/x/a.jpg"], areaM2: 90, durationWeeks: 10, scope: [], details: [], beforeImages: [], routes: []}});
+  assert.match(withCase, /Uitgewerkte casestudy/);
+  assert.match(withCase, /w=900/);
+});

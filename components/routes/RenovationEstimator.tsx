@@ -3,18 +3,18 @@
 import {useId, useState} from "react";
 
 import {trackFunnel} from "@/lib/analytics";
-import {RENOVATION_PRICE_PER_M2, renovationEstimate} from "@/lib/conversionRoutes";
+import {ESTIMATOR_M2, RENOVATION_PRICE_PER_M2, renovationBand} from "@/lib/conversionRoutes";
 
 // Rekenhulp totaalrenovatie, bewust terughoudend:
-// - alleen de bevestigde € 1.000 tot € 1.250 per m² excl. btw;
-// - afgerond op € 5.000, zodat er geen schijnprecisie ontstaat;
+// - alleen de bevestigde € 1.000 tot € 1.250 per m² excl. btw, getoond inclusief
+//   btw (consumentenprijzen zijn volgens de algemene voorwaarden incl. btw);
+// - afgerond op € 5.000 (ondergrens omlaag, bovengrens omhoog), zie renovationBand;
 // - de factoren die de echte prijs bepalen staan ernaast, zonder verzonnen percentages;
 // - het betaalschema in percentages, niet in bedragen;
 // - nergens "offerte": die volgt pas na een bezichtiging.
 
-const VAT = 0.21;
-const MIN_M2 = 40;
-const MAX_M2 = 300;
+const MIN_M2 = ESTIMATOR_M2.min;
+const MAX_M2 = ESTIMATOR_M2.max;
 
 export const PRICE_FACTORS = [
   {up: true, text: "Staat van de woning: verouderde leidingen, houtrot of scheefstand"},
@@ -26,14 +26,14 @@ export const PRICE_FACTORS = [
 ] as const;
 
 function euro(value: number): string {
-  return `€ ${(Math.round(value / 5000) * 5000).toLocaleString("nl-NL")}`;
+  return `€ ${value.toLocaleString("nl-NL")}`;
 }
 
 export default function RenovationEstimator({intakeHref = "#intake", route = "grote-renovatie"}: {intakeHref?: string; route?: string}) {
   const id = useId();
-  const [m2, setM2] = useState(120);
+  const [m2, setM2] = useState<number>(ESTIMATOR_M2.initial);
   const [touched, setTouched] = useState(false);
-  const {min, max} = renovationEstimate(m2);
+  const band = renovationBand(m2);
 
   function onChange(value: number) {
     setM2(value);
@@ -64,7 +64,7 @@ export default function RenovationEstimator({intakeHref = "#intake", route = "gr
             max={MAX_M2}
             min={MIN_M2}
             onChange={(e) => onChange(Number(e.target.value))}
-            step={5}
+            step={ESTIMATOR_M2.step}
             type="range"
             value={m2}
           />
@@ -75,16 +75,16 @@ export default function RenovationEstimator({intakeHref = "#intake", route = "gr
         </div>
 
         <div className="border-t border-[var(--pr-line)] p-6 md:p-8">
-          <p className="pr-measure">indicatieve bandbreedte, exclusief btw</p>
+          <p className="pr-measure">indicatieve bandbreedte, inclusief 21% btw</p>
           <p aria-live="polite" className="mt-4 pr-num font-[family-name:var(--font-display)] text-[30px] font-[650] leading-tight tracking-[-0.02em] [font-stretch:112%] sm:text-[38px]">
-            <span className="whitespace-nowrap">{euro(min)}</span> tot <span className="whitespace-nowrap">{euro(max)}</span>
+            <span className="whitespace-nowrap">{euro(band.incl.min)}</span> tot <span className="whitespace-nowrap">{euro(band.incl.max)}</span>
           </p>
           <p className="mt-1 text-[15px] pr-num pr-muted">
-            Inclusief 21% btw: {euro(min * (1 + VAT))} tot {euro(max * (1 + VAT))}
+            Exclusief btw: {euro(band.excl.min)} tot {euro(band.excl.max)}
           </p>
           <p className="mt-5 rounded-[4px] bg-[var(--pr-kalk)] px-4 py-3 text-[15px] leading-[1.55]">
             <strong className="font-semibold">Dit is een indicatie, geen offerte.</strong> Gerekend met € {RENOVATION_PRICE_PER_M2.min.toLocaleString("nl-NL")} tot €{" "}
-            {RENOVATION_PRICE_PER_M2.max.toLocaleString("nl-NL")} per m², afgerond op € 5.000. Uw prijs volgt pas na een bezichtiging, als we de woning hebben gezien.
+            {RENOVATION_PRICE_PER_M2.max.toLocaleString("nl-NL")} per m² exclusief btw, afgerond op € 5.000. Of tegels, sanitair en keuken in de prijs zitten, staat in uw offerte: volgens de algemene voorwaarden kiest en levert u die zelf, tenzij we afspreken dat wij ze leveren. Uw prijs volgt pas na een bezichtiging.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
             <a className="pr-btn" data-cta="estimator_to_intake" data-track="estimator" href={intakeHref}>

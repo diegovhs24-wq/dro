@@ -7,7 +7,7 @@ export const HOME_DESCRIPTION =
 export const HOME_FAQ = [
   {
     q: "Wat kost een totaalrenovatie?",
-    a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Uw prijs volgt na een bezichtiging.",
+    a: "Als indicatie € 1.210 tot € 1.510 per m² inclusief btw (€ 1.000 tot € 1.250 exclusief btw). De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Uw prijs volgt na een bezichtiging.",
   },
   {
     q: "Moet ik vooruitbetalen?",

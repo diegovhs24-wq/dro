@@ -767,7 +767,7 @@ export default function SmartIntakeWizard({
           </dl>
           <span className="intake-price-s">
             Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, container en afvoer. Leges van de
-            gemeente apart. Na de opname krijgt u een vaste prijs.
+            gemeente apart. Na de opname krijgt u een offerte met een prijs per onderdeel.
           </span>
           {b.wide ? (
             <span className="intake-price-s" style={{color: "#ffd6b8"}}>
@@ -1142,7 +1142,7 @@ export default function SmartIntakeWizard({
           <div className="intake-ns-r">
             <span className="intake-ns-n">3</span>
             <span className="intake-ns-tx">
-              <b>Een heldere, vaste prijsopgave.</b> Geen verrassingen, en u betaalt per afgeronde fase.
+              <b>Een heldere prijsopgave per onderdeel.</b> U betaalt per afgeronde fase, volgens het betaalschema.
             </span>
           </div>
         </div>

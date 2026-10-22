@@ -342,7 +342,7 @@ async function buildRawMarkdownForPath(pathname: string) {
     lines.push(paragraph(HOME_DESCRIPTION));
     lines.push(heading(2, "Twee routes"));
     lines.push(list([
-      `${link("Grote renovaties", GROTE_RENOVATIE.path)}: totaalrenovatie, uitbouw en dakopbouw. Indicatie totaalrenovatie € 1.000 tot € 1.250 per m² excl. btw.`,
+      `${link("Grote renovaties", GROTE_RENOVATIE.path)}: totaalrenovatie, uitbouw en dakopbouw. Indicatie totaalrenovatie € 1.210 tot € 1.510 per m² incl. btw (€ 1.000 tot € 1.250 excl. btw).`,
       `${link("Constructieve werken", SPECIALISTISCH.path)}: draagmuur verwijderen, doorbraak, stalen ligger. Uitvoering meestal 1 tot 3 dagen na constructieberekening.`,
       `${link("Totaalrenovatie: kosten, duur en aanpak", TOTAALRENOVATIE.path)}`,
     ]));

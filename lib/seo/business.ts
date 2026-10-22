@@ -107,7 +107,7 @@ export const BUSINESS = {
   priceIndications: [
     {
       service: "Totaalrenovatie",
-      range: "€ 1.000 tot € 1.250 per m² (excl. btw)",
+      range: "€ 1.210 tot € 1.510 per m² incl. btw (€ 1.000 tot € 1.250 excl. btw)",
       note: "Afhankelijk van staat van de woning, installaties, constructieve wijzigingen en afwerkingsniveau.",
     },
     {

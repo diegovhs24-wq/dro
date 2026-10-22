@@ -3,7 +3,7 @@ import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
-import {getProjects} from '@/lib/cms'
+import {getProjects, getVerifiedClaims} from '@/lib/cms'
 import {cmsImageUrl, fetchSanity, type CmsImageSource} from '@/lib/sanity'
 import type {ProjectItem} from '@/lib/types'
 
@@ -17,7 +17,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'Totaalrenovatie in Den Haag en omgeving | DRO Renovaties',
   description:
-    `Totaalrenovatie van uw woning door een Haags familiebedrijf met vaste eigen ploegen. ${BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')} uit ${BUSINESS.reviews.reviewCount}+ Google-reviews. Vraag vrijblijvend een bezichtiging aan.`,
+    `Totaalrenovatie van uw woning door een Haags familiebedrijf met vaste vakteams. ${BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')} uit ${BUSINESS.reviews.reviewCount}+ Google-reviews. Vraag vrijblijvend een bezichtiging aan.`,
   robots: {index: false, follow: true},
   alternates: {canonical: '/totaalrenovatie-den-haag'},
 }
@@ -31,10 +31,9 @@ const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
 const REVIEW_SCORE = BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')
 const REVIEW_COUNT = `${BUSINESS.reviews.reviewCount}+`
-// LET OP: Trustoo-cijfers en reactietijd pas live na bevestiging door Therab.
-const TRUSTOO_SCORE = '9,8'
-const TRUSTOO_COUNT = '557'
-const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'
+// Trustoo-cijfer en reactietijd komen uit Sanity (Site Settings > Geverifieerde
+// claims) en verschijnen alleen als ze daar zijn bevestigd. Zonder bevestiging
+// tonen we de Google-score en 'zo snel mogelijk'.
 
 type Variant = 'aannemer' | 'woning' | 'kosten'
 
@@ -42,7 +41,7 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   aannemer: {
     title: 'Uw renovatie-aannemer in Den Haag',
     intro:
-      'Totaalrenovaties van € 50.000 tot € 150.000, uitgevoerd door een Haags familiebedrijf met vaste eigen ploegen. Van sloop tot oplevering, met één vast aanspreekpunt.',
+      'Totaalrenovaties van € 50.000 tot € 150.000, uitgevoerd door een Haags familiebedrijf met vaste vakteams. Van sloop tot oplevering, met één vast aanspreekpunt.',
   },
   woning: {
     title: 'Totaalrenovatie van uw woning in Den Haag',
@@ -55,9 +54,8 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   },
 }
 
-const PROOF = [
-  `${TRUSTOO_SCORE} op Trustoo uit ${TRUSTOO_COUNT} reviews, Top Pro 2026`,
-  'Vaste eigen ploegen en één vast aanspreekpunt',
+const PROOF_REST = [
+  'Vaste vakteams en één vast aanspreekpunt voor de afstemming',
   'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
   'VCA-gecertificeerd en CAR-verzekerd',
 ]
@@ -77,7 +75,7 @@ const FAQ = [
   },
   {
     q: 'Hoe werkt de betaling?',
-    a: 'Bij het tekenen van de opdracht betaalt u niets. Op de eerste werkdag, als we echt beginnen, betaalt u 20 tot 25%. Daarna betaalt u per fase, en pas als die fase klaar is en u het werk heeft gezien. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.',
+    a: 'Bij het tekenen van de opdracht betaalt u niets. Op de eerste werkdag, als we echt beginnen, betaalt u 20 tot 25%. Daarna betaalt u per afgeronde fase. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.',
   },
   {
     q: 'Heb ik een vergunning nodig?',
@@ -199,11 +197,11 @@ const EXAMPLE_PHASES = [
 ]
 
 const GRIP = [
-  {title: 'Eén vast aanspreekpunt', text: 'Van de eerste bezichtiging tot de oplevering dezelfde persoon.', icon: 'person'},
+  {title: 'Eén vast aanspreekpunt', text: 'Voor de afstemming, met vaste rollen voor techniek en betalingen.', icon: 'person'},
   {title: 'Elke week een vast meetmoment', text: 'U ziet de voortgang en stelt uw vragen op een vast moment.', icon: 'calendar'},
   {title: 'Vragen binnen 24 uur opgepakt', text: 'Via de app, ook tussen de meetmomenten door.', icon: 'chat'},
-  {title: 'Vaste eigen ploegen', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
-  {title: 'Volledig verzekerd', text: 'CAR- en aansprakelijkheidsverzekering: schade tijdens de bouw is gedekt.', icon: 'shield'},
+  {title: 'Vaste vakteams', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
+  {title: 'Verzekerd', text: 'DRO heeft een CAR- en een bedrijfsaansprakelijkheidsverzekering.', icon: 'shield'},
 ] as const
 
 const ICON_PATHS: Record<string, string[]> = {
@@ -217,7 +215,7 @@ const ICON_PATHS: Record<string, string[]> = {
 // Keurmerken en verzekeraar. Logo's in /public/landing/logos/; zolang een
 // bestand ontbreekt (src leeg), toont de pagina alleen de naam.
 const LOGOS = [
-  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar. Schade tijdens de bouw is gedekt.'},
+  {name: 'Goudse Verzekeringen', src: '/landing/logos/logo-goudse.png', text: 'Onze verzekeraar voor de CAR- en aansprakelijkheidsverzekering.'},
   {name: 'VCA', src: '/landing/logos/logo-vca.png', text: 'Gecertificeerd voor veilig werken op de bouw.'},
   {name: 'VLOK', src: '/landing/logos/logo-vlok.png', text: 'Erkend voor werk aan airco- en warmtepompsystemen.'},
   {name: 'SBB', src: '/landing/logos/logo-sbb.png', text: 'Erkend leerbedrijf: wij leiden zelf vakmensen op.'},
@@ -351,7 +349,14 @@ export default async function TotaalrenovatieLandingPage(
   const searchParams = await props.searchParams;
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
-  const [projects, teamPhoto] = await Promise.all([getProjects(), getTeamPhoto()])
+  const [projects, teamPhoto, claims] = await Promise.all([getProjects(), getTeamPhoto(), getVerifiedClaims()])
+  const trustoo = claims.trustoo
+  const responseSlot = claims.responseTime?.text || 'zo snel mogelijk'
+  const responseLine = claims.responseTime ? `We nemen ${claims.responseTime.text} contact op` : 'We nemen zo snel mogelijk contact op'
+  const PROOF = [
+    trustoo ? `${trustoo.score} op Trustoo uit ${trustoo.count} reviews` : `${REVIEW_SCORE} uit ${BUSINESS.reviews.reviewCount} Google-reviews`,
+    ...PROOF_REST,
+  ]
   const shownProjects = pickProjects(projects)
   const heroImage = heroImageOf(projects)
 
@@ -388,7 +393,7 @@ export default async function TotaalrenovatieLandingPage(
             </div>
             <p className="max-w-[44ch] text-[15px] leading-snug">
               <span className="font-bold">Bij het tekenen betaalt u nog niets.</span> Op de eerste werkdag volgt de startbetaling,
-              daarna betaalt u pas als een fase klaar is en u het werk heeft gezien.
+              daarna betaalt u per afgeronde fase, volgens het betaalschema in uw offerte.
             </p>
           </div>
 
@@ -565,7 +570,7 @@ export default async function TotaalrenovatieLandingPage(
           <div className="text-lp-ink">
             <SmartIntakeWizard
               largeBudget={[50000, 100000]}
-              responsePromise="binnen 1 werkuur"
+              responsePromise={responseSlot}
               serviceOrder={['Totaalrenovatie', 'Aanbouw of opbouw', 'Badkamer', 'Keuken', 'Dakkapel']}
               servicesSub="Kies één of meer onderdelen. Daarna stellen we alleen de vragen die bij uw verbouwing horen."
               servicesTitle="Wat wilt u verbouwen?"
@@ -579,10 +584,10 @@ export default async function TotaalrenovatieLandingPage(
               variant={variant}
             />
             <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
-              <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} Trustoo</span>
+              {trustoo && <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {trustoo.score} Trustoo</span>}
               <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
               <span>VCA-gecertificeerd</span>
-              <span>{RESPONSE_PROMISE}</span>
+              <span>{responseLine}</span>
             </p>
           </div>
         </div>
@@ -590,13 +595,15 @@ export default async function TotaalrenovatieLandingPage(
 
       <section aria-label="Beoordelingen en beloften" className="bg-lp-plaster">
         <dl className="section-shell grid grid-cols-2 items-start gap-x-6 gap-y-5 py-6 lg:grid-cols-5">
+          {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
             <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
-              {TRUSTOO_SCORE}/10{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{TRUSTOO_COUNT} reviews</span>
+              {trustoo.score}/10{' '}
+              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{trustoo.count} reviews</span>
             </dd>
           </div>
+          )}
           <div>
             <dt className="text-[13px] text-lp-muted">Google</dt>
             <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
@@ -604,6 +611,7 @@ export default async function TotaalrenovatieLandingPage(
               <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
             </dd>
           </div>
+          {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Onderscheiden in 2026</dt>
             <dd className="mt-1 flex min-h-[44px] items-center gap-2">
@@ -613,6 +621,7 @@ export default async function TotaalrenovatieLandingPage(
               ))}
             </dd>
           </div>
+          )}
           <div>
             <dt className="text-[13px] text-lp-muted">Gecertificeerd en verzekerd</dt>
             <dd className="mt-1 flex min-h-[44px] items-center gap-4">
@@ -624,7 +633,7 @@ export default async function TotaalrenovatieLandingPage(
           </div>
           <div className="col-span-2 lg:col-span-1">
             <dt className="text-[13px] text-lp-muted">Na uw aanvraag</dt>
-            <dd className="mt-0.5 text-[17px] font-semibold">{RESPONSE_PROMISE}</dd>
+            <dd className="mt-0.5 text-[17px] font-semibold">{responseLine}</dd>
           </div>
         </dl>
       </section>
@@ -718,18 +727,19 @@ export default async function TotaalrenovatieLandingPage(
         <div className="section-shell py-14">
           <h2 className={H2}>Wat klanten over ons zeggen</h2>
           <div className="mt-8 grid items-start gap-8 lg:grid-cols-[300px_1fr]">
+            {trustoo ? (
             <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
               <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
-                {TRUSTOO_SCORE}
+                {trustoo.score}
                 <span className="text-[20px] font-medium text-lp-muted">/10</span>
               </p>
               <span className="mt-1.5 inline-block rounded-full bg-[#1F1A4A] px-2.5 py-0.5 text-[12px] font-bold uppercase tracking-[0.06em] text-white">
                 Uitstekend
               </span>
               <p className="mt-3 text-[14px] text-lp-muted">
-                {TRUSTOO_COUNT} reviews uit 4 bronnen: {TRUSTOO_SOURCES}.
+                {trustoo.count} reviews (stand {trustoo.asOf}).
               </p>
               <div className="mt-4 flex items-end gap-3.5">
                 {TRUSTOO_BADGES.map((badge) => (
@@ -741,6 +751,15 @@ export default async function TotaalrenovatieLandingPage(
                 <strong>{REVIEW_SCORE}</strong> <span className={STAR}>★</span> op Google, {REVIEW_COUNT} reviews
               </p>
             </aside>
+            ) : (
+            <aside aria-label="Google-score" className="rounded-lg border border-lp-line bg-white p-6">
+              <p className="text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
+                {REVIEW_SCORE}
+                <span className="text-[20px] font-medium text-lp-muted"> ★</span>
+              </p>
+              <p className="mt-3 text-[14px] text-lp-muted">Op Google, {REVIEW_COUNT} reviews.</p>
+            </aside>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               {GOOGLE_REVIEWS.map((review) => (
                 <figure className="m-0 flex flex-col rounded-lg border border-lp-line bg-white p-5" key={review.name}>
@@ -813,14 +832,14 @@ export default async function TotaalrenovatieLandingPage(
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
-                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste eigen
-                ploegen, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
+                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste
+                vakteams, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
                 één aanspreekpunt van de eerste bezichtiging tot de oplevering.
               </p>
             </div>
             <ul className="grid content-start gap-3 text-[15px] md:border-l md:border-lp-line md:pl-8">
               <li>Kantoor aan de Orionstraat 235 in Den Haag</li>
-              <li>Vaste eigen ploegen en eigen opslag</li>
+              <li>Vaste vakteams en eigen opslag</li>
               <li>Vast netwerk van constructeurs en architecten</li>
             </ul>
           </div>
@@ -894,9 +913,13 @@ export default async function TotaalrenovatieLandingPage(
             <h2 className={H2}>Plannen voor een totaalrenovatie?</h2>
             <p className="mt-2 text-white/75">Vraag vrijblijvend een bezichtiging aan, of bel ons direct.</p>
             <p className="mt-2 text-[14px] text-white/85">
-              <span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} op Trustoo uit {TRUSTOO_COUNT} reviews
-              <span aria-hidden="true" className="mx-2 opacity-40">|</span>
-              {REVIEW_SCORE} op Google
+              <span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} op Google
+              {trustoo && (
+                <>
+                  <span aria-hidden="true" className="mx-2 opacity-40">|</span>
+                  {trustoo.score} op Trustoo uit {trustoo.count} reviews
+                </>
+              )}
               <span aria-hidden="true" className="mx-2 opacity-40">|</span>
               VCA-gecertificeerd
             </p>

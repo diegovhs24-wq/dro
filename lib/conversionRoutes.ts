@@ -82,11 +82,11 @@ const PAYMENT_FAQ: RouteFaq = {
   a: "Bij het ondertekenen van de opdracht betaalt u niets. Op de eerste werkdag volgt een startbetaling van 20 tot 25 procent. Daarna betaalt u per afgeronde fase. Het aantal fases en de bedragen staan in uw offerte, voordat u tekent.",
 };
 
-const INSURANCE_TEXT = `${BUSINESS.insurance.join(" en ")}. Schade tijdens de bouw is daarmee verzekerd.`;
+const INSURANCE_TEXT = "DRO heeft een CAR-verzekering en een bedrijfsaansprakelijkheidsverzekering. Wat in een concreet geval gedekt is, hangt af van de polis en artikel 13 van de algemene voorwaarden.";
 
 export const ROUTE_TRUST = {
   insurance: INSURANCE_TEXT,
-  insuranceShort: "CAR- en aansprakelijkheidsverzekering. Schade tijdens de bouw is verzekerd.",
+  insuranceShort: "DRO heeft een CAR- en een bedrijfsaansprakelijkheidsverzekering.",
   credentials: BUSINESS.credentials.map((c) => c.name),
   payment: BUSINESS.paymentTerms,
 };
@@ -127,7 +127,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   },
   scope: {
     title: "Wat er onder deze route valt",
-    intro: "Wij voeren het werk uit met eigen vakteams en vaste partners, zoals constructeurs en architecten, en houden de regie over het geheel.",
+    intro: "Wij voeren het werk uit met vaste vakteams en vaste partners, zoals constructeurs en architecten, en houden de regie over het geheel.",
     cards: [
       {title: "Totaalrenovatie", text: "Van sloop tot casco tot de laatste afwerking, inclusief installaties.", href: "/totaalrenovatie", linkLabel: "Over totaalrenovatie"},
       {title: "Uitbouw en aanbouw", text: "Extra woonruimte aan de achter- of zijkant, met fundering, constructie en aansluiting op de bestaande woning.", href: "/uitbouw-aanbouw", linkLabel: "Over uitbouw en aanbouw"},
@@ -138,8 +138,8 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   pricing: {
     title: "Wat een grote renovatie kost",
     intro:
-      "Voor een totaalrenovatie rekenen we als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u wat dat betekent voor uw woning, inclusief het betaalschema.",
-    note: "Indicatie exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Een uitbouw of dakopbouw prijzen we altijd na een opname, omdat fundering en constructie per woning verschillen.",
+      "Voor een totaalrenovatie rekenen we als indicatie € 1.210 tot € 1.510 per m² inclusief btw (€ 1.000 tot € 1.250 exclusief btw). Met de rekenhulp ziet u wat dat betekent voor uw woning, inclusief het betaalschema.",
+    note: "Indicatie, geen offerte. Of tegels, sanitair en keuken in de prijs zitten, staat in uw offerte: volgens de algemene voorwaarden kiest en levert u die zelf, tenzij we afspreken dat wij ze leveren. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt. Een uitbouw of dakopbouw prijzen we altijd na een opname, omdat fundering en constructie per woning verschillen.",
   },
   steps: {
     title: "Zo verloopt het",
@@ -156,7 +156,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   faq: [
     {
       q: "Wat kost een totaalrenovatie per m²?",
-      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 120 m² is dat ongeveer € 120.000 tot € 150.000 exclusief btw. De staat van de woning, de installaties en uw afwerkingswensen bepalen waar u uitkomt. Na een bezichtiging krijgt u een offerte op maat.",
+      a: "Als indicatie € 1.210 tot € 1.510 per m² inclusief btw (€ 1.000 tot € 1.250 exclusief btw). Voor een woning van 120 m² is dat ongeveer € 145.000 tot € 180.000 inclusief btw. Of tegels, sanitair en keuken in de prijs zitten, staat in uw offerte: volgens de algemene voorwaarden kiest en levert u die zelf, tenzij we afspreken dat wij ze leveren. De staat van de woning, de installaties en uw afwerkingswensen bepalen waar u uitkomt. Na een bezichtiging krijgt u een offerte op maat.",
     },
     PAYMENT_FAQ,
     {
@@ -234,7 +234,7 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
     title: "Wat het kost",
     intro:
       "De prijs hangt af van de breedte van de opening, de dikte van de muur, de verdieping en of de ligger brandwerend bekleed moet worden. In de intake hieronder ziet u direct een prijsindicatie op basis van uw maten.",
-    note: "De indicatie in de intake is een eerste schatting. Na de opname en de constructieberekening ontvangt u een offerte met een vaste prijs per onderdeel.",
+    note: "De indicatie in de intake is een eerste schatting. Na de opname en de constructieberekening ontvangt u een offerte met een prijs per onderdeel.",
   },
   steps: {
     title: "Zo verloopt het",
@@ -242,7 +242,7 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
     items: [
       {title: "Opname", text: "We meten de muur en de situatie eromheen in en bekijken waar de krachten naartoe gaan."},
       {title: "Constructieberekening", text: "Een constructeur bepaalt het profiel van de ligger en de opleggingen."},
-      {title: "Vergunning of melding", text: "We zoeken uit wat in uw gemeente en voor uw woning nodig is, en regelen de aanvraag voor u."},
+      {title: "Vergunning of melding", text: "We zoeken uit wat in uw gemeente en voor uw woning nodig is, en verzorgen zo nodig de aanvraag voor u."},
       // Doorlooptijd bevestigd door Therab: uitvoering 1 tot 3 dagen.
       {title: "Uitvoering", text: "Tijdelijk ondersteunen, de muur verwijderen, de ligger plaatsen en de opening afwerken. Dit duurt meestal 1 tot 3 dagen."},
       {title: "Oplevering", text: "We lopen het werk met u na voordat we opleveren."},
@@ -301,7 +301,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   heroSlug: "essehout-zoetermeer",
   metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO Renovaties",
   metaDescription:
-    "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.000 tot € 1.250 per m² excl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
+    "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.210 tot € 1.510 per m² incl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
   eyebrow: "Totaalrenovatie",
   title: "Totaalrenovatie van uw woning",
   intro:
@@ -320,7 +320,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   },
   scope: {
     title: "Wat erin zit",
-    intro: "Wij voeren het werk uit met eigen vakteams en vaste partners, zoals constructeurs en architecten.",
+    intro: "Wij voeren het werk uit met vaste vakteams en vaste partners, zoals constructeurs en architecten.",
     cards: [
       {title: "Sloop en voorbereiding", text: "Vloeren, keuken, badkamer en niet-dragende wanden eruit, afvoer geregeld."},
       {title: "Installaties", text: "Leidingwerk, elektra en technische installaties vernieuwd waar nodig."},
@@ -330,7 +330,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   },
   pricing: {
     title: "Wat kost een totaalrenovatie?",
-    intro: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u de bandbreedte voor uw woning, en ernaast wat de prijs hoger of lager maakt.",
+    intro: "Als indicatie € 1.210 tot € 1.510 per m² inclusief btw (€ 1.000 tot € 1.250 exclusief btw). Met de rekenhulp ziet u de bandbreedte voor uw woning, en ernaast wat de prijs hoger of lager maakt.",
     note: "De rekenhulp is een indicatie. Uw prijs volgt na een bezichtiging, uitgesplitst per onderdeel.",
   },
   steps: {
@@ -347,7 +347,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   faq: [
     {
       q: "Wat kost een totaalrenovatie per m²?",
-      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 100 m² is dat ongeveer € 100.000 tot € 125.000 exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt.",
+      a: "Als indicatie € 1.210 tot € 1.510 per m² inclusief btw (€ 1.000 tot € 1.250 exclusief btw). Voor een woning van 100 m² is dat ongeveer € 121.000 tot € 151.000 inclusief btw. Of tegels, sanitair en keuken in de prijs zitten, staat in uw offerte: volgens de algemene voorwaarden kiest en levert u die zelf, tenzij we afspreken dat wij ze leveren. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt.",
     },
     {
       q: "Hoe lang duurt een totaalrenovatie?",
@@ -395,6 +395,26 @@ export const RENOVATION_EXAMPLE_SIZES = [80, 120, 160, 200] as const;
 
 export function renovationEstimate(m2: number): {min: number; max: number} {
   return {min: m2 * RENOVATION_PRICE_PER_M2.min, max: m2 * RENOVATION_PRICE_PER_M2.max};
+}
+
+export const VAT_RATE = 0.21;
+export const ESTIMATOR_M2 = {min: 40, max: 300, step: 5, initial: 120} as const;
+const BAND_STEP = 5000;
+
+// Wat de rekenhulp toont. Ondergrens naar beneden en bovengrens naar boven
+// afgerond op € 5.000: de band wordt daardoor iets ruimer, nooit smaller dan
+// de bevestigde m²-prijs. Ongeldige invoer valt terug op het bereik van de schuif.
+export function renovationBand(m2Input: number) {
+  const raw = Number.isFinite(m2Input) ? Math.round(m2Input) : ESTIMATOR_M2.initial;
+  const m2 = Math.min(ESTIMATOR_M2.max, Math.max(ESTIMATOR_M2.min, raw));
+  const {min, max} = renovationEstimate(m2);
+  const down = (x: number) => Math.floor(x / BAND_STEP) * BAND_STEP;
+  const up = (x: number) => Math.ceil(x / BAND_STEP) * BAND_STEP;
+  return {
+    m2,
+    excl: {min: down(min), max: up(max)},
+    incl: {min: down(min * (1 + VAT_RATE)), max: up(max * (1 + VAT_RATE))},
+  };
 }
 
 // "8 weken", "3 maanden ", "2.5 weken" → weken. Onbekend formaat → undefined.

@@ -33,8 +33,8 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       key: "planning",
       topic: "Planning",
       question: "Weet ik vooraf wanneer wat gebeurt?",
-      answer: "Bij akkoord krijgt u een planning per fase, op papier, voordat het werk begint.",
-      proof: "Opgesteld door Therab Raja, die ook de offerte maakt.",
+      answer: "Bij akkoord krijgt u een realistische planning per fase, op papier, voordat het werk begint. Verandert er iets, dan bespreken we dat in het wekelijkse meetmoment.",
+      proof: "Opgesteld door Therab Raja, die ook de offerte maakt. Data zijn een inschatting, geen vaste termijn (algemene voorwaarden, artikel 6.4).",
     },
     {
       key: "communicatie",
@@ -75,7 +75,7 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       answer:
         claims.delivery?.text ||
         "We lopen het werk samen met u na. Restpunten komen op een opleverlijst en worden daarna door ons hersteld.",
-      proof: "Algemene voorwaarden, artikel 10. U betaalt per afgeronde fase, dus ook de laatste termijn hoort bij werk dat af is.",
+      proof: "Algemene voorwaarden, artikel 10. Kleine restpunten herstellen we na oplevering; de slottermijn volgt bij oplevering.",
     },
   ];
 }

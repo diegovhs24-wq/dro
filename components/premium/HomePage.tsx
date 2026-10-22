@@ -55,7 +55,7 @@ export default async function HomePage() {
               <RoutePanel
                 facts={[
                   {term: "Voor", detail: "Totaalrenovatie, uitbouw, dakopbouw, of een combinatie"},
-                  {term: "Indicatie", detail: "€ 1.000 tot € 1.250 per m², excl. btw, voor een totaalrenovatie"},
+                  {term: "Indicatie", detail: "€ 1.210 tot € 1.510 per m² incl. btw, voor een totaalrenovatie"},
                   ...(bigWeeks ? [{term: "Uitvoering", detail: `${bigWeeks} bij onze projecten`}] : []),
                 ]}
                 href={GROTE_RENOVATIE.path}
