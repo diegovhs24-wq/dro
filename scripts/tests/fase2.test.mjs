@@ -120,3 +120,49 @@ test("prijsrekenvoorbeeld volgt de bevestigde m²-prijs", () => {
   assert.equal(routes.routeFromSource("route-specialistisch"), "specialistisch");
   assert.equal(routes.routeFromSource("lp-draagmuur"), undefined);
 });
+
+const {buildAssurances} = await import(process.env.F2_ASSURANCES);
+const cats = await import(process.env.F2_CATS);
+const home = await import(process.env.F2_HOME);
+
+const BANNED = /garantie|vaste prijs|100\+|\bbeste\b|nummer 1|binnen \d+ werkuur|binnen 1 uur|trustoo|geen aanbetaling|opstartlocaties|—/i;
+
+test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
+  const items = buildAssurances({});
+  assert.deepEqual(items.map((i) => i.key), ["planning", "communicatie", "meerwerk", "kwaliteit", "betaling", "oplevering"]);
+  const text = JSON.stringify(items);
+  assert.ok(!BANNED.test(text), `onbevestigd: ${text.match(BANNED)?.[0]}`);
+  assert.match(text, /binnen 24 uur opgepakt/);
+  assert.match(text, /niets/i);
+});
+
+test("zekerheden gebruiken bevestigde claims uit Sanity als ze er zijn", () => {
+  const items = buildAssurances({extraWork: {text: "Meerwerk pas na schriftelijk akkoord."}, guarantee: {text: "5 jaar garantie op constructief werk"}, delivery: {text: "Samen nalopen, punten binnen 2 weken opgelost."}});
+  const byKey = Object.fromEntries(items.map((i) => [i.key, i]));
+  assert.equal(byKey.meerwerk.answer, "Meerwerk pas na schriftelijk akkoord.");
+  assert.match(byKey.kwaliteit.answer, /5 jaar garantie op constructief werk\.$/);
+  assert.equal(byKey.oplevering.answer, "Samen nalopen, punten binnen 2 weken opgelost.");
+});
+
+test("homepage- en totaalrenovatieteksten bevatten geen onbevestigde claims", () => {
+  const text = JSON.stringify({d: home.HOME_DESCRIPTION, f: home.HOME_FAQ, t: home.HOME_TITLE}) +
+    JSON.stringify(routes.TOTAALRENOVATIE, (k, v) => (v instanceof RegExp ? undefined : v));
+  assert.ok(!BANNED.test(text), `onbevestigd: ${text.match(BANNED)?.[0]}`);
+});
+
+test("projectindeling op type, ook met rommelige invoer", () => {
+  assert.equal(cats.projectCategory({type: "Totaalrenovatie "}), "groot");
+  assert.equal(cats.projectCategory({type: "Totaalrenovatie & dakopbouw"}), "groot");
+  assert.equal(cats.projectCategory({type: "Aanbouw "}), "groot");
+  assert.equal(cats.projectCategory({type: "Badkamer- en toiletrenovatie"}), "badkamer");
+  assert.equal(cats.projectCategory({type: "Draagmuur verwijderen"}), "constructief");
+  assert.equal(cats.projectCategory({type: "Vloerverwarming"}), "overig");
+  assert.equal(cats.uniqueProjects([{slug: "a"}, {slug: "b"}, {slug: "a"}]).length, 2);
+  const sorted = cats.sortForPortfolio([
+    {slug: "bad", type: "Badkamer", images: []},
+    {slug: "tot", type: "Totaalrenovatie", images: []},
+    {slug: "cs", type: "Badkamer", images: [], caseStudy: {afterImages: ["x"]}},
+  ]);
+  assert.deepEqual(sorted.map((p) => p.slug), ["cs", "tot", "bad"]);
+  assert.equal(cats.cleanTitle("Van der Sluijsplantsoen , Den Haag "), "Van der Sluijsplantsoen, Den Haag");
+});

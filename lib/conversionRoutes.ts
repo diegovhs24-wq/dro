@@ -43,6 +43,10 @@ export type RouteStep = {title: string; text: string};
 export type ConversionRouteConfig = {
   key: ConversionRouteKey;
   path: string;
+  // Naam in kruimelpad en sitemap.
+  crumbLabel: string;
+  // Rekenhulp m²-prijs tonen (alleen waar de bevestigde m²-prijs van toepassing is).
+  estimator: boolean;
   metaTitle: string;
   metaDescription: string;
   eyebrow: string;
@@ -88,6 +92,8 @@ export const ROUTE_TRUST = {
 export const GROTE_RENOVATIE: ConversionRouteConfig = {
   key: "grote-renovatie",
   path: "/grote-renovaties",
+  crumbLabel: "Grote renovaties",
+  estimator: true,
   metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
   metaDescription:
     "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, vaste vakteams, niets betalen bij ondertekening. Start uw projectintake.",
@@ -190,6 +196,8 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
 export const SPECIALISTISCH: ConversionRouteConfig = {
   key: "specialistisch",
   path: "/constructieve-werken",
+  crumbLabel: "Constructieve werken",
+  estimator: false,
   metaTitle: "Draagmuur verwijderen en constructieve verbouwingen | DRO Renovaties",
   metaDescription:
     "Dragende muur verwijderen, doorbraak of stalen ligger in Den Haag en omgeving. Met constructieberekening, CAR-verzekerd en direct een prijsindicatie in de intake.",
@@ -275,6 +283,101 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
   otherRoute: {
     title: "Onderdeel van een grotere verbouwing?",
     text: "Gaat de draagmuur eruit als onderdeel van een totaalrenovatie of uitbouw, dan past de route voor grote renovaties beter.",
+    href: "/grote-renovaties",
+    label: "Naar grote renovaties",
+  },
+};
+
+// Inhoudelijke dienstpagina totaalrenovatie: zelfde opbouw, eigen zoekintentie
+// (kosten, duur, fases). Leads tellen mee in de route "grote renovatie".
+export const TOTAALRENOVATIE: ConversionRouteConfig = {
+  key: "grote-renovatie",
+  path: "/totaalrenovatie",
+  crumbLabel: "Totaalrenovatie",
+  estimator: true,
+  metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO Renovaties",
+  metaDescription:
+    "Wat kost een totaalrenovatie, hoe lang duurt het en hoe verloopt het? Indicatie € 1.000 tot € 1.250 per m² excl. btw, fases en betaalschema. Familiebedrijf uit Den Haag.",
+  eyebrow: "Totaalrenovatie",
+  title: "Totaalrenovatie van uw woning",
+  intro:
+    "Uw woning in één traject vernieuwd: sloop, installaties, indeling, keuken, badkamer en afwerking. Met één planning, één betaalschema en vaste aanspreekpunten van bezichtiging tot oplevering.",
+  primaryCta: "Bespreek uw renovatie",
+  serviceName: "Totaalrenovatie van woningen",
+  serviceType: "Totaalrenovatie",
+  audience: {
+    title: "Wanneer een totaalrenovatie past",
+    intro: "Een totaalrenovatie is meer dan losse klussen bij elkaar: alles wordt in de juiste volgorde gedaan, zodat niets twee keer hoeft.",
+    cards: [
+      {title: "Net gekocht", text: "U wilt de woning klaar hebben voordat u erin trekt. Begin met een bouwkundige keuring: € 399 voor het rapport, kosteloos als wij de renovatie uitvoeren."},
+      {title: "Verouderd van binnen", text: "Leidingen, elektra, keuken en badkamer zijn aan vervanging toe. Dan is het logisch om de indeling in hetzelfde traject aan te pakken."},
+      {title: "Zakelijk bezit", text: "Voor beleggers en vastgoedpartijen: projectmatig uitvoeren, met dezelfde vaste aanspreekpunten."},
+    ],
+  },
+  scope: {
+    title: "Wat erin zit",
+    intro: "Wij voeren het werk uit met eigen vakteams en vaste partners, zoals constructeurs en architecten.",
+    cards: [
+      {title: "Sloop en voorbereiding", text: "Vloeren, keuken, badkamer en niet-dragende wanden eruit, afvoer geregeld."},
+      {title: "Installaties", text: "Leidingwerk, elektra en technische installaties vernieuwd waar nodig."},
+      {title: "Constructie en indeling", text: "Wanden, kozijnen, isolatie en zo nodig een draagmuur eruit.", href: "/constructieve-werken", linkLabel: "Over constructief werk"},
+      {title: "Afbouw en afwerking", text: "Stucwerk, tegelwerk, plafonds, schilderwerk, vloeren, keuken en badkamer."},
+    ],
+  },
+  pricing: {
+    title: "Wat kost een totaalrenovatie?",
+    intro: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Met de rekenhulp ziet u de bandbreedte voor uw woning, en ernaast wat de prijs hoger of lager maakt.",
+    note: "De rekenhulp is een indicatie. Uw prijs volgt na een bezichtiging, uitgesplitst per onderdeel.",
+  },
+  steps: {
+    title: "Zo verloopt een totaalrenovatie",
+    intro: "Elke fase bouwt voort op de vorige. Daarom staat de volgorde vooraf vast, net als het betaalschema.",
+    items: [
+      {title: "Sloop en voorbereiding", text: "Oude onderdelen eruit en afgevoerd, zodat de basis zichtbaar is."},
+      {title: "Installaties", text: "Leidingwerk, elektra en technische installaties, voordat er wordt dichtgemaakt."},
+      {title: "Constructie en indeling", text: "Wanden, kozijnen, isolatie en eventuele constructieve aanpassingen."},
+      {title: "Afbouw", text: "Stucwerk, tegelwerk, plafonds, schilderwerk en vloeren."},
+      {title: "Keuken, badkamer en oplevering", text: "Plaatsen en afwerken, daarna lopen we het werk samen met u na."},
+    ],
+  },
+  faq: [
+    {
+      q: "Wat kost een totaalrenovatie per m²?",
+      a: "Als indicatie € 1.000 tot € 1.250 per m², exclusief btw. Voor een woning van 100 m² is dat ongeveer € 100.000 tot € 125.000 exclusief btw. De staat van de woning, installaties, constructieve wijzigingen en het afwerkingsniveau bepalen waar u uitkomt.",
+    },
+    {
+      q: "Hoe lang duurt een totaalrenovatie?",
+      a: "Dat hangt af van de grootte en staat van de woning en van de werkzaamheden. Voor de uitvoering komt er voorbereidingstijd bij voor tekeningen, eventuele vergunningen en levertijden van bijvoorbeeld keuken en kozijnen. Na de bezichtiging krijgt u een planning per fase.",
+    },
+    PAYMENT_FAQ,
+    {
+      q: "Kan ik tijdens de renovatie in de woning blijven?",
+      a: "Bij een volledige totaalrenovatie is dat meestal niet praktisch: badkamer, keuken en installaties zijn tijdelijk buiten gebruik. Soms kan het in fases. We bespreken het bij de bezichtiging.",
+    },
+    {
+      q: "Heb ik een vergunning nodig?",
+      a: "Voor een renovatie binnen de bestaande woning meestal niet. Bij wijzigingen aan de constructie, de gevel of bij een monument soms wel. We werken met vaste constructeurs en architecten en zoeken dit voor u uit.",
+    },
+    {
+      q: "Net een woning gekocht: waar begin ik?",
+      a: "Met een bouwkundige keuring. Het rapport kost € 399 en is kosteloos als wij daarna de renovatie uitvoeren.",
+    },
+  ],
+  projectTypeMatch: /totaal/i,
+  intake: {
+    title: "Bespreek uw renovatie",
+    intro: "Een paar vragen over uw woning, planning en budget. Daarna belt een vaste adviseur u terug.",
+    serviceOrder: ["Totaalrenovatie", "Aanbouw of opbouw", "Badkamer", "Keuken", "Draagmuur verwijderen"],
+    servicesTitle: "Wat wilt u laten doen?",
+    servicesSub: "Kies alles wat bij uw project hoort.",
+    initialBudget: [75000, 150000],
+    largeBudget: [75000, 150000],
+    budgetScaleMax: 250000,
+    budgetStep: 5000,
+  },
+  otherRoute: {
+    title: "Ook uitbouwen of een dakopbouw?",
+    text: "Combineert u de renovatie met extra ruimte, dan helpt de route voor grote renovaties u verder.",
     href: "/grote-renovaties",
     label: "Naar grote renovaties",
   },

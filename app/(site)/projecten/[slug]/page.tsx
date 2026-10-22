@@ -1,17 +1,18 @@
 import type {Metadata} from "next";
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import {notFound} from "next/navigation";
-import PageStructuredData from "@/components/seo/PageStructuredData";
-import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
+
 import {CaseStudyDetail} from "@/components/casestudy/CaseStudy";
-import {
-  getProjectBySlug,
-  getProjects,
-  getSiteSettings,
-  metadataFromSeo,
-} from "@/lib/cms";
+import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBlockSection";
+import {Measure, ProjectTile, sizedImage, WHATSAPP_HREF} from "@/components/premium/blocks";
+import {premiumFontClass} from "@/components/premium/fonts";
+import PageStructuredData from "@/components/seo/PageStructuredData";
+import {caseStudyFacts} from "@/lib/caseStudy";
+import {getProjectBySlug, getProjects, getSiteSettings, metadataFromSeo} from "@/lib/cms";
+import {cleanTitle, projectCategory, projectCover, uniqueProjects} from "@/lib/projectCategories";
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
-import {resolveSmartLink} from "@/lib/smartLink";
+import {BUSINESS} from "@/lib/seo/business";
 
 type ProjectPageProps = {
   params: {
@@ -45,26 +46,41 @@ export async function generateMetadata({params}: ProjectPageProps): Promise<Meta
   });
 }
 
-export default async function ProjectDetailPage({params}: ProjectPageProps) {
-  const [siteSettings, project] = await Promise.all([
-    getSiteSettings(),
-    getProjectBySlug(params.slug),
-  ]);
+export const revalidate = 3600;
 
+const NEXT_STEP = {
+  groot: {href: "/grote-renovaties#intake", label: "Bespreek een vergelijkbaar project", route: "/grote-renovaties", routeLabel: "Over grote renovaties"},
+  constructief: {href: "/constructieve-werken#intake", label: "Bereken uw indicatie", route: "/constructieve-werken", routeLabel: "Over constructief werk"},
+  badkamer: {href: "/#intake", label: "Start uw intake", route: "/projecten?type=badkamer", routeLabel: "Meer badkamers"},
+  overig: {href: "/#intake", label: "Start uw intake", route: "/projecten", routeLabel: "Alle projecten"},
+} as const;
+
+export default async function ProjectDetailPage({params}: ProjectPageProps) {
+  const [siteSettings, project, all] = await Promise.all([getSiteSettings(), getProjectBySlug(params.slug), getProjects()]);
   if (!project) notFound();
 
   const pathname = `/projecten/${params.slug}`;
-  const breadcrumbs = breadcrumbsForPath(pathname, project.title);
-  const title = `${project.type} in ${project.location}`.replace(/\s+/g, " ").trim();
-  const primary = resolveSmartLink(
-    project.primaryLink ?? {linkType: "internal", internalRef: {_type: "page", slug: "contact"}}
-  );
-  const secondary = resolveSmartLink(
-    project.secondaryLink ?? {linkType: "external", externalUrl: "tel:+31850871814"}
-  );
+  const type = cleanTitle(project.type);
+  const place = cleanTitle(project.location);
+  const title = `${type} in ${place}`;
+  const breadcrumbs = breadcrumbsForPath(pathname, cleanTitle(project.title));
+  const category = projectCategory(project);
+  const next = NEXT_STEP[category];
+  const cover = projectCover(project);
+  const gallery = Array.from(new Set(project.images.filter((src) => src && src !== cover)));
+  const hasPair = Boolean(project.beforeImage && project.afterImage);
+  const facts = [
+    {term: "Plaats", detail: place},
+    {term: "Type", detail: type},
+    ...(project.duration ? [{term: "Uitvoering", detail: cleanTitle(project.duration)}] : []),
+    ...(project.caseStudy ? caseStudyFacts(project.caseStudy).filter((f) => f.label !== "Locatie" && f.label !== "Uitvoering").map((f) => ({term: f.label, detail: f.value})) : []),
+  ];
+  const related = uniqueProjects(all)
+    .filter((p) => p.slug !== project.slug && projectCategory(p) === category && projectCover(p))
+    .slice(0, 3);
 
   return (
-    <>
+    <div className={`pr ${premiumFontClass}`}>
       <PageStructuredData
         breadcrumbs={breadcrumbs}
         description={project.description}
@@ -74,111 +90,150 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
         title={title}
       />
       <main>
-        <section className="bg-brand-ink py-14 text-white sm:py-16">
-          <div className="section-shell grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div>
-              <p className="eyebrow">{project.location}</p>
-              <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-5xl">
-                {project.type} in {project.location}
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-white/76">{project.description}</p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  className="btn-primary"
-                  href={primary.href}
-                  target={primary.openInNewTab ? "_blank" : undefined}
-                  rel={primary.openInNewTab ? "noopener noreferrer" : undefined}
-                >
-                  {project.primaryLabel || "Start intake"}
+        <section className="pr-kalk">
+          <div className="section-shell grid gap-10 pb-14 pt-10 md:pt-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+            <div className="flex flex-col">
+              <nav aria-label="Kruimelpad" className="text-[14px] pr-muted">
+                <Link className="hover:underline" href="/">
+                  Home
                 </Link>
-                <Link
-                  className="btn-secondary"
-                  href={secondary.href}
-                  target={secondary.openInNewTab ? "_blank" : undefined}
-                  rel={secondary.openInNewTab ? "noopener noreferrer" : undefined}
-                >
-                  {project.secondaryLabel || "Bespreek uw project met ons"}
+                <span aria-hidden="true"> / </span>
+                <Link className="hover:underline" href="/projecten">
+                  Projecten
                 </Link>
-              </div>
-            </div>
-            <div
-              className="min-h-[430px] rounded-lg bg-cover bg-center shadow-premium"
-              style={{backgroundImage: `url(${project.images[0]})`}}
-            />
-          </div>
-        </section>
-
-        <section className="bg-white py-12 sm:py-14">
-          <div className="section-shell grid gap-5 md:grid-cols-4">
-            {[
-              ["Locatie", project.location],
-              ["Type", project.type],
-              ["Duur", project.duration],
-              ["Begeleiding", "Van A tot Z"],
-            ].filter(([, value]) => value && value.trim()).map(([label, value]) => (
-              <div className="rounded-lg bg-brand-soft p-6" key={label}>
-                <p className="text-sm font-bold uppercase tracking-[0.16em] text-brand-orange">
-                  {label}
-                </p>
-                <p className="mt-3 text-xl font-extrabold">{value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-brand-soft py-14 sm:py-16">
-          <div className="section-shell grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-            <div>
-              <p className="eyebrow">Uitgevoerd werk</p>
-              <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">
-                Wat hebben we gedaan?
-              </h2>
-              <ul className="mt-7 grid gap-3 text-neutral-700">
-                {project.work_items.map((item) => (
-                  <li className="flex gap-3" key={item}>
-                    <span className="text-brand-orange">✔</span>
-                    <span>{item}</span>
-                  </li>
+                <span aria-hidden="true"> / </span>
+                <span aria-current="page">{cleanTitle(project.title)}</span>
+              </nav>
+              <h1 className="pr-display mt-6 text-[clamp(2.2rem,1.4rem+3vw,3.6rem)] lg:mt-10">{title}</h1>
+              {project.description && <p className="pr-lead mt-6">{project.description}</p>}
+              <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 border-t border-[var(--pr-line)] pt-6">
+                {facts.map((f) => (
+                  <div key={f.term}>
+                    <dt className="text-[14px] pr-muted">{f.term}</dt>
+                    <dd className="mt-1 text-[15px] font-semibold leading-snug pr-num">{f.detail}</dd>
+                  </div>
                 ))}
-              </ul>
+              </dl>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 lg:mt-auto lg:pt-10" data-track="project_hero">
+                <Link className="pr-btn" data-cta="project_next_step" href={next.href}>
+                  {next.label}
+                </Link>
+                <Link className="pr-link text-[15px]" href={next.route}>
+                  {next.routeLabel}
+                </Link>
+              </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {project.images.map((image, index) => (
-                <div
-                  className={`min-h-72 rounded-lg bg-cover bg-center shadow-sm ${
-                    index === 0 ? "sm:col-span-2" : ""
-                  }`}
-                  key={image}
-                  style={{backgroundImage: `url(${image})`}}
-                />
-              ))}
-            </div>
+            {cover && (
+              <figure>
+                <Measure className="mb-3">{cleanTitle(project.title)}</Measure>
+                <img alt={`${title}: resultaat`} className="aspect-[4/3] w-full rounded-[4px] object-cover" fetchPriority="high" src={sizedImage(cover, 1600)} />
+              </figure>
+            )}
           </div>
         </section>
 
-        <section className="bg-white py-14 sm:py-16">
-          <div className="section-shell max-w-4xl">
-            <p className="eyebrow">Projectverhaal</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-5xl">
-              Van eerste plan naar duidelijke oplevering.
-            </h2>
-            <p className="mt-7 text-lg leading-9 text-neutral-700">{project.story}</p>
-          </div>
-        </section>
+        {(project.work_items.length > 0 || project.story) && (
+          <section aria-labelledby="uitgevoerd" className="pr-section">
+            <div className="section-shell pr-split">
+              <div className="pr-split-head">
+                <h2 className="pr-h2" id="uitgevoerd">
+                  Wat we hebben gedaan
+                </h2>
+              </div>
+              <div className="grid gap-10 lg:grid-cols-2">
+                {project.work_items.length > 0 && (
+                  <ul className="border-b border-[var(--pr-line)]">
+                    {project.work_items.map((item) => (
+                      <li className="border-t border-[var(--pr-line)] py-3 text-[16px]" key={item}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {project.story && <p className="max-w-[62ch] text-[17px] leading-[1.75]">{project.story}</p>}
+              </div>
+            </div>
+          </section>
+        )}
 
         {project.caseStudy && (
-          <div className="border-t border-lp-line bg-white py-14 sm:py-20">
+          <section className="pr-section pr-kalk">
             <div className="section-shell">
-              <CaseStudyDetail caseStudy={project.caseStudy} location={project.location.trim()} />
+              <CaseStudyDetail caseStudy={project.caseStudy} location={place} />
+            </div>
+          </section>
+        )}
+
+        {!project.caseStudy && (hasPair || gallery.length > 0) && (
+          <section aria-labelledby="fotos" className="pr-section pr-kalk">
+            <div className="section-shell">
+              <h2 className="pr-h2" id="fotos">
+                Foto&apos;s
+              </h2>
+              {hasPair && (
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  <figure>
+                    <img alt={`${title}: voor`} className="aspect-[4/3] w-full rounded-[4px] object-cover" loading="lazy" src={sizedImage(project.beforeImage, 1000)} />
+                    <figcaption className="mt-2 text-[14px] pr-muted">Voor</figcaption>
+                  </figure>
+                  <figure>
+                    <img alt={`${title}: na`} className="aspect-[4/3] w-full rounded-[4px] object-cover" loading="lazy" src={sizedImage(project.afterImage, 1000)} />
+                    <figcaption className="mt-2 text-[14px] pr-muted">Na</figcaption>
+                  </figure>
+                </div>
+              )}
+              {gallery.length > 0 && (
+                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {gallery.map((src, i) => (
+                    <img alt={`${title}, foto ${i + 1}`} className="aspect-[4/3] w-full rounded-[4px] object-cover" key={src} loading="lazy" src={sizedImage(src, 900)} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {project.videoChecklist?.[0] && <VideoChecklistBlockSection content={project.videoChecklist[0]} />}
+
+        {related.length > 0 && (
+          <section aria-labelledby="meer" className="pr-section">
+            <div className="section-shell">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 className="pr-h2" id="meer">
+                  Vergelijkbare projecten
+                </h2>
+                <Link className="pr-link" href={category === "overig" ? "/projecten" : `/projecten?type=${category}`}>
+                  Bekijk alle
+                </Link>
+              </div>
+              <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+                {related.map((p) => (
+                  <ProjectTile key={p.slug} project={p} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <section className="pr-section pr-dark">
+          <div className="section-shell flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+            <div>
+              <h2 className="pr-h2 max-w-[22ch]">Iets vergelijkbaars van plan?</h2>
+              <p className="mt-4 max-w-[52ch] text-white/80">
+                Bel {BUSINESS.phone.display}, stuur een WhatsApp of vul de intake in. Scott Huisman neemt uw plannen met u door.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4" data-track="project_footer">
+              <Link className="pr-btn" data-cta="project_footer_intake" href={next.href}>
+                {next.label}
+              </Link>
+              <a className="pr-btn-light" href={WHATSAPP_HREF} rel="noopener noreferrer" target="_blank">
+                WhatsApp
+              </a>
             </div>
           </div>
-        )}
-
-        {project.videoChecklist?.[0] && (
-          <VideoChecklistBlockSection content={project.videoChecklist[0]} />
-        )}
-
+        </section>
       </main>
-    </>
+    </div>
   );
 }

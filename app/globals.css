@@ -97,104 +97,148 @@ section.bg-white::after {
   background-size: cover;
 }
 
-/* Routepagina's (grote renovaties, constructieve werken). Koel palet van de
-   landingspagina's; oranje alleen voor acties. */
-.route-h1 {
-  font-size: clamp(2.4rem, 1.6rem + 3.4vw, 4.25rem);
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
+/* Premium paginasysteem (fase 2b): homepage, totaalrenovatie, routes, portfolio.
+   Koel palet, Archivo voor koppen, Hanken Grotesk voor tekst, oranje alleen
+   voor acties en de maatlijn. Zie docs/fase-2/03-visueel-voorstel.md. */
+.pr {
+  --pr-ink: #1c1f23;
+  --pr-slate: #26313a;
+  --pr-kalk: #eef0ee;
+  --pr-line: #d9ddda;
+  --pr-steen: #5b6368;
+  --pr-signal: #d95b16;
+  --pr-signal-dark: #bf4e12;
+  font-family: var(--font-text), Arial, sans-serif;
+  color: var(--pr-ink);
+  background: #fff;
+  font-size: 17px;
+  line-height: 1.65;
+}
+.pr h1, .pr h2, .pr h3, .pr .pr-display, .pr .pr-h2, .pr .pr-h3 {
+  font-family: var(--font-display), Arial, sans-serif;
   text-wrap: balance;
 }
-.route-h2 {
-  font-size: clamp(1.75rem, 1.4rem + 1.3vw, 2.5rem);
-  font-weight: 700;
-  line-height: 1.1;
+.pr-display {
+  font-size: clamp(2.5rem, 1.35rem + 4.3vw, 4.6rem);
+  font-weight: 650;
+  font-stretch: 118%;
+  line-height: 0.98;
+  letter-spacing: -0.028em;
+}
+.pr-h2 {
+  font-size: clamp(1.85rem, 1.3rem + 1.8vw, 2.85rem);
+  font-weight: 650;
+  font-stretch: 115%;
+  line-height: 1.04;
   letter-spacing: -0.02em;
-  text-wrap: balance;
 }
-.route-section {
-  padding-block: clamp(3.5rem, 2.5rem + 4vw, 6.5rem);
+.pr-h3 {
+  font-size: 1.25rem;
+  font-weight: 650;
+  font-stretch: 108%;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
 }
-.route-grid {
-  display: grid;
-  gap: 2.5rem;
+.pr-lead {
+  font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.6;
+  color: #3a4047;
+  max-width: 60ch;
 }
+.pr-muted { color: var(--pr-steen); }
+.pr-num { font-variant-numeric: tabular-nums; }
+.pr-section { padding-block: clamp(3.75rem, 2.5rem + 4.5vw, 7rem); }
+.pr-kalk { background: var(--pr-kalk); }
+.pr-dark { background: var(--pr-slate); color: #fff; }
+.pr-split { display: grid; gap: 2.25rem; }
 @media (min-width: 1024px) {
-  .route-grid {
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-    gap: 4rem;
-    align-items: start;
-  }
+  .pr-split { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 4.5rem; align-items: start; }
+  .pr-split > .pr-split-head { position: sticky; top: 7rem; }
 }
-.route-btn {
+.pr-rule { border-top: 1px solid var(--pr-line); }
+.pr-rule-strong { border-top: 2px solid var(--pr-ink); }
+
+/* Maatlijn zoals op een bouwtekening: |———— label ————| */
+.pr-measure {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--pr-steen);
+  font-variant-numeric: tabular-nums;
+}
+.pr-measure::before, .pr-measure::after {
+  content: "";
+  flex: 1;
+  height: 9px;
+  border-top: 1px solid var(--pr-signal);
+  transform: translateY(4px);
+}
+.pr-measure::before { border-left: 1px solid var(--pr-signal); }
+.pr-measure::after { border-right: 1px solid var(--pr-signal); }
+.pr-dark .pr-measure { color: rgba(255, 255, 255, 0.7); }
+
+.pr-btn, .pr-btn-line, .pr-btn-light {
   display: inline-flex;
   min-height: 52px;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: #d95b16;
-  padding: 0 1.5rem;
+  border-radius: 6px;
+  padding: 0 1.4rem;
+  font-family: var(--font-text), Arial, sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
-  transition: background-color 150ms ease;
+  line-height: 1.2;
+  text-align: center;
+  transition: background-color 150ms ease, color 150ms ease;
 }
-.route-btn:hover {
-  background: #bf4e12;
-}
-.route-btn:focus-visible,
-.route-page a:focus-visible,
-.route-page summary:focus-visible {
+.pr-btn { background: var(--pr-signal); color: #fff; }
+.pr-btn:hover { background: var(--pr-signal-dark); }
+.pr-btn-line { box-shadow: inset 0 0 0 1.5px var(--pr-ink); color: var(--pr-ink); }
+.pr-btn-line:hover { background: var(--pr-ink); color: #fff; }
+.pr-btn-light { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.7); color: #fff; }
+.pr-btn-light:hover { background: #fff; color: var(--pr-ink); }
+.pr-link { color: var(--pr-ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--pr-signal); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.pr-link:hover { color: var(--pr-signal-dark); }
+.pr a:focus-visible, .pr button:focus-visible, .pr summary:focus-visible, .pr input:focus-visible {
   outline: 3px solid #f2a46f;
   outline-offset: 3px;
 }
-.route-btn-quiet {
-  background: transparent;
-  color: #1c1f23;
-  box-shadow: inset 0 0 0 2px #1c1f23;
-}
-.route-btn-quiet:hover {
-  background: #1c1f23;
-  color: #fff;
-}
-.route-steps {
-  counter-reset: step;
-  display: grid;
-}
-.route-steps > li {
+
+/* Stappen: echte volgorde, dus genummerd. */
+.pr-steps { counter-reset: step; display: grid; }
+.pr-steps > li {
   counter-increment: step;
   position: relative;
-  padding: 0 0 2rem 3.5rem;
-  border-left: 2px solid #d9ddda;
+  padding: 0 0 2.1rem 3.4rem;
   margin-left: 1rem;
+  border-left: 1px solid var(--pr-line);
 }
-.route-steps > li:last-child {
-  border-left-color: transparent;
-  padding-bottom: 0;
-}
-.route-steps > li::before {
+.pr-steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+.pr-steps > li::before {
   content: counter(step);
   position: absolute;
-  left: -1.05rem;
-  top: -0.15rem;
+  left: -1rem;
+  top: -0.1rem;
   display: grid;
   place-items: center;
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: #26313a;
-  color: #fff;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px var(--pr-ink);
+  font-family: var(--font-display), Arial, sans-serif;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
-.route-range {
-  accent-color: #d95b16;
-  height: 28px;
-}
+.pr-kalk .pr-steps > li::before { background: var(--pr-kalk); }
+
+.pr-range { width: 100%; accent-color: var(--pr-signal); height: 28px; }
+.pr details > summary { list-style: none; }
+.pr details > summary::-webkit-details-marker { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
-  .route-page * {
-    transition: none !important;
-  }
+  .pr *, .pr *::before, .pr *::after { transition: none !important; animation: none !important; }
 }

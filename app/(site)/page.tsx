@@ -1,17 +1,21 @@
 import type {Metadata} from "next";
 
-import DynamicPageShell from "@/components/cms/DynamicPageShell";
-import {cmsPageMetadata, requireCmsPage} from "@/lib/cms-page";
+import HomePage, {HOME_DESCRIPTION, HOME_TITLE} from "@/components/premium/HomePage";
+import {buildPageMetadata} from "@/lib/seo/metadata";
+
+// Homepage in code (fase 2b) in plaats van CMS-blokken: de oude blokken bevatten
+// onbevestigde claims (vaste prijs, garantietermijn, 100+ projecten, dekking).
+// Projecten, reviews en geverifieerde claims komen nog steeds uit Sanity.
+export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
-  return cmsPageMetadata({
-    slug: "home",
+  return buildPageMetadata({
+    fallbackTitle: `${HOME_TITLE} | DRO Renovaties`,
+    fallbackDescription: HOME_DESCRIPTION,
     pathname: "/",
-    fallbackTitle: "Renovatiebedrijf | DRO Renovaties",
   });
 }
 
-export default async function Home() {
-  const page = await requireCmsPage("home");
-  return <DynamicPageShell page={page} pathname="/" />;
+export default function Home() {
+  return <HomePage />;
 }

@@ -6,6 +6,9 @@
 export type VerifiedClaims = {
   guarantee?: {text: string; scope?: string};
   responseTime?: {text: string};
+  // Hoe meerwerk wordt afgesproken, en hoe oplevering en nazorg verlopen.
+  extraWork?: {text: string};
+  delivery?: {text: string};
   trustoo?: {score: string; count: number; asOf: string; url?: string};
 };
 
@@ -43,6 +46,16 @@ export function pickVerifiedClaims(raw: unknown): VerifiedClaims {
   const response = rec(r.responseTime);
   if (confirmed(response) && text(response.text, 120)) {
     out.responseTime = {text: text(response.text, 120) as string};
+  }
+
+  const extraWork = rec(r.extraWork);
+  if (confirmed(extraWork) && text(extraWork.text, 400)) {
+    out.extraWork = {text: text(extraWork.text, 400) as string};
+  }
+
+  const delivery = rec(r.delivery);
+  if (confirmed(delivery) && text(delivery.text, 400)) {
+    out.delivery = {text: text(delivery.text, 400) as string};
   }
 
   const trustoo = rec(r.trustoo);

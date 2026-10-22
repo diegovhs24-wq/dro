@@ -9,9 +9,12 @@ import {
   getServiceBySlug,
   getServicesIndex,
   getSiteSettings,
+  getVerifiedClaims,
 } from "@/lib/cms";
 import {absoluteUrl, getSiteUrl} from "@/lib/seo/site";
-import {CONVERSION_ROUTES, ROUTE_TRUST} from "@/lib/conversionRoutes";
+import {CONVERSION_ROUTES, GROTE_RENOVATIE, ROUTE_TRUST, SPECIALISTISCH, TOTAALRENOVATIE} from "@/lib/conversionRoutes";
+import {buildAssurances} from "@/lib/assurances";
+import {HOME_DESCRIPTION, HOME_FAQ} from "@/components/premium/homeContent";
 import {caseStudyFacts} from "@/lib/caseStudy";
 import {BUSINESS, formatReviewSummary, getReviewSnapshot, stripOutdatedClaims} from "@/lib/seo/business";
 import type {CmsDynamicPageBlock} from "@/lib/cms";
@@ -333,19 +336,25 @@ async function buildRawMarkdownForPath(pathname: string) {
   ];
 
   if (normalized === "/") {
-    const page = await getPageBySlug("home");
-    page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
-    lines.push(`## Navigatie\n\n`);
-    siteSettings.headerMenu.forEach((item) => {
-      if (item.type === "link" && item.link?.linkType === "external" && item.link.externalUrl) {
-        lines.push(`- ${link(item.label, item.link.externalUrl)}`);
-      }
-    });
+    // Zelfde inhoud als de homepage in code (components/premium/HomePage.tsx).
+    const claims = await getVerifiedClaims();
+    lines.push(heading(1, "Renovatie en verbouwing, onder één regie"));
+    lines.push(paragraph(HOME_DESCRIPTION));
+    lines.push(heading(2, "Twee routes"));
+    lines.push(list([
+      `${link("Grote renovaties", GROTE_RENOVATIE.path)}: totaalrenovatie, uitbouw en dakopbouw. Indicatie totaalrenovatie € 1.000 tot € 1.250 per m² excl. btw.`,
+      `${link("Constructieve werken", SPECIALISTISCH.path)}: draagmuur verwijderen, doorbraak, stalen ligger. Uitvoering meestal 1 tot 3 dagen na constructieberekening.`,
+      `${link("Totaalrenovatie: kosten, duur en aanpak", TOTAALRENOVATIE.path)}`,
+    ]));
+    lines.push(heading(2, "Hoe het geregeld is"));
+    buildAssurances(claims).forEach((a) => lines.push(`- **${a.topic}.** ${a.answer} ${a.proof}\n`));
     lines.push("\n");
+    lines.push(heading(2, "Veelgestelde vragen"));
+    HOME_FAQ.forEach((f) => lines.push(`### ${f.q}\n\n${f.a}\n\n`));
     return lines.join("\n");
   }
 
-  const route = CONVERSION_ROUTES.find((r) => r.path === normalized);
+  const route = [...CONVERSION_ROUTES, TOTAALRENOVATIE].find((r) => r.path === normalized);
   if (route) {
     lines.push(heading(1, route.title));
     lines.push(paragraph(route.intro));
