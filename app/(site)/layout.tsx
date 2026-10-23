@@ -76,7 +76,8 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
   const organizationGraph = buildOrganizationGraph(
     siteSettings,
     siteSettings.organizationSeo,
-    locations.map((location) => location.name)
+    locations.map((location) => location.name),
+    {services: services.map((service) => ({title: service.title, href: service.href, summary: service.summary}))}
   )
   const {isEnabled: isDraftMode} = draftMode()
 

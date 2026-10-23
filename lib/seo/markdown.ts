@@ -11,6 +11,7 @@ import {
   getSiteSettings,
 } from "@/lib/cms";
 import {absoluteUrl, getSiteUrl} from "@/lib/seo/site";
+import {BUSINESS, formatReviewSummary, getReviewSnapshot, stripOutdatedClaims} from "@/lib/seo/business";
 import type {CmsDynamicPageBlock} from "@/lib/cms";
 import type {PtBlock, RichTextContent} from "@/lib/types";
 
@@ -262,7 +263,54 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
   }
 }
 
+// Publieke ingang: verouderde claims (zoals "geen aanbetaling") eruit filteren
+// voordat AI-agents de Markdown-versie lezen (GEO-03).
 export async function buildMarkdownForPath(pathname: string) {
+  const markdown = await buildRawMarkdownForPath(pathname);
+  if (!markdown) return markdown;
+  return withPageTitleAndFacts(stripOutdatedClaimsMultiline(markdown));
+}
+
+// Verbetert de Markdown-versie voor AI-agents (SEO-01 uit de live crawl):
+// - front-matter-titel = de echte paginatitel in plaats van "DRO Renovaties";
+// - slechts één H1 (de algemene merkkop wordt een contextregel);
+// - onderaan altijd dezelfde, citeerbare bedrijfsgegevens (NAP, KvK).
+function withPageTitleAndFacts(markdown: string) {
+  const lines = markdown.split("\n");
+  const brandH1 = lines.findIndex((line) => line === "# DRO Renovaties");
+  const pageH1 = lines.findIndex((line, index) => index !== brandH1 && /^# \S/.test(line));
+  if (pageH1 !== -1) {
+    const pageTitle = lines[pageH1].replace(/^# /, "").replace(/\s+/g, " ").trim();
+    const titleLine = lines.findIndex((line) => line.startsWith("title: "));
+    if (titleLine !== -1) lines[titleLine] = `title: ${JSON.stringify(`${pageTitle} | DRO Renovaties`)}`;
+    if (brandH1 !== -1) lines[brandH1] = "**DRO Renovaties**";
+  }
+
+  const facts = [
+    "",
+    "---",
+    "",
+    "## Over DRO Renovaties",
+    "",
+    `- Bedrijf: ${BUSINESS.name} (${BUSINESS.legalName}), KvK ${BUSINESS.kvkNumber}, btw ${BUSINESS.vatId}`,
+    `- Adres: ${BUSINESS.address.streetAddress}, ${[BUSINESS.address.postalCode, BUSINESS.address.addressLocality].filter(Boolean).join(" ")}`,
+    `- Telefoon: ${BUSINESS.phone.display} (ook via WhatsApp)`,
+    `- Werkgebied: Den Haag, Zuid-Holland en de rest van de Randstad`,
+    `- Betaalvoorwaarden: ${BUSINESS.paymentTerms}`,
+    `- Bedrijfsprofiel voor AI-systemen: ${absoluteUrl("/llms.txt")}`,
+    "",
+  ];
+  return [...lines, ...facts].join("\n");
+}
+
+function stripOutdatedClaimsMultiline(markdown: string) {
+  return markdown
+    .split("\n")
+    .map((line) => (/aanbetaling/i.test(line) ? stripOutdatedClaims(line) : line))
+    .join("\n");
+}
+
+async function buildRawMarkdownForPath(pathname: string) {
   const normalized = pathname === "" ? "/" : pathname.startsWith("/") ? pathname : `/${pathname}`;
   const siteSettings = await getSiteSettings();
   const siteUrl = getSiteUrl();
@@ -404,7 +452,7 @@ export async function buildMarkdownForPath(pathname: string) {
       const serviceName = service.eyebrow || service.title;
       lines.push(heading(1, `${serviceName} in ${location.name}`));
       lines.push(paragraph(service.intro));
-      lines.push(paragraph(`Actief in ${location.name} en omgeving. Vaste prijs, betaling per afgeronde fase, 4,8 uit 273 reviews.`));
+      lines.push(paragraph(`Actief in ${location.name} en omgeving. ${BUSINESS.paymentTerms} ${formatReviewSummary(getReviewSnapshot(siteSettings.organizationSeo))}.`));
       if (location.localContext) {
         lines.push(heading(2, "Lokale situatie"));
         lines.push(paragraph(location.localContext));

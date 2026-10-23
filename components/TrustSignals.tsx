@@ -1,3 +1,4 @@
+import {formatReviewSummary} from "@/lib/seo/business";
 import SketchIcon, { type SketchIconName } from "@/components/SketchIcon";
 
 type TrustSignalItem = {
@@ -6,9 +7,9 @@ type TrustSignalItem = {
 };
 
 const DEFAULT_SIGNALS: TrustSignalItem[] = [
-  { icon: "quality", label: "4,8 uit 273 Google-reviews" },
-  { icon: "handshake", label: "Vaste prijs vooraf, geen verrassingen" },
-  { icon: "payment", label: "Betaling per afgeronde fase" },
+  { icon: "quality", label: formatReviewSummary() },
+  { icon: "handshake", label: "Heldere offerte per onderdeel" },
+  { icon: "payment", label: "Betalingsschema per fase in de offerte" },
   { icon: "shield", label: "VCA-gecertificeerd en verzekerd" },
 ];
 

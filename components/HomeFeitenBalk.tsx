@@ -1,17 +1,20 @@
 import {getSiteSettings} from "@/lib/cms";
+import {getReviewSnapshot} from "@/lib/seo/business";
 
-// TODO: "35+ vakmensen", "VLOK" en "2e generatie familiebedrijf" hebben geen Sanity-bron,
-// hardcoded conform het goedgekeurde prototype. Rating/aantal reviews komt wel uit
-// siteSettings.organizationSeo (dezelfde bron als de JSON-LD structured data).
+// Feitenbalk: alleen geverifieerde feiten (lib/seo/business.ts). "35+ vakmensen"
+// is verwijderd tot er een bron voor is; "VLOK" is vervangen door VCA plus
+// verzekering, omdat VLOK een airco/warmtepomp-erkenning is en hier als
+// algemene bouwerkenning gelezen werd (zie docs/audit/04).
 export default async function HomeFeitenBalk() {
   const siteSettings = await getSiteSettings();
-  const rating = siteSettings.organizationSeo?.aggregateRatingValue ?? 4.8;
-  const reviewCount = siteSettings.organizationSeo?.aggregateRatingCount ?? 273;
+  const reviews = getReviewSnapshot(siteSettings.organizationSeo);
+  const rating = reviews.ratingValue;
+  const reviewCount = reviews.reviewCount;
 
   const feiten = [
-    {v: `${rating.toString().replace(".", ",")} / 5`, k: `${reviewCount} onafhankelijke Google-reviews`},
-    {v: "35+", k: "Vakmensen in vaste teams"},
-    {v: "VLOK", k: "Erkend en verzekerd"},
+    {v: `${rating.toString().replace(".", ",")} / 5`, k: `${reviewCount} Google-reviews`},
+    {v: "SBB", k: "Erkend leerbedrijf"},
+    {v: "VCA", k: "Gecertificeerd, CAR-verzekerd"},
     {v: "2e generatie", k: "Familiebedrijf uit Den Haag"},
   ];
 

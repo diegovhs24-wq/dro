@@ -1,3 +1,4 @@
+import {BUSINESS, formatReviewSummary} from "@/lib/seo/business";
 import Link from "next/link";
 
 import BlogCard from "@/components/BlogCard";
@@ -32,8 +33,8 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
               Ja, DRO Renovaties voert renovaties uit in {location.name} en omgeving: badkamers,
-              totaalrenovaties, uitbouwen en meer, met een vaste prijs vooraf en betaling per
-              afgeronde fase.
+              totaalrenovaties, uitbouwen en meer, met een heldere offerte per onderdeel en een
+              betalingsschema per fase.
             </p>
             <p className="mt-5 max-w-2xl text-base leading-7 text-white/80">{location.intro}</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
@@ -209,13 +210,13 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
       <CTASection
         eyebrow="Aan de slag"
         title={`Renoveren in ${location.name}?`}
-        text="Start een vrijblijvende intake en ontvang een vaste prijs voor uw project."
+        text="Start een vrijblijvende intake en ontvang een heldere offerte voor uw project."
         buttons={[
           {label: "Start intake", link: {linkType: "external", externalUrl: "/contact"}, variant: "primary"},
           {label: "Bel direct", link: {linkType: "external", externalUrl: "tel:+31850871814"}, variant: "outlined"},
         ]}
-        ratingScore={4.8}
-        ratingLabel="4,8 uit 273 reviews"
+        ratingScore={BUSINESS.reviews.ratingValue}
+        ratingLabel={formatReviewSummary()}
       />
     </main>
   );

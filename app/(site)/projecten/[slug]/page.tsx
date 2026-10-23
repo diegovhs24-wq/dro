@@ -33,7 +33,8 @@ export async function generateMetadata({params}: ProjectPageProps): Promise<Meta
     };
   }
 
-  const title = `${project.type} ${project.location} | DRO Renovaties`;
+  // Uniek per project (straat + plaats) en zonder dubbele spaties (SEO-12).
+  const title = `${project.type}, ${project.title} | DRO Renovaties`.replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
 
   return metadataFromSeo({}, title, {
     pathname: `/projecten/${params.slug}`,
@@ -53,12 +54,12 @@ export default async function ProjectDetailPage({params}: ProjectPageProps) {
 
   const pathname = `/projecten/${params.slug}`;
   const breadcrumbs = breadcrumbsForPath(pathname, project.title);
-  const title = `${project.type} in ${project.location}`;
+  const title = `${project.type} in ${project.location}`.replace(/\s+/g, " ").trim();
   const primary = resolveSmartLink(
     project.primaryLink ?? {linkType: "internal", internalRef: {_type: "page", slug: "contact"}}
   );
   const secondary = resolveSmartLink(
-    project.secondaryLink ?? {linkType: "external", externalUrl: "tel:+31600000000"}
+    project.secondaryLink ?? {linkType: "external", externalUrl: "tel:+31850871814"}
   );
 
   return (

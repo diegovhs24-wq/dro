@@ -1,4 +1,5 @@
 "use client";
+import {BUSINESS} from "@/lib/seo/business";
 
 import {useEffect, useMemo, useRef, useState} from "react";
 import {Bricolage_Grotesque, Hanken_Grotesk} from "next/font/google";
@@ -220,7 +221,7 @@ export default function SmartIntakeWizard({
   skipIds = [],
   source = "smart-intake",
   variant,
-  responsePromise = "binnen één werkdag",
+  responsePromise = "zo snel mogelijk",
   initialBudget,
   thanksLinks,
   serviceOrder,
@@ -259,6 +260,7 @@ export default function SmartIntakeWizard({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
   const leadTrackedRef = useRef(false);
+  const submissionIdRef = useRef<string | null>(null);
   const submitInFlightRef = useRef(false);
 
   const [budgetMin, setBudgetMin] = useState(initialBudget ? initialBudget[0] : 15000);
@@ -432,13 +434,20 @@ export default function SmartIntakeWizard({
     });
 
     const attribution = getAttribution();
+    // Eén ID per inzending: een herhaalde poging na een time-out wordt door de
+    // server als dubbel herkend in plaats van als tweede lead.
+    if (!submissionIdRef.current) {
+      submissionIdRef.current =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+    }
 
     try {
-      const res = await fetch("/api/submit-request", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-          company,
+      const buildBody = (withPhotos: boolean) =>
+        JSON.stringify({
+          hp_x7: company,
+          submissionId: submissionIdRef.current,
           name: answers.nm,
           email: answers.em,
           phone: answers.ph,
@@ -455,14 +464,29 @@ export default function SmartIntakeWizard({
           hoeGevonden: answers.found || (source.startsWith("lp-") ? "Advertentie (landingspagina)" : undefined),
           message: answers.more,
           serviceAnswers,
-          photos: photos.map((p) => p.replace(/^data:image\/jpeg;base64,/, "")),
+          photos: withPhotos ? photos.map((p) => p.replace(/^data:image\/jpeg;base64,/, "")) : [],
+          photosDropped: withPhotos ? 0 : photos.length,
           source,
           attribution,
-        }),
-      });
+        });
+      const post = (withPhotos: boolean) =>
+        fetch("/api/submit-request", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: buildBody(withPhotos),
+        });
+
+      let res = await post(photos.length > 0);
+      // Te grote aanvraag (foto's) of serverfout: eenmaal opnieuw zonder foto's,
+      // zodat de klantgegevens in elk geval binnenkomen.
+      if (!res.ok && photos.length > 0 && (res.status === 413 || res.status >= 500)) {
+        res = await post(false);
+      }
 
       if (!res.ok) throw new Error("Submit failed");
-      if (!leadTrackedRef.current) {
+      const result = (await res.json().catch(() => ({}))) as {spamSuspect?: boolean; duplicate?: boolean};
+      // Geen Ads-conversie voor mogelijke spam of een herhaalde inzending (L8).
+      if (!leadTrackedRef.current && !result.spamSuspect && !result.duplicate) {
         leadTrackedRef.current = true;
         trackLead();
       }
@@ -554,7 +578,7 @@ export default function SmartIntakeWizard({
             <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
           </span>
           <span>
-            <b>4.8</b> uit 273 reviews, huiseigenaren in de regio gingen u voor
+            <b>{BUSINESS.reviews.ratingValue.toLocaleString("nl-NL")}</b> uit {BUSINESS.reviews.reviewCount} reviews, huiseigenaren in de regio gingen u voor
           </span>
         </div>
         <div className="intake-grid">
@@ -703,7 +727,7 @@ export default function SmartIntakeWizard({
           </dl>
           <span className="intake-price-s">
             Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen ligger, sloop, container en afvoer. Leges van de
-            gemeente apart. Na de opname krijgt u een vaste prijs.
+            gemeente apart. Na de opname krijgt u een offerte met een prijs per onderdeel.
           </span>
           {b.wide ? (
             <span className="intake-price-s" style={{color: "#ffd6b8"}}>
@@ -990,7 +1014,7 @@ export default function SmartIntakeWizard({
           <span className="intake-stars">
             <StarIcon /><StarIcon /><StarIcon /><StarIcon /><StarIcon />
           </span>
-          <b>4.8</b> uit 273 reviews
+          <b>{BUSINESS.reviews.ratingValue.toLocaleString("nl-NL")}</b> uit {BUSINESS.reviews.reviewCount} reviews
         </span>
       </div>
     );
@@ -1020,13 +1044,21 @@ export default function SmartIntakeWizard({
 
         {/* Honeypot: onzichtbaar voor bezoekers, bots vullen doorgaans elk veld. */}
         <div aria-hidden="true" style={{position: "absolute", left: -9999, top: 0, height: 0, width: 0, overflow: "hidden"}}>
-          <label htmlFor="company">Bedrijf</label>
-          <input autoComplete="off" id="company" name="company" onChange={(e) => setCompany(e.target.value)} tabIndex={-1} type="text" value={company} />
+          {/* Naam die autofill niet herkent (BE-01); een ingevuld veld markeert de lead alleen als "mogelijk spam", er gaat niets verloren. */}
+          <label htmlFor="hp_x7">Laat dit veld leeg</label>
+          <input autoComplete="off" id="hp_x7" name="hp_x7" onChange={(e) => setCompany(e.target.value)} tabIndex={-1} type="text" value={company} />
         </div>
 
         <div className="intake-note">
           <ShieldCheckIcon />U zit nergens aan vast. Volledig vrijblijvend, en uw gegevens blijven vertrouwelijk.
         </div>
+        <p className="intake-sub" style={{fontSize: 12, marginTop: 6}}>
+          Wij gebruiken uw gegevens alleen om uw aanvraag te behandelen. Lees onze{" "}
+          <a href="/privacypolicy" rel="noopener" style={{textDecoration: "underline"}} target="_blank">
+            privacyverklaring
+          </a>
+          .
+        </p>
         {submitError ? (
           <p className="intake-sub" style={{color: "var(--intake-accent-deep)", marginTop: 10}}>
             Er ging iets mis bij het versturen. Probeer het nog eens, of bel of WhatsApp ons op 085 087 1814.
@@ -1070,7 +1102,7 @@ export default function SmartIntakeWizard({
           <div className="intake-ns-r">
             <span className="intake-ns-n">3</span>
             <span className="intake-ns-tx">
-              <b>Een heldere, vaste prijsopgave.</b> Geen verrassingen, en u betaalt per afgeronde fase.
+              <b>Een heldere prijsopgave per onderdeel.</b> Het betalingsschema per fase staat vooraf in de offerte.
             </span>
           </div>
         </div>

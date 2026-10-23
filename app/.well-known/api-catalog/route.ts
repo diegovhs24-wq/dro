@@ -7,7 +7,7 @@ export async function GET() {
   const body = {
     name: "DRO Renovaties",
     description:
-      "Machine-readable entry points for AI agents and crawlers indexing drorenovaties.nl.",
+      "Machine-readable entry points for AI agents and crawlers indexing www.dro-renovaties.nl.",
     endpoints: [
       {
         title: "llms.txt",

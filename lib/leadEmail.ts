@@ -28,6 +28,13 @@ const FONT = "Arial,Helvetica,sans-serif";
 
 export type LeadEmailData = {
   documentId?: string;
+  // true als opslaan in Sanity mislukte: deze mail is dan de enige kopie.
+  notSavedWarning?: boolean;
+  // true als het verborgen anti-spamveld was ingevuld. Kan ook autofill bij een
+  // echte klant zijn, dus de mail gaat wel uit, met een duidelijke markering.
+  spamSuspect?: boolean;
+  // Aantal foto's dat de klant had toegevoegd maar dat niet kon worden verstuurd.
+  photosDropped?: number;
   submittedAt: string;
   formTitle: string;
   name: string;
@@ -175,7 +182,7 @@ export function renderLeadEmail(d: LeadEmailData): {subject: string; html: strin
   const addressHtml = address
     ? `${esc(address)}${mapLink ? ` &middot; <a href="${esc(mapLink)}" style="color:${C.ads};">kaart</a>` : ""}`
     : "";
-  const fundaHtml = d.fundaUrl && /^https?:\/\//i.test(d.fundaUrl) ? `<a href="${esc(d.fundaUrl)}" style="color:${C.ads};">Funda-advertentie openen</a>` : d.fundaUrl;
+  const fundaHtml = d.fundaUrl && /^https?:\/\//i.test(d.fundaUrl) ? `<a href="${esc(d.fundaUrl)}" style="color:${C.ads};">Funda-advertentie openen</a>` : d.fundaUrl ? esc(d.fundaUrl) : undefined;
 
   const answerRows: Array<[string, string]> = d.serviceAnswers.flatMap((g) => g.answers.map((qa) => [shortQuestion(qa.question), qa.answer] as [string, string]));
 
@@ -266,21 +273,40 @@ export function renderLeadEmail(d: LeadEmailData): {subject: string; html: strin
 
 // Ontvangers: standaard Scott (opvolging) met de beheerder in cc. Beide zijn via
 // omgevingsvariabelen te overschrijven, zonder codewijziging.
-export async function sendLeadEmail(d: LeadEmailData): Promise<void> {
+// Geeft true terug als de mail is verstuurd, false als Resend niet is
+// ingesteld (BE-05). Fouten van Resend worden gegooid.
+export async function sendLeadEmail(d: LeadEmailData): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
   const admin = process.env.ADMIN_NOTIFICATION_EMAIL;
   const toRaw = process.env.LEAD_NOTIFICATION_TO || "scott@dro-renovaties.nl";
 
   if (!apiKey || !from) {
-    console.warn("Resend niet ingesteld (RESEND_API_KEY / EMAIL_FROM ontbreekt), leadmail overgeslagen");
-    return;
+    console.error("LEAD_EMAIL_NOT_CONFIGURED: RESEND_API_KEY / EMAIL_FROM ontbreekt, leadmail overgeslagen");
+    return false;
   }
 
   const split = (v?: string) => (v || "").split(",").map((x) => x.trim()).filter(Boolean);
   const to = split(toRaw);
   const cc = split(admin).filter((x) => !to.includes(x));
-  const {subject, html, text} = renderLeadEmail(d);
+  const rendered = renderLeadEmail(d);
+  const warning = "LET OP: deze aanvraag is NIET opgeslagen in Sanity. Deze mail is de enige kopie.";
+  const spamNote = "MOGELIJK SPAM: het verborgen anti-spamveld was ingevuld. Kan ook browser-autofill bij een echte klant zijn; controleer kort.";
+  // Markeringen ACHTER het onderwerp: de mailassistent en filters herkennen
+  // leadmails aan het begin ("[Google Ads]" / "[Website]"); dat moet intact blijven.
+  const subject = `${rendered.subject}${d.notSavedWarning ? " [NIET OPGESLAGEN]" : ""}${d.spamSuspect ? " [MOGELIJK SPAM]" : ""}`;
+  const photosNote = d.photosDropped
+    ? `Let op: de klant had ${d.photosDropped} foto('s) toegevoegd die niet konden worden verstuurd (te groot). Vraag ze zo nodig via WhatsApp op.`
+    : "";
+  const banners = [
+    ...(d.notSavedWarning ? [warning] : []),
+    ...(d.spamSuspect ? [spamNote] : []),
+    ...(photosNote ? [photosNote] : []),
+  ];
+  const html = `${banners
+    .map((note) => `<p style="background:#b91c1c;color:#fff;padding:12px;font-weight:700;">${note}</p>`)
+    .join("")}${rendered.html}`;
+  const text = banners.length ? `${banners.join("\n")}\n\n${rendered.text}` : rendered.text;
 
   const resend = new Resend(apiKey);
   const {error} = await resend.emails.send({
@@ -299,4 +325,5 @@ export async function sendLeadEmail(d: LeadEmailData): Promise<void> {
       statusCode: typeof error.statusCode === "number" ? error.statusCode : undefined,
     });
   }
+  return true;
 }

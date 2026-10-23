@@ -996,19 +996,21 @@ export const formSubmission = defineType({
       readOnly: true,
       description: 'Geüpload via het aanvraagformulier (maximaal 6, verkleind).',
     }),
-    defineField({name: 'channel', title: 'Kanaal', type: 'string', readOnly: true, description: 'Google Ads, organisch zoeken, verwijzing of direct. Automatisch bepaald.'}),
+    defineField({name: 'emailedAt', title: 'Leadmail verstuurd op', type: 'datetime', readOnly: true, description: 'Wordt gevuld voor leads vanaf oktober 2026. Leeg bij een nieuwe lead betekent: er is geen leadmail verstuurd, bel zelf terug.'}),
+    defineField({name: 'spamSuspect', title: 'Mogelijk spam', type: 'boolean', readOnly: true, description: 'Het verborgen anti-spamveld was ingevuld. Kan ook een echte klant zijn (browser-autofill): controleer en bel zo nodig terug.'}),
+    defineField({name: 'channel', title: 'Kanaal', type: 'string', readOnly: true, description: 'Google Ads, AI-assistent (ChatGPT, Perplexity, Gemini, Copilot), organisch zoeken, verwijzing of direct. Automatisch bepaald.'}),
     defineField({name: 'leadAssessment', title: 'Eerste beoordeling', type: 'string', readOnly: true, description: 'Automatisch: Kansrijk, Twijfel of Past niet (budget, planning, regio).'}),
     defineField({name: 'submittedAt', title: 'Verzonden op', type: 'datetime', readOnly: true}),
   ],
   preview: {
-    select: {name: 'name', services: 'services', location: 'location', submittedAt: 'submittedAt', legacyTitle: 'entries.0.value'},
-    prepare({name, services, location, submittedAt, legacyTitle}) {
+    select: {name: 'name', services: 'services', location: 'location', submittedAt: 'submittedAt', legacyTitle: 'entries.0.value', spamSuspect: 'spamSuspect'},
+    prepare({name, services, location, submittedAt, legacyTitle, spamSuspect}) {
       const dateLabel = submittedAt ? new Date(submittedAt).toLocaleString('nl-NL') : ''
       const servicesLabel = Array.isArray(services) && services.length ? services.join(', ') : ''
 
       if (name || servicesLabel) {
         return {
-          title: name || 'Aanvraag',
+          title: `${spamSuspect ? '[mogelijk spam] ' : ''}${name || 'Aanvraag'}`,
           subtitle: [servicesLabel, location, dateLabel].filter(Boolean).join(' · '),
           media: DocumentIcon,
         }

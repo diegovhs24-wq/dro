@@ -18,7 +18,7 @@ export default function GoogleRatingBadge({
   compact = false,
   variant = "light",
   ratingScore = 4.8,
-  ratingLabel = "4.8 Star Rating",
+  ratingLabel = "4,8 uit 5 op Google",
 }: GoogleRatingBadgeProps) {
   const muted = variant === "dark" ? "text-white/70" : "text-neutral-500";
   const filledStars = Math.min(5, Math.max(0, Math.round(ratingScore)));

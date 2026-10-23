@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 
 import LocationServiceDetailRoute from "@/components/LocationServiceDetailRoute";
+import {formatReviewSummary, getReviewSnapshot} from "@/lib/seo/business";
 import {
   getLocationBySlug,
   getLocationCityServiceParams,
@@ -38,8 +39,11 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
   // eyebrow holds the clean short service name for composing "{name} in {city}" copy.
   const serviceName = service.eyebrow || service.title;
   const title = `${serviceName} in ${location.name} | DRO Renovaties`;
-  const description = `${service.intro} Actief in ${location.name} en omgeving. Vaste prijs, betaling per afgeronde fase, 4,8 uit 273 reviews.`;
+  const description = `${service.intro} Actief in ${location.name} en omgeving. ${formatReviewSummary(getReviewSnapshot())}.`;
 
+  // Alle stad x dienst-combinaties blijven indexeerbaar met een canonical naar
+  // zichzelf, zoals op main. Een besluit om combinaties uit de index te halen
+  // vereist eerst Search Console-data (docs/audit/18, punt 2).
   return metadataFromSeo(
     {metaTitle: title, metaDescription: description},
     title,
