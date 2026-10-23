@@ -828,7 +828,7 @@ export default async function TotaalrenovatieLandingPage(
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
-                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste
+                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van projectleider Therab Raja. We werken met vaste
                 vakteams, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
                 één aanspreekpunt van de eerste bezichtiging tot de oplevering.
               </p>

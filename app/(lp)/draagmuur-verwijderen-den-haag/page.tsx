@@ -848,7 +848,7 @@ export default async function DraagmuurLandingPage(
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
-                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. Een doorbraak doen we met onze eigen
+                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van projectleider Therab Raja. Een doorbraak doen we met onze eigen
                 vaste ploeg, met vaste constructeurs en een vaste tekenaar voor de vergunning. U heeft één aanspreekpunt van de eerste
                 opname tot de oplevering.
               </p>

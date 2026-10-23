@@ -1064,7 +1064,7 @@ export default function SmartIntakeWizard({
         <div className="intake-eyebrow">Voor {primaryLabel()}</div>
         <Heading className="intake-h1">Waar mogen we uw plan naartoe sturen?</Heading>
         <p className="intake-sub">
-          U bent klaar. Uw aanvraag komt direct bij Therab en het team terecht, wij nemen {responsePromise} persoonlijk contact met u op.
+          U bent klaar. Uw aanvraag komt direct bij ons team terecht. Een adviseur neemt {responsePromise} persoonlijk contact met u op.
         </p>
         <div className="intake-field">
           <label>Naam</label>
@@ -1127,7 +1127,7 @@ export default function SmartIntakeWizard({
           <div className="intake-ns-r">
             <span className="intake-ns-n">1</span>
             <span className="intake-ns-tx">
-              <b>Therab of een collega neemt {responsePromise} contact op</b>, per telefoon, e-mail of WhatsApp.
+              <b>Een adviseur neemt {responsePromise} contact met u op</b>, per telefoon, e-mail of WhatsApp.
             </span>
           </div>
           <div className="intake-ns-r">
