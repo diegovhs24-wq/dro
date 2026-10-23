@@ -45,7 +45,13 @@ body {
 h1, h2, h3, h4, p, li, dd, dt, blockquote, figcaption {
   overflow-wrap: break-word;
 }
-/* Koppen worden niet automatisch afgebroken; overflow-wrap hierboven is het vangnet. */
+/* Koppen: alleen lange woorden (10+ letters) afbreken, met koppelteken. Korte woorden blijven heel. */
+h1, h2, h3 {
+  hyphens: auto;
+  hyphenate-limit-chars: 10 4 4;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
+}
 
 ::selection {
   background: var(--dro-orange);
@@ -289,7 +295,10 @@ section.bg-white::after {
   .pr *, .pr *::before, .pr *::after { transition: none !important; animation: none !important; }
 }
 
-/* Koppen in de paginalaag niet automatisch afbreken. */
+/* Koppen in de paginalaag: zelfde regel. */
 .pr h1, .pr h2, .pr h3, .pr .pr-display, .pr .pr-h2, .pr .pr-h3 {
-  hyphens: manual;
+  hyphens: auto;
+  hyphenate-limit-chars: 10 4 4;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
 }
