@@ -34,7 +34,7 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       topic: "Planning",
       question: "Weet ik vooraf wanneer wat gebeurt?",
       answer: "Bij akkoord krijgt u een realistische planning per fase, op papier, voordat het werk begint. Verandert er iets, dan bespreken we dat in het wekelijkse meetmoment.",
-      proof: "Opgesteld door Therab Raja, die ook de offerte maakt. Data zijn een inschatting, geen vaste termijn (algemene voorwaarden, artikel 6.4).",
+      proof: "Opgesteld door projectleider Therab Raja, die ook de offerte maakt. Data zijn een inschatting, geen vaste termijn (algemene voorwaarden, artikel 6.4).",
     },
     {
       key: "communicatie",

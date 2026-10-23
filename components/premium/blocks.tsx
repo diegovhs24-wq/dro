@@ -240,7 +240,7 @@ export function IntakeBlock({
             </li>
             <li className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2">
               <span className="pr-num font-semibold text-white">3.</span>
-              Bij een groter project komt Therab Raja langs voor een bezichtiging en maakt de offerte.
+              Bij een groter project komt projectleider Therab Raja langs voor een bezichtiging en maakt de offerte.
             </li>
           </ol>
           <p className="mt-8 text-[15px] text-white/70">

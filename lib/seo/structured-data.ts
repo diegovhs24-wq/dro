@@ -50,7 +50,7 @@ export function websiteId(siteUrl: string = getSiteUrl()) {
 }
 
 export function founderId(siteUrl: string = getSiteUrl()) {
-  return `${siteUrl}/#founder`;
+  return `${siteUrl}/#projectleider`;
 }
 
 
@@ -147,7 +147,6 @@ export function buildOrganizationGraph(
       name: credential.name,
       credentialCategory: credential.category,
     })),
-    founder: {"@id": founderId(siteUrl)},
     contactPoint: [
       {
         "@type": "ContactPoint",

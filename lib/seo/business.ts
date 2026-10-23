@@ -48,13 +48,14 @@ export const BUSINESS = {
   },
   email: "info@dro-renovaties.nl",
 
+  // Therab staat op de site als projectleider, niet als eigenaar of oprichter.
   founder: {
     name: "Therab Raja",
-    jobTitle: "Oprichter en eigenaar",
+    jobTitle: "Projectleider renovatie",
   },
 
   team: [
-    {name: "Therab Raja", jobTitle: "Oprichter, eerste aanspreekpunt"},
+    {name: "Therab Raja", jobTitle: "Projectleider renovatie, eerste aanspreekpunt"},
     {name: "Scott Huisman", jobTitle: "Verkoop en advies"},
     {name: "Esra Ozdemir", jobTitle: "Kwaliteit en klantzorg"},
     {name: "Jarek", jobTitle: "Hoofd uitvoering"},
