@@ -1583,7 +1583,7 @@ export const DRO_TOOLS_CONFIG: ToolsConfig = {
         actief: true,
         gerelateerd: ["vve-onderhoud", "vergunning"],
         whatsapp_tekst: "Hoi DRO, ik heb de transformatie quickscan ingevuld: {m2} m² BVO, {woningen} woningen. Ik wil graag sparren over mijn pand.",
-        dro_blok_tekst: "DRO heeft ervaring met transformaties, onder andere commercieel naar wonen in Den Haag. Bespreek je pand vrijblijvend met Therab.",
+        dro_blok_tekst: "DRO heeft ervaring met transformaties, onder andere commercieel naar wonen in Den Haag. Bespreek je pand vrijblijvend met ons.",
         tussentijdse_cta: false,
       },
       stappen: [

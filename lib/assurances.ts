@@ -34,14 +34,14 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       topic: "Planning",
       question: "Weet ik vooraf wanneer wat gebeurt?",
       answer: "Bij akkoord krijgt u een realistische planning per fase, op papier, voordat het werk begint. Verandert er iets, dan bespreken we dat in het wekelijkse meetmoment.",
-      proof: "Opgesteld door Therab Raja, die ook de offerte maakt. Data zijn een inschatting, geen vaste termijn (algemene voorwaarden, artikel 6.4).",
+      proof: "Opgesteld door wie ook de offerte maakt. Data zijn een inschatting, geen vaste termijn (algemene voorwaarden, artikel 6.4).",
     },
     {
       key: "communicatie",
       topic: "Communicatie",
       question: "Wie spreek ik, en hoe vaak?",
       answer: "Elke week één vast meetmoment voor uw vragen. Vragen via de app worden binnen 24 uur opgepakt.",
-      proof: "Vaste rollen: Therab voor de algemene afstemming, Jarek voor techniek, Esra voor betalingen en kwaliteit.",
+      proof: "Vaste rollen: een vast aanspreekpunt voor de algemene afstemming, Jarek voor techniek, Esra voor betalingen en kwaliteit.",
     },
     {
       key: "meerwerk",

@@ -1754,7 +1754,8 @@ export async function getReviews() {
 // Reviews die een oud-medewerker als aanspreekpunt noemen, tonen we niet meer:
 // die persoon werkt niet meer bij DRO, dus de review schept een verkeerde
 // verwachting. De review zelf blijft ongewijzigd in Sanity staan.
-const FORMER_STAFF = ["Lauren"];
+// Reviews met deze namen tonen we niet (oud-medewerker; eigenaar wil niet bij naam op de site).
+const FORMER_STAFF = ["Lauren", "Therab", "Raja"];
 
 export function withoutFormerStaffReviews<T extends {quote?: string}>(reviews: T[]): T[] {
   return reviews.filter((r) => !FORMER_STAFF.some((name) => new RegExp(`\\b${name}\\b`, "i").test(r.quote || "")));

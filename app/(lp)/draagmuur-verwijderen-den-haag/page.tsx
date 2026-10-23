@@ -277,7 +277,6 @@ const REVIEW_POLICY = 'Wij tonen reviews zoals ze op Google en Trustoo staan, zo
 type StaticReview = {name: string; date: string; project: string; quote: string}
 const GOOGLE_REVIEWS: StaticReview[] = [
   {name: 'Allama', date: '13 mei 2026', project: 'Totaalrenovatie', quote: 'We zijn erg tevreden. Het team was professioneel, kwam alle afspraken na en startte het werk steeds op tijd.'},
-  {name: 'Youri', date: '15 apr 2026', project: 'Renovatie', quote: 'Therab laat duidelijk zien wat eerlijk verbouwen is. Ook als dingen niet gaan zoals ze moeten zijn ze responsief en lossen ze het netjes op.'},
   {name: 'Kaylee', date: '1 apr 2026', project: 'Badkamer en toilet', quote: 'Onze badkamer en toilet laten renoveren door DRO. Super hard werkende mensen, goede communicatie en alles is netjes afgewerkt.'},
   {name: 'Anil', date: '14 mei 2026', project: 'Badkamer en wc renovatie', quote: 'Ik ben ontzettend tevreden over het werk van DRO Renovaties. Mijn badkamer en wc zijn volledig gerenoveerd en werkelijk prachtig geworden. Alles verliep professioneel en duidelijk.'},
 ]
@@ -848,7 +847,7 @@ export default async function DraagmuurLandingPage(
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
-                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. Een doorbraak doen we met onze eigen
+                DRO Renovaties is gegroeid uit een familiebouwbedrijf. Een doorbraak doen we met onze eigen
                 vaste ploeg, met vaste constructeurs en een vaste tekenaar voor de vergunning. U heeft één aanspreekpunt van de eerste
                 opname tot de oplevering.
               </p>

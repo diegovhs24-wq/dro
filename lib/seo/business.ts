@@ -48,13 +48,7 @@ export const BUSINESS = {
   },
   email: "info@dro-renovaties.nl",
 
-  founder: {
-    name: "Therab Raja",
-    jobTitle: "Oprichter en eigenaar",
-  },
-
   team: [
-    {name: "Therab Raja", jobTitle: "Oprichter, eerste aanspreekpunt"},
     {name: "Scott Huisman", jobTitle: "Verkoop en advies"},
     {name: "Esra Ozdemir", jobTitle: "Kwaliteit en klantzorg"},
     {name: "Jarek", jobTitle: "Hoofd uitvoering"},

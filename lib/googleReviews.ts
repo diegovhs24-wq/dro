@@ -5,5 +5,4 @@ export type StaticGoogleReview = {name: string; date: string; project: string; q
 
 export const BIG_PROJECT_REVIEWS: StaticGoogleReview[] = [
   {name: "Allama", date: "13 mei 2026", project: "Totaalrenovatie", quote: "We zijn erg tevreden. Het team was professioneel, kwam alle afspraken na en startte het werk steeds op tijd."},
-  {name: "Youri", date: "15 apr 2026", project: "Renovatie", quote: "Therab laat duidelijk zien wat eerlijk verbouwen is. Ook als dingen niet gaan zoals ze moeten zijn ze responsief en lossen ze het netjes op."},
 ];

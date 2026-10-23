@@ -46,7 +46,6 @@ export async function GET() {
       `- Telefoon: ${BUSINESS.phone.display} (ook via WhatsApp)`,
       `- E-mail: ${org.email}`,
       `- Website: ${org.siteUrl}`,
-      `- Oprichter en eigenaar: ${BUSINESS.founder.name}`,
       `- Werkgebied: Den Haag en omgeving (Haaglanden), Zuid-Holland en de rest van de Randstad`,
       `- Talen: ${BUSINESS.languages.join(", ")}`,
       `- Erkenningen: ${BUSINESS.credentials.map((credential) => credential.name).join(", ")}`,
@@ -72,7 +71,7 @@ export async function GET() {
     "",
     section("Werkwijze in het kort", [
       "1. Aanvraag: een adviseur belt terug, bespreekt de wensen en plant zo nodig een bezichtiging.",
-      "2. Bezichtiging en offerte: de oprichter bekijkt grotere projecten zelf en maakt een uitgewerkte offerte per onderdeel.",
+      "2. Bezichtiging en offerte: bij grotere projecten komen wij zelf op locatie kijken en maken we een uitgewerkte offerte per onderdeel.",
       "3. Voorbereiding: bij akkoord volgen een planning en betaalschema; waar nodig verzorgt DRO via vaste constructeurs de constructieberekening en, als dat in de offerte staat, de vergunningsaanvraag.",
       "4. Uitvoering: vaste vakteams onder een technisch hoofd uitvoering; elke week één vast overlegmoment en vragen via de app binnen 24 uur opgepakt.",
       "5. Betaling en oplevering: betalingsschema per projectfase, vooraf vastgelegd in de offerte (eventuele startbetalingen en afwijkende afspraken staan daar schriftelijk in); oplevering met gezamenlijke opname en opleverlijst.",

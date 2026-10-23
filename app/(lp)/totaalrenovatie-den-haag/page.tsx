@@ -262,7 +262,6 @@ const SCENARIO_M2 = [80, 100, 120]
 type StaticReview = {name: string; date: string; project: string; quote: string}
 const GOOGLE_REVIEWS: StaticReview[] = [
   {name: 'Allama', date: '13 mei 2026', project: 'Totaalrenovatie', quote: 'We zijn erg tevreden. Het team was professioneel, kwam alle afspraken na en startte het werk steeds op tijd.'},
-  {name: 'Youri', date: '15 apr 2026', project: 'Renovatie', quote: 'Therab laat duidelijk zien wat eerlijk verbouwen is. Ook als dingen niet gaan zoals ze moeten zijn ze responsief en lossen ze het netjes op.'},
   {name: 'Kaylee', date: '1 apr 2026', project: 'Badkamer en toilet', quote: 'Onze badkamer en toilet laten renoveren door DRO. Super hard werkende mensen, goede communicatie en alles is netjes afgewerkt.'},
   {name: 'Anil', date: '14 mei 2026', project: 'Badkamer en wc renovatie', quote: 'Ik ben ontzettend tevreden over het werk van DRO Renovaties. Mijn badkamer en wc zijn volledig gerenoveerd en werkelijk prachtig geworden. Alles verliep professioneel en duidelijk.'},
 ]
@@ -828,7 +827,7 @@ export default async function TotaalrenovatieLandingPage(
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
-                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste
+                DRO Renovaties is gegroeid uit een familiebouwbedrijf. We werken met vaste
                 vakteams, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
                 één aanspreekpunt van de eerste bezichtiging tot de oplevering.
               </p>

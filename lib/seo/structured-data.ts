@@ -85,14 +85,6 @@ export function buildOrganizationGraph(
       ? {"@type": "GeoCoordinates", latitude: org.latitude, longitude: org.longitude}
       : undefined;
 
-  const founder: JsonLd = {
-    "@type": "Person",
-    "@id": founderId(siteUrl),
-    name: BUSINESS.founder.name,
-    jobTitle: BUSINESS.founder.jobTitle,
-    worksFor: orgRef(),
-  };
-
   const offerCatalog = options.services?.length
     ? {
         hasOfferCatalog: {
@@ -147,7 +139,6 @@ export function buildOrganizationGraph(
       name: credential.name,
       credentialCategory: credential.category,
     })),
-    founder: {"@id": founderId(siteUrl)},
     contactPoint: [
       {
         "@type": "ContactPoint",
@@ -176,7 +167,7 @@ export function buildOrganizationGraph(
 
   // Teamleden staan bewust niet als `employee` in de graph: hun dienstverband
   // (in loondienst of vaste partner) is niet geverifieerd.
-  return [organization, website, founder];
+  return [organization, website];
 }
 
 export function buildBreadcrumbList(items: BreadcrumbItem[]) {
@@ -267,14 +258,9 @@ export function buildArticleSchema(
   const org = resolveOrganizationSeo(siteSettings, organizationSeo);
   const authorName = article.authorName?.trim();
 
-  // De auteur "Therab" in Sanity is de oprichter: koppel aan dezelfde Person-node
-  // zodat expertise (E-E-A-T) bij één herkenbare persoon samenkomt. Zonder
-  // bekende auteur is het bedrijf de auteur (als Organization, niet als Person).
-  const isFounder =
-    !authorName || BUSINESS.founder.name.toLowerCase().startsWith(authorName.toLowerCase());
-  const author = isFounder
-    ? {"@id": founderId(org.siteUrl)}
-    : {"@type": "Person", name: authorName, worksFor: orgRef()};
+  // Artikelen staan op naam van het bedrijf (geen persoonsnaam op de site).
+  void authorName;
+  const author = orgRef();
 
   return {
     "@type": "BlogPosting",
