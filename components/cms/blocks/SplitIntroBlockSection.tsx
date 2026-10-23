@@ -51,7 +51,7 @@ export default function SplitIntroBlockSection({
           <div className="min-w-0 max-w-3xl">
             {content.eyebrow ? <p className="eyebrow-slate">{content.eyebrow}</p> : null}
 
-            <h1 className="mt-4 text-4xl font-bold  tracking-[-0.03em] leading-tight  text-brand-ink text-[38px] lg:text-[40px] xl:text-[50px] max-w-[600px]">
+            <h1 className="mt-4 text-4xl font-bold  tracking-[-0.03em] leading-tight  text-brand-ink text-[30px] sm:text-[38px] lg:text-[40px] xl:text-[50px] max-w-[600px]">
               {content.titlePrefix ? <span>{content.titlePrefix} </span> : null}
               {content.titleHighlight ? <span className="text-brand-orange">{content.titleHighlight}</span> : null}
               {content.titleSuffix ? <span>{content.titleHighlight ? " " : ""}{content.titleSuffix}</span> : null}

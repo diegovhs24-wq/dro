@@ -45,12 +45,7 @@ body {
 h1, h2, h3, h4, p, li, dd, dt, blockquote, figcaption {
   overflow-wrap: break-word;
 }
-/* Afbreken alleen op mobiel en tablet; op desktop blijven koppen heel. */
-@media (max-width: 1023px) {
-  h1, h2, h3 {
-    hyphens: auto;
-  }
-}
+/* Koppen worden niet automatisch afgebroken; overflow-wrap hierboven is het vangnet. */
 
 ::selection {
   background: var(--dro-orange);
@@ -294,9 +289,7 @@ section.bg-white::after {
   .pr *, .pr *::before, .pr *::after { transition: none !important; animation: none !important; }
 }
 
-/* Op desktop koppen in de paginalaag niet afbreken. */
-@media (min-width: 1024px) {
-  .pr h1, .pr h2, .pr h3, .pr .pr-display, .pr .pr-h2, .pr .pr-h3 {
-    hyphens: manual;
-  }
+/* Koppen in de paginalaag niet automatisch afbreken. */
+.pr h1, .pr h2, .pr h3, .pr .pr-display, .pr .pr-h2, .pr .pr-h3 {
+  hyphens: manual;
 }
