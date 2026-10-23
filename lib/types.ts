@@ -1,3 +1,4 @@
+import type {PublicCaseStudy} from "@/lib/caseStudy";
 export type SeoSettings = {
   metaTitle?: string;
   metaDescription?: string;
@@ -382,6 +383,7 @@ export type ProjectItem = {
   secondaryLabel?: string;
   secondaryLink?: SmartLink;
   videoChecklist?: VideoChecklistItem[];
+  caseStudy?: PublicCaseStudy | null;
   href?: string;
   seo?: SeoSettings;
 };

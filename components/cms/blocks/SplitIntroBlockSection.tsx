@@ -47,11 +47,11 @@ export default function SplitIntroBlockSection({
   return (
     <section className="bg-[#f7f3ec]/75 border-b border-black/5 pt-10 sm:pt-14">
       <div className="section-shell">
-        <div className="grid gap-6 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-          <div className="max-w-3xl">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:items-center">
+          <div className="min-w-0 max-w-3xl">
             {content.eyebrow ? <p className="eyebrow-slate">{content.eyebrow}</p> : null}
 
-            <h1 className="mt-4 text-4xl font-bold  tracking-[-0.03em] leading-tight  text-brand-ink text-[38px] lg:text-[56px] max-w-[500px">
+            <h1 className="mt-4 text-4xl font-bold  tracking-[-0.03em] leading-tight  text-brand-ink text-[38px] lg:text-[56px] max-w-[500px]">
               {content.titlePrefix ? <span>{content.titlePrefix} </span> : null}
               {content.titleHighlight ? <span className="text-brand-orange">{content.titleHighlight}</span> : null}
               {content.titleSuffix ? <span>{content.titleHighlight ? " " : ""}{content.titleSuffix}</span> : null}
@@ -85,10 +85,10 @@ export default function SplitIntroBlockSection({
             </div>
           </div>
 
-          <div className="lg:justify-self-end lg:pl-4">
+          <div className="min-w-0 lg:justify-self-end lg:pl-4">
             <div className="relative overflow-hidden rounded-[1.25rem] border border-black/10 bg-brand-soft shadow-premium">
               <div
-                className="min-h-[320px] bg-cover bg-center sm:min-h-[420px] lg:min-h-[620px] lg:min-w-[460px]"
+                className="min-h-[320px] w-full bg-cover bg-center sm:min-h-[420px] lg:min-h-[620px] lg:w-[min(460px,100%)]"
                 style={{backgroundImage: `url(${content.image})`}}
               />
               {content.imageCaption ? (

@@ -161,6 +161,7 @@ export const PLANNING_OPTIONS = ["Zo snel mogelijk", "Binnen 3 maanden", "Over 3
 
 export const FOUND_OPTIONS = [
   "Google of zoekmachine",
+  "Via een AI-assistent (ChatGPT, Gemini, Perplexity of Copilot)",
   "Via IamExpat of een beurs",
   "Social media (Instagram, Facebook)",
   "Via iemand die ik ken",

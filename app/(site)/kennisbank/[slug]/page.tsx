@@ -91,17 +91,17 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
         title={post.title}
       />
       <main>
-        <section className="bg-brand-ink py-14 text-white sm:py-16">
+        <section className="hero-ref">
           <div className="section-shell grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div>
-              <Link className="eyebrow hover:text-brand-orange" href="/kennisbank">
+              <Link className="eyebrow-slate hover:text-brand-orange" href="/kennisbank">
                 Kennisbank
               </Link>
-              <h1 className="mt-4 text-3xl font-extrabold leading-tight sm:text-5xl">
+              <h1 className="hero-ref-title mt-5">
                 {post.title}
               </h1>
-              <p className="mt-6 text-lg leading-8 text-white/76">{post.excerpt}</p>
-              <div className="mt-7 flex flex-wrap items-center gap-3 text-sm font-semibold text-white/75">
+              <p className="hero-ref-text mt-6">{post.excerpt}</p>
+              <div className="mt-7 flex flex-wrap items-center gap-3 text-sm font-semibold text-brand-stone">
                 {post.author?.name ? <span>Door {post.author.name}</span> : null}
                 {publishedDate ? <span>{publishedDate}</span> : null}
                 {post.readingTime ? <span>{post.readingTime}</span> : null}
@@ -110,7 +110,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
                 <div className="mt-6 flex flex-wrap gap-2">
                   {post.categories.map((category) => (
                     <span
-                      className="rounded bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-white/80"
+                      className="rounded-btn bg-white px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-brand-stone"
                       key={category.slug}
                     >
                       {category.title}
@@ -121,7 +121,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
             </div>
             {post.featuredImage ? (
               <div
-                className="min-h-[430px] rounded-lg bg-cover bg-center shadow-premium"
+                className="min-h-[430px] rounded-img bg-cover bg-center shadow-img"
                 style={{backgroundImage: `url(${post.featuredImage})`}}
               />
             ) : null}

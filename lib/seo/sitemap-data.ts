@@ -49,6 +49,8 @@ const STATIC_PATHS = [
   {path: "/", priority: 1, changeFrequency: "weekly" as const},
   {path: "/diensten", priority: 0.9, changeFrequency: "weekly" as const},
   {path: "/projecten", priority: 0.9, changeFrequency: "weekly" as const},
+  {path: "/grote-renovaties", priority: 0.9, changeFrequency: "monthly" as const},
+  {path: "/constructieve-werken", priority: 0.85, changeFrequency: "monthly" as const},
   {path: "/kennisbank", priority: 0.8, changeFrequency: "weekly" as const},
   {path: "/handige-tools", priority: 0.85, changeFrequency: "monthly" as const},
   {path: "/over-ons", priority: 0.8, changeFrequency: "monthly" as const},

@@ -55,6 +55,8 @@ export type LeadEmailData = {
   channel: LeadChannel;
   assessment: LeadAssessment;
   attribution?: LeadAttribution;
+  conversionRouteLabel?: string;
+  budgetTierLabel?: string;
 };
 
 function esc(value: string): string {
@@ -227,6 +229,7 @@ export function renderLeadEmail(d: LeadEmailData): {subject: string; html: strin
       ["Funda", fundaHtml, true],
       ["Foto's", d.photoCount ? `${d.photoCount} foto${d.photoCount === 1 ? "" : "'s"} &middot; <a href="${esc(studioLink(d.documentId))}" style="color:${C.ads};">bekijken</a>` : undefined, true],
       ["Budget", d.budgetLabel],
+      ["Budgetklasse", d.budgetTierLabel],
       ["Planning", d.timeline],
     ]),
   )}
@@ -240,7 +243,9 @@ export function renderLeadEmail(d: LeadEmailData): {subject: string; html: strin
       ["Zoekwoord", a.utm_term],
       ["Pagina", page],
       ["Verwijzer", a.referrer],
+      ["Route", d.conversionRouteLabel],
       ["Formulier", d.formTitle],
+      ["Verstuurd vanaf", a.submitPage],
       ["Hoe gevonden", d.hoeGevonden],
     ]) + `<div style="margin-top:12px;">${button(studioLink(d.documentId), "Bekijk alle gegevens")}</div>`,
   )}
@@ -259,6 +264,8 @@ export function renderLeadEmail(d: LeadEmailData): {subject: string; html: strin
     ...answerRows.map(([q, v]) => `${q}: ${v}`),
     address ? `Adres: ${address}` : "",
     d.budgetLabel ? `Budget: ${d.budgetLabel}` : "",
+    d.budgetTierLabel ? `Budgetklasse: ${d.budgetTierLabel}` : "",
+    d.conversionRouteLabel ? `Route: ${d.conversionRouteLabel}` : "",
     d.timeline ? `Planning: ${d.timeline}` : "",
     d.message ? `Opmerking: ${d.message}` : "",
     a.utm_campaign ? `Campagne: ${a.utm_campaign}` : "",

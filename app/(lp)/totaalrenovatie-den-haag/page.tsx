@@ -3,7 +3,7 @@ import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
-import {getProjects} from '@/lib/cms'
+import {getProjects, getVerifiedClaims} from '@/lib/cms'
 import {cmsImageUrl, fetchSanity, type CmsImageSource} from '@/lib/sanity'
 import type {ProjectItem} from '@/lib/types'
 
@@ -31,10 +31,9 @@ const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
 const REVIEW_SCORE = BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')
 const REVIEW_COUNT = `${BUSINESS.reviews.reviewCount}+`
-// LET OP: Trustoo-cijfers en reactietijd pas live na bevestiging door Therab.
-const TRUSTOO_SCORE = '9,8'
-const TRUSTOO_COUNT = '557'
-const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'
+// Trustoo-cijfer en reactietijd komen uit Sanity (Site Settings > Geverifieerde
+// claims) en verschijnen alleen als ze daar zijn bevestigd. Zonder bevestiging
+// tonen we de Google-score en 'zo snel mogelijk'.
 
 type Variant = 'aannemer' | 'woning' | 'kosten'
 
@@ -55,9 +54,8 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   },
 }
 
-const PROOF = [
-  `${TRUSTOO_SCORE} op Trustoo uit ${TRUSTOO_COUNT} reviews, Top Pro 2026`,
-  'Vaste vakteams en één vast aanspreekpunt',
+const PROOF_REST = [
+  'Vaste vakteams en één vast aanspreekpunt voor de afstemming',
   'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
   'VCA-gecertificeerd en CAR-verzekerd',
 ]
@@ -198,7 +196,7 @@ const EXAMPLE_PHASES = [
 ]
 
 const GRIP = [
-  {title: 'Eén vast aanspreekpunt', text: 'Van de eerste bezichtiging tot de oplevering dezelfde persoon.', icon: 'person'},
+  {title: 'Eén vast aanspreekpunt', text: 'Voor de afstemming, met vaste rollen voor techniek en betalingen.', icon: 'person'},
   {title: 'Elke week een vast meetmoment', text: 'U ziet de voortgang en stelt uw vragen op een vast moment.', icon: 'calendar'},
   {title: 'Vragen binnen 24 uur opgepakt', text: 'Via de app, ook tussen de meetmomenten door.', icon: 'chat'},
   {title: 'Vaste vakteams', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
@@ -314,9 +312,9 @@ function Icon({name}: {name: string}) {
 
 const euro = (n: number) => `€ ${n.toLocaleString('nl-NL')}`
 
-const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
+const H1 = 'font-bold tracking-[-0.035em] leading-[1.06] text-lp-ink'
 const H2 =
-  'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
+  'text-[26px] sm:text-[32px] font-bold tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
 
 // Snelmenu bovenin: springt naar de onderdelen van deze pagina.
 const NAV = [
@@ -350,7 +348,14 @@ export default async function TotaalrenovatieLandingPage(
   const searchParams = await props.searchParams;
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
-  const [projects, teamPhoto] = await Promise.all([getProjects(), getTeamPhoto()])
+  const [projects, teamPhoto, claims] = await Promise.all([getProjects(), getTeamPhoto(), getVerifiedClaims()])
+  const trustoo = claims.trustoo
+  const responseSlot = claims.responseTime?.text || 'zo snel mogelijk'
+  const responseLine = claims.responseTime ? `We nemen ${claims.responseTime.text} contact op` : 'We nemen zo snel mogelijk contact op'
+  const PROOF = [
+    trustoo ? `${trustoo.score} op Trustoo uit ${trustoo.count} reviews` : `${REVIEW_SCORE} uit ${BUSINESS.reviews.reviewCount} Google-reviews`,
+    ...PROOF_REST,
+  ]
   const shownProjects = pickProjects(projects)
   const heroImage = heroImageOf(projects)
 
@@ -380,7 +385,7 @@ export default async function TotaalrenovatieLandingPage(
           <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-b border-lp-line px-5 py-4">
             <div>
               <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-lp-orange">Rekenvoorbeeld</p>
-              <h3 className="mt-0.5 text-[18px] font-bold [font-stretch:108%]">Totaalrenovatie jaren 30-woning, 100 m²</h3>
+              <h3 className="mt-0.5 text-[18px] font-bold">Totaalrenovatie jaren 30-woning, 100 m²</h3>
               <p className="text-sm text-lp-muted">
                 {euro(EXAMPLE_TOTAL)} inclusief btw &middot; {EXAMPLE_WEEKS} weken werk
               </p>
@@ -412,7 +417,7 @@ export default async function TotaalrenovatieLandingPage(
                     <span className="text-[12px] uppercase tracking-[0.06em] text-lp-muted">{phase.weeks}</span>
                   </div>
                   <p className="mt-2 font-semibold leading-tight">{phase.step}</p>
-                  <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums [font-stretch:110%] ${first ? 'text-lp-orange' : ''}`}>
+                  <p className={`mt-1 text-[24px] font-bold leading-none tabular-nums ${first ? 'text-lp-orange' : ''}`}>
                     {euro(phase.amount)}
                   </p>
                   <p className="mt-1 text-[12px] text-lp-muted">{`${phase.pct}% van het totaal`}</p>
@@ -456,7 +461,7 @@ export default async function TotaalrenovatieLandingPage(
         <div className="mt-8 grid gap-10 md:grid-cols-[1fr_1.15fr] md:items-start">
           <div>
             <p className="text-sm text-lp-muted">Indicatie per m², inclusief btw</p>
-            <p className="mt-2 text-[40px] font-bold leading-none tabular-nums [font-stretch:112%] sm:text-[52px]">
+            <p className="mt-2 text-[40px] font-bold leading-none tabular-nums sm:text-[52px]">
               {euro(PRICE_MIN_INCL)}
               <span className="px-2 text-[0.5em] font-semibold text-lp-muted">tot</span>
               {PRICE_MAX_INCL.toLocaleString('nl-NL')}
@@ -490,7 +495,7 @@ export default async function TotaalrenovatieLandingPage(
             </ul>
             <p className="mt-4">Na de bezichtiging krijgt u een offerte op maat, met de fases en termijnen van het betaalschema erin.</p>
             <PullQuote review={GOOGLE_REVIEWS[1]} />
-            <a className="mt-5 inline-flex min-h-[48px] items-center rounded-md bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover" href="#aanvraag">
+            <a className="mt-5 inline-flex min-h-[48px] items-center rounded-btn bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover shadow-cta" href="#aanvraag">
               Bezichtiging aanvragen
             </a>
           </div>
@@ -522,7 +527,7 @@ export default async function TotaalrenovatieLandingPage(
               Bezoek onze website
             </a>
             <a
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-btn bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange shadow-cta"
               href={PHONE_HREF}
             >
               <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -547,24 +552,21 @@ export default async function TotaalrenovatieLandingPage(
         </nav>
       </header>
 
-      <section className="relative isolate overflow-hidden bg-lp-slate text-white" id="aanvraag">
-        {heroImage && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" aria-hidden="true" className="absolute inset-0 -z-20 h-full w-full object-cover" fetchPriority="high" src={heroImage} />
-            <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-lp-slate via-lp-slate/90 to-lp-slate/40" />
-          </>
-        )}
+      <section className="bg-lp-plaster text-lp-ink" id="aanvraag">
         <div className="section-shell grid gap-10 py-10 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
           <div>
             <h1 className={`${H1} text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title.replace('Den Haag', 'Den\u00a0Haag')}</h1>
-            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-white/85">{hero.intro}</p>
-            <ul className="mt-7 hidden gap-3 text-white/90 md:grid">{proofItems}</ul>
+            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-lp-muted">{hero.intro}</p>
+            <ul className="mt-7 hidden gap-3 text-lp-ink md:grid">{proofItems}</ul>
+            {heroImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt="Opgeleverd project van DRO Renovaties" className="mt-8 hidden aspect-[16/9] w-full rounded-img object-cover shadow-img md:block" fetchPriority="high" src={heroImage} />
+            )}
           </div>
           <div className="text-lp-ink">
             <SmartIntakeWizard
               largeBudget={[50000, 100000]}
-              responsePromise="zo snel mogelijk"
+              responsePromise={responseSlot}
               serviceOrder={['Totaalrenovatie', 'Aanbouw of opbouw', 'Badkamer', 'Keuken', 'Dakkapel']}
               servicesSub="Kies één of meer onderdelen. Daarna stellen we alleen de vragen die bij uw verbouwing horen."
               servicesTitle="Wat wilt u verbouwen?"
@@ -577,11 +579,11 @@ export default async function TotaalrenovatieLandingPage(
               ]}
               variant={variant}
             />
-            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
-              <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} Trustoo</span>
-              <span className="font-semibold text-white"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
+            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-lp-muted">
+              {trustoo && <span className="font-semibold text-lp-ink"><span aria-hidden="true" className={STAR}>★</span> {trustoo.score} Trustoo</span>}
+              <span className="font-semibold text-lp-ink"><span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} Google</span>
               <span>VCA-gecertificeerd</span>
-              <span>{RESPONSE_PROMISE}</span>
+              <span>{responseLine}</span>
             </p>
           </div>
         </div>
@@ -589,20 +591,23 @@ export default async function TotaalrenovatieLandingPage(
 
       <section aria-label="Beoordelingen en beloften" className="bg-lp-plaster">
         <dl className="section-shell grid grid-cols-2 items-start gap-x-6 gap-y-5 py-6 lg:grid-cols-5">
+          {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
-              {TRUSTOO_SCORE}/10{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{TRUSTOO_COUNT} reviews</span>
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
+              {trustoo.score}/10{' '}
+              <span className="text-[14px] font-normal text-lp-muted">{trustoo.count} reviews</span>
             </dd>
           </div>
+          )}
           <div>
             <dt className="text-[13px] text-lp-muted">Google</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
               {REVIEW_SCORE}<span className="text-lp-orange"> ★</span>{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
+              <span className="text-[14px] font-normal text-lp-muted">{REVIEW_COUNT} reviews</span>
             </dd>
           </div>
+          {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Onderscheiden in 2026</dt>
             <dd className="mt-1 flex min-h-[44px] items-center gap-2">
@@ -612,6 +617,7 @@ export default async function TotaalrenovatieLandingPage(
               ))}
             </dd>
           </div>
+          )}
           <div>
             <dt className="text-[13px] text-lp-muted">Gecertificeerd en verzekerd</dt>
             <dd className="mt-1 flex min-h-[44px] items-center gap-4">
@@ -623,7 +629,7 @@ export default async function TotaalrenovatieLandingPage(
           </div>
           <div className="col-span-2 lg:col-span-1">
             <dt className="text-[13px] text-lp-muted">Na uw aanvraag</dt>
-            <dd className="mt-0.5 text-[17px] font-semibold">{RESPONSE_PROMISE}</dd>
+            <dd className="mt-0.5 text-[17px] font-semibold">{responseLine}</dd>
           </div>
         </dl>
       </section>
@@ -687,7 +693,7 @@ export default async function TotaalrenovatieLandingPage(
                       </dl>
                     )}
                     <a
-                      className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white"
+                      className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-btn border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white shadow-cta"
                       href={`/projecten/${project.slug}`}
                     >
                       Bekijk project
@@ -717,18 +723,19 @@ export default async function TotaalrenovatieLandingPage(
         <div className="section-shell py-14">
           <h2 className={H2}>Wat klanten over ons zeggen</h2>
           <div className="mt-8 grid items-start gap-8 lg:grid-cols-[300px_1fr]">
+            {trustoo ? (
             <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
-              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
-                {TRUSTOO_SCORE}
+              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums">
+                {trustoo.score}
                 <span className="text-[20px] font-medium text-lp-muted">/10</span>
               </p>
               <span className="mt-1.5 inline-block rounded-full bg-[#1F1A4A] px-2.5 py-0.5 text-[12px] font-bold uppercase tracking-[0.06em] text-white">
                 Uitstekend
               </span>
               <p className="mt-3 text-[14px] text-lp-muted">
-                {TRUSTOO_COUNT} reviews uit 4 bronnen: {TRUSTOO_SOURCES}.
+                {trustoo.count} reviews (stand {trustoo.asOf}).
               </p>
               <div className="mt-4 flex items-end gap-3.5">
                 {TRUSTOO_BADGES.map((badge) => (
@@ -740,6 +747,15 @@ export default async function TotaalrenovatieLandingPage(
                 <strong>{REVIEW_SCORE}</strong> <span className={STAR}>★</span> op Google, {REVIEW_COUNT} reviews
               </p>
             </aside>
+            ) : (
+            <aside aria-label="Google-score" className="rounded-lg border border-lp-line bg-white p-6">
+              <p className="text-[56px] font-extrabold leading-none tabular-nums">
+                {REVIEW_SCORE}
+                <span className="text-[20px] font-medium text-lp-muted"> ★</span>
+              </p>
+              <p className="mt-3 text-[14px] text-lp-muted">Op Google, {REVIEW_COUNT} reviews.</p>
+            </aside>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               {GOOGLE_REVIEWS.map((review) => (
                 <figure className="m-0 flex flex-col rounded-lg border border-lp-line bg-white p-5" key={review.name}>
@@ -812,8 +828,8 @@ export default async function TotaalrenovatieLandingPage(
             <div>
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
-                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste eigen
-                ploegen, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
+                DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van oprichter Therab Raja. We werken met vaste
+                vakteams, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
                 één aanspreekpunt van de eerste bezichtiging tot de oplevering.
               </p>
             </div>
@@ -831,7 +847,7 @@ export default async function TotaalrenovatieLandingPage(
                     // eslint-disable-next-line @next/next/no-img-element
                     <img alt={logo.name} className="max-h-full max-w-full object-contain" loading="lazy" src={logo.src} />
                   ) : (
-                    <span className="text-center text-[17px] font-bold [font-stretch:110%]">{logo.name}</span>
+                    <span className="text-center text-[17px] font-bold">{logo.name}</span>
                   )}
                 </div>
                 <p className="mt-2 text-[13px] leading-[1.45] text-lp-muted">{logo.text}</p>
@@ -888,23 +904,27 @@ export default async function TotaalrenovatieLandingPage(
       </section>
 
       <section className="bg-lp-slate text-white">
-        <div className="section-shell flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between">
+        <div className="section-shell flex flex-col items-start gap-6 py-12 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className={H2}>Plannen voor een totaalrenovatie?</h2>
             <p className="mt-2 text-white/75">Vraag vrijblijvend een bezichtiging aan, of bel ons direct.</p>
             <p className="mt-2 text-[14px] text-white/85">
-              <span aria-hidden="true" className={STAR}>★</span> {TRUSTOO_SCORE} op Trustoo uit {TRUSTOO_COUNT} reviews
-              <span aria-hidden="true" className="mx-2 opacity-40">|</span>
-              {REVIEW_SCORE} op Google
+              <span aria-hidden="true" className={STAR}>★</span> {REVIEW_SCORE} op Google
+              {trustoo && (
+                <>
+                  <span aria-hidden="true" className="mx-2 opacity-40">|</span>
+                  {trustoo.score} op Trustoo uit {trustoo.count} reviews
+                </>
+              )}
               <span aria-hidden="true" className="mx-2 opacity-40">|</span>
               VCA-gecertificeerd
             </p>
           </div>
-          <div className="flex w-full gap-3 md:w-auto">
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
+          <div className="flex w-full flex-wrap gap-3 lg:w-auto lg:flex-nowrap">
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover lg:flex-none" href="#aanvraag">
               Aanvraag starten
             </a>
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink md:flex-none" href={PHONE_HREF}>
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink lg:flex-none" href={PHONE_HREF}>
               Bel {PHONE_LABEL}
             </a>
           </div>
@@ -923,7 +943,7 @@ export default async function TotaalrenovatieLandingPage(
         <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-lp-ink font-semibold" href={PHONE_HREF}>
           Bellen
         </a>
-        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-lp-orange font-semibold text-white" href="#aanvraag">
+        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-btn bg-lp-orange font-semibold text-white" href="#aanvraag">
           Aanvraag starten
         </a>
       </div>

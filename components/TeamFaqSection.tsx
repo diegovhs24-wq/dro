@@ -85,7 +85,7 @@ export default function TeamFaqSection() {
                   />
                   <div className="-mt-10 mx-4 rounded-lg bg-white p-5 shadow-sm">
                     <h3 className="text-xl font-bold text-brand-ink">
-                      {member.name} — {member.role}
+                      {member.name}, {member.role}
                     </h3>
                     <p className="mt-3 text-sm font-semibold leading-6 text-neutral-600">
                       {member.text}

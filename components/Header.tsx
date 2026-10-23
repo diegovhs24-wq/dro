@@ -72,7 +72,7 @@ export default function Header({siteSettings}: HeaderProps) {
           <Logo logo={siteSettings.headerLogo} />
 
           {/* Desktop nav */}
-          <nav className="hidden flex-1 items-center justify-center gap-9 md:flex xl:gap-12" aria-label="Hoofdmenu">
+          <nav className="hidden flex-1 items-center justify-center gap-7 lg:flex xl:gap-12" aria-label="Hoofdmenu">
             {siteSettings.headerMenu.map((item) =>
               item.type === "megaMenu" ? (
                 <MegaMenuItem key={item.label} item={item} pathname={pathname} />
@@ -83,7 +83,7 @@ export default function Header({siteSettings}: HeaderProps) {
           </nav>
 
           {/* Desktop CTA buttons */}
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             <SmartButton buttons={siteSettings.headerButtons} />
           </div>
 
@@ -93,7 +93,7 @@ export default function Header({siteSettings}: HeaderProps) {
             aria-label={mobileOpen ? "Menu sluiten" : "Menu openen"}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
-            className="flex h-10 w-10 items-center justify-center rounded-md text-brand-ink transition hover:bg-neutral-100 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-md text-brand-ink transition hover:bg-neutral-100 lg:hidden"
             onClick={() => setMobileOpen((v) => !v)}
           >
             {mobileOpen ? (
@@ -118,6 +118,7 @@ export default function Header({siteSettings}: HeaderProps) {
         pathname={pathname}
         onClose={() => setMobileOpen(false)}
         logo={siteSettings.headerLogo}
+        whatsappHref={siteSettings.floatingActions?.whatsappHref}
       />
     </>
   );
@@ -279,15 +280,16 @@ type MobileMenuProps = {
   pathname: string;
   onClose: () => void;
   logo?: string;
+  whatsappHref?: string;
 };
 
-function MobileMenu({id, open, items, buttons, pathname, onClose, logo}: MobileMenuProps) {
+function MobileMenu({id, open, items, buttons, pathname, onClose, logo, whatsappHref}: MobileMenuProps) {
   return (
     <>
       {/* Backdrop */}
       <div
         aria-hidden="true"
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 lg:hidden ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={onClose}
@@ -299,7 +301,7 @@ function MobileMenu({id, open, items, buttons, pathname, onClose, logo}: MobileM
         role="dialog"
         aria-modal="true"
         aria-label="Navigatiemenu"
-        className={`fixed inset-y-0 right-0 z-50 flex w-[min(340px,100vw)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed inset-y-0 right-0 z-50 flex w-[min(340px,100vw)] flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -333,14 +335,22 @@ function MobileMenu({id, open, items, buttons, pathname, onClose, logo}: MobileM
           </ul>
         </nav>
 
-        {/* CTA buttons pinned to bottom */}
-        {buttons && buttons.length > 0 && (
-          <div className="shrink-0 border-t border-black/10 px-4 py-4">
-            <div className="flex flex-col gap-2">
-              <SmartButton buttons={buttons} className="justify-center" />
+        {/* CTA's onderaan: intake, bellen en WhatsApp (op mobiel staat geen zwevende knop). */}
+        <div className="shrink-0 border-t border-black/10 px-4 py-4">
+          <div className="flex flex-col gap-2">
+            {buttons && buttons.length > 0 && <SmartButton buttons={buttons} className="justify-center" />}
+            <div className="grid grid-cols-2 gap-2">
+              <a className="btn-outline" data-track="mobile_menu" href="tel:+31850871814">
+                Bel 085 087 1814
+              </a>
+              {whatsappHref && whatsappHref !== "#" ? (
+                <a className="btn-outline" data-track="mobile_menu" href={whatsappHref}>
+                  WhatsApp
+                </a>
+              ) : null}
             </div>
           </div>
-        )}
+        </div>
       </div>
     </>
   );

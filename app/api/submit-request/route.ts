@@ -1,7 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
 import {describeError, getLeadsClient} from "@/lib/sanityLeadsClient";
 import {sendLeadEmail} from "@/lib/leadEmail";
-import {assessLead, deriveChannel} from "@/lib/leadInsights";
+import {assessLead, budgetTier, deriveChannel} from "@/lib/leadInsights";
+import {CONVERSION_ROUTE_LABELS, isConversionRoute, routeFromSource} from "@/lib/conversionRoutes";
 
 type ServiceAnswer = {question?: string; answer?: string};
 type ServiceAnswerGroup = {service?: string; answers?: ServiceAnswer[]};
@@ -34,14 +35,17 @@ type SubmitPayload = {
   serviceAnswers?: ServiceAnswerGroup[];
   photos?: unknown;
   source?: string;
+  conversionRoute?: string;
   attribution?: Record<string, unknown>;
 };
 
 // Alleen bekende bronnen; alles anders wordt "smart-intake".
-const ALLOWED_SOURCES = new Set(["smart-intake", "lp-totaalrenovatie", "lp-draagmuur"]);
+const ALLOWED_SOURCES = new Set(["smart-intake", "lp-totaalrenovatie", "lp-draagmuur", "route-grote-renovatie", "route-specialistisch"]);
 const FORM_TITLES: Record<string, string> = {
   "lp-totaalrenovatie": "Landingspagina totaalrenovatie",
   "lp-draagmuur": "Landingspagina draagmuur",
+  "route-grote-renovatie": "Intake grote renovaties",
+  "route-specialistisch": "Intake constructieve werken",
 };
 const ATTRIBUTION_KEYS = [
   "gclid",
@@ -56,6 +60,7 @@ const ATTRIBUTION_KEYS = [
   "referrer",
   "variant",
   "firstSeenAt",
+  "submitPage",
 ] as const;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -253,7 +258,18 @@ export async function POST(request: NextRequest) {
   const source = ALLOWED_SOURCES.has(requestedSource) ? requestedSource : "smart-intake";
   const attribution = cleanAttribution(payload.attribution);
   const channel = deriveChannel(source, attribution);
-  const assessment = assessLead({services, budgetMin, budgetMax, budgetLabel, timeline, postcode});
+  // Route: expliciet uit het formulier, anders afgeleid van de bron. Onbekende waarden vallen weg.
+  const conversionRoute = isConversionRoute(payload.conversionRoute) ? payload.conversionRoute : routeFromSource(source);
+  const assessment = assessLead({
+    // Op de route "grote renovatie" geldt de budgetcheck vanaf € 50.000 altijd.
+    services: conversionRoute === "grote-renovatie" ? [...services, "Totaalrenovatie (route)"] : services,
+    budgetMin,
+    budgetMax,
+    budgetLabel,
+    timeline,
+    postcode,
+  });
+  const tier = budgetTier({budgetMin, budgetMax, budgetLabel});
 
   // Volgorde (na pre-productiereview):
   // 1. lead opslaan (max 8 s);
@@ -290,6 +306,8 @@ export async function POST(request: NextRequest) {
     source,
     channel: channel.label,
     leadAssessment: assessment.label,
+    budgetTier: tier.key,
+    ...(conversionRoute ? {conversionRoute} : {}),
     ...(attribution ? {attribution} : {}),
     ...(spamSuspect ? {spamSuspect: true} : {}),
     submittedAt,
@@ -359,6 +377,8 @@ export async function POST(request: NextRequest) {
           channel,
           assessment,
           attribution,
+          conversionRouteLabel: conversionRoute ? CONVERSION_ROUTE_LABELS[conversionRoute] : undefined,
+          budgetTierLabel: tier.key === "onbekend" ? undefined : tier.label,
         }),
         12_000,
         false

@@ -103,17 +103,63 @@ export function revokeGoogleConsent() {
 }
 
 // Conversie voor een geslaagde aanvraag. Doet niets zonder toestemming, zonder
-// Ads-ID of zonder conversielabel. De aanroeper bewaakt "één keer per aanvraag".
-export function trackLead() {
+// Ads-ID of zonder conversielabel. De aanroeper bewaakt "één keer per aanvraag";
+// het aanvraagnummer als transaction_id laat Google dubbele tellingen negeren.
+export function trackLead(leadId?: string) {
   if (!canTrack() || !GOOGLE_ADS_LEAD_LABEL) return;
   ensureGtag()("event", "conversion", {
     send_to: `${GOOGLE_ADS_ID}/${GOOGLE_ADS_LEAD_LABEL}`,
     value: 1,
     currency: "EUR",
+    ...(leadId && /^[\w-]{6,80}$/.test(leadId) ? {transaction_id: leadId} : {}),
   });
 }
 
 export function trackEvent(name: string) {
   if (!canTrack()) return;
   ensureGtag()("event", name);
+}
+
+// Optioneel GA4-meet-ID. Leeg = alleen Google Ads (zoals nu).
+export const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "";
+
+export type FunnelEventName =
+  | "route_view"
+  | "cta_click"
+  | "form_start"
+  | "form_step_complete"
+  | "form_submit_success"
+  | "form_submit_error"
+  | "click_call"
+  | "click_whatsapp";
+
+export type FunnelParams = Record<string, string | number | boolean | undefined>;
+
+// Nooit persoonsgegevens in meetdata: alleen korte, technische waarden.
+const BLOCKED_PARAM = /(name|naam|email|mail|phone|telefoon|tel|address|adres|postcode|huisnummer|message|bericht)/i;
+
+export function sanitizeFunnelParams(params: FunnelParams = {}): Record<string, string | number | boolean> {
+  const out: Record<string, string | number | boolean> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || BLOCKED_PARAM.test(key)) continue;
+    if (typeof value === "string") {
+      // Ook waarden die op een e-mailadres of telefoonnummer lijken, weglaten.
+      if (/@/.test(value) || /\d{6,}/.test(value.replace(/[\s-]/g, ""))) continue;
+      out[key] = value.slice(0, 100);
+    } else {
+      out[key] = value;
+    }
+  }
+  return out;
+}
+
+// Funnelmeting. Doet niets zonder cookietoestemming. Zet de gebeurtenis in de
+// dataLayer (voor GA4 of Tag Manager) en, als gtag actief is, direct als event.
+export function trackFunnel(name: FunnelEventName, params?: FunnelParams) {
+  if (typeof window === "undefined" || readConsent() !== "granted") return;
+  const clean = sanitizeFunnelParams({page_path: window.location.pathname, ...params});
+  const w = window as GtagWindow;
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push({event: name, ...clean});
+  if (GOOGLE_ADS_ID || GA4_ID) ensureGtag()("event", name, clean);
 }

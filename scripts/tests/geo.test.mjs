@@ -8,17 +8,31 @@ const {deriveChannel, detectAiPlatform} = await import(process.env.GEO_LEADS);
 
 test("absolute betaalbeloftes uit het CMS worden geneutraliseerd (keuze B)", () => {
   assert.equal(stripOutdatedClaims("Geen aanbetaling"), "Een vooraf vastgelegd betaalschema");
+  assert.equal(stripOutdatedClaims("Geen aanbetaling vooraf"), "Een vooraf vastgelegd betaalschema");
   assert.equal(stripOutdatedClaims("Vaste vakteams, geen aanbetaling en één vast team"), "Vaste vakteams, een vooraf vastgelegd betaalschema en één vast team");
+  assert.equal(
+    stripOutdatedClaims("We werken met vaste vakteams en zonder aanbetaling, en hebben"),
+    "We werken met vaste vakteams en met een vooraf vastgelegd betaalschema, en hebben"
+  );
   assert.equal(stripOutdatedClaims("Bij ondertekening betaalt u niets."), "Het betaalschema staat vooraf in de offerte.");
+  assert.equal(stripOutdatedClaims("Niets bij ondertekening"), "Het betaalschema staat vooraf in de offerte");
   assert.equal(stripOutdatedClaims("U betaalt per afgeronde fase en nooit vooruit."), "U betaalt per afgeronde fase, volgens het betaalschema in de offerte.");
+  assert.equal(
+    stripOutdatedClaims("U betaalt nooit voor werk dat nog niet gedaan is."),
+    "U betaalt volgens het betaalschema in de offerte, gekoppeld aan de projectfasen."
+  );
+  // Tekst zonder claim, inclusief alinea-witregels, blijft exact gelijk.
   const plain = "Eerste alinea.\n\nTweede  alinea.";
   assert.equal(stripOutdatedClaims(plain), plain);
+  assert.equal(stripOutdatedClaims("De startbetaling is 20%."), "De startbetaling is 20%.");
+  // De algemene voorwaarden (art. 8.8) worden niet geraakt.
   const av = "DRO mag op ieder moment gehele of gedeeltelijke vooruitbetaling of zekerheid verlangen.";
   assert.equal(stripOutdatedClaims(av), av);
 });
 
 test("betaalvoorwaarden in bedrijfsprofiel volgen keuze B", () => {
   assert.ok(!/niets bij ondertekening|eerste werkdag|geen aanbetaling|nooit vooruit/i.test(BUSINESS.paymentTerms));
+  assert.match(BUSINESS.paymentTerms, /betalingsschema vast in de offerte/);
 });
 
 test("review-samenvatting in Nederlandse notatie", () => {

@@ -9,8 +9,13 @@ import {
   getServiceBySlug,
   getServicesIndex,
   getSiteSettings,
+  getVerifiedClaims,
 } from "@/lib/cms";
 import {absoluteUrl, getSiteUrl} from "@/lib/seo/site";
+import {CONVERSION_ROUTES, GROTE_RENOVATIE, ROUTE_TRUST, SPECIALISTISCH, TOTAALRENOVATIE} from "@/lib/conversionRoutes";
+import {buildAssurances} from "@/lib/assurances";
+import {HOME_DESCRIPTION, HOME_FAQ} from "@/components/premium/homeContent";
+import {caseStudyFacts} from "@/lib/caseStudy";
 import {BUSINESS, formatReviewSummary, getReviewSnapshot, stripOutdatedClaims} from "@/lib/seo/business";
 import type {CmsDynamicPageBlock} from "@/lib/cms";
 import type {PtBlock, RichTextContent} from "@/lib/types";
@@ -331,15 +336,45 @@ async function buildRawMarkdownForPath(pathname: string) {
   ];
 
   if (normalized === "/") {
-    const page = await getPageBySlug("home");
-    page?.contentBlocks?.forEach((block) => lines.push(blockToMarkdown(block)));
-    lines.push(`## Navigatie\n\n`);
-    siteSettings.headerMenu.forEach((item) => {
-      if (item.type === "link" && item.link?.linkType === "external" && item.link.externalUrl) {
-        lines.push(`- ${link(item.label, item.link.externalUrl)}`);
-      }
-    });
+    // Zelfde inhoud als de homepage in code (components/premium/HomePage.tsx).
+    const claims = await getVerifiedClaims();
+    lines.push(heading(1, "Renovatie en verbouwing, onder één regie"));
+    lines.push(paragraph(HOME_DESCRIPTION));
+    lines.push(heading(2, "Twee routes"));
+    lines.push(list([
+      `${link("Grote renovaties", GROTE_RENOVATIE.path)}: totaalrenovatie, uitbouw en dakopbouw. Indicatie totaalrenovatie € 1.210 tot € 1.510 per m² incl. btw (€ 1.000 tot € 1.250 excl. btw).`,
+      `${link("Constructieve werken", SPECIALISTISCH.path)}: draagmuur verwijderen, doorbraak, stalen ligger. Uitvoering meestal 1 tot 3 dagen na constructieberekening.`,
+      `${link("Totaalrenovatie: kosten, duur en aanpak", TOTAALRENOVATIE.path)}`,
+    ]));
+    lines.push(heading(2, "Hoe het geregeld is"));
+    buildAssurances(claims).forEach((a) => lines.push(`- **${a.topic}.** ${a.answer} ${a.proof}\n`));
     lines.push("\n");
+    lines.push(heading(2, "Veelgestelde vragen"));
+    HOME_FAQ.forEach((f) => lines.push(`### ${f.q}\n\n${f.a}\n\n`));
+    return lines.join("\n");
+  }
+
+  const route = [...CONVERSION_ROUTES, TOTAALRENOVATIE].find((r) => r.path === normalized);
+  if (route) {
+    lines.push(heading(1, route.title));
+    lines.push(paragraph(route.intro));
+    lines.push(heading(2, route.audience.title));
+    route.audience.cards.forEach((c) => lines.push(`- **${c.title}.** ${c.text}\n`));
+    lines.push("\n");
+    lines.push(heading(2, route.scope.title));
+    route.scope.cards.forEach((c) => lines.push(`- **${c.title}.** ${c.text}${c.href ? ` ${link(c.linkLabel || c.title, c.href)}` : ""}\n`));
+    lines.push("\n");
+    lines.push(heading(2, route.pricing.title));
+    lines.push(paragraph(route.pricing.intro));
+    lines.push(paragraph(route.pricing.note));
+    lines.push(heading(2, "Betaling en zekerheden"));
+    lines.push(list([ROUTE_TRUST.payment, ROUTE_TRUST.insurance, `Erkenningen: ${ROUTE_TRUST.credentials.join(", ")}.`]));
+    lines.push(heading(2, route.steps.title));
+    route.steps.items.forEach((step, i) => lines.push(`${i + 1}. **${step.title}.** ${step.text}\n`));
+    lines.push("\n");
+    lines.push(heading(2, "Veelgestelde vragen"));
+    route.faq.forEach((f) => lines.push(`### ${f.q}\n\n${f.a}\n\n`));
+    lines.push(`Aanvragen: ${link("projectintake op deze pagina", `${route.path}#intake`)} of bel ${BUSINESS.phone.display} (ook via WhatsApp).\n`);
     return lines.join("\n");
   }
 
@@ -433,6 +468,17 @@ async function buildRawMarkdownForPath(pathname: string) {
     lines.push(list(project.work_items));
     lines.push(heading(2, "Projectverhaal"));
     lines.push(paragraph(project.story));
+    if (project.caseStudy) {
+      const cs = project.caseStudy;
+      lines.push(heading(2, "Casestudy"));
+      lines.push(list(caseStudyFacts(cs, project.location.trim()).map((f) => `${f.label}: ${f.value}`)));
+      lines.push(paragraph(`Wat de opdrachtgever wilde: ${cs.clientGoal}`));
+      if (cs.challenge) lines.push(paragraph(`Grootste uitdaging: ${cs.challenge}`));
+      if (cs.solution) lines.push(paragraph(`Oplossing: ${cs.solution}`));
+      lines.push(heading(3, "Scope"));
+      lines.push(list(cs.scope));
+      if (cs.quote) lines.push(`> ${cs.quote.text}${cs.quote.author ? ` (${cs.quote.author})` : ""}\n\n`);
+    }
     lines.push(`Terug naar ${link("alle projecten", "/projecten")}.\n`);
     return lines.join("\n");
   }

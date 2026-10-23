@@ -73,7 +73,7 @@ export const BUSINESS = {
 
   // Betaalvoorwaarden (besluit Therab 22-10-2026, keuze B): geen absolute
   // belofte over wat er bij ondertekening of vooraf betaald wordt. Het schema
-  // staat per project in de offerte (AV art. 8.1).
+  // staat per project in de offerte (AV art. 8.1). Zie PAYMENT_TERMS hieronder.
   paymentTerms:
     "Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd.",
 
@@ -107,7 +107,7 @@ export const BUSINESS = {
   priceIndications: [
     {
       service: "Totaalrenovatie",
-      range: "€ 1.000 tot € 1.250 per m² (excl. btw)",
+      range: "€ 1.210 tot € 1.510 per m² incl. btw (€ 1.000 tot € 1.250 excl. btw)",
       note: "Afhankelijk van staat van de woning, installaties, constructieve wijzigingen en afwerkingsniveau.",
     },
     {
@@ -158,6 +158,12 @@ export function getReviewSnapshot(override?: {
 }
 
 // "4,8 uit 273 Google-reviews": Nederlandse notatie voor in lopende tekst.
+// Vaste formulering betaalvoorwaarden (besluit 22-10-2026). Kort voor feitenbalken.
+export const PAYMENT_TERMS = {
+  long: "Voor aanvang van de werkzaamheden leggen wij het betalingsschema vast in de offerte. Betalingen worden gekoppeld aan de afgesproken projectfasen. Eventuele startbetalingen en afwijkende afspraken worden vooraf schriftelijk vastgelegd.",
+  short: "Per fase, vooraf vastgelegd in de offerte",
+} as const;
+
 export function formatReviewSummary(snapshot: ReviewSnapshot = getReviewSnapshot()) {
   const rating = snapshot.ratingValue.toLocaleString("nl-NL", {
     minimumFractionDigits: 1,

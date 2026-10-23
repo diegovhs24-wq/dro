@@ -3,7 +3,7 @@ import type {Metadata} from 'next'
 import CookieSettingsLink from '@/components/analytics/CookieSettingsLink'
 import SmartIntakeWizard from '@/components/SmartIntakeWizard'
 import VideoTestimonials, {type VideoTestimonial} from '@/components/landing/VideoTestimonials'
-import {getProjects} from '@/lib/cms'
+import {getProjects, getVerifiedClaims} from '@/lib/cms'
 import {EXAMPLE_INPUT, PRICE, draagmuurBreakdown, formatEuro} from '@/lib/draagmuurPrice'
 import type {ProjectItem} from '@/lib/types'
 
@@ -17,7 +17,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'Draagmuur verwijderen in Den Haag, alles geregeld | DRO Renovaties',
   description:
-    'Draagmuur eruit of een deuropening in een dragende muur: constructieberekening, vergunning, stalen balk en afwerking geregeld door een Haags familiebedrijf. Bereken direct uw prijsindicatie.',
+    'Draagmuur eruit of een deuropening in een dragende muur: berekening, vergunningsaanvraag, stalen balk en afwerking door één Haags familiebedrijf.',
   robots: {index: false, follow: true},
   alternates: {canonical: '/draagmuur-verwijderen-den-haag'},
 }
@@ -26,9 +26,9 @@ const PHONE_LABEL = '085 087 1814'
 const PHONE_HREF = 'tel:+31850871814'
 const REVIEW_SCORE = BUSINESS.reviews.ratingValue.toLocaleString('nl-NL')
 const REVIEW_COUNT = `${BUSINESS.reviews.reviewCount}+`
-const TRUSTOO_SCORE = '9,8'
-const TRUSTOO_COUNT = '557'
-const RESPONSE_PROMISE = 'Binnen 1 werkuur teruggebeld'
+// Trustoo-cijfer en reactietijd komen uit Sanity (Site Settings > Geverifieerde
+// claims) en verschijnen alleen als ze daar zijn bevestigd. Zonder bevestiging
+// tonen we de Google-score en 'zo snel mogelijk'.
 // Rekenvoorbeeld van Therab: 3 m breed x 2,60 m hoog, standaard, afgewerkt.
 const EXAMPLE = draagmuurBreakdown(EXAMPLE_INPUT)
 const EXAMPLE_INCL = formatEuro(EXAMPLE.totalIncl)
@@ -44,7 +44,7 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   kosten: {
     title: 'Wat kost een draagmuur verwijderen?',
     intro:
-      'Bereken hiernaast direct uw prijsindicatie. Inclusief constructieberekening, vergunningsaanvraag, stempelen, stalen balk, container en afvoer. Na de opname krijgt u een offerte met een prijs per onderdeel.',
+      'Bereken hiernaast direct uw prijsindicatie. Inclusief constructieberekening, stempelen, stalen balk, sloop en afvoer en basisafwerking. Na de opname krijgt u een offerte met een prijs per onderdeel.',
   },
   balk: {
     title: 'Draagmuur weg, stalen balk erin',
@@ -53,17 +53,16 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
   },
 }
 
-const PROOF = [
-  `${TRUSTOO_SCORE} op Trustoo uit ${TRUSTOO_COUNT} reviews, Top Pro 2026`,
-  'Vergunning en constructeur door ons geregeld',
-  'Uitvoering in 1 tot 3 dagen, met eigen vaste ploeg',
+const PROOF_REST = [
+  'Constructeur door ons geregeld, vergunningsaanvraag op verzoek verzorgd',
+  'Uitvoering in 1 tot 3 dagen, met een vaste ploeg',
   'VCA-gecertificeerd en CAR-verzekerd',
 ]
 
 // Wat er in de prijs zit. Volgorde = volgorde van het werk.
 const INCLUDED = [
   {title: 'Constructieberekening', text: 'Een constructeur berekent welke balk of latei er nodig is en hoe die wordt opgelegd.', icon: 'calc'},
-  {title: 'Tekening en vergunning', text: 'Wij maken de tekeningen en dienen de omgevingsvergunning voor u in.', icon: 'doc'},
+  {title: 'Tekening en vergunning', text: 'Wij laten de tekeningen maken en verzorgen zo nodig de aanvraag van de omgevingsvergunning voor u.', icon: 'doc'},
   {title: 'Stempelen', text: 'Het huis wordt veilig ondersteund voordat er ook maar één steen uit gaat.', icon: 'stamp'},
   {title: 'Sloop, container en afvoer', text: 'Wij slopen de muur, voeren het puin af en laten het bezemschoon achter.', icon: 'truck'},
   {title: 'Stalen balk of latei', text: 'Geleverd, geplaatst, ondersabeld en ingemetseld volgens de berekening.', icon: 'beam'},
@@ -92,10 +91,10 @@ const JOBS = [
 ] as const
 
 const STEPS = [
-  {title: 'Aanvraag en indicatie', text: 'U vult het formulier in en ziet direct een prijsindicatie. Wij bellen u zo snel mogelijk terug.'},
+  {title: 'Aanvraag en indicatie', text: 'U vult het formulier in en ziet direct een prijsindicatie. Daarna bellen wij u terug.'},
   {title: 'Opname op locatie', text: 'Een verbouwadviseur komt langs, meet alles in en bekijkt leidingen, vloer en plafond.'},
   {title: 'Berekening en tekening', text: 'De constructeur rekent de balk door. Geen tekeningen? Wij vragen ze op bij het gemeentearchief.'},
-  {title: 'Vergunning', text: 'Wij dienen de aanvraag in. De gemeente beslist meestal binnen 8 weken. Intussen plannen we de uitvoering.'},
+  {title: 'Vergunning', text: 'Is een vergunning nodig, dan verzorgen wij de aanvraag. De gemeente beslist meestal binnen 8 weken. Intussen plannen we de uitvoering.'},
   {title: 'Uitvoering in 1 tot 3 dagen', text: 'Inpakken, stempelen, slopen, balk plaatsen en inmetselen. Daarna gaan de stempels eruit.'},
   {title: 'Afwerking en oplevering', text: 'Stucwerk schilderklaar of casco, net wat u kiest. We lopen het samen na.'},
 ]
@@ -221,7 +220,7 @@ const GUIDE = [
   {title: 'Check of de muur dragend is', text: 'Let op dikte, klank en wat erboven staat, en vraag de bouwtekeningen op. Twijfelt u, dan kijken wij het na.'},
   {title: 'Bereken uw indicatie en vraag een opname aan', text: 'Met het formulier bovenaan weet u in twee minuten waar u aan toe bent. Daarna komt een verbouwadviseur langs om alles in te meten.'},
   {title: 'Constructieberekening en stempelplan', text: 'De constructeur bepaalt de ligger, de opleggingen en of er kolommen nodig zijn, en hoe het huis tijdens het werk wordt ondersteund.'},
-  {title: 'Tekeningen en vergunning', text: 'Wij maken de tekeningen en dienen de omgevingsvergunning in. Bij een appartement regelt u eerst de toestemming van de VvE. De gemeente beslist meestal binnen 8 weken.'},
+  {title: 'Tekeningen en vergunning', text: 'Wij laten de tekeningen maken en verzorgen zo nodig de aanvraag van de omgevingsvergunning. Bij een appartement regelt u eerst de toestemming van de VvE. De gemeente beslist meestal binnen 8 weken.'},
   {title: 'Voorbereiden', text: 'Leidingen en elektra in de muur worden omgelegd, de ruimte wordt leeggemaakt en u bestelt pas nu uw keuken.'},
   {title: 'Uitvoering in 1 tot 3 dagen', text: 'Afschermen tegen stof, stempelen, slopen, ligger plaatsen, ondersabelen en inmetselen. Als alles vastzit, gaan de stempels eruit.'},
   {title: 'Brandwerend bekleden en afwerken', text: 'De ligger wordt brandwerend bekleed. Daarna volgt de afwerking: stucwerk, en als u wilt schilderwerk, vloer en keuken.'},
@@ -305,12 +304,12 @@ const NAV = [
   {href: '#gids', label: 'Stappenplan'},
 ]
 
-const H1 = 'font-bold [font-stretch:115%] tracking-[-0.015em] leading-[1.04]'
+const H1 = 'font-bold tracking-[-0.035em] leading-[1.06] text-lp-ink'
 const H2 =
-  'text-[26px] sm:text-[32px] font-bold [font-stretch:112%] tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
+  'text-[26px] sm:text-[32px] font-bold tracking-[-0.01em] leading-[1.1] after:mt-3 after:block after:h-[3px] after:w-12 after:rounded-full after:bg-lp-orange'
 const BODY = 'text-[16px] leading-[1.65] text-lp-muted'
 const CTA =
-  'inline-flex min-h-[48px] items-center rounded-md bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover'
+  'inline-flex min-h-[48px] items-center rounded-btn bg-lp-orange px-6 font-semibold text-white transition-colors hover:bg-lp-orange-hover'
 
 function sizedImage(url: string, width: number): string {
   if (!url.includes('cdn.sanity.io') || /[?&]w=/.test(url)) return url
@@ -377,7 +376,14 @@ export default async function DraagmuurLandingPage(
   const searchParams = await props.searchParams;
   const variant = pickVariant(searchParams.v)
   const hero = HERO[variant]
-  const projects = await getProjects()
+  const [projects, claims] = await Promise.all([getProjects(), getVerifiedClaims()])
+  const trustoo = claims.trustoo
+  const responseSlot = claims.responseTime?.text || 'zo snel mogelijk'
+  const responseLine = claims.responseTime ? `We nemen ${claims.responseTime.text} contact op` : 'We nemen zo snel mogelijk contact op'
+  const PROOF = [
+    trustoo ? `${trustoo.score} op Trustoo uit ${trustoo.count} reviews` : `${REVIEW_SCORE} uit ${BUSINESS.reviews.reviewCount} Google-reviews`,
+    ...PROOF_REST,
+  ]
   const shownProjects = pickProjects(projects)
   const heroImage = heroImageOf(projects)
 
@@ -408,7 +414,7 @@ export default async function DraagmuurLandingPage(
               Bezoek onze website
             </a>
             <a
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-md bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange"
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-btn bg-lp-orange px-4 text-[15px] font-semibold text-white transition-colors hover:bg-lp-orange-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-orange shadow-cta"
               href={PHONE_HREF}
             >
               <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -433,25 +439,22 @@ export default async function DraagmuurLandingPage(
         </nav>
       </header>
 
-      <section className="relative isolate overflow-hidden bg-lp-slate text-white" id="aanvraag">
-        {heroImage && (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" aria-hidden="true" className="absolute inset-0 -z-20 h-full w-full object-cover" fetchPriority="high" src={heroImage} />
-            <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-lp-slate via-lp-slate/90 to-lp-slate/40" />
-          </>
-        )}
+      <section className="bg-lp-plaster text-lp-ink" id="aanvraag">
         <div className="section-shell grid gap-10 py-10 md:grid-cols-[1.05fr_1fr] md:items-center md:py-16">
           <div>
             <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-lp-orange">Draagmuur verwijderen in Den Haag e.o.</p>
             <h1 className={`${H1} mt-3 text-[34px] sm:text-[46px] lg:text-[50px]`}>{hero.title}</h1>
-            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-white/85">{hero.intro}</p>
-            <ul className="mt-7 hidden gap-3 text-white/90 md:grid">{proofItems}</ul>
+            <p className="mt-5 max-w-[34em] text-[17px] leading-[1.6] text-lp-muted">{hero.intro}</p>
+            <ul className="mt-7 hidden gap-3 text-lp-ink md:grid">{proofItems}</ul>
+            {heroImage && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img alt="Opgeleverd project van DRO Renovaties" className="mt-8 hidden aspect-[16/9] w-full rounded-img object-cover shadow-img md:block" fetchPriority="high" src={heroImage} />
+            )}
           </div>
           <div className="text-lp-ink">
             <SmartIntakeWizard
               presetServices={['Draagmuur verwijderen']}
-              responsePromise="zo snel mogelijk"
+              responsePromise={responseSlot}
               skipIds={['found', 'budget']}
               source="lp-draagmuur"
               thanksLinks={[
@@ -461,21 +464,23 @@ export default async function DraagmuurLandingPage(
               ]}
               variant={variant}
             />
-            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-white/85">
-              <span className="font-semibold text-white">
-                <span aria-hidden="true" className={STAR}>
-                  ★
-                </span>{' '}
-                {TRUSTOO_SCORE} Trustoo
-              </span>
-              <span className="font-semibold text-white">
+            <p className="mt-3.5 flex flex-wrap gap-x-4 gap-y-1.5 text-[13px] text-lp-muted">
+              {trustoo && (
+                <span className="font-semibold text-lp-ink">
+                  <span aria-hidden="true" className={STAR}>
+                    ★
+                  </span>{' '}
+                  {trustoo.score} Trustoo
+                </span>
+              )}
+              <span className="font-semibold text-lp-ink">
                 <span aria-hidden="true" className={STAR}>
                   ★
                 </span>{' '}
                 {REVIEW_SCORE} Google
               </span>
-              <span>Vergunning geregeld</span>
-              <span>{RESPONSE_PROMISE}</span>
+              <span>Constructeur geregeld</span>
+              <span>{responseLine}</span>
             </p>
           </div>
         </div>
@@ -483,23 +488,25 @@ export default async function DraagmuurLandingPage(
 
       <section aria-label="Beoordelingen en beloften" className="bg-lp-plaster">
         <dl className="section-shell grid grid-cols-2 items-start gap-x-6 gap-y-5 py-6 lg:grid-cols-5">
+          {trustoo && (
           <div>
             <dt className="text-[13px] text-lp-muted">Trustoo</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
-              {TRUSTOO_SCORE}/10 <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{TRUSTOO_COUNT} reviews</span>
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
+              {trustoo.score}/10 <span className="text-[14px] font-normal text-lp-muted">{trustoo.count} reviews</span>
             </dd>
           </div>
+          )}
           <div>
             <dt className="text-[13px] text-lp-muted">Google</dt>
-            <dd className="mt-0.5 text-[20px] font-bold tabular-nums [font-stretch:110%]">
+            <dd className="mt-0.5 text-[20px] font-bold tabular-nums">
               {REVIEW_SCORE}
               <span className="text-lp-orange"> ★</span>{' '}
-              <span className="text-[14px] font-normal text-lp-muted [font-stretch:100%]">{REVIEW_COUNT} reviews</span>
+              <span className="text-[14px] font-normal text-lp-muted">{REVIEW_COUNT} reviews</span>
             </dd>
           </div>
           <div>
             <dt className="text-[13px] text-lp-muted">Uitvoering</dt>
-            <dd className="mt-0.5 text-[20px] font-bold [font-stretch:110%]">1 tot 3 dagen</dd>
+            <dd className="mt-0.5 text-[20px] font-bold">1 tot 3 dagen</dd>
           </div>
           <div>
             <dt className="text-[13px] text-lp-muted">Gecertificeerd en verzekerd</dt>
@@ -512,7 +519,7 @@ export default async function DraagmuurLandingPage(
           </div>
           <div className="col-span-2 lg:col-span-1">
             <dt className="text-[13px] text-lp-muted">Na uw aanvraag</dt>
-            <dd className="mt-0.5 text-[17px] font-semibold">{RESPONSE_PROMISE}</dd>
+            <dd className="mt-0.5 text-[17px] font-semibold">{responseLine}</dd>
           </div>
         </dl>
       </section>
@@ -525,8 +532,8 @@ export default async function DraagmuurLandingPage(
         <div className="section-shell py-14">
           <h2 className={`${H2} max-w-[24ch]`}>Alles geregeld, van berekening tot afwerking</h2>
           <p className={`mt-3 max-w-[62ch] ${BODY}`}>
-            Bij de meeste partijen regelt u zelf de constructeur of de vergunning. Bij ons niet: u heeft één aanspreekpunt en één prijs
-            voor het hele traject.
+            Bij de meeste partijen regelt u zelf de constructeur of de vergunningsaanvraag. Bij ons niet: u heeft één aanspreekpunt en één
+            offerte met een prijs per onderdeel voor het hele traject.
           </p>
           <ul className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
             {INCLUDED.map((item) => (
@@ -551,7 +558,7 @@ export default async function DraagmuurLandingPage(
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {JOBS.map((job, i) => (
               <article className={`flex flex-col rounded-lg border bg-white p-5 ${i === 2 ? 'border-lp-orange' : 'border-lp-line'}`} key={job.title}>
-                <h3 className="text-[18px] font-bold [font-stretch:108%]">{job.title}</h3>
+                <h3 className="text-[18px] font-bold">{job.title}</h3>
                 <p className="mt-2 flex-1 text-[15px] leading-[1.6] text-lp-muted">{job.text}</p>
                 <p className={`mt-4 border-t border-lp-line pt-3 text-[15px] font-semibold ${i === 2 ? 'text-lp-orange' : ''}`}>{job.note}</p>
               </article>
@@ -688,8 +695,8 @@ export default async function DraagmuurLandingPage(
           </div>
           <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_1.4fr]">
             <div className="rounded-lg border border-lp-line bg-white p-6">
-              <h3 className="text-[18px] font-bold [font-stretch:108%]">Checklist voor de opname</h3>
-              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we in één bezoek een offerte op maat maken.</p>
+              <h3 className="text-[18px] font-bold">Checklist voor de opname</h3>
+              <p className="mt-1 text-[14px] text-lp-muted">Heeft u dit klaar, dan kunnen we na één bezoek een prijs per onderdeel maken.</p>
               <ul className="mt-4 space-y-2.5">
                 {CHECKLIST.map((item) => (
                   <li className="flex gap-3 text-[15px] leading-[1.55]" key={item}>
@@ -702,7 +709,7 @@ export default async function DraagmuurLandingPage(
               </ul>
             </div>
             <div>
-              <h3 className="text-[18px] font-bold [font-stretch:108%]">Zes fouten die we vaak zien</h3>
+              <h3 className="text-[18px] font-bold">Zes fouten die we vaak zien</h3>
               <ol className="mt-4 grid gap-4 sm:grid-cols-2">
                 {MISTAKES.map((item, i) => (
                   <li className="grid grid-cols-[28px_minmax(0,1fr)] gap-2" key={item.title}>
@@ -743,7 +750,7 @@ export default async function DraagmuurLandingPage(
                   <h3 className="mt-3 text-[17px] font-semibold">{project.title}</h3>
                   <p className="mt-1 text-sm text-lp-muted">{[project.location?.trim(), project.type?.trim()].filter(Boolean).join(' · ')}</p>
                   <a
-                    className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-md border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white"
+                    className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-btn border border-lp-orange px-4 text-[15px] font-semibold text-lp-orange transition-colors hover:bg-lp-orange hover:text-white shadow-cta"
                     href={`/projecten/${project.slug}`}
                   >
                     Bekijk project <span aria-hidden="true">&rarr;</span>
@@ -769,15 +776,16 @@ export default async function DraagmuurLandingPage(
         <div className="section-shell py-14">
           <h2 className={H2}>Wat klanten over ons zeggen</h2>
           <div className="mt-8 grid items-start gap-8 lg:grid-cols-[300px_1fr]">
+            {trustoo ? (
             <aside aria-label="Trustoo-score" className="rounded-lg border border-lp-line bg-white p-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img alt="Trustoo" className="h-7 w-auto" src="/landing/logos/trustoo-logo.png" />
-              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums [font-stretch:110%]">
-                {TRUSTOO_SCORE}
+              <p className="mt-3.5 text-[56px] font-extrabold leading-none tabular-nums">
+                {trustoo.score}
                 <span className="text-[20px] font-medium text-lp-muted">/10</span>
               </p>
               <p className="mt-3 text-[14px] text-lp-muted">
-                {TRUSTOO_COUNT} reviews uit 4 bronnen: {TRUSTOO_SOURCES}.
+                {trustoo.count} reviews (stand {trustoo.asOf}).
               </p>
               <div className="mt-4 flex items-end gap-3.5">
                 {TRUSTOO_BADGES.map((badge) => (
@@ -789,6 +797,15 @@ export default async function DraagmuurLandingPage(
                 <strong>{REVIEW_SCORE}</strong> <span className={STAR}>★</span> op Google, {REVIEW_COUNT} reviews
               </p>
             </aside>
+            ) : (
+            <aside aria-label="Google-score" className="rounded-lg border border-lp-line bg-white p-6">
+              <p className="text-[56px] font-extrabold leading-none tabular-nums">
+                {REVIEW_SCORE}
+                <span className="text-[20px] font-medium text-lp-muted"> ★</span>
+              </p>
+              <p className="mt-3 text-[14px] text-lp-muted">Op Google, {REVIEW_COUNT} reviews.</p>
+            </aside>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               {GOOGLE_REVIEWS.map((review) => (
                 <figure className="m-0 flex flex-col rounded-lg border border-lp-line bg-white p-5" key={review.name}>
@@ -838,7 +855,7 @@ export default async function DraagmuurLandingPage(
             </div>
             <ul className="grid content-start gap-3 text-[15px] md:border-l md:border-lp-line md:pl-8">
               <li>Kantoor aan de Orionstraat 235 in Den Haag</li>
-              <li>Eigen vaste ploegen en eigen opslag</li>
+              <li>Vaste vakteams en eigen opslag</li>
               <li>Vaste constructeurs en tekenaar</li>
             </ul>
           </div>
@@ -894,7 +911,7 @@ export default async function DraagmuurLandingPage(
             ))}
           </ol>
           <div className="mt-10 flex flex-col items-start gap-4 rounded-lg bg-lp-plaster p-6 sm:flex-row sm:items-center sm:justify-between">
-            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u zo snel mogelijk terug.</p>
+            <p className="max-w-[52ch] text-[16px] font-semibold">Klaar voor stap 3? Bereken uw indicatie, dan bellen we u terug.</p>
             <a className={CTA} href="#aanvraag">
               Indicatie berekenen
             </a>
@@ -903,7 +920,7 @@ export default async function DraagmuurLandingPage(
       </section>
 
       <section className="bg-lp-slate text-white">
-        <div className="section-shell flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between">
+        <div className="section-shell flex flex-col items-start gap-6 py-12 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className={H2}>Muur eruit? Bereken uw indicatie</h2>
             <p className="mt-2 text-white/75">In twee minuten weet u waar u aan toe bent. Of bel ons direct.</p>
@@ -911,22 +928,26 @@ export default async function DraagmuurLandingPage(
               <span aria-hidden="true" className={STAR}>
                 ★
               </span>{' '}
-              {TRUSTOO_SCORE} op Trustoo uit {TRUSTOO_COUNT} reviews
-              <span aria-hidden="true" className="mx-2 opacity-40">
-                |
-              </span>
               {REVIEW_SCORE} op Google
+              {trustoo && (
+                <>
+                  <span aria-hidden="true" className="mx-2 opacity-40">
+                    |
+                  </span>
+                  {trustoo.score} op Trustoo uit {trustoo.count} reviews
+                </>
+              )}
               <span aria-hidden="true" className="mx-2 opacity-40">
                 |
               </span>
               VCA-gecertificeerd
             </p>
           </div>
-          <div className="flex w-full gap-3 md:w-auto">
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover md:flex-none" href="#aanvraag">
+          <div className="flex w-full flex-wrap gap-3 lg:w-auto lg:flex-nowrap">
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn bg-lp-orange px-6 font-semibold transition-colors hover:bg-lp-orange-hover lg:flex-none" href="#aanvraag">
               Indicatie berekenen
             </a>
-            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-md border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink md:flex-none" href={PHONE_HREF}>
+            <a className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-btn border border-white/60 px-6 font-semibold transition-colors hover:bg-white hover:text-lp-ink lg:flex-none" href={PHONE_HREF}>
               Bel {PHONE_LABEL}
             </a>
           </div>
@@ -945,7 +966,7 @@ export default async function DraagmuurLandingPage(
         <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md border border-lp-ink font-semibold" href={PHONE_HREF}>
           Bellen
         </a>
-        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-md bg-lp-orange font-semibold text-white" href="#aanvraag">
+        <a className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-btn bg-lp-orange font-semibold text-white" href="#aanvraag">
           Indicatie berekenen
         </a>
       </div>

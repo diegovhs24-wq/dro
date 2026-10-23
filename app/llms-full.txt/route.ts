@@ -2,7 +2,7 @@ import {NextResponse} from "next/server";
 import {getBlogPosts, getLocations, getProjects, getServices} from "@/lib/cms";
 import {buildMarkdownForPath} from "@/lib/seo/markdown";
 
-const STATIC_PATHS = ["/", "/diensten", "/projecten", "/kennisbank", "/werkwijze", "/over-ons", "/zakelijk", "/contact"];
+const STATIC_PATHS = ["/", "/grote-renovaties", "/constructieve-werken", "/diensten", "/projecten", "/kennisbank", "/werkwijze", "/over-ons", "/zakelijk", "/contact"];
 
 // Next 15: GET-routes zijn standaard dynamisch; deze inhoud mag een uur gecachet worden.
 export const revalidate = 3600;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import CookieSettingsLink from "@/components/analytics/CookieSettingsLink";
 import {GOOGLE_ADS_ID} from "@/lib/analytics";
 import FooterCtaGate from "@/components/FooterCtaGate";
+import {BUSINESS} from "@/lib/seo/business";
 import type {LocationSummary, ServiceSummary, SiteSettings} from "@/lib/types";
 
 type FooterProps = {
@@ -16,7 +17,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
   return (
     <>
       {siteSettings.footerCta && <FooterCtaGate cta={siteSettings.footerCta} />}
-      <footer className="bg-brand-ink text-white">
+      <footer className="bg-brand-ink text-white" data-track="footer">
       <div className="section-shell py-8">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-[1.15fr_0.85fr_1.1fr_1fr]">
           <div>
@@ -149,7 +150,38 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
           </div>
         )}
 
-        {footer.statement && (
+        <div className="mt-6 border-t border-white/10 pt-5">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">Voor uw project</p>
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
+              <Link className="transition hover:text-brand-orange" data-cta="footer_route_groot" href="/grote-renovaties">
+                Grote renovaties vanaf € 50.000
+              </Link>
+              <Link className="transition hover:text-brand-orange" data-cta="footer_route_constructief" href="/constructieve-werken">
+                Draagmuur en constructief werk
+              </Link>
+              <Link className="transition hover:text-brand-orange" href="/projecten">
+                Projecten
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Juridische gegevens: altijd uit lib/seo/business.ts, niet uit het CMS. */}
+        <p className="mt-5 text-xs leading-5 text-white/45">
+          <span className="text-white/65">{BUSINESS.legalName}</span>
+          <span className="mx-2 text-white/20">/</span>
+          {BUSINESS.address.streetAddress}, {BUSINESS.address.postalCode} {BUSINESS.address.addressLocality}
+          <span className="mx-2 text-white/20">/</span>KvK {BUSINESS.kvkNumber}
+          <span className="mx-2 text-white/20">/</span>btw {BUSINESS.vatId}
+          <span className="mx-2 text-white/20">/</span>
+          {BUSINESS.credentials.map((c) => c.name).join(", ")}
+          <span className="mx-2 text-white/20">/</span>
+          {BUSINESS.insurance.map((i) => i.replace(/ \(.*\)$/, "")).join(" en ")}
+        </p>
+
+        {/* De statement uit het CMS bevatte de juridische naam met koppelteken; die staat nu correct in de regel hierboven. */}
+        {footer.statement && !/DRO Bouw-?\s*en Aannemingsbedrijf/i.test(footer.statement) && (
           <div className="mt-6 border-y border-white/10 py-3">
             <p className="text-sm font-bold tracking-tight text-white/90 sm:text-base">
               {footer.statement}

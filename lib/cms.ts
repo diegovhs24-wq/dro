@@ -1,4 +1,6 @@
 import {cmsImageUrl, fetchSanity} from "@/lib/sanity";
+import {toPublicCaseStudy} from "@/lib/caseStudy";
+import {pickVerifiedClaims, type VerifiedClaims} from "@/lib/verifiedClaims";
 import {
   fallbackHomePage,
   fallbackServices,
@@ -33,6 +35,8 @@ import type {
   ServiceSummary,
   SiteSettings,
   SmartLink,
+  HeaderMenuItem,
+  HeaderMenuLink,
   AboutPageContent,
   BusinessPageContent,
   ContactPageContent,
@@ -838,6 +842,13 @@ const PROJECTS_QUERY = `*[_type == "project"]|order(sortOrder asc, title asc){
   primaryLink{${SMART_LINK_FIELDS}},
   secondaryLabel,
   secondaryLink{${SMART_LINK_FIELDS}},
+  caseStudy{
+    published, consentDate, routes, district, propertyType, buildYear, areaM2, durationWeeks,
+    budgetBand, budgetBandConsent, startingSituation, clientGoal, scope, challenge, solution, result, details,
+    quote, quoteAuthor, quoteConsent, projectLead,
+    beforeImages[]{${IMAGE_SOURCE_FIELDS}},
+    afterImages[]{${IMAGE_SOURCE_FIELDS}}
+  },
   seo{${SEO_FIELDS}}
 }`;
 
@@ -863,6 +874,13 @@ const PROJECT_QUERY = `*[_type == "project" && slug.current == $slug][0]{
     lists[]{ icon, title, items },
     videoUrl,
     videoCaption
+  },
+  caseStudy{
+    published, consentDate, routes, district, propertyType, buildYear, areaM2, durationWeeks,
+    budgetBand, budgetBandConsent, startingSituation, clientGoal, scope, challenge, solution, result, details,
+    quote, quoteAuthor, quoteConsent, projectLead,
+    beforeImages[]{${IMAGE_SOURCE_FIELDS}},
+    afterImages[]{${IMAGE_SOURCE_FIELDS}}
   },
   seo{${SEO_FIELDS}}
 }`;
@@ -1450,6 +1468,8 @@ function toProject(raw: RawRecord): ProjectItem | null {
     secondaryLabel: normalized.secondaryLabel,
     secondaryLink: normalized.secondaryLink,
     videoChecklist: Array.isArray(normalized.videoChecklist) ? normalized.videoChecklist as VideoChecklistItem[] : [],
+    // Alleen vrijgegeven casestudy's komen door (toestemming + minimale inhoud).
+    caseStudy: toPublicCaseStudy((normalized as Record<string, unknown>).caseStudy),
     seo: mapSeo(raw.seo),
   };
 }
@@ -1572,7 +1592,7 @@ function mapSiteSettings(raw: unknown): SiteSettings {
     description: asString(normalized.description) || undefined,
     favicon: asString(normalized.favicon) || undefined,
     headerLogo: asString(normalized.headerLogo) || undefined,
-    headerMenu: asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu),
+    headerMenu: withRouteLinks(asArray<SiteSettings["headerMenu"][number]>(normalized.headerMenu)),
     headerButtons: asArray<SiteSettings["headerButtons"][number]>(normalized.headerButtons),
     footer: {
       logo: asString(footer.logo) || undefined,
@@ -1655,6 +1675,12 @@ export async function getServiceSlugs() {
   return services.map((service) => service.slug);
 }
 
+export async function getVerifiedClaims(): Promise<VerifiedClaims> {
+  const {data, failed} = await safeFetch<unknown>(`*[_type == "siteSettings"][0].verifiedClaims`);
+  if (failed) return {};
+  return pickVerifiedClaims(data);
+}
+
 export async function getProjects() {
   const {data, failed} = await safeFetch<RawRecord[] | null>(PROJECTS_QUERY);
 
@@ -1722,7 +1748,16 @@ export async function getReviews() {
   }
 
   const reviews = normalizeCmsValue(data) as ReviewItem[] | null;
-  return reviews || [];
+  return withoutFormerStaffReviews(reviews || []);
+}
+
+// Reviews die een oud-medewerker als aanspreekpunt noemen, tonen we niet meer:
+// die persoon werkt niet meer bij DRO, dus de review schept een verkeerde
+// verwachting. De review zelf blijft ongewijzigd in Sanity staan.
+const FORMER_STAFF = ["Lauren"];
+
+export function withoutFormerStaffReviews<T extends {quote?: string}>(reviews: T[]): T[] {
+  return reviews.filter((r) => !FORMER_STAFF.some((name) => new RegExp(`\\b${name}\\b`, "i").test(r.quote || "")));
 }
 
 export async function getPartners() {
@@ -1974,3 +2009,24 @@ export type {
   ServiceSummary,
   SiteSettings,
 } from "@/lib/types";
+
+// De twee conversieroutes (fase 2) staan vast in de code en horen in het
+// dienstenmenu, ook als het CMS-menu ze (nog) niet bevat. Ze komen bovenaan de
+// eerste kolom ("Wonen"); bestaan ze al in het CMS-menu, dan gebeurt er niets.
+const ROUTE_MENU_LINKS: HeaderMenuLink[] = [
+  {label: "Grote renovatie", link: {linkType: "external", externalUrl: "/grote-renovaties"}},
+  {label: "Draagmuur en constructief", link: {linkType: "external", externalUrl: "/constructieve-werken"}},
+];
+
+export function withRouteLinks(menu: HeaderMenuItem[]): HeaderMenuItem[] {
+  const existing = JSON.stringify(menu);
+  const missing = ROUTE_MENU_LINKS.filter((l) => l.link.linkType === "external" && !existing.includes(`"${l.link.externalUrl}"`));
+  if (!missing.length) return menu;
+  let added = false;
+  return menu.map((item) => {
+    if (added || item?.type !== "megaMenu" || !Array.isArray(item.columns) || !item.columns.length) return item;
+    added = true;
+    const [first, ...rest] = item.columns;
+    return {...item, columns: [{...first, links: [...missing, ...(first.links || [])]}, ...rest]};
+  });
+}
