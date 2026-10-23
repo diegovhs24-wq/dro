@@ -45,8 +45,11 @@ body {
 h1, h2, h3, h4, p, li, dd, dt, blockquote, figcaption {
   overflow-wrap: break-word;
 }
-h1, h2, h3 {
-  hyphens: auto;
+/* Afbreken alleen op mobiel en tablet; op desktop blijven koppen heel. */
+@media (max-width: 1023px) {
+  h1, h2, h3 {
+    hyphens: auto;
+  }
 }
 
 ::selection {
@@ -289,4 +292,11 @@ section.bg-white::after {
 
 @media (prefers-reduced-motion: reduce) {
   .pr *, .pr *::before, .pr *::after { transition: none !important; animation: none !important; }
+}
+
+/* Op desktop koppen in de paginalaag niet afbreken. */
+@media (min-width: 1024px) {
+  .pr h1, .pr h2, .pr h3, .pr .pr-display, .pr .pr-h2, .pr .pr-h3 {
+    hyphens: manual;
+  }
 }

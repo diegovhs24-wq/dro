@@ -85,10 +85,10 @@ export default function SplitIntroBlockSection({
             </div>
           </div>
 
-          <div className="min-w-0 lg:justify-self-end lg:pl-4">
+          <div className="min-w-0 w-full lg:max-w-[460px] lg:justify-self-end">
             <div className="relative overflow-hidden rounded-[1.25rem] border border-black/10 bg-brand-soft shadow-premium">
               <div
-                className="min-h-[320px] w-full bg-cover bg-center sm:min-h-[420px] lg:min-h-[620px] lg:w-[min(460px,100%)]"
+                className="min-h-[320px] w-full bg-cover bg-center sm:min-h-[420px] lg:min-h-[620px]"
                 style={{backgroundImage: `url(${content.image})`}}
               />
               {content.imageCaption ? (
