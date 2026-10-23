@@ -79,7 +79,7 @@ export default async function SiteLayout({children}: Readonly<{children: React.R
     locations.map((location) => location.name),
     {services: services.map((service) => ({title: service.title, href: service.href, summary: service.summary}))}
   )
-  const {isEnabled: isDraftMode} = draftMode()
+  const {isEnabled: isDraftMode} = await draftMode()
 
   return (
     <div className={`${poppins.className} ${patrickHand.variable} ${newsreader.variable}`}>

@@ -1,6 +1,9 @@
 import {NextResponse} from "next/server";
 import {getSiteUrl} from "@/lib/seo/site";
 
+// Next 15: GET-routes zijn standaard dynamisch; deze inhoud mag een uur gecachet worden.
+export const revalidate = 3600;
+
 export async function GET() {
   const siteUrl = getSiteUrl();
 
