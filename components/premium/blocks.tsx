@@ -236,7 +236,7 @@ export function IntakeBlock({
             </li>
             <li className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2">
               <span className="pr-num font-semibold text-white">2.</span>
-              Scott Huisman belt u om uw plannen door te nemen.
+              Een adviseur belt u om uw plannen door te nemen.
             </li>
             <li className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2">
               <span className="pr-num font-semibold text-white">3.</span>
