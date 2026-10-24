@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import {AssuranceTable, FaqList, IntakeBlock, ProjectTile, ReviewQuotes, SectionHead} from "@/components/premium/blocks";
+import {AssuranceTable, FaqList, IntakeBlock, MaterialAdvice, ProjectTile, ReviewQuotes, SectionHead} from "@/components/premium/blocks";
 import LintelDrawing from "@/components/premium/LintelDrawing";
 import PremiumHero, {type HeroFact} from "@/components/premium/PremiumHero";
 import RenovationEstimator from "@/components/routes/RenovationEstimator";
@@ -161,6 +161,8 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
             </ol>
           </div>
         </section>
+
+        {route.key === "grote-renovatie" && <MaterialAdvice />}
 
         <AssuranceTable
           intro="Per onderwerp hoe het geregeld is, en waaruit dat blijkt."
