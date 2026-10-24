@@ -13,6 +13,7 @@ export default function PremiumHero({
   title,
   lead,
   primary,
+  secondary,
   facts,
   project,
   aside,
@@ -21,6 +22,7 @@ export default function PremiumHero({
   title: string;
   lead: string;
   primary: {label: string; href: string; cta: string};
+  secondary?: {label: string; href: string; cta: string};
   facts: HeroFact[];
   project?: ProjectItem;
   aside?: ReactNode;
@@ -51,7 +53,12 @@ export default function PremiumHero({
             <a className="pr-btn" data-cta={primary.cta} href={primary.href}>
               {primary.label}
             </a>
-            <span className="text-[16px]">
+            {secondary && (
+              <Link className="pr-link" data-cta={secondary.cta} href={secondary.href}>
+                {secondary.label}
+              </Link>
+            )}
+            <span className={secondary ? "basis-full text-[16px]" : "text-[16px]"}>
               of bel{" "}
               <a className="pr-link pr-num" href={BUSINESS.phone.href}>
                 {BUSINESS.phone.display}

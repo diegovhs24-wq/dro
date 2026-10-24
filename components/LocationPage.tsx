@@ -38,7 +38,7 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
             <p className="hero-ref-text mt-4 max-w-2xl">{location.intro}</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link className="btn-primary" href="/contact">
-                Start intake
+                Bespreek uw plannen
               </Link>
               <Link className="btn-outline" href="tel:+31850871814">
                 Bespreek uw project met ons
@@ -211,7 +211,7 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
         title={`Renoveren in ${location.name}?`}
         text="Start een vrijblijvende intake en ontvang een heldere offerte voor uw project."
         buttons={[
-          {label: "Start intake", link: {linkType: "external", externalUrl: "/contact"}, variant: "primary"},
+          {label: "Bespreek uw plannen", link: {linkType: "external", externalUrl: "/contact"}, variant: "primary"},
           {label: "Bel direct", link: {linkType: "external", externalUrl: "tel:+31850871814"}, variant: "outlined"},
         ]}
         ratingScore={BUSINESS.reviews.ratingValue}

@@ -35,7 +35,11 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
 
   const facts: HeroFact[] = route.estimator
     ? [
-        {term: "Indicatie", detail: "€ 1.210 tot € 1.510 per m², incl. btw"},
+        // Prijs in de hero alleen op de kostenpagina (/totaalrenovatie); op
+        // Grote renovaties staat de indicatie verderop, bij "Wat het kost".
+        route.path === "/totaalrenovatie"
+          ? {term: "Indicatie", detail: "€ 1.210 tot € 1.510 per m², incl. btw"}
+          : {term: "Regie", detail: "Eén aanspreekpunt, vaste vakteams"},
         ...(weeks ? [{term: "Uitvoering", detail: `${weeks} bij onze projecten`}] : []),
         {term: "Betalingen", detail: PAYMENT_TERMS.short},
         {term: "Google-reviews", detail: data.reviewSummary.replace(" Google-reviews", "")},

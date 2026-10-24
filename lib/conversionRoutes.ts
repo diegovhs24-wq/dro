@@ -99,12 +99,12 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   heroSlug: "jan-muschlaan-den-haag",
   metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
   metaDescription:
-    "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, met vaste vakteams. Start uw projectintake.",
+    "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten.",
   eyebrow: "Totaalrenovatie, uitbouw en dakopbouw",
   title: "Grote renovaties onder één regie",
   intro:
-    "Voor woningen waar alles tegelijk moet gebeuren: indeling, installaties, isolatie en afwerking. Van € 50.000 tot € 250.000 en meer. Eén aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten voor planning en techniek.",
-  primaryCta: "Start uw projectintake",
+    "Voor woningen waar alles tegelijk moet gebeuren: indeling, installaties, isolatie en afwerking. Eén aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten voor planning en techniek.",
+  primaryCta: "Bespreek uw plannen",
   serviceName: "Grote renovaties: totaalrenovatie, uitbouw en dakopbouw",
   serviceType: "Totaalrenovatie",
   audience: {
@@ -178,8 +178,8 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   ],
   projectTypeMatch: /totaal|dakopbouw|aanbouw|uitbouw|opbouw/i,
   intake: {
-    title: "Start uw projectintake",
-    intro: "In een paar minuten weten wij wat u wilt, waar de woning staat en welk budget u voor ogen heeft. Daarna belt een vaste adviseur u terug.",
+    title: "Bespreek uw plannen",
+    intro: "Vertel ons in een paar minuten wat u wilt, waar de woning staat en welk budget u voor ogen heeft. Daarna belt een vaste adviseur u voor een kennismaking.",
     serviceOrder: ["Totaalrenovatie", "Aanbouw of opbouw", "Badkamer", "Keuken", "Draagmuur verwijderen"],
     servicesTitle: "Wat wilt u laten doen?",
     servicesSub: "Kies alles wat bij uw project hoort. We stellen daarna alleen de vragen die erbij horen.",

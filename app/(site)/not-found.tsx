@@ -17,7 +17,7 @@ const FALLBACK = {
   text: "De pagina bestaat niet meer, is verplaatst of het adres klopt niet. Ga terug naar de homepage of start direct een intake.",
   buttons: [
     {label: "Naar homepage", link: {linkType: "external" as const, externalUrl: "/"}, variant: "primary" as const},
-    {label: "Start intake", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "outlined" as const},
+    {label: "Bespreek uw plannen", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "outlined" as const},
   ],
 };
 
