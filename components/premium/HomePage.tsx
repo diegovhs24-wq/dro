@@ -6,7 +6,7 @@ import PageStructuredData from "@/components/seo/PageStructuredData";
 import {GROTE_RENOVATIE, SPECIALISTISCH} from "@/lib/conversionRoutes";
 import {getPremiumData, weeksRange} from "@/lib/premiumData";
 import {projectCategory, projectCover} from "@/lib/projectCategories";
-import {BUSINESS, PAYMENT_TERMS} from "@/lib/seo/business";
+import {BUSINESS} from "@/lib/seo/business";
 import {HOME_DESCRIPTION, HOME_FAQ, HOME_TITLE} from "@/components/premium/homeContent";
 
 export {HOME_DESCRIPTION, HOME_FAQ, HOME_TITLE} from "@/components/premium/homeContent";
@@ -35,13 +35,13 @@ export default async function HomePage() {
       <main>
         <PremiumHero
           facts={[
-            {term: "Google-reviews", detail: data.reviewSummary.replace(" Google-reviews", "")},
-            {term: "Betalingen", detail: PAYMENT_TERMS.short},
-            {term: "Verzekerd", detail: "CAR en aansprakelijkheid"},
+            {term: "Familiebedrijf", detail: "Den Haag"},
+            {term: "Uitvoering", detail: "Vaste vakteams"},
             {term: "Erkend", detail: "VCA, SBB en VLOK"},
+            {term: "Verzekerd", detail: "CAR en aansprakelijkheid"},
           ]}
-          lead={`${BUSINESS.name} is een familiebedrijf uit Den Haag. Wij voeren totaalrenovaties, uitbouwen en constructieve verbouwingen uit, van € 50.000 tot € 250.000 en meer: één aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten.`}
-          primary={{label: "Start uw projectintake", href: "#intake", cta: "home_hero_intake"}}
+          lead={`${BUSINESS.name} is een familiebedrijf uit Den Haag. Wij realiseren complete renovaties, uitbouwen en constructieve verbouwingen, van het bouwkundige plan tot de laatste afwerking. Eén partij houdt de regie, met vaste vakteams, een vast aanspreekpunt en oog voor elk detail. Ook als een verbouwing constructief complex wordt.`}
+          primary={{label: "Bespreek uw project", href: "#intake", cta: "home_hero_intake"}}
           project={hero}
           title="Renovatie en verbouwing, onder één regie"
         />
@@ -56,7 +56,7 @@ export default async function HomePage() {
               <RoutePanel
                 facts={[
                   {term: "Voor", detail: "Totaalrenovatie, uitbouw, dakopbouw, of een combinatie"},
-                  {term: "Indicatie", detail: "€ 1.210 tot € 1.510 per m² incl. btw, voor een totaalrenovatie"},
+                  {term: "Aanpak", detail: "Eén planning, één betaalschema en vaste vakteams"},
                   ...(bigWeeks ? [{term: "Uitvoering", detail: `${bigWeeks} bij onze projecten`}] : []),
                 ]}
                 href={GROTE_RENOVATIE.path}
@@ -69,7 +69,7 @@ export default async function HomePage() {
                 border
                 facts={[
                   {term: "Voor", detail: "Draagmuur verwijderen, deuropening, doorbraak, stalen ligger"},
-                  {term: "Indicatie", detail: "Direct in de intake, op basis van uw maten"},
+                  {term: "Aanpak", detail: "Berekend door een constructeur, uitgevoerd door vaste vakteams"},
                   {term: "Uitvoering", detail: "Meestal 1 tot 3 dagen, na constructieberekening"},
                 ]}
                 href={SPECIALISTISCH.path}
