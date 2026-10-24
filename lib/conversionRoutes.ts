@@ -97,7 +97,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   crumbLabel: "Grote renovaties",
   estimator: true,
   heroSlug: "jan-muschlaan-den-haag",
-  metaTitle: "Grote renovaties van € 50.000 tot € 250.000+ | DRO Renovaties",
+  metaTitle: "Grote renovaties onder één regie | DRO Renovaties",
   metaDescription:
     "Totaalrenovatie, uitbouw of dakopbouw in Den Haag en de Randstad. Eén aannemer van sloop tot oplevering, met vaste vakteams en vaste aanspreekpunten.",
   eyebrow: "Totaalrenovatie, uitbouw en dakopbouw",
