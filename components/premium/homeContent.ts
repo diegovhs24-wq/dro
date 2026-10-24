@@ -22,6 +22,10 @@ export const HOME_FAQ = [
     a: "Therab Raja, projectleider renovatie, voor de algemene afstemming en Jarek als hoofd uitvoering voor technische vragen. Elke week is er een vast meetmoment, en vragen via de app worden binnen 24 uur opgepakt.",
   },
   {
+    q: "Helpen jullie bij het kiezen van materialen?",
+    a: "Ja. We denken mee over tegels, sanitair, keuken, vloeren en kozijnen, passend bij uw woning en budget. We werken met vaste leveranciers voor bouwmaterialen, sanitair en keukens. U kunt ook zelf kiezen of iets aanleveren; dat nemen we mee in de offerte en de planning.",
+  },
+  {
     q: "In welke regio werken jullie?",
     a: "Vanuit Den Haag in Haaglanden, de rest van Zuid-Holland en de Randstad.",
   },

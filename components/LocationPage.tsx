@@ -32,7 +32,7 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
             </h1>
             <p className="hero-ref-text mt-6 max-w-2xl">
               Ja, DRO Renovaties voert renovaties uit in {location.name} en omgeving: badkamers,
-              totaalrenovaties, uitbouwen en meer, met een heldere offerte per onderdeel en een
+              totaalrenovaties, uitbouwen en meer, met een heldere offerte per onderdeel, advies over materiaal en afwerking en een
               betalingsschema per fase.
             </p>
             <p className="hero-ref-text mt-4 max-w-2xl">{location.intro}</p>

@@ -101,6 +101,49 @@ export function AssuranceTable({items, id = "zekerheden", title, intro}: {items:
   );
 }
 
+// Meedenken over materiaal en vaste leveranciers. Leveranciers en de keuze
+// "zelf kiezen of via ons" staan zo in Sanity (partners en Werkwijze, stap 5).
+const MATERIAL_POINTS = [
+  {
+    title: "Wij denken mee in uw keuzes",
+    text: "Tegels, sanitair, keuken, vloeren, kozijnen: we bespreken bij de bezichtiging wat bij uw woning, uw wensen en uw budget past. Is iets duurder dan nodig, dan zeggen we dat eerlijk.",
+  },
+  {
+    title: "Vaste leveranciers",
+    text: "We werken met vaste leveranciers voor bouwmaterialen, sanitair en keukens, onder andere Bouwmaat, Sanisale en Keukensale. Dat maakt levertijden en kwaliteit beter te overzien.",
+  },
+  {
+    title: "Zelf kiezen mag ook",
+    text: "Tegels, sanitair en keuken kiest u zelf of laat u via ons leveren. Heeft u al iets op het oog, dan nemen we dat mee in de offerte en de planning.",
+  },
+  {
+    title: "Per onderdeel in de offerte",
+    text: "De materialen staan per onderdeel in de offerte, zodat u ziet waar uw budget naartoe gaat. Wij bestellen en stemmen de levering af op de planning.",
+  },
+];
+
+export function MaterialAdvice({className = "pr-section"}: {className?: string}) {
+  return (
+    <section aria-labelledby="materiaal" className={className}>
+      <div className="section-shell pr-split">
+        <SectionHead
+          id="materiaal"
+          intro="Een verbouwing bestaat voor een groot deel uit keuzes. Wij helpen u die keuzes te maken, met vaste leveranciers en eerlijk advies over prijs en kwaliteit."
+          title="Materiaal en afwerking: wij denken mee"
+        />
+        <ul className="grid gap-x-10 sm:grid-cols-2">
+          {MATERIAL_POINTS.map((point) => (
+            <li className="border-t-2 border-[var(--pr-ink)] py-5" key={point.title}>
+              <h3 className="pr-h3">{point.title}</h3>
+              <p className="mt-1 text-[16px] pr-muted">{point.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 export function TeamList({intro}: {intro?: string}) {
   return (
     <section aria-labelledby="team" className="pr-section pr-kalk">

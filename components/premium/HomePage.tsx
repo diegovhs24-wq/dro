@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import {AssuranceTable, FaqList, IntakeBlock, ProjectTile, ReviewQuotes, TeamList} from "@/components/premium/blocks";
+import {AssuranceTable, FaqList, IntakeBlock, MaterialAdvice, ProjectTile, ReviewQuotes, TeamList} from "@/components/premium/blocks";
 import PremiumHero from "@/components/premium/PremiumHero";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {GROTE_RENOVATIE, SPECIALISTISCH} from "@/lib/conversionRoutes";
@@ -118,6 +118,7 @@ export default async function HomePage() {
           </section>
         )}
 
+        <MaterialAdvice />
         <TeamList />
         <ReviewQuotes asOf={data.reviewAsOf} reviews={data.featuredReviews} summary={data.reviewSummary} />
         <FaqList items={HOME_FAQ} />

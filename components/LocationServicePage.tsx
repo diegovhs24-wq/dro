@@ -46,8 +46,8 @@ export default function LocationServicePage({
             </h1>
             <p className="hero-ref-text mt-6 max-w-2xl">
               Ja, DRO Renovaties verzorgt {serviceName.toLowerCase()} in {location.name} en
-              omgeving, met een heldere offerte per onderdeel, een betalingsschema per fase en één vast
-              aanspreekpunt.
+              omgeving, met een heldere offerte per onderdeel, advies over materiaal en afwerking, een
+              betalingsschema per fase en één vast aanspreekpunt.
             </p>
             <p className="hero-ref-text mt-4 max-w-2xl">{service.intro}</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
