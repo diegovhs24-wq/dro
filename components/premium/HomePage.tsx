@@ -41,16 +41,38 @@ export default async function HomePage() {
             {term: "Verzekerd", detail: "CAR en aansprakelijkheid"},
           ]}
           lead={`${BUSINESS.name} is een familiebedrijf uit Den Haag. Wij realiseren complete renovaties, uitbouwen en constructieve verbouwingen, van het bouwkundige plan tot de laatste afwerking. Eén partij houdt de regie, met vaste vakteams, een vast aanspreekpunt en oog voor elk detail. Ook als een verbouwing constructief complex wordt.`}
-          primary={{label: "Bespreek uw project", href: "#intake", cta: "home_hero_intake"}}
+          primary={{label: "Bespreek uw plannen", href: "#intake", cta: "home_hero_intake"}}
+          secondary={{label: "Bekijk onze projecten", href: "/projecten", cta: "home_hero_projects"}}
           project={hero}
           title="Renovatie en verbouwing, onder één regie"
         />
 
+        {/* Projecten */}
+        {showcase.length > 0 && (
+          <section aria-labelledby="projecten" className="pr-section">
+            <div className="section-shell">
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <h2 className="pr-h2" id="projecten">
+                  Gerealiseerde projecten
+                </h2>
+                <Link className="pr-link" data-cta="home_projects" href="/projecten">
+                  Bekijk onze projecten
+                </Link>
+              </div>
+              <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
+                {showcase.map((p) => (
+                  <ProjectTile key={p.slug} project={p} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Twee routes */}
-        <section aria-labelledby="routes" className="pr-section">
+        <section aria-labelledby="routes" className="pr-section pr-kalk">
           <div className="section-shell">
             <h2 className="pr-h2 max-w-[22ch]" id="routes">
-              Waar gaat uw project over?
+              Waar wij in thuis zijn
             </h2>
             <div className="mt-10 grid border-y border-[var(--pr-line)] md:grid-cols-2">
               <RoutePanel
@@ -89,42 +111,21 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <MaterialAdvice />
         <div className="pr-kalk">
           <AssuranceTable
-            intro="Bij een project van deze omvang wilt u vooraf weten hoe het geregeld is. Hieronder staat het per onderwerp, met wat het aantoont."
+            intro="Bij een verbouwing van deze omvang wilt u vooraf weten waar u aan toe bent. Per onderwerp hoe wij het regelen, en waaruit dat blijkt."
             items={data.assurances}
-            title="Zes vragen die u ons gaat stellen"
+            title="Hoe het geregeld is"
           />
         </div>
 
-        {/* Projecten */}
-        {showcase.length > 0 && (
-          <section aria-labelledby="projecten" className="pr-section">
-            <div className="section-shell">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <h2 className="pr-h2" id="projecten">
-                  Recent opgeleverd
-                </h2>
-                <Link className="pr-link" href="/projecten">
-                  Alle projecten
-                </Link>
-              </div>
-              <div className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
-                {showcase.map((p) => (
-                  <ProjectTile key={p.slug} project={p} />
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        <MaterialAdvice />
-        <TeamList />
         <ReviewQuotes asOf={data.reviewAsOf} reviews={data.featuredReviews} summary={data.reviewSummary} />
+        <TeamList />
         <FaqList items={HOME_FAQ} />
         <IntakeBlock
-          intro="Vertel ons wat u van plan bent. Het duurt een paar minuten en u zit nergens aan vast."
-          title="Start uw projectintake"
+          intro="Vertel ons kort wat u van plan bent. Daarna belt een adviseur u voor een kennismaking. U zit nergens aan vast."
+          title="Bespreek uw plannen"
           wizard={{
             serviceOrder: ["Totaalrenovatie", "Aanbouw of opbouw", "Draagmuur verwijderen", "Badkamer", "Keuken"],
             largeBudget: [75000, 150000],

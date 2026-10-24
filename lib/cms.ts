@@ -1071,7 +1071,7 @@ const EMPTY_SITE_SETTINGS: SiteSettings = {
   floatingActions: {
     whatsappLabel: "WhatsApp",
     whatsappHref: "#",
-    intakeLabel: "Start intake",
+    intakeLabel: "Bespreek uw plannen",
     intakeHref: "/contact",
   },
 };

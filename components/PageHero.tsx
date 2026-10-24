@@ -19,7 +19,7 @@ export default function PageHero({
   eyebrow,
   title,
   text,
-  primaryLabel = "Start intake",
+  primaryLabel = "Bespreek uw plannen",
   primaryLink,
   secondaryLabel = "Bespreek uw project met ons",
   secondaryLink,

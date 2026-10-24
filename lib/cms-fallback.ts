@@ -32,7 +32,7 @@ export const fallbackSiteSettings: SiteSettings = {
   floatingActions: {
     whatsappLabel: "WhatsApp",
     whatsappHref: "https://wa.me/31850871814",
-    intakeLabel: "Start intake",
+    intakeLabel: "Bespreek uw plannen",
     intakeHref: "/contact",
   },
 };
@@ -190,7 +190,7 @@ export const fallbackHomePage = {
         title: "Klaar om uw project goed te starten?",
         text: "Start de intake. Wij nemen zo snel mogelijk contact op.",
         buttons: [
-          {label: "Start intake", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "primary" as const},
+          {label: "Bespreek uw plannen", link: {linkType: "external" as const, externalUrl: "/contact"}, variant: "primary" as const},
           {label: "Bel direct", link: {linkType: "external" as const, externalUrl: "tel:+31850871814"}, variant: "outlined" as const},
         ],
       },

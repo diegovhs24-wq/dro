@@ -53,8 +53,8 @@ export const revalidate = 3600;
 const NEXT_STEP = {
   groot: {href: "/grote-renovaties#intake", label: "Bespreek een vergelijkbaar project", route: "/grote-renovaties", routeLabel: "Over grote renovaties"},
   constructief: {href: "/constructieve-werken#intake", label: "Bereken uw indicatie", route: "/constructieve-werken", routeLabel: "Over constructief werk"},
-  badkamer: {href: "/#intake", label: "Start uw intake", route: "/projecten?type=badkamer", routeLabel: "Meer badkamers"},
-  overig: {href: "/#intake", label: "Start uw intake", route: "/projecten", routeLabel: "Alle projecten"},
+  badkamer: {href: "/#intake", label: "Bespreek uw plannen", route: "/projecten?type=badkamer", routeLabel: "Meer badkamers"},
+  overig: {href: "/#intake", label: "Bespreek uw plannen", route: "/projecten", routeLabel: "Alle projecten"},
 } as const;
 
 export default async function ProjectDetailPage(props: ProjectPageProps) {

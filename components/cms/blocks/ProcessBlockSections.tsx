@@ -327,7 +327,7 @@ export function ProcessIntakeBannerBlockSection({
             target={btnLink.openInNewTab ? "_blank" : undefined}
             rel={btnLink.openInNewTab ? "noopener noreferrer" : undefined}
           >
-            {content.buttonLabel || "Start intake"}
+            {content.buttonLabel || "Bespreek uw plannen"}
           </Link>
         </div>
       </div>
