@@ -90,6 +90,10 @@ const FAQ = [
     a: 'Dan is een bouwkundige keuring een goede eerste stap. Het rapport kost € 399 en is gratis als wij daarna de renovatie uitvoeren.',
   },
   {
+    q: 'Denken jullie mee over materialen?',
+    a: 'Ja. We denken mee over tegels, sanitair, keuken en vloeren, passend bij uw woning en budget, en werken met vaste leveranciers voor bouwmaterialen, sanitair en keukens. Zelf iets uitzoeken kan ook; dat nemen we mee in de offerte en de planning.',
+  },
+  {
     q: 'In welke plaatsen werken jullie?',
     a: 'Den Haag, Rijswijk, Leidschendam-Voorburg, Wassenaar, Delft, Zoetermeer en omgeving.',
   },
@@ -829,7 +833,8 @@ export default async function TotaalrenovatieLandingPage(
               <h2 className={H2}>Een Haags familiebedrijf</h2>
               <p className={`mt-4 max-w-[60ch] ${BODY}`}>
                 DRO Renovaties is gegroeid uit het bouwbedrijf van de vader van projectleider Therab Raja. We werken met vaste
-                vakteams, eigen opslag en vaste leveranciers, en met een vast netwerk van constructeurs en architecten. U heeft
+                vakteams, eigen opslag en vaste leveranciers voor bouwmaterialen, sanitair en keukens, en met een vast netwerk van constructeurs en
+                architecten. We denken mee in uw materiaalkeuzes. U heeft
                 één aanspreekpunt van de eerste bezichtiging tot de oplevering.
               </p>
             </div>
