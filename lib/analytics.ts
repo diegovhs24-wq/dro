@@ -120,8 +120,9 @@ export function trackEvent(name: string) {
   ensureGtag()("event", name);
 }
 
-// Optioneel GA4-meet-ID. Leeg = alleen Google Ads (zoals nu).
-export const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "";
+// GA4-meet-ID (property "DRO Renovaties website", aangemaakt 22 nov 2026).
+// Een omgevingsvariabele gaat voor. Laadt alleen na cookietoestemming.
+export const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID || "G-FENLMW4Z8B";
 
 export type FunnelEventName =
   | "route_view"
