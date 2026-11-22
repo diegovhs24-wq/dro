@@ -991,6 +991,7 @@ const LOCATION_QUERY = `*[_type == "location" && slug.current == $slug][0]{
   whyDro,
   neighborhoods,
   nearbyCities,
+  "serviceAngles": serviceAngles[]{angle, "slug": service->slug.current, "title": coalesce(service->eyebrow, service->title)},
   "nearbyCitiesResolved": *[_type == "location" && slug.current in ^.nearbyCities]{name, "slug": slug.current} | order(name asc),
   popularServices[]->{
     title,
@@ -1828,6 +1829,13 @@ function toLocationDetail(raw: RawRecord): LocationDetail | null {
     whyDro: typeof raw.whyDro === "string" ? raw.whyDro : undefined,
     neighborhoods: asStringArray(raw.neighborhoods),
     nearbyCities,
+    serviceAngles: asArray<RawRecord>(raw.serviceAngles)
+      .map((item) => ({
+        angle: typeof item.angle === "string" ? item.angle : "",
+        slug: typeof item.slug === "string" ? item.slug : "",
+        title: typeof item.title === "string" ? item.title : "",
+      }))
+      .filter((item) => item.angle && item.slug && item.title),
     popularServices,
     popularServiceSlugs: asStringArray(raw.popularServiceSlugs),
     relatedProjects,

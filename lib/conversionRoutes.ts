@@ -363,7 +363,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
     },
     {
       q: "Hoe lang duurt een totaalrenovatie?",
-      a: "Dat hangt af van de grootte en staat van de woning en van de werkzaamheden. Voor de uitvoering komt er voorbereidingstijd bij voor tekeningen, eventuele vergunningen en levertijden van bijvoorbeeld keuken en kozijnen. Na de bezichtiging krijgt u een planning per fase.",
+      a: "Bij onze recente totaalrenovaties duurde de uitvoering 8 tot 14 weken: Essehout in Zoetermeer 8 weken, Amersfoort 11 weken, het appartement aan de Fuutlaan in Leidschendam 12 weken en de Paulinastraat in Den Haag 14 weken. De duur hangt af van de grootte en staat van de woning en van de werkzaamheden. Voor de uitvoering komt er voorbereidingstijd bij voor tekeningen, eventuele vergunningen en levertijden van bijvoorbeeld keuken en kozijnen. Na de bezichtiging krijgt u een planning per fase.",
     },
     PAYMENT_FAQ,
     {

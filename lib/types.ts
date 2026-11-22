@@ -413,6 +413,8 @@ export type LocationDetail = LocationSummary & {
   whyDro?: string;
   neighborhoods: string[];
   nearbyCities: NearbyLocation[];
+  // Stadsspecifieke uitleg per dienst (Sanity: serviceAngles).
+  serviceAngles: {angle: string; slug: string; title: string}[];
   popularServices: ServiceSummary[];
   relatedProjects: ProjectItem[];
   matchedProjects: ProjectItem[];
