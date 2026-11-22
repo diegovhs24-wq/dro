@@ -199,6 +199,24 @@ export default async function ConversionRoutePage({route}: {route: ConversionRou
 
         <ReviewQuotes asOf={data.reviewAsOf} reviews={data.featuredReviews} summary={data.reviewSummary} />
         <FaqList items={route.faq} />
+        {route.readMore?.length ? (
+          <section aria-labelledby="verder-lezen" className="pr-section">
+            <div className="section-shell">
+              <h2 className="pr-h3 text-[22px]" id="verder-lezen">
+                Verder lezen in de kennisbank
+              </h2>
+              <ul className="mt-4 grid gap-3 md:grid-cols-2">
+                {route.readMore.map((item) => (
+                  <li key={item.href}>
+                    <Link className="pr-link text-[16px]" data-cta="read_more" href={item.href}>
+                      {item.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        ) : null}
         <IntakeBlock
           intro={route.intake.intro}
           title={route.intake.title}
