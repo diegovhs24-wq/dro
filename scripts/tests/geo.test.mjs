@@ -66,8 +66,9 @@ test("placeholder-telefoonnummers worden nooit live gebruikt", () => {
 
 const {isIndexableLocationService} = await import(process.env.GEO_BUSINESS);
 
-test("kerndiensten per stad blijven indexeerbaar", () => {
-  assert.equal(isIndexableLocationService("uitbouw-aanbouw", []), true);
-  assert.equal(isIndexableLocationService("warmtepomp", []), false);
-  assert.equal(isIndexableLocationService("warmtepomp", ["warmtepomp"]), true);
+test("alleen bewezen stad x dienst-combinaties zijn indexeerbaar", () => {
+  assert.equal(isIndexableLocationService("dordrecht", "vloerverwarming"), true);
+  assert.equal(isIndexableLocationService("pijnacker", "totaalrenovatie"), true);
+  assert.equal(isIndexableLocationService("delft", "badkamer-renovatie"), false);
+  assert.equal(isIndexableLocationService("den-haag", "warmtepomp"), false);
 });
