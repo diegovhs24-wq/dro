@@ -75,6 +75,8 @@ export type ConversionRouteConfig = {
     budgetStep: number;
   };
   otherRoute: {title: string; text: string; href: string; label: string};
+  // Verdiepende kennisbankartikelen (interne links, ook voor AI-zoekmachines).
+  readMore?: {title: string; href: string}[];
 };
 
 const PAYMENT_FAQ: RouteFaq = {
@@ -188,6 +190,11 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
     budgetScaleMax: 250000,
     budgetStep: 10000,
   },
+  readMore: [
+    {title: "Betrouwbare aannemer kiezen voor een grote verbouwing", href: "/kennisbank/betrouwbare-aannemer-kiezen"},
+    {title: "Waarom een renovatie staat of valt met voorbereiding", href: "/kennisbank/renovatie-planning-vooraf"},
+    {title: "Totaalrenovatie van je woning: de complete gids", href: "/kennisbank/totaalrenovatie-woning-complete-gids"},
+  ],
   otherRoute: {
     title: "Alleen een draagmuur of doorbraak?",
     text: "Voor constructief werk zonder volledige renovatie hebben we een kortere intake met direct een prijsindicatie.",
@@ -201,7 +208,7 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
   path: "/constructieve-werken",
   crumbLabel: "Constructieve werken",
   estimator: false,
-  metaTitle: "Draagmuur verwijderen en constructieve verbouwingen | DRO Renovaties",
+  metaTitle: "Draagmuur verwijderen en constructief verbouwen | DRO",
   metaDescription:
     "Dragende muur verwijderen, doorbraak of stalen ligger in Den Haag e.o. Met constructieberekening, CAR-verzekerd en direct een prijsindicatie.",
   eyebrow: "Draagmuur, doorbraak en staalconstructie",
@@ -283,6 +290,11 @@ export const SPECIALISTISCH: ConversionRouteConfig = {
     budgetScaleMax: 150000,
     budgetStep: 5000,
   },
+  readMore: [
+    {title: "Draagmuur verwijderen: kosten per meter en wat erbij komt kijken", href: "/kennisbank/draagmuur-verwijderen-kosten"},
+    {title: "Renoveren of verbouwen: wat is het verschil?", href: "/kennisbank/renoveren-of-verbouwen-verschil"},
+    {title: "Betrouwbare aannemer kiezen voor een grote verbouwing", href: "/kennisbank/betrouwbare-aannemer-kiezen"},
+  ],
   otherRoute: {
     title: "Onderdeel van een grotere verbouwing?",
     text: "Gaat de draagmuur eruit als onderdeel van een totaalrenovatie of uitbouw, dan past de route voor grote renovaties beter.",
@@ -299,7 +311,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   crumbLabel: "Totaalrenovatie",
   estimator: true,
   heroSlug: "essehout-zoetermeer",
-  metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO Renovaties",
+  metaTitle: "Totaalrenovatie woning: kosten, duur en aanpak | DRO",
   metaDescription:
     "Wat kost een totaalrenovatie en hoe lang duurt het? Indicatie € 1.210 tot € 1.510 per m² incl. btw, met fases en betaalschema. Familiebedrijf uit Den Haag.",
   eyebrow: "Totaalrenovatie",
@@ -379,6 +391,12 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
     budgetScaleMax: 250000,
     budgetStep: 5000,
   },
+  readMore: [
+    {title: "Wat kost een totaalrenovatie per m2?", href: "/kennisbank/totaalrenovatie-kosten-per-m2"},
+    {title: "Totaalrenovatie van je woning: de complete gids", href: "/kennisbank/totaalrenovatie-woning-complete-gids"},
+    {title: "Jaren 30 woning verbouwen: kosten en aandachtspunten", href: "/kennisbank/jaren-30-woning-verbouwen"},
+    {title: "De volgorde van een verbouwing: stappenplan", href: "/kennisbank/volgorde-verbouwing-stappenplan"},
+  ],
   otherRoute: {
     title: "Ook uitbouwen of een dakopbouw?",
     text: "Combineert u de renovatie met extra ruimte, dan helpt de route voor grote renovaties u verder.",

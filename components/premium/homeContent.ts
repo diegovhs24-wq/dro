@@ -1,6 +1,6 @@
 // Teksten van de homepage, ook gebruikt voor de Markdown-versie (AI-vindbaarheid).
 
-export const HOME_TITLE = "Aannemer voor renovatie en verbouwing in Den Haag";
+export const HOME_TITLE = "Aannemer Den Haag voor renovatie en verbouwing";
 export const HOME_DESCRIPTION =
   "Familiebedrijf uit Den Haag voor complete renovaties, uitbouwen en constructieve verbouwingen onder één regie. Vaste vakteams, vakmanschap tot in de afwerking.";
 
