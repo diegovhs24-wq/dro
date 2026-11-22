@@ -141,16 +141,24 @@ export const BUSINESS = {
   languages: ["Nederlands", "Engels"],
 } as const;
 
-// Kerndiensten met de hoogste projectwaarde. Hun stad x dienst-pagina's blijven
-// altijd indexeerbaar, ook zonder lokale tekst in Sanity: ze zijn commercieel
-// te waardevol om zonder verkeersdata (Search Console) te schrappen.
-export const CORE_SERVICE_SLUGS = ["totaalrenovatie", "uitbouw-aanbouw", "badkamer-renovatie"] as const;
+// Stad x dienst-pagina's (22 steden x 9 diensten) zijn grotendeels sjabloontekst.
+// Search Console (21 aug tot 21 nov 2026): 198 combinaties, samen 10 klikken,
+// terwijl de stadspagina's en dienstpagina's het verkeer trekken. Daarom staan
+// combinaties standaard op noindex,follow (pagina blijft bereikbaar, links worden
+// gevolgd) en uit de sitemap. Alleen combinaties die aantoonbaar klikken
+// opleverden blijven in de index. Lijst opnieuw beoordelen met verse
+// Search Console-data; een combinatie met eigen lokale tekst kan erbij.
+export const INDEXABLE_LOCATION_SERVICE_PATHS = [
+  "/westland/vloerverwarming",
+  "/dordrecht/vloerverwarming",
+  "/voorburg/vloerverwarming",
+  "/pijnacker/totaalrenovatie",
+  "/voorburg/totaalrenovatie",
+  "/rijswijk/totaalrenovatie",
+] as const;
 
-export function isIndexableLocationService(serviceSlug: string, popularServiceSlugs: string[] = []) {
-  return (
-    popularServiceSlugs.includes(serviceSlug) ||
-    (CORE_SERVICE_SLUGS as readonly string[]).includes(serviceSlug)
-  );
+export function isIndexableLocationService(citySlug: string, serviceSlug: string) {
+  return (INDEXABLE_LOCATION_SERVICE_PATHS as readonly string[]).includes(`/${citySlug}/${serviceSlug}`);
 }
 
 export type ReviewSnapshot = {
