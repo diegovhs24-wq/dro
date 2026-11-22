@@ -117,6 +117,11 @@ export const BUSINESS = {
       note: "Afhankelijk van diepte, grootte, lichtstraat, breedte van de doorbraak, fundering en afwerkingsniveau. Een kleine uitbouw is per m² duurder door vaste posten.",
     },
     {
+      service: "Dragende muur verwijderen",
+      range: "€ 1.260 per meter doorbraak excl. btw (bij 2,6 m hoogte) plus € 1.775 vaste kosten; 3 m doorbraak € 5.555 excl. btw (€ 6.721,55 incl. btw)",
+      note: "Vaste kosten zijn stempelen, constructieberekening met vergunningsaanvraag en basisafwerking. Toeslag 25 tot 50% op de verdieping, in een appartement, bij muren dikker dan 24 cm of doorbraken breder dan 4 m.",
+    },
+    {
       service: "Bouwkundige keuring",
       range: "€ 399 voor het rapport",
       note: "Kosteloos als DRO de renovatie daarna uitvoert.",
