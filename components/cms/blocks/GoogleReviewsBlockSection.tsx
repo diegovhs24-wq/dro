@@ -46,7 +46,7 @@ export default async function GoogleReviewsBlockSection({limit = 3}: GoogleRevie
             <div className="flex flex-col gap-5 border-t border-brand-ink pt-6" key={`${review.name}-${index}`}>
               <blockquote className="font-serif text-[19.5px] italic leading-[1.55] text-brand-ink-soft">{review.quote}</blockquote>
               <p className="mt-auto text-[13.5px] text-brand-stone">
-                <b className="font-medium not-italic text-brand-ink">{review.name}</b> — {formatReviewMeta(review.location)}
+                <b className="font-medium not-italic text-brand-ink">{review.name}</b>, {formatReviewMeta(review.location)}
               </p>
             </div>
           ))}

@@ -73,7 +73,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
                   <a className="transition hover:text-brand-orange-on-dark" href={footer.contactPhoneHref || undefined}>
                     {footer.contactPhone}
                     {footer.contactPhoneNote && (
-                      <span className="text-white/40"> {footer.contactPhoneNote}</span>
+                      <span className="text-white/60"> {footer.contactPhoneNote}</span>
                     )}
                   </a>
                 )}
@@ -168,7 +168,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
         </div>
 
         {/* Juridische gegevens: altijd uit lib/seo/business.ts, niet uit het CMS. */}
-        <p className="mt-5 text-xs leading-5 text-white/45">
+        <p className="mt-5 text-xs leading-5 text-white/60">
           <span className="text-white/65">{BUSINESS.legalName}</span>
           <span className="mx-2 text-white/20">/</span>
           {BUSINESS.address.streetAddress}, {BUSINESS.address.postalCode} {BUSINESS.address.addressLocality}
@@ -190,7 +190,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
         )}
 
         {(footer.copyright || footer.legalLinks.length > 0 || GOOGLE_ADS_ID) && (
-          <div className="mt-4 flex flex-col justify-between gap-3 text-xs text-white/40 md:flex-row md:items-center">
+          <div className="mt-4 flex flex-col justify-between gap-3 text-xs text-white/60 md:flex-row md:items-center">
             {footer.copyright && <p>{footer.copyright}</p>}
             {(footer.legalLinks.length > 0 || GOOGLE_ADS_ID) && (
               <div className="flex flex-wrap gap-5">
