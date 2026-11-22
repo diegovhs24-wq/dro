@@ -33,17 +33,13 @@ export default function ConsentBanner() {
       className="fixed inset-x-0 bottom-0 z-[80] border-t border-black/10 bg-white shadow-[0_-12px_40px_rgba(23,23,23,0.12)]"
       role="dialog"
     >
-      <div className="section-shell flex flex-col gap-4 py-4 sm:py-5 lg:flex-row lg:items-center lg:gap-8">
+      <div className="section-shell flex flex-col gap-3 py-3 sm:py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
         <div className="max-w-3xl">
-          <p className="text-base font-bold text-brand-ink">Mogen wij meten wat werkt?</p>
-          <p className="mt-1 text-sm leading-6 text-neutral-600">
-            Met uw toestemming gebruiken wij Google Analytics en Google Ads. Zo zien wij welke informatie bezoekers echt
-            helpt en of onze advertenties werken, en maken wij de site beter. Kiest u &ldquo;Alleen noodzakelijk&rdquo;,
-            dan werkt alles gewoon en laden wij geen Google-script.{" "}
+          <p className="text-sm leading-6 text-neutral-700">
+            Wij gebruiken cookies voor statistieken en advertenties.{" "}
             <Link className="font-semibold text-brand-ink underline underline-offset-2 hover:text-brand-orange" href="/cookie-informatie">
               Meer informatie
             </Link>
-            .
           </p>
         </div>
         <div className="flex w-full gap-3 lg:w-auto lg:min-w-[420px]">
