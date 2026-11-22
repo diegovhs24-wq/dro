@@ -237,7 +237,7 @@ function blockToMarkdown(block: CmsDynamicPageBlock): string {
         heading(1, `${block.titlePrefix || ""} ${block.titleHighlight || ""}`.trim()),
         paragraph(block.intro),
         ...(block.steps || []).map(
-          (step, index) => `${index + 1}. **${step.title}** — ${step.text || ""}\n`
+          (step, index) => `${index + 1}. **${step.title}**: ${step.text || ""}\n`
         ),
         "\n",
         heading(2, "Voordelen"),
@@ -396,7 +396,7 @@ async function buildRawMarkdownForPath(pathname: string) {
     lines.push(heading(2, "Artikelen"));
     const posts = await getBlogPosts();
     posts.forEach((post) => {
-      lines.push(`- ${link(post.title, post.href)}${post.excerpt ? ` — ${post.excerpt}` : ""}\n`);
+      lines.push(`- ${link(post.title, post.href)}${post.excerpt ? `: ${post.excerpt}` : ""}\n`);
     });
     return lines.join("\n");
   }
@@ -409,7 +409,7 @@ async function buildRawMarkdownForPath(pathname: string) {
     if (post.author?.name || post.publishedAt) {
       lines.push(
         `${post.author?.name ? `Door ${post.author.name}` : ""}${
-          post.author?.name && post.publishedAt ? " — " : ""
+          post.author?.name && post.publishedAt ? ", " : ""
         }${post.publishedAt ? post.publishedAt : ""}\n\n`
       );
     }
