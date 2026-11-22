@@ -8,10 +8,10 @@ import VideoChecklistBlockSection from "@/components/cms/blocks/VideoChecklistBl
 import {Measure, ProjectTile, sizedImage, WHATSAPP_HREF} from "@/components/premium/blocks";
 import PageStructuredData from "@/components/seo/PageStructuredData";
 import {caseStudyFacts} from "@/lib/caseStudy";
-import {getProjectBySlug, getProjects, getSiteSettings, metadataFromSeo} from "@/lib/cms";
+import {getLocations, getProjectBySlug, getProjects, getSiteSettings, metadataFromSeo} from "@/lib/cms";
 import {cleanTitle, projectCategory, projectCover, projectImages, uniqueProjects} from "@/lib/projectCategories";
 import {breadcrumbsForPath} from "@/lib/seo/breadcrumbs";
-import {BUSINESS} from "@/lib/seo/business";
+import {BUSINESS, isIndexableLocationService} from "@/lib/seo/business";
 
 // params als Promise: werkt op Next 14 (await op een gewoon object) en is
 // verplicht vanaf Next 15 (PR #25), zodat beide PR's zonder conflict samengaan.
@@ -38,7 +38,9 @@ export async function generateMetadata(props: ProjectPageProps): Promise<Metadat
   }
 
   // Uniek per project (straat + plaats) en zonder dubbele spaties (SEO-12).
-  const title = `${project.type}, ${project.title} | DRO Renovaties`.replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
+  const base = `${project.type}, ${project.title}`.replace(/\s+/g, " ").replace(/\s+,/g, ",").trim();
+  // Max ~60 tekens in Google: bij lange typen valt het merk-achtervoegsel weg.
+  const title = `${base} | DRO Renovaties`.length > 60 ? base : `${base} | DRO Renovaties`;
 
   return metadataFromSeo({}, title, {
     pathname: `/projecten/${params.slug}`,
@@ -50,6 +52,24 @@ export async function generateMetadata(props: ProjectPageProps): Promise<Metadat
 
 export const revalidate = 3600;
 
+// Dienstpagina die bij het projecttype hoort (interne link project -> dienst).
+const SERVICE_FOR_TYPE: Array<{match: RegExp; href: string; label: string}> = [
+  {match: /dakopbouw/i, href: "/dakopbouw", label: "Dakopbouw"},
+  {match: /totaal/i, href: "/totaalrenovatie", label: "Totaalrenovatie"},
+  {match: /badkamer|toilet/i, href: "/badkamer-renovatie", label: "Badkamer renovatie"},
+  {match: /aanbouw|uitbouw/i, href: "/uitbouw-aanbouw", label: "Uitbouw en aanbouw"},
+  {match: /vloerverwarming/i, href: "/vloerverwarming", label: "Vloerverwarming"},
+];
+
+const SERVICE_SLUG_FOR_HREF: Record<string, string> = {
+  "/badkamer-renovatie": "badkamer-renovatie",
+  "/totaalrenovatie": "totaalrenovatie",
+  "/uitbouw-aanbouw": "uitbouw-aanbouw",
+  "/vloerverwarming": "vloerverwarming",
+};
+
+const norm = (value: string) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
 const NEXT_STEP = {
   groot: {href: "/grote-renovaties#intake", label: "Bespreek een vergelijkbaar project", route: "/grote-renovaties", routeLabel: "Over grote renovaties"},
   constructief: {href: "/constructieve-werken#intake", label: "Bereken uw indicatie", route: "/constructieve-werken", routeLabel: "Over constructief werk"},
@@ -59,7 +79,7 @@ const NEXT_STEP = {
 
 export default async function ProjectDetailPage(props: ProjectPageProps) {
   const params = await props.params;
-  const [siteSettings, project, all] = await Promise.all([getSiteSettings(), getProjectBySlug(params.slug), getProjects()]);
+  const [siteSettings, project, all, locations] = await Promise.all([getSiteSettings(), getProjectBySlug(params.slug), getProjects(), getLocations()]);
   if (!project) notFound();
 
   const pathname = `/projecten/${params.slug}`;
@@ -77,6 +97,16 @@ export default async function ProjectDetailPage(props: ProjectPageProps) {
     {term: "Type", detail: type},
     ...(project.duration ? [{term: "Uitvoering", detail: cleanTitle(project.duration)}] : []),
     ...(project.caseStudy ? caseStudyFacts(project.caseStudy).filter((f) => f.label !== "Locatie" && f.label !== "Uitvoering").map((f) => ({term: f.label, detail: f.value})) : []),
+  ];
+  const service = SERVICE_FOR_TYPE.find((s) => s.match.test(project.type || ""));
+  const city = locations.find((l) => norm(l.name) === norm(cleanTitle(project.location)));
+  const serviceSlug = service ? SERVICE_SLUG_FOR_HREF[service.href] : undefined;
+  const readMore = [
+    ...(service ? [{href: service.href, label: `${service.label}: werkwijze, prijzen en doorlooptijd`}] : []),
+    ...(city && serviceSlug && isIndexableLocationService(city.slug, serviceSlug)
+      ? [{href: `/${city.slug}/${serviceSlug}`, label: `${service!.label} in ${city.name}`}]
+      : []),
+    ...(city ? [{href: `/${city.slug}`, label: `Renovatie en verbouwing in ${city.name}`}] : []),
   ];
   const related = uniqueProjects(all)
     .filter((p) => p.slug !== project.slug && projectCategory(p) === category && projectCover(p))
@@ -202,6 +232,25 @@ export default async function ProjectDetailPage(props: ProjectPageProps) {
                   ))}
                 </div>
               )}
+            </div>
+          </section>
+        )}
+
+        {readMore.length > 0 && (
+          <section aria-labelledby="verder" className="pr-section">
+            <div className="section-shell">
+              <h2 className="pr-h2" id="verder">
+                Meer over dit soort werk
+              </h2>
+              <ul className="mt-8 grid max-w-[64ch] border-b border-[var(--pr-line)]">
+                {readMore.map((link) => (
+                  <li className="border-t border-[var(--pr-line)] py-3 text-[16px]" key={link.href}>
+                    <Link className="pr-link" href={link.href}>
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
         )}
