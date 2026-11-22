@@ -127,6 +127,11 @@ export const BUSINESS = {
       note: "Inclusief sloop, leidingwerk, waterdicht maken, tegelwerk, nisjes, verstek en waar nodig een tussenwandje. Duurder bij inbouwkranen, hangtoilet, inloopdouche met goot, grootformaat tegels of natuursteen, vloerverwarming en het verplaatsen van toilet of douche.",
     },
     {
+      service: "Nokverhoging",
+      range: "eenzijdig vanaf € 21.175 incl. btw (€ 17.500 excl. btw), tweezijdig vanaf € 33.275 incl. btw (€ 27.500 excl. btw), gemiddelde rijwoning",
+      note: "Inclusief constructieberekening, dakconstructie, isolatie, dakbedekking en kozijnen, wind- en waterdicht. Binnenafwerking en leges apart.",
+    },
+    {
       service: "Dakopbouw",
       range: "vanaf € 2.420 per m² incl. btw (vanaf € 2.000 excl. btw), woonklaar opgeleverd",
       note: "Afhankelijk van oppervlakte, draagkracht van de bestaande constructie, prefab of traditioneel, indeling, trap en bereikbaarheid voor kraan en steiger. Leges van de gemeente apart.",
