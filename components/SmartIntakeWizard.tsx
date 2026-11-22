@@ -1410,6 +1410,17 @@ export default function SmartIntakeWizard({
           padding: 6px 22px 26px;
           background: var(--intake-bg);
         }
+        /* Op een telefoon geen vaste kaarthoogte met een eigen scrollbalk: dan vallen
+           keuzes half buiten beeld en scrolt de bezoeker in een scrollvlak. */
+        @media (max-width: 640px) {
+          .intake-card {
+            height: auto;
+            max-height: none;
+          }
+          .intake-screen {
+            overflow-y: visible;
+          }
+        }
         .intake-screen-enter {
           animation: intakeIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) both;
         }

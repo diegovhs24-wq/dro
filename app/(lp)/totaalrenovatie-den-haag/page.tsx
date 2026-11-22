@@ -56,7 +56,7 @@ const HERO: Record<Variant, {title: string; intro: string}> = {
 
 const PROOF_REST = [
   'Vaste vakteams en één vast aanspreekpunt voor de afstemming',
-  'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
+  'Elke week een vast meetmoment voor vragen en de stand van zaken',
   'VCA-gecertificeerd en CAR-verzekerd',
 ]
 
@@ -150,7 +150,7 @@ const COMPARE = [
   {
     topic: 'Tijdens het werk',
     self: 'Zelf achter vragen en problemen aan',
-    dro: 'Elke week een vast meetmoment, vragen binnen 24 uur opgepakt',
+    dro: 'Elke week een vast meetmoment voor vragen en de stand van zaken',
   },
   {
     topic: 'Na afloop',
@@ -202,7 +202,7 @@ const EXAMPLE_PHASES = [
 const GRIP = [
   {title: 'Eén vast aanspreekpunt', text: 'Voor de afstemming, met vaste rollen voor techniek en betalingen.', icon: 'person'},
   {title: 'Elke week een vast meetmoment', text: 'U ziet de voortgang en stelt uw vragen op een vast moment.', icon: 'calendar'},
-  {title: 'Vragen binnen 24 uur opgepakt', text: 'Via de app, ook tussen de meetmomenten door.', icon: 'chat'},
+  {title: 'Tussendoor bereikbaar', text: 'Via WhatsApp of telefoon, ook tussen de meetmomenten door.', icon: 'chat'},
   {title: 'Vaste vakteams', text: 'Vakmensen die op elkaar ingespeeld zijn, met één planning.', icon: 'house'},
   {title: 'Verzekerd', text: 'DRO heeft een CAR- en een bedrijfsaansprakelijkheidsverzekering.', icon: 'shield'},
 ] as const

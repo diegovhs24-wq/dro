@@ -40,7 +40,7 @@ export function projectCover(project: Pick<ProjectItem, "afterImage" | "images" 
 // steigers) blijven in het portfolio, maar openen het niet.
 // Grootste projecten in het eigen werkgebied eerst; Amersfoort (buiten het
 // kernwerkgebied) achteraan binnen de grote renovaties.
-export const FEATURED_ORDER = ["jan-muschlaan-den-haag", "borneostraat-den-haag", "paulinastraat", "fuutlaan-leidschendam", "essehout-zoetermeer", "amersfoort"];
+export const FEATURED_ORDER = ["fuutlaan-leidschendam", "essehout-zoetermeer", "jan-muschlaan-den-haag", "borneostraat-den-haag", "paulinastraat", "amersfoort"];
 
 // Volgorde: vrijgegeven casestudy's, dan grote renovaties (eindbeelden eerst),
 // dan constructief, dan overig werk en als laatste badkamers en toiletten;

@@ -2,8 +2,9 @@
 // onderwerp wat DRO aantoonbaar doet. Bronnen:
 // - BUSINESS (lib/seo/business.ts): betaling, verzekering, erkenningen, team.
 // - Rolverdeling en klantbeloftes zoals door Therab bevestigd (oktober 2026):
-//   planning en betaalschema bij akkoord, wekelijks vast meetmoment, appvragen
-//   binnen 24 uur opgepakt, Jarek technisch verantwoordelijk.
+//   planning en betaalschema bij akkoord, wekelijks vast meetmoment, Jarek
+//   technisch verantwoordelijk. De 24-uursbelofte voor appvragen is bewust
+//   geschrapt (22-11-2026): niet structureel aantoonbaar.
 // - De gepubliceerde algemene voorwaarden (versie augustus 2026, /algemene-voorwaarden),
 //   die bij elke offerte worden meegestuurd: art. 3.4 (offerte limitatief),
 //   art. 5 (meerwerk op nacalculatie, tijdig gemeld), art. 10 (gezamenlijke
@@ -40,7 +41,7 @@ export function buildAssurances(claims: VerifiedClaims = {}): AssuranceTopic[] {
       key: "communicatie",
       topic: "Communicatie",
       question: "Wie spreek ik, en hoe vaak?",
-      answer: "Elke week één vast meetmoment voor uw vragen. Vragen via de app worden binnen 24 uur opgepakt.",
+      answer: "Elke week één vast meetmoment voor uw vragen en de stand van zaken. Tussendoor kunt u ons appen of bellen; wat niet direct kan, bespreken we uiterlijk in het meetmoment.",
       proof: "Vaste rollen: Therab voor de algemene afstemming, Jarek voor techniek, Esra voor betalingen en kwaliteit.",
     },
     {
