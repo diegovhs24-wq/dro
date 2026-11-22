@@ -40,11 +40,11 @@ export default async function HomePage() {
             {term: "Erkend", detail: "VCA, SBB en VLOK"},
             {term: "Verzekerd", detail: "CAR en aansprakelijkheid"},
           ]}
-          lead={`${BUSINESS.name} is een familiebedrijf uit Den Haag. Wij realiseren complete renovaties, uitbouwen en constructieve verbouwingen, van het bouwkundige plan tot de laatste afwerking. Eén partij houdt de regie, met vaste vakteams, een vast aanspreekpunt en oog voor elk detail. Ook als een verbouwing constructief complex wordt.`}
+          lead={`${BUSINESS.name} is een aannemer en familiebedrijf uit Den Haag. Wij realiseren complete renovaties, uitbouwen en constructieve verbouwingen, van het bouwkundige plan tot de laatste afwerking. Eén partij houdt de regie, met vaste vakteams, een vast aanspreekpunt en oog voor elk detail. Ook als een verbouwing constructief complex wordt.`}
           primary={{label: "Bespreek uw plannen", href: "#intake", cta: "home_hero_intake"}}
           secondary={{label: "Bekijk onze projecten", href: "/projecten", cta: "home_hero_projects"}}
           project={hero}
-          title="Renovatie en verbouwing, onder één regie"
+          title="Aannemer in Den Haag voor renovatie en verbouwing"
         />
 
         {/* Projecten */}
