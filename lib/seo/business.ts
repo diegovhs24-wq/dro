@@ -122,6 +122,11 @@ export const BUSINESS = {
       note: "Vaste kosten zijn stempelen, constructieberekening met vergunningsaanvraag en basisafwerking. Toeslag 25 tot 50% op de verdieping, in een appartement, bij muren dikker dan 24 cm of doorbraken breder dan 4 m.",
     },
     {
+      service: "Badkamerrenovatie",
+      range: "vanaf € 10.890 incl. btw (vanaf € 9.000 excl. btw), inclusief alle bouwmaterialen en arbeid",
+      note: "Inclusief sloop, leidingwerk, waterdicht maken, tegelwerk, nisjes, verstek en waar nodig een tussenwandje. Duurder bij inbouwkranen, hangtoilet, inloopdouche met goot, grootformaat tegels of natuursteen, vloerverwarming en het verplaatsen van toilet of douche.",
+    },
+    {
       service: "Dakopbouw",
       range: "vanaf € 2.420 per m² incl. btw (vanaf € 2.000 excl. btw), woonklaar opgeleverd",
       note: "Afhankelijk van oppervlakte, draagkracht van de bestaande constructie, prefab of traditioneel, indeling, trap en bereikbaarheid voor kraan en steiger. Leges van de gemeente apart.",
