@@ -6,7 +6,7 @@ import {useEffect} from "react";
 import {useConsent} from "@/components/analytics/useConsent";
 import {GA4_ID, GOOGLE_ADS_ID, trackFunnel} from "@/lib/analytics";
 
-// Laadt gtag.js ALLEEN na "Alles accepteren". Tot dat moment staat er geen
+// Laadt gtag.js ALLEEN na "Accepteren". Tot dat moment staat er geen
 // Google-script en gaat er geen verzoek naar googletagmanager.com.
 export default function GoogleTag() {
   const consent = useConsent();

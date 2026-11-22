@@ -7,8 +7,8 @@ import {GOOGLE_ADS_ID} from "@/lib/analytics";
 import {buildPageMetadata} from "@/lib/seo/metadata";
 
 const PATHNAME = "/cookie-informatie";
-const TITLE = "Cookies en Google Ads | DRO Renovaties";
-const DESCRIPTION = "Wat wij met uw toestemming meten met Google Ads, welke gegevens daarbij naar Google gaan en hoe u uw keuze wijzigt.";
+const TITLE = "Cookies, Google Analytics en Google Ads | DRO Renovaties";
+const DESCRIPTION = "Wat wij met uw toestemming meten met Google Analytics en Google Ads, welke gegevens daarbij naar Google gaan en hoe u uw keuze wijzigt.";
 
 export const metadata: Metadata = buildPageMetadata({
   fallbackTitle: TITLE,
@@ -25,9 +25,9 @@ export default function CookieInformatiePage() {
   return (
     <main className="bg-white">
       <div className="section-shell max-w-3xl py-12 sm:py-16">
-        <h1 className="text-3xl font-bold tracking-tight text-brand-ink sm:text-4xl">Cookies en Google Ads</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-brand-ink sm:text-4xl">Cookies, Google Analytics en Google Ads</h1>
         <p className="mt-4 text-base leading-7 text-neutral-700">
-          Deze pagina beschrijft wat onze website doet met Google Ads. De{" "}
+          Deze pagina beschrijft wat onze website doet met Google Analytics en Google Ads. De{" "}
           <Link className="font-semibold underline underline-offset-2 hover:text-brand-orange" href="/privacypolicy">
             privacyverklaring
           </Link>{" "}
@@ -36,20 +36,25 @@ export default function CookieInformatiePage() {
 
         <h2 className="mt-10 text-xl font-bold text-brand-ink">Zonder uw toestemming</h2>
         <p className="mt-2 text-base leading-7 text-neutral-700">
-          Zolang u niet op &ldquo;Alles accepteren&rdquo; klikt, laden wij geen Google-script en gaat er geen verzoek naar
+          Zolang u niet op &ldquo;Accepteren&rdquo; klikt, laden wij geen Google-script en gaat er geen verzoek naar
           Google. Als u &ldquo;Alleen noodzakelijk&rdquo; kiest, werkt de website en het aanvraagformulier gewoon.
         </p>
 
         <h2 className="mt-10 text-xl font-bold text-brand-ink">Met uw toestemming</h2>
         <p className="mt-2 text-base leading-7 text-neutral-700">
-          Na &ldquo;Alles accepteren&rdquo; laden wij de Google Ads-tag van Google. Wij geven Google daarbij toestemming voor
+          Na &ldquo;Accepteren&rdquo; laden wij de Google-tag voor Google Analytics en Google Ads. Wij geven Google daarbij toestemming voor
           advertentieopslag, het gebruik van gebruikersgegevens voor advertenties, advertentiepersonalisatie en
           analyseopslag (in de technische instellingen van Google: <code>ad_storage</code>, <code>ad_user_data</code>,{" "}
-          <code>ad_personalization</code> en <code>analytics_storage</code>). Wij meten dan drie dingen:
+          <code>ad_personalization</code> en <code>analytics_storage</code>). Wij meten dan vier dingen:
         </p>
         <ul className="mt-3 list-disc space-y-2 pl-6 text-base leading-7 text-neutral-700">
           <li>
             Bezoeken aan onze website, zodat Google advertentieresultaten kan meten (de standaardmeting van de tag).
+          </li>
+          <li>
+            Met Google Analytics: welke pagina&apos;s worden bekeken, hoe bezoekers binnenkomen (bijvoorbeeld via Google of
+            een advertentie) en welke stappen van het aanvraagformulier zij doorlopen. Zo zien wij welke informatie
+            bezoekers helpt.
           </li>
           <li>
             Een succesvol verzonden aanvraag. Dan sturen wij een conversiegebeurtenis met een vaste waarde van 1 euro en
