@@ -55,7 +55,7 @@ export default async function LocationDetailRoute({slug}: {slug: string}) {
   const pathname = `/${location.slug}`;
   const breadcrumbs = breadcrumbsForPath(pathname, location.name);
   const faqs = LOCATION_FAQ_TEMPLATE(location.name);
-  const title = location.seo?.metaTitle || `Renovatie in ${location.name} | DRO Renovaties`;
+  const title = location.seo?.metaTitle || `Aannemer ${location.name}: renovatie en verbouwing | DRO Renovaties`;
   const description = location.seo?.metaDescription || location.intro;
 
   const graph = [

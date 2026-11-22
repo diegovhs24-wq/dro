@@ -19,7 +19,7 @@ export default function CTASection({
       <div className="section-shell flex flex-col justify-between gap-5 md:flex-row md:items-center">
         <div className="max-w-2xl">
           {eyebrow && (
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-on-dark">
               {eyebrow}
             </p>
           )}

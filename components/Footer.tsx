@@ -55,7 +55,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
                 {footer.description}
               </p>
             )}
-            <Link className="mt-3 inline-flex text-xs font-bold text-brand-orange hover:text-white" href="/handige-tools">
+            <Link className="mt-3 inline-flex text-xs font-bold text-brand-orange-on-dark hover:text-white" href="/handige-tools">
               Handige tools &rarr;
             </Link>
           </div>
@@ -63,14 +63,14 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
           {(footer.contactTitle || footer.contactAddress || footer.contactPhone || footer.contactEmail) && (
             <div>
               {footer.contactTitle && (
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-on-dark">
                   {footer.contactTitle}
                 </p>
               )}
               <div className="mt-3 grid gap-2 text-xs leading-5 text-white/65">
                 {footer.contactAddress && <p>{footer.contactAddress}</p>}
                 {footer.contactPhone && (
-                  <a className="transition hover:text-brand-orange" href={footer.contactPhoneHref || undefined}>
+                  <a className="transition hover:text-brand-orange-on-dark" href={footer.contactPhoneHref || undefined}>
                     {footer.contactPhone}
                     {footer.contactPhoneNote && (
                       <span className="text-white/40"> {footer.contactPhoneNote}</span>
@@ -78,7 +78,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
                   </a>
                 )}
                 {footer.contactEmail && (
-                  <a className="transition hover:text-brand-orange" href={footer.contactEmailHref || undefined}>
+                  <a className="transition hover:text-brand-orange-on-dark" href={footer.contactEmailHref || undefined}>
                     {footer.contactEmail}
                   </a>
                 )}
@@ -89,13 +89,13 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
           {services.length > 0 && (
             <div>
               {footer.servicesTitle && (
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-on-dark">
                   {footer.servicesTitle}
                 </p>
               )}
               <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-white/65">
                 {services.map((service) => (
-                  <Link className="transition hover:text-brand-orange" href={service.href} key={service.href}>
+                  <Link className="transition hover:text-brand-orange-on-dark" href={service.href} key={service.href}>
                     {service.title}
                   </Link>
                 ))}
@@ -106,7 +106,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
           {(footer.businessTitle || footer.businessText || footer.businessItems.length > 0) && (
             <div>
               {footer.businessTitle && (
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-on-dark">
                   {footer.businessTitle}
                 </p>
               )}
@@ -117,7 +117,7 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
                 <div className="mt-3 grid gap-1.5 text-xs text-white/70">
                   {footer.businessItems.map((item) => (
                     <p key={item}>
-                      <span className="mr-2 text-brand-orange">✔</span>
+                      <span className="mr-2 text-brand-orange-on-dark">✔</span>
                       {item}
                     </p>
                   ))}
@@ -134,13 +134,13 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
 
         {locations.length > 0 && (
           <div className="mt-6 border-t border-white/10 pt-5">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-on-dark">
               Werkgebied
             </p>
             <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-xs text-white/50">
               {locations.map((location, index) => (
                 <span key={location.slug}>
-                  <Link className="transition hover:text-brand-orange" href={location.href}>
+                  <Link className="transition hover:text-brand-orange-on-dark" href={location.href}>
                     {location.name}
                   </Link>
                   {index < locations.length - 1 && <span className="ml-3 text-white/20">/</span>}
@@ -152,15 +152,15 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
 
         <div className="mt-6 border-t border-white/10 pt-5">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange">Voor uw project</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-orange-on-dark">Voor uw project</p>
             <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/80">
-              <Link className="transition hover:text-brand-orange" data-cta="footer_route_groot" href="/grote-renovaties">
+              <Link className="transition hover:text-brand-orange-on-dark" data-cta="footer_route_groot" href="/grote-renovaties">
                 Grote renovaties vanaf € 50.000
               </Link>
-              <Link className="transition hover:text-brand-orange" data-cta="footer_route_constructief" href="/constructieve-werken">
+              <Link className="transition hover:text-brand-orange-on-dark" data-cta="footer_route_constructief" href="/constructieve-werken">
                 Draagmuur en constructief werk
               </Link>
-              <Link className="transition hover:text-brand-orange" href="/projecten">
+              <Link className="transition hover:text-brand-orange-on-dark" href="/projecten">
                 Projecten
               </Link>
             </div>
@@ -195,11 +195,11 @@ export default function Footer({services, locations = [], siteSettings}: FooterP
             {(footer.legalLinks.length > 0 || GOOGLE_ADS_ID) && (
               <div className="flex flex-wrap gap-5">
                 {footer.legalLinks.map((link) => (
-                  <Link className="transition hover:text-brand-orange" href={link.href} key={link.href}>
+                  <Link className="transition hover:text-brand-orange-on-dark" href={link.href} key={link.href}>
                     {link.label}
                   </Link>
                 ))}
-                <CookieSettingsLink className="transition hover:text-brand-orange" />
+                <CookieSettingsLink className="transition hover:text-brand-orange-on-dark" />
               </div>
             )}
           </div>

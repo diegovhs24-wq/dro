@@ -112,6 +112,16 @@ export const BUSINESS = {
       note: "Afhankelijk van staat van de woning, installaties, constructieve wijzigingen en afwerkingsniveau.",
     },
     {
+      service: "Uitbouw en aanbouw",
+      range: "vanaf € 3.025 per m² incl. btw (vanaf € 2.500 excl. btw), compleet afgewerkt inclusief schuifpui",
+      note: "Afhankelijk van diepte, grootte, lichtstraat, breedte van de doorbraak, fundering en afwerkingsniveau. Een kleine uitbouw is per m² duurder door vaste posten.",
+    },
+    {
+      service: "Dragende muur verwijderen",
+      range: "€ 1.260 per meter doorbraak excl. btw (bij 2,6 m hoogte) plus € 1.775 vaste kosten; 3 m doorbraak € 5.555 excl. btw (€ 6.721,55 incl. btw)",
+      note: "Vaste kosten zijn stempelen, constructieberekening met vergunningsaanvraag en basisafwerking. Toeslag 25 tot 50% op de verdieping, in een appartement, bij muren dikker dan 24 cm of doorbraken breder dan 4 m.",
+    },
+    {
       service: "Bouwkundige keuring",
       range: "€ 399 voor het rapport",
       note: "Kosteloos als DRO de renovatie daarna uitvoert.",
