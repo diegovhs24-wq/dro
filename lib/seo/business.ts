@@ -112,6 +112,11 @@ export const BUSINESS = {
       note: "Afhankelijk van staat van de woning, installaties, constructieve wijzigingen en afwerkingsniveau.",
     },
     {
+      service: "Uitbouw en aanbouw",
+      range: "vanaf € 3.025 per m² incl. btw (vanaf € 2.500 excl. btw), compleet afgewerkt inclusief schuifpui",
+      note: "Afhankelijk van diepte, grootte, lichtstraat, breedte van de doorbraak, fundering en afwerkingsniveau. Een kleine uitbouw is per m² duurder door vaste posten.",
+    },
+    {
       service: "Bouwkundige keuring",
       range: "€ 399 voor het rapport",
       note: "Kosteloos als DRO de renovatie daarna uitvoert.",
