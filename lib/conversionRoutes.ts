@@ -193,7 +193,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
   readMore: [
     {title: "Betrouwbare aannemer kiezen voor een grote verbouwing", href: "/kennisbank/betrouwbare-aannemer-kiezen"},
     {title: "Waarom een renovatie staat of valt met voorbereiding", href: "/kennisbank/renovatie-planning-vooraf"},
-    {title: "Totaalrenovatie van je woning: de complete gids", href: "/kennisbank/totaalrenovatie-woning-complete-gids"},
+    {title: "Totaalrenovatie van uw woning: de complete gids", href: "/kennisbank/totaalrenovatie-woning-complete-gids"},
   ],
   otherRoute: {
     title: "Alleen een draagmuur of doorbraak?",
@@ -393,7 +393,7 @@ export const TOTAALRENOVATIE: ConversionRouteConfig = {
   },
   readMore: [
     {title: "Wat kost een totaalrenovatie per m2?", href: "/kennisbank/totaalrenovatie-kosten-per-m2"},
-    {title: "Totaalrenovatie van je woning: de complete gids", href: "/kennisbank/totaalrenovatie-woning-complete-gids"},
+    {title: "Totaalrenovatie van uw woning: de complete gids", href: "/kennisbank/totaalrenovatie-woning-complete-gids"},
     {title: "Jaren 30 woning verbouwen: kosten en aandachtspunten", href: "/kennisbank/jaren-30-woning-verbouwen"},
     {title: "De volgorde van een verbouwing: stappenplan", href: "/kennisbank/volgorde-verbouwing-stappenplan"},
   ],
