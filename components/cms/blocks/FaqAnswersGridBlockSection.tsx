@@ -24,7 +24,9 @@ export default function FaqAnswersGridBlockSection({
 }) {
   const faqs = Array.isArray(block.faqs) ? block.faqs : [];
 
-  if (!block.title || !block.intro || faqs.length === 0) {
+  // Een intro is optioneel: zonder intro bleven de vragen onzichtbaar terwijl ze wel
+  // als FAQ-structured data in de pagina stonden (Google eist dat die zichtbaar zijn).
+  if (!block.title || faqs.length === 0) {
     return null;
   }
 
@@ -39,11 +41,13 @@ export default function FaqAnswersGridBlockSection({
             </h2>
           </div>
 
-          <div className="max-w-2xl pt-2 lg:pt-20">
-            <p className="text-[16px] font-normal leading-[1.7] text-[#425466] ">
-              {block.intro}
-            </p>
-          </div>
+          {block.intro ? (
+            <div className="max-w-2xl pt-2 lg:pt-20">
+              <p className="text-[16px] font-normal leading-[1.7] text-[#425466] ">
+                {block.intro}
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <div className="mt-12 grid gap-x-14 gap-y-8 md:gap-y-12 lg:grid-cols-2">
