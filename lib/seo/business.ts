@@ -123,7 +123,7 @@ export const BUSINESS = {
     },
     {
       service: "Badkamerrenovatie",
-      range: "vanaf € 10.890 incl. btw (vanaf € 9.000 excl. btw), inclusief alle bouwmaterialen en arbeid",
+      range: "vanaf € 10.890 incl. btw (vanaf € 9.000 excl. btw), inclusief alle bouwmaterialen en arbeid, exclusief tegels, sanitair en kranen",
       note: "Inclusief sloop, leidingwerk, waterdicht maken, tegelwerk, nisjes, verstek en waar nodig een tussenwandje. Duurder bij inbouwkranen, hangtoilet, inloopdouche met goot, grootformaat tegels of natuursteen, vloerverwarming en het verplaatsen van toilet of douche.",
     },
     {
