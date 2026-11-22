@@ -122,6 +122,16 @@ export const BUSINESS = {
       note: "Vaste kosten zijn stempelen, constructieberekening met vergunningsaanvraag en basisafwerking. Toeslag 25 tot 50% op de verdieping, in een appartement, bij muren dikker dan 24 cm of doorbraken breder dan 4 m.",
     },
     {
+      service: "Badkamerrenovatie",
+      range: "vanaf € 10.890 incl. btw (vanaf € 9.000 excl. btw), inclusief alle bouwmaterialen en arbeid, exclusief tegels, sanitair en kranen",
+      note: "Inclusief sloop, leidingwerk, waterdicht maken, tegelwerk, nisjes, verstek en waar nodig een tussenwandje. Duurder bij inbouwkranen, hangtoilet, inloopdouche met goot, grootformaat tegels of natuursteen, vloerverwarming en het verplaatsen van toilet of douche.",
+    },
+    {
+      service: "Dakopbouw",
+      range: "vanaf € 2.420 per m² incl. btw (vanaf € 2.000 excl. btw), woonklaar opgeleverd",
+      note: "Afhankelijk van oppervlakte, draagkracht van de bestaande constructie, prefab of traditioneel, indeling, trap en bereikbaarheid voor kraan en steiger. Leges van de gemeente apart.",
+    },
+    {
       service: "Bouwkundige keuring",
       range: "€ 399 voor het rapport",
       note: "Kosteloos als DRO de renovatie daarna uitvoert.",
@@ -136,16 +146,24 @@ export const BUSINESS = {
   languages: ["Nederlands", "Engels"],
 } as const;
 
-// Kerndiensten met de hoogste projectwaarde. Hun stad x dienst-pagina's blijven
-// altijd indexeerbaar, ook zonder lokale tekst in Sanity: ze zijn commercieel
-// te waardevol om zonder verkeersdata (Search Console) te schrappen.
-export const CORE_SERVICE_SLUGS = ["totaalrenovatie", "uitbouw-aanbouw", "badkamer-renovatie"] as const;
+// Stad x dienst-pagina's (22 steden x 9 diensten) zijn grotendeels sjabloontekst.
+// Search Console (21 aug tot 21 nov 2026): 198 combinaties, samen 10 klikken,
+// terwijl de stadspagina's en dienstpagina's het verkeer trekken. Daarom staan
+// combinaties standaard op noindex,follow (pagina blijft bereikbaar, links worden
+// gevolgd) en uit de sitemap. Alleen combinaties die aantoonbaar klikken
+// opleverden blijven in de index. Lijst opnieuw beoordelen met verse
+// Search Console-data; een combinatie met eigen lokale tekst kan erbij.
+export const INDEXABLE_LOCATION_SERVICE_PATHS = [
+  "/westland/vloerverwarming",
+  "/dordrecht/vloerverwarming",
+  "/voorburg/vloerverwarming",
+  "/pijnacker/totaalrenovatie",
+  "/voorburg/totaalrenovatie",
+  "/rijswijk/totaalrenovatie",
+] as const;
 
-export function isIndexableLocationService(serviceSlug: string, popularServiceSlugs: string[] = []) {
-  return (
-    popularServiceSlugs.includes(serviceSlug) ||
-    (CORE_SERVICE_SLUGS as readonly string[]).includes(serviceSlug)
-  );
+export function isIndexableLocationService(citySlug: string, serviceSlug: string) {
+  return (INDEXABLE_LOCATION_SERVICE_PATHS as readonly string[]).includes(`/${citySlug}/${serviceSlug}`);
 }
 
 export type ReviewSnapshot = {

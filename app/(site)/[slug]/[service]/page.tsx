@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 
 import LocationServiceDetailRoute from "@/components/LocationServiceDetailRoute";
-import {formatReviewSummary, getReviewSnapshot} from "@/lib/seo/business";
+import {formatReviewSummary, getReviewSnapshot, isIndexableLocationService} from "@/lib/seo/business";
 import {
   getLocationBySlug,
   getLocationCityServiceParams,
@@ -41,11 +41,14 @@ export async function generateMetadata({params}: LocationServicePageProps): Prom
   const title = `${serviceName} in ${location.name} | DRO Renovaties`;
   const description = `${service.intro} Actief in ${location.name} en omgeving. ${formatReviewSummary(getReviewSnapshot())}.`;
 
-  // Alle stad x dienst-combinaties blijven indexeerbaar met een canonical naar
-  // zichzelf, zoals op main. Een besluit om combinaties uit de index te halen
-  // vereist eerst Search Console-data (docs/audit/18, punt 2).
+  // Combinaties staan op noindex,follow, behalve de lijst in lib/seo/business.ts
+  // (onderbouwd met Search Console-data, zie daar).
   return metadataFromSeo(
-    {metaTitle: title, metaDescription: description},
+    {
+      metaTitle: title,
+      metaDescription: description,
+      noIndex: !isIndexableLocationService(slug, serviceSlug),
+    },
     title,
     {
       pathname: `/${slug}/${serviceSlug}`,
