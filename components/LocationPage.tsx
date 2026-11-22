@@ -28,7 +28,7 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
           <div className="max-w-3xl animate-float-in">
             <p className="eyebrow-slate">Werkgebied</p>
             <h1 className="hero-ref-title mt-5">
-              Renovatiebedrijf in {location.name}
+              Aannemer en renovatiebedrijf in {location.name}
             </h1>
             <p className="hero-ref-text mt-6 max-w-2xl">
               Ja, DRO Renovaties voert renovaties uit in {location.name} en omgeving: badkamers,

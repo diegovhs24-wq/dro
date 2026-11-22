@@ -66,7 +66,7 @@ export async function pageOrLocationMetadata({
 
   if (result.kind === "location") {
     const {location} = result;
-    const title = location.seo?.metaTitle || `Renovatie in ${location.name} | DRO Renovaties`;
+    const title = location.seo?.metaTitle || `Aannemer ${location.name}: renovatie en verbouwing | DRO Renovaties`;
     const description = location.seo?.metaDescription || location.intro;
     return metadataFromSeo({metaTitle: title, metaDescription: description}, title, {
       pathname,

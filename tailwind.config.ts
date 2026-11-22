@@ -14,6 +14,9 @@ const config: Config = {
         brand: {
           orange: "#c4520f",
           "orange-hover": "#a9450c",
+          // Lichtere oranje voor kleine tekst op donkere vlakken (footer, donkere
+          // CTA-balk): #c4520f haalt daar maar 3,9:1, deze tint 4,7:1 (WCAG AA).
+          "orange-on-dark": "#d95b16",
           ink: "#181613",
           "ink-soft": "#3a3733",
           soft: "#fbfaf7",

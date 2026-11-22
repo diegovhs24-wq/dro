@@ -525,7 +525,7 @@ async function buildRawMarkdownForPath(pathname: string) {
 
   const location = await getLocationBySlug(cmsSlug);
   if (location) {
-    lines.push(heading(1, `Renovatie in ${location.name}`));
+    lines.push(heading(1, `Aannemer en renovatiebedrijf in ${location.name}`));
     lines.push(paragraph(location.intro));
     if (location.localContext) {
       lines.push(heading(2, "Lokale situatie"));
