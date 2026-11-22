@@ -18,14 +18,16 @@ import {
   buildWebPageSchema,
 } from "@/lib/seo/structured-data";
 
-const LOCATION_FAQ_TEMPLATE = (cityName: string) => [
+const LOCATION_FAQ_TEMPLATE = (cityName: string, neighborhoods: string[] = []) => [
   {
     question: `Werkt DRO Renovaties ook in ${cityName}?`,
-    answer: `Ja. DRO Renovaties voert renovaties uit in ${cityName} en de directe omgeving, met vaste vakteams en één aanspreekpunt van intake tot oplevering.`,
+    answer: neighborhoods.length
+      ? `Ja. DRO Renovaties voert renovaties uit in ${cityName} en de directe omgeving, onder meer in ${neighborhoods.slice(0, -1).join(", ")}${neighborhoods.length > 1 ? " en " : ""}${neighborhoods[neighborhoods.length - 1]}. U heeft één aanspreekpunt van intake tot oplevering.`
+      : `Ja. DRO Renovaties voert renovaties uit in ${cityName} en de directe omgeving, met vaste vakteams en één aanspreekpunt van intake tot oplevering.`,
   },
   {
     question: `Wat kost een renovatie in ${cityName}?`,
-    answer: "Dat hangt af van de omvang van het project. U ontvangt vooraf een offerte met een prijs per onderdeel. Blijkt er tijdens het werk meer nodig, dan hoort u dat vooraf. Het betalingsschema per fase staat vooraf in de offerte.",
+    answer: "Als indicatie: een totaalrenovatie kost bij DRO 1.000 tot 1.250 euro per m² excl. btw, een uitbouw vanaf 2.500 euro per m² excl. btw (compleet met schuifpui), een dakopbouw vanaf 2.000 euro per m² excl. btw en een complete badkamer vanaf 9.000 euro excl. btw (tegels en sanitair apart). Na een opname ontvangt u een offerte met een prijs per onderdeel en een betalingsschema per fase.",
   },
   {
     question: "Hoe snel kan DRO Renovaties starten?",
@@ -54,7 +56,7 @@ export default async function LocationDetailRoute({slug}: {slug: string}) {
 
   const pathname = `/${location.slug}`;
   const breadcrumbs = breadcrumbsForPath(pathname, location.name);
-  const faqs = LOCATION_FAQ_TEMPLATE(location.name);
+  const faqs = LOCATION_FAQ_TEMPLATE(location.name, location.neighborhoods);
   const title = location.seo?.metaTitle || `Aannemer ${location.name}: renovatie en verbouwing | DRO Renovaties`;
   const description = location.seo?.metaDescription || location.intro;
 

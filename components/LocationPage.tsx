@@ -1,4 +1,4 @@
-import {BUSINESS, formatReviewSummary} from "@/lib/seo/business";
+import {BUSINESS, formatReviewSummary, isIndexableLocationService} from "@/lib/seo/business";
 import Link from "next/link";
 
 import BlogCard from "@/components/BlogCard";
@@ -100,7 +100,11 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
             <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
               {location.popularServices.map((service) => (
                 <ServiceCard
-                  href={`/${location.slug}/${service.slug}`}
+                  href={
+                    isIndexableLocationService(location.slug, service.slug)
+                      ? `/${location.slug}/${service.slug}`
+                      : `/${service.slug}`
+                  }
                   icon={service.icon}
                   image={service.image}
                   key={service.slug}
@@ -108,6 +112,29 @@ export default function LocationPage({location, reviews, relatedArticles, faqs}:
                   summary={service.summary}
                   title={service.title}
                 />
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {location.serviceAngles.length ? (
+        <section className="bg-white pb-14 sm:pb-16">
+          <div className="section-shell">
+            <h2 className="text-2xl font-bold tracking-tight text-brand-ink">
+              Wat wij in {location.name} vaak doen.
+            </h2>
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              {location.serviceAngles.map((item) => (
+                <div key={item.slug}>
+                  <h3 className="text-lg font-bold text-brand-ink">
+                    {item.title} in {location.name}
+                  </h3>
+                  <p className="mt-2 text-base leading-7 text-neutral-700">{item.angle}</p>
+                  <Link className="mt-2 inline-block font-semibold text-brand-orange hover:text-brand-ink" href={`/${item.slug}`}>
+                    Meer over {item.title.toLowerCase()}
+                  </Link>
+                </div>
               ))}
             </div>
           </div>
