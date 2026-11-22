@@ -7,7 +7,9 @@ export const GOOGLE_ADS_LEAD_LABEL = process.env.NEXT_PUBLIC_GOOGLE_ADS_LEAD_LAB
 
 export type ConsentChoice = "granted" | "denied";
 
-const STORAGE_KEY = "dro-cookie-consent";
+// v2 (22 nov 2026): Google Analytics toegevoegd naast Google Ads. Nieuw doel,
+// dus iedereen krijgt de vraag opnieuw.
+const STORAGE_KEY = "dro-cookie-consent-v2";
 const CHANGE_EVENT = "dro-consent-change";
 const OPEN_EVENT = "dro-consent-open";
 

@@ -316,7 +316,7 @@ test("funnelmeting: niets zonder toestemming, met toestemming zonder persoonsgeg
   try {
     analytics.trackFunnel("form_submit_success", {route: "grote-renovatie"});
     assert.equal(globalThis.window.dataLayer, undefined, "zonder toestemming geen dataLayer");
-    store["dro-cookie-consent"] = "granted";
+    store["dro-cookie-consent-v2"] = "granted";
     analytics.trackFunnel("form_submit_success", {route: "grote-renovatie", email: "a@b.nl", naam: "Jan", note: "06 12345678", budget_tier: "100k-250k"});
     const ev = globalThis.window.dataLayer?.[0];
     assert.equal(ev.event, "form_submit_success");

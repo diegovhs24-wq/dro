@@ -35,23 +35,20 @@ export default function ConsentBanner() {
     >
       <div className="section-shell flex flex-col gap-4 py-4 sm:py-5 lg:flex-row lg:items-center lg:gap-8">
         <div className="max-w-3xl">
-          <p className="text-base font-bold text-brand-ink">Cookies en uw privacy</p>
+          <p className="text-base font-bold text-brand-ink">Mogen wij meten wat werkt?</p>
           <p className="mt-1 text-sm leading-6 text-neutral-600">
-            Wij gebruiken alleen noodzakelijke cookies. Met uw toestemming laden wij ook een Google-tag, zodat wij kunnen
-            meten of onze advertenties werken. Zonder uw toestemming wordt er geen Google-script geladen. Meer in onze{" "}
-            <Link className="font-semibold text-brand-ink underline underline-offset-2 hover:text-brand-orange" href="/privacypolicy">
-              privacyverklaring
-            </Link>
-            {" "}en{" "}
+            Met uw toestemming gebruiken wij Google Analytics en Google Ads. Zo zien wij welke informatie bezoekers echt
+            helpt en of onze advertenties werken, en maken wij de site beter. Kiest u &ldquo;Alleen noodzakelijk&rdquo;,
+            dan werkt alles gewoon en laden wij geen Google-script.{" "}
             <Link className="font-semibold text-brand-ink underline underline-offset-2 hover:text-brand-orange" href="/cookie-informatie">
-              cookie-informatie
+              Meer informatie
             </Link>
             .
           </p>
         </div>
         <div className="flex w-full gap-3 lg:w-auto lg:min-w-[420px]">
           <button className={buttonClass} onClick={() => choose("granted")} type="button">
-            Alles accepteren
+            Accepteren
           </button>
           <button className={buttonClass} onClick={() => choose("denied")} type="button">
             Alleen noodzakelijk
