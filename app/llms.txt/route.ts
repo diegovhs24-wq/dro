@@ -74,7 +74,7 @@ export async function GET() {
       "1. Aanvraag: een adviseur belt terug, bespreekt de wensen en plant zo nodig een bezichtiging.",
       "2. Bezichtiging en offerte: de projectleider bekijkt grotere projecten zelf en maakt een uitgewerkte offerte per onderdeel. DRO denkt mee over materialen en afwerking en werkt met vaste leveranciers voor bouwmaterialen, sanitair en keukens; de klant kan ook zelf kiezen of materiaal aanleveren.",
       "3. Voorbereiding: bij akkoord volgen een planning en betaalschema; waar nodig verzorgt DRO via vaste constructeurs de constructieberekening en, als dat in de offerte staat, de vergunningsaanvraag.",
-      "4. Uitvoering: vaste vakteams onder een technisch hoofd uitvoering; elke week één vast overlegmoment en vragen via de app binnen 24 uur opgepakt.",
+      "4. Uitvoering: vaste vakteams onder een technisch hoofd uitvoering; elke week één vast overlegmoment voor vragen en de stand van zaken.",
       "5. Betaling en oplevering: betalingsschema per projectfase, vooraf vastgelegd in de offerte (eventuele startbetalingen en afwijkende afspraken staan daar schriftelijk in); oplevering met gezamenlijke opname en opleverlijst.",
       `Meer: ${absoluteUrl("/werkwijze")}`,
     ]),

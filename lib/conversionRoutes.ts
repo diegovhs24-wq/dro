@@ -151,7 +151,7 @@ export const GROTE_RENOVATIE: ConversionRouteConfig = {
       {title: "Bezichtiging en offerte op maat", text: "We komen langs, nemen de woning op en maken een offerte per onderdeel, zodat u ziet waar uw budget naartoe gaat. We denken daarbij mee over materialen en afwerking."},
       {title: "Planning en betaalschema", text: "Bij akkoord krijgt u een planning en een betalingsschema per fase. Een eventuele startbetaling staat daar vooraf in."},
       // Klantbeloftes bevestigd door Therab (rolverdeling DRO, oktober 2026).
-      {title: "Uitvoering", text: "Onze vaste vakteams voeren het werk uit. Elke week is er één vast meetmoment voor uw vragen, en vragen via de app worden binnen 24 uur opgepakt."},
+      {title: "Uitvoering", text: "Onze vaste vakteams voeren het werk uit. Elke week is er één vast meetmoment voor uw vragen en de stand van zaken; tussendoor kunt u ons appen of bellen."},
       {title: "Samen nalopen en opleveren", text: "We lopen het werk met u na voordat we opleveren."},
     ],
   },

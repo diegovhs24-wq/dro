@@ -132,7 +132,8 @@ test("zes zekerheden: alle onderwerpen, zonder onbevestigde claims", () => {
   assert.deepEqual(items.map((i) => i.key), ["planning", "communicatie", "meerwerk", "kwaliteit", "betaling", "oplevering"]);
   const text = JSON.stringify(items);
   assert.ok(!BANNED.test(text), `onbevestigd: ${text.match(BANNED)?.[0]}`);
-  assert.match(text, /binnen 24 uur opgepakt/);
+  assert.match(text, /vast meetmoment/);
+  assert.ok(!/24 uur/.test(text), "geen 24-uursbelofte");
   // Garantie en meerwerk zoals in de gepubliceerde algemene voorwaarden.
   assert.match(text, /12 maanden garantie/);
   assert.match(text, /nacalculatie/);

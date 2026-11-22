@@ -19,7 +19,7 @@ export const HOME_FAQ = [
   },
   {
     q: "Wie is mijn aanspreekpunt tijdens de verbouwing?",
-    a: "Therab Raja, projectleider renovatie, voor de algemene afstemming en Jarek als hoofd uitvoering voor technische vragen. Elke week is er een vast meetmoment, en vragen via de app worden binnen 24 uur opgepakt.",
+    a: "Therab Raja, projectleider renovatie, voor de algemene afstemming en Jarek als hoofd uitvoering voor technische vragen. Elke week is er een vast meetmoment voor uw vragen en de stand van zaken, en tussendoor kunt u ons appen of bellen.",
   },
   {
     q: "Helpen jullie bij het kiezen van materialen?",
