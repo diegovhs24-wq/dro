@@ -164,7 +164,6 @@ test("publieke broncode bevat geen absolute of onbevestigde beloftes", async () 
     "components/LocationPage.tsx",
     "components/LocationServicePage.tsx",
     "components/LocationDetailRoute.tsx",
-    "components/TeamFaqSection.tsx",
     "components/tools/toolsConfig.ts",
     ...dirFiles("components/premium", [".ts", ".tsx"]),
     ...dirFiles("components/routes", [".ts", ".tsx"]),
