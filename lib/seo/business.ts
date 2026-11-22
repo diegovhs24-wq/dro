@@ -122,6 +122,11 @@ export const BUSINESS = {
       note: "Vaste kosten zijn stempelen, constructieberekening met vergunningsaanvraag en basisafwerking. Toeslag 25 tot 50% op de verdieping, in een appartement, bij muren dikker dan 24 cm of doorbraken breder dan 4 m.",
     },
     {
+      service: "Dakopbouw",
+      range: "vanaf € 2.420 per m² incl. btw (vanaf € 2.000 excl. btw), woonklaar opgeleverd",
+      note: "Afhankelijk van oppervlakte, draagkracht van de bestaande constructie, prefab of traditioneel, indeling, trap en bereikbaarheid voor kraan en steiger. Leges van de gemeente apart.",
+    },
+    {
       service: "Bouwkundige keuring",
       range: "€ 399 voor het rapport",
       note: "Kosteloos als DRO de renovatie daarna uitvoert.",
